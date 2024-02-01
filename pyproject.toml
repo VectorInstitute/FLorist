@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "florist"
+version = "0.0.1"
+description = ""
+authors = ["Vector AI Engineering <fl4health@vectorinstitute.ai>"]
+license = "MIT"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9.0,<3.11"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.1.1"
+flake8 = "^7.0.0"
+isort = "^5.13.2"
+mypy = "^1.8.0"
+pre-commit = "^3.6.0"
+toml = "^0.10.2"
+types-requests = "^2.31.0.20240125"
+types-setuptools = "^69.0.0.20240125"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.isort]
+multi_line_output = 10
+skip_gitignore = true
+use_parentheses = true
+
+[tool.black]
+line-length = 119
+
+[tool.mypy]
+ignore_missing_imports = true
+install_types = true
+pretty = true
+non_interactive = true
