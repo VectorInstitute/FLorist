@@ -23,14 +23,6 @@ export default function Sidebar() {
                             <span className="nav-link-text ms-1">Home</span>
                         </a>
                     </li>
-                    <li className="nav-item">
-                        <a className="nav-link text-white " href="about.html">
-                            <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                                <b style={{padding: "0 7px"}}>?</b>
-                            </div>
-                            <span className="nav-link-text ms-1">About</span>
-                        </a>
-                    </li>
                 </ul>
             </div>
         </aside>
