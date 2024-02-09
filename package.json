@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "fastapi-dev": "poetry install --with dev && python -m uvicorn api.index:app --reload",
-    "next-dev": "next dev",
+    "fastapi-dev": "poetry install --with dev && python -m uvicorn florist.api.index:app --reload",
+    "next-dev": "next dev florist",
     "dev": "concurrently \"npm run next-dev\" \"npm run fastapi-dev\"",
     "build": "next build",
     "start": "next start",

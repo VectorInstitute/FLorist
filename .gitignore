@@ -141,6 +141,7 @@ dmypy.json
 
 # next.js
 /.next/
+/florist/.next/
 /out/
 
 # production
@@ -164,3 +165,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+/florist/tsconfig.json
