@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-function ClientImports() {
+function ClientImports(): null {
     useEffect(() => {
         require("./assets/js/core/popper.min.js");
         require("./assets/js/core/bootstrap.min.js");

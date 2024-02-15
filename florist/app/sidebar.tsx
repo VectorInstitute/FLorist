@@ -1,8 +1,9 @@
-import logo_ct from "./assets/img/logo-ct.png"
+import logo_ct from "./assets/img/logo-ct.png";
 
-import Image from 'next/image'
+import Image from "next/image";
+import { ReactElement } from "react/React";
 
-export default function Sidebar() {
+export default function Sidebar(): ReactElement {
     return (
         <aside className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
             <div className="sidenav-header">
