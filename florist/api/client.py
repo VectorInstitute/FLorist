@@ -5,5 +5,5 @@ app = FastAPI()
 
 
 @app.get("/api/client/connect")
-def connect():
+def connect() -> JSONResponse:
     return JSONResponse({"status": "ok"})
