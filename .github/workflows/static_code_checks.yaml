@@ -1,4 +1,4 @@
-# only has to pass for python 3.8
+# only has to pass for python 3.9
 name: Static code checks
 
 on:
