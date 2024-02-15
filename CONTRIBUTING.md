@@ -13,6 +13,35 @@ Once the python virtual environment is setup, you can run pre-commit hooks using
 pre-commit run --all-files
 ```
 
+## Development dependencies
+
+To install development dependencies, first you need to create a virtual environment.
+The easiest way is by using the [virtualenv](https://pypi.org/project/virtualenv/) package:
+
+```shell
+virtualenv venv
+source venv/bin/activate
+```
+
+We use [Poetry](https://python-poetry.org/) to manage back-end dependencies:
+
+```shell
+pip install --upgrade pip poetry
+poetry install --with dev
+```
+
+We use [Yarn](https://yarnpkg.com/) to manage front-end dependencies. Install it on MacOS
+using [Homebrew](https://brew.sh/):
+
+```shell
+brew install yarn
+```
+
+Then install the project dependencies:
+```shell
+yarn
+```
+
 ## Coding guidelines
 
 For code style, we recommend the [google style guide](https://google.github.io/styleguide/pyguide.html).
