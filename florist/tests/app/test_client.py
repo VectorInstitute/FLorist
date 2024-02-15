@@ -3,7 +3,7 @@ import json
 from florist.api import client
 
 
-def test_connect():
+def test_connect() -> None:
     response = client.connect()
 
     assert response.status_code == 200
