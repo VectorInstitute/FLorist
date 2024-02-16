@@ -14,7 +14,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.9.0,<3.11"
 fastapi = "^0.109.1"
-uvicorn = {version = "0.23.2", extras = ["standard"]}
+uvicorn = {version = "^0.23.2", extras = ["standard"]}
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.1.1"
