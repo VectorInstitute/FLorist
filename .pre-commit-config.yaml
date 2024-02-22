@@ -44,5 +44,5 @@ repos:
     - id: doctest
       name: doctest
       entry: python3 -m doctest -o NORMALIZE_WHITESPACE
-      files: "^aieng_template/"
+      files: "^florist/"
       language: system

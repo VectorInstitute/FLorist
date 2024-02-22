@@ -2,6 +2,8 @@
 
 # User Guide
 
+# TODO: modify this when working on updating documentation
+
 ## pyproject.toml file and dependency management
 
 If your project doesn't have a pyproject.toml file, simply copy the one from the
@@ -47,14 +49,14 @@ can add to your repository.
 
 The available workflows are:
 
-- [code checks](https://github.com/VectorInstitute/aieng-template/blob/main/.github/workflows/code_checks.yml): Static code analysis, code formatting and unit tests
-- [documentation](https://github.com/VectorInstitute/aieng-template/blob/main/.github/workflows/docs_deploy.yml): Project documentation including example API reference
-- [integration tests](https://github.com/VectorInstitute/aieng-template/blob/main/.github/workflows/integration_tests.yml): Integration tests
-- [publish](https://github.com/VectorInstitute/aieng-template/blob/main/.github/workflows/publish.yml):
+- [code checks](https://github.com/VectorInstitute/FLorist/blob/main/.github/workflows/code_checks.yml): Static code analysis, code formatting and unit tests
+- [documentation](https://github.com/VectorInstitute/FLorist/blob/main/.github/workflows/docs_deploy.yml): Project documentation including example API reference
+- [integration tests](https://github.com/VectorInstitute/FLorist/blob/main/.github/workflows/integration_tests.yml): Integration tests
+- [publish](https://github.com/VectorInstitute/FLorist/blob/main/.github/workflows/publish.yml):
 Publishing python package to PyPI. Create a `PYPI_API_TOKEN` and add it to the
 repository's actions [secret variables](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions)
 in order to publish PyPI packages when new software releases are created on Github.
 
 The test workflows also compute coverage and upload code coverage metrics to
-[codecov.io](https://app.codecov.io/gh/VectorInstitute/aieng-template). Create a
+[codecov.io](https://app.codecov.io/gh/VectorInstitute/FLorist). Create a
 `CODECOV_TOKEN` and add it to the repository's actions [secret variables](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions).

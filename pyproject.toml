@@ -138,7 +138,7 @@ markers = [
 
 [tool.coverage]
     [tool.coverage.run]
-    source=["aieng_template"]
+    source=["florist"]
     omit=["tests/*", "*__init__.py"]
 
 [build-system]
