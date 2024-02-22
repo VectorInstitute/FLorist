@@ -139,7 +139,7 @@ markers = [
 [tool.coverage]
     [tool.coverage.run]
     source=["florist"]
-    omit=["tests/*", "*__init__.py"]
+    omit=["florist/tests/*", "*__init__.py"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

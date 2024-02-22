@@ -1,42 +1,61 @@
-# only has to pass for python 3.9
-name: PyTest Unit Tests
+name: tests
 
 on:
   push:
     branches:
-      main
+      - main
+    paths:
+      - .pre-commit-config.yaml
+      - .github/workflows/static_code_checks.yml
+      - .github/workflows/docs_build.yml
+      - .github/workflows/docs_deploy.yml
+      - .github/workflows/tests.yml
+      - '**.py'
+      - '**.ipynb'
+      - poetry.lock
+      - pyproject.toml
+      - '**.rst'
+      - '**.md'
   pull_request:
     branches:
-      main
+      - main
+    paths:
+      - .pre-commit-config.yaml
+      - .github/workflows/static_code_checks.yml
+      - .github/workflows/docs_build.yml
+      - .github/workflows/docs_deploy.yml
+      - .github/workflows/tests.yml
+      - '**.py'
+      - '**.ipynb'
+      - poetry.lock
+      - pyproject.toml
+      - '**.rst'
+      - '**.md'
 
 jobs:
-  test:
+  integration-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v3
+      - uses: actions/checkout@v4.1.1
+      - name: Install poetry
+        run: python3 -m pip install --upgrade pip && python3 -m pip install poetry
+      - uses: actions/setup-python@v5.0.0
         with:
-          python-version: 3.9
-      # Display the Python version being used
-      - name: Display Python version
-        run: python -c "import sys; print(sys.version)"
-      - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-      - name: Set up cache
-        uses: actions/cache@v2
-        id: cached-poetry-dependencies
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Install dependencies
-        run: poetry install --with test
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      - name: Run Tests
+          python-version: '3.9'
+      - name: Install dependencies and check code
         run: |
-          source .venv/bin/activate
-          pytest florist/tests/*
+          poetry env use '3.9'
+          source $(poetry env info --path)/bin/activate
+          poetry install --with docs,test
+          coverage run -m pytest && coverage xml && coverage report -m
+      - name: Upload coverage to Codecov
+        uses: Wandalen/wretry.action@v1.4.4
+        with:
+          action: codecov/codecov-action@v4.0.1
+          with: |
+            token: ${{ secrets.CODECOV_TOKEN }}
+            file: ./coverage.xml
+            name: codecov-umbrella
+            fail_ci_if_error: true
+          attempt_limit: 5
+          attempt_delay: 30000
