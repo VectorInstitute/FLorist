@@ -46,4 +46,10 @@ back-end APIs individually, they will be available at `https://localhost:8000`.
 
 ### Running the client
 
-Coming up.
+To start the client back-end service:
+
+```shell
+uvicorn florist.api.client:app --reload --port 8001
+```
+
+The service will be available at `http://localhost:8001`.
