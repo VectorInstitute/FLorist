@@ -21,6 +21,8 @@ pip install --upgrade pip poetry
 poetry install
 ```
 
+### Install Yarn
+
 We use [Yarn](https://yarnpkg.com/) to manage front-end dependencies. Install it on MacOS
 using [Homebrew](https://brew.sh/):
 
@@ -33,20 +35,20 @@ Then install the project dependencies:
 yarn
 ```
 
-## Running the server
+### Pulling Redis' Docker
 
-### Start server's Redis instance
+Redis is used to facilitate the communication between FL4Health/Flower and
+FLorist's servers and clients.
 
-Redis is used to facilitate the communication between FL4Health/Flower servers and
-FLorist server.
-
-First, make sure you have Docker installed, and if you don't follow
-[these instructions](https://docs.docker.com/desktop/).
-
-Then, pull Redis' official Docker image (currently we use version 7.2.4):
+If you don't have Docker installed, follow [these instructions](https://docs.docker.com/desktop/)
+to install it. Then, pull Redis' official docker image (we currently use version 7.2.4):
 ```shell
 docker pull redis:7.2.4
 ```
+
+## Running the server
+
+### Start server's Redis instance
 
 If it's your first time running it, create a container and run it with the command below:
 ```shell
@@ -72,9 +74,6 @@ back-end APIs individually, they will be available at `https://localhost:8000`.
 ## Running the client
 
 ### Start client's Redis instance
-
-Similarly to the server, FLorist's client also uses Redis to facilitate the
-communication with FL4Health/Flower client.
 
 If it's your first time running it, create a container and run it with the command below:
 ```shell
