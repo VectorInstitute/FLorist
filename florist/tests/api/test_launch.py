@@ -12,7 +12,7 @@ from florist.tests.api.utils.fl4health_utils import MnistClient, get_server_feda
 from florist.tests.api.utils.models import MnistNet
 
 
-def fit_config(batch_size: int, local_epochs: int, current_server_round: int) -> Dict:
+def fit_config(batch_size: int, local_epochs: int, current_server_round: int) -> Dict[str, int]:
     return {
         "batch_size": batch_size,
         "current_server_round": current_server_round,
@@ -21,7 +21,7 @@ def fit_config(batch_size: int, local_epochs: int, current_server_round: int) ->
 
 
 def get_server(
-    fit_config: Callable = fit_config,
+    fit_config: Callable[..., Dict[str, int]] = fit_config,
     n_clients: int = 2,
     batch_size: int = 8,
     local_epochs: int = 1,
@@ -42,12 +42,9 @@ def test_launch() -> None:
             os.mkdir(client_data_path)
         clients = [MnistClient(client_data_path, [], torch.device("cpu")) for client_data_path in client_data_paths]
 
-        try:
-            launch(
-                get_server,
-                server_address,
-                n_server_rounds,
-                clients,
-            )
-        finally:
-            pass
+        launch(
+            get_server,
+            server_address,
+            n_server_rounds,
+            clients,
+        )

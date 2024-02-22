@@ -12,10 +12,20 @@ from flwr.common.logger import DEFAULT_FORMATTER
 from flwr.server import ServerConfig
 
 
-def redirect_logging_from_console_to_file(log_file_name: str) -> None:
-    fh = logging.FileHandler(log_file_name)
+def redirect_logging_from_console_to_file(log_file_path: str) -> None:
+    """
+    Function that redirects loggers outputing to console to specified file.
+
+    Args:
+        log_file_name (str): The path to the file to log to.
+    """
+
+    # Define file handler to log to and set format
+    fh = logging.FileHandler(log_file_path)
     fh.setFormatter(DEFAULT_FORMATTER)
 
+    # Loop through existing loggers to check if they have one or more streamhandlers
+    # If they do, remove them (to prevent logging to the console) and add filehandler
     for name in logging.root.manager.loggerDict:
         logger = logging.getLogger(name)
         if not all([isinstance(h, logging.StreamHandler) is False for h in logger.handlers]):
@@ -40,6 +50,7 @@ def start_server(
     log_file_name = "server.out"
     redirect_logging_from_console_to_file(log_file_name)
     log_file = open(log_file_name, "a")
+    # Send remaining ouput (ie print) from stdout and stderr to file
     sys.stdout = sys.stderr = log_file
     server = server_constructor()
     fl.server.start_server(
@@ -63,6 +74,7 @@ def start_client(client: BasicClient, server_address: str) -> None:
     log_file_name = f"client_{str(os.getpid())}.out"
     redirect_logging_from_console_to_file(log_file_name)
     log_file = open(log_file_name, "a")
+    # Send remaining ouput (ie print) from stdout and stderr to file
     sys.stdout = sys.stderr = log_file
     fl.client.start_numpy_client(server_address=server_address, client=client)
     client.shutdown()
