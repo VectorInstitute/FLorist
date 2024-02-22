@@ -1,24 +1,24 @@
-from typing import Tuple, List, Callable
+from typing import Callable, List, Tuple
+
 import torch
 import torch.nn as nn
-from torch.optim import Optimizer
-from torch.nn.modules.loss import _Loss
-from torch.utils.data import DataLoader
-from flwr.common.typing import Config, Metrics, Parameters
-from flwr.common.parameter import ndarrays_to_parameters
-from flwr.server.strategy import FedAvg
-from fl4health.clients.basic_client import BasicClient
 from fl4health.client_managers.base_sampling_manager import SimpleClientManager
-from fl4health.utils.load_data import load_mnist_data
+from fl4health.clients.basic_client import BasicClient
 from fl4health.server.base_server import FlServer
+from fl4health.utils.load_data import load_mnist_data
+from flwr.common.parameter import ndarrays_to_parameters
+from flwr.common.typing import Config, Metrics, Parameters
+from flwr.server.strategy import FedAvg
+from torch.nn.modules.loss import _Loss
+from torch.optim import Optimizer
+from torch.utils.data import DataLoader
+
 from florist.tests.api.utils.models import MnistNet
 
 
-class MnsitClient(BasicClient):
+class MnistClient(BasicClient):
     def get_data_loaders(self, config: Config) -> Tuple[DataLoader, DataLoader]:
-        train_loader, val_loader, _ = load_mnist_data(
-            self.data_path, batch_size=config["batch_size"]
-        )
+        train_loader, val_loader, _ = load_mnist_data(self.data_path, batch_size=config["batch_size"])
         return train_loader, val_loader
 
     def get_model(self, config: Config) -> nn.Module:
@@ -46,15 +46,11 @@ def metric_aggregation(
             if isinstance(metric_value, float):
                 current_metric_value = aggregated_metrics.get(metric_name, 0.0)
                 assert isinstance(current_metric_value, float)
-                aggregated_metrics[metric_name] = (
-                    current_metric_value + num_examples_on_client * metric_value
-                )
+                aggregated_metrics[metric_name] = current_metric_value + num_examples_on_client * metric_value
             elif isinstance(metric_value, int):
                 current_metric_value = aggregated_metrics.get(metric_name, 0)
                 assert isinstance(current_metric_value, int)
-                aggregated_metrics[metric_name] = (
-                    current_metric_value + num_examples_on_client * metric_value
-                )
+                aggregated_metrics[metric_name] = current_metric_value + num_examples_on_client * metric_value
             else:
                 raise ValueError("Metric type is not supported")
     return total_examples, aggregated_metrics
@@ -89,14 +85,10 @@ def evaluate_metrics_aggregation_fn(
 
 def get_initial_model_parameters(model: nn.Module) -> Parameters:
     # Initializing the model parameters on the server side.
-    return ndarrays_to_parameters(
-        [val.cpu().numpy() for _, val in model.state_dict().items()]
-    )
+    return ndarrays_to_parameters([val.cpu().numpy() for _, val in model.state_dict().items()])
 
 
-def get_fedavg_strategy(
-    model: nn.Module, n_clients: int, fit_config_fn: Callable
-) -> FedAvg:
+def get_fedavg_strategy(model: nn.Module, n_clients: int, fit_config_fn: Callable) -> FedAvg:
     strategy = FedAvg(
         min_fit_clients=n_clients,
         min_evaluate_clients=n_clients,
@@ -110,18 +102,8 @@ def get_fedavg_strategy(
     return strategy
 
 
-def get_server_fedavg(
-    model: nn.Module, n_clients: int, fit_config_fn: Callable
-) -> FlServer:
+def get_server_fedavg(model: nn.Module, n_clients: int, fit_config_fn: Callable) -> FlServer:
     strategy = get_fedavg_strategy(model, n_clients, fit_config_fn)
     client_manager = SimpleClientManager()
     server = FlServer(strategy=strategy, client_manager=client_manager)
     return server
-
-
-def fit_config(batch_size: int, local_epochs: int, current_server_round) -> Config:
-    return {
-        "batch_size": batch_size,
-        "current_server_round": current_server_round,
-        "local_epochs": local_epochs,
-    }

@@ -1,21 +1,18 @@
-from pathlib import Path
 import os
 import tempfile
 from functools import partial
+from pathlib import Path
+from typing import Callable, Dict
 
 import torch
+from fl4health.server.base_server import FlServer
 
-import flwr as fl
 from florist.api.launch import launch
-
+from florist.tests.api.utils.fl4health_utils import MnistClient, get_server_fedavg
 from florist.tests.api.utils.models import MnistNet
-from florist.tests.api.utils.fl4health_utils import (
-    get_server_fedavg,
-    MnsitClient,
-)
 
 
-def fit_config(batch_size: int, local_epochs: int, current_server_round: int):
+def fit_config(batch_size: int, local_epochs: int, current_server_round: int) -> Dict:
     return {
         "batch_size": batch_size,
         "current_server_round": current_server_round,
@@ -23,30 +20,31 @@ def fit_config(batch_size: int, local_epochs: int, current_server_round: int):
     }
 
 
+def get_server(
+    fit_config: Callable = fit_config,
+    n_clients: int = 2,
+    batch_size: int = 8,
+    local_epochs: int = 1,
+) -> FlServer:
+    fit_config_fn = partial(fit_config, batch_size, local_epochs)
+    server = get_server_fedavg(model=MnistNet(), n_clients=n_clients, fit_config_fn=fit_config_fn)
+    return server
+
+
 def test_launch() -> None:
     n_clients = 2
-    batch_size = 8
     n_server_rounds = 2
-    local_epochs = 1
     server_address = "0.0.0.0:8080"
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        fit_config_fn = partial(fit_config, batch_size, local_epochs)
-        server = get_server_fedavg(
-            model=MnistNet(), n_clients=n_clients, fit_config_fn=fit_config_fn
-        )
-
         client_data_paths = [Path(f"{temp_dir}/{i}") for i in range(n_clients)]
         for client_data_path in client_data_paths:
             os.mkdir(client_data_path)
-        clients = [
-            MnsitClient(client_data_path, [], torch.device("cpu"))
-            for client_data_path in client_data_paths
-        ]
+        clients = [MnistClient(client_data_path, [], torch.device("cpu")) for client_data_path in client_data_paths]
 
         try:
             launch(
-                server,
+                get_server,
                 server_address,
                 n_server_rounds,
                 clients,

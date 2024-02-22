@@ -42,6 +42,7 @@ build-backend = "setuptools.build_meta"
 multi_line_output = 10
 skip_gitignore = true
 use_parentheses = true
+profile = "black"
 
 [tool.black]
 line-length = 119
