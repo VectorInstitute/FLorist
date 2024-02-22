@@ -33,7 +33,7 @@ on:
       - '**.md'
 
 jobs:
-  integration-tests:
+  python-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
