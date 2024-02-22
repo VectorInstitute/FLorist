@@ -1,7 +1,7 @@
-florist\_template.foo module
+florist.foo module
 ==========================
 
-.. automodule:: florist_template.foo
+.. automodule:: florist.foo
    :members:
    :undoc-members:
    :show-inheritance:

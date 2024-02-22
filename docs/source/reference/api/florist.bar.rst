@@ -1,7 +1,7 @@
-florist\_template.bar module
+florist.bar module
 ==========================
 
-.. automodule:: florist_template.bar
+.. automodule:: florist.bar
    :members:
    :undoc-members:
    :show-inheritance:

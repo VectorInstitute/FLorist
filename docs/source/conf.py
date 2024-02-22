@@ -15,12 +15,12 @@ import sys
 from typing import List
 
 
-sys.path.insert(0, os.path.abspath("../../florist_template"))
+sys.path.insert(0, os.path.abspath("../../florist"))
 
 
 # -- Project information -----------------------------------------------------
 
-project = "florist"
+project = "FLorist"
 copyright = "2024, Vector AI Engineering"  # noqa: A001
 author = "Vector AI Engineering"
 
@@ -56,8 +56,8 @@ autosectionlabel_prefix_document = True
 copybutton_prompt_text = r">>> |\.\.\. "
 copybutton_prompt_is_regexp = True
 
-apidoc_module_dir = "../../florist_template"
-apidoc_excluded_paths = ["tests"]
+apidoc_module_dir = "../../florist"
+apidoc_excluded_paths = ["florist/tests"]
 apidoc_output_dir = "reference/api"
 apidoc_separate_modules = True
 apidoc_extra_args = ["-f", "-M", "-T", "--implicit-namespaces"]

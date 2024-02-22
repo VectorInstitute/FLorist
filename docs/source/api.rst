@@ -5,4 +5,4 @@ API Reference
    :maxdepth: 1
    :glob:
 
-   reference/api/florist_template.rst
+   reference/api/florist.rst
