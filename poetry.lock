@@ -895,6 +895,20 @@ rest = ["fastapi (>=0.95.0,<0.96.0)", "requests (>=2.28.2,<3.0.0)", "starlette (
 simulation = ["ray[default] (>=2.3.0,<3.0.0)"]
 
 [[package]]
+name = "freezegun"
+version = "1.4.0"
+description = "Let your Python tests travel through time"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "freezegun-1.4.0-py3-none-any.whl", hash = "sha256:55e0fc3c84ebf0a96a5aa23ff8b53d70246479e9a68863f1fcac5a3e52f19dd6"},
+    {file = "freezegun-1.4.0.tar.gz", hash = "sha256:10939b0ba0ff5adaecf3b06a5c2f73071d9678e507c5eaedb23c761d56ac774b"},
+]
+
+[package.dependencies]
+python-dateutil = ">=2.7"
+
+[[package]]
 name = "frozenlist"
 version = "1.4.1"
 description = "A list-like structure which implements collections.abc.MutableSequence"
@@ -4134,4 +4148,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9.0,<3.11"
-content-hash = "64f43bc14447812b8b107d69210131ad53d00953c24515d7965e965f5aec9116"
+content-hash = "e88dcf9693184ed93b9b3f32dad723142c85aee1ba02436fb4ad5f4e9b83f0c7"
