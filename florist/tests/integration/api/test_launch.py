@@ -8,7 +8,7 @@ from typing import Callable, Dict
 import torch
 from fl4health.server.base_server import FlServer
 
-from florist.api.launch import launch
+from florist.api.launchers.launch import launch
 from florist.tests.utils.api.fl4health_utils import MnistClient, get_server_fedavg
 from florist.tests.utils.api.models import MnistNet
 
@@ -50,7 +50,7 @@ def test_launch() -> None:
             os.mkdir(client_data_path)
         clients = [MnistClient(client_data_path, [], torch.device("cpu")) for client_data_path in client_data_paths]
 
-        server_path = os.path.join(temp_dir, "server.out")
+        server_path = os.path.join(temp_dir, "server")
         client_base_path = f"{temp_dir}/client"
         launch(
             get_server,
@@ -61,4 +61,4 @@ def test_launch() -> None:
             client_base_path,
         )
 
-        assert_string_in_file(server_path, "FL finished in")
+        assert_string_in_file(f"{server_path}.out", "FL finished in")
