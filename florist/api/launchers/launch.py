@@ -27,12 +27,8 @@ def redirect_logging_from_console_to_file(log_file_path: str) -> None:
     # If they do, remove them (to prevent logging to the console) and add filehandler
     for name in logging.root.manager.loggerDict:
         logger = logging.getLogger(name)
-        if not all(
-            [isinstance(h, logging.StreamHandler) is False for h in logger.handlers]
-        ):
-            logger.handlers = [
-                h for h in logger.handlers if not isinstance(h, logging.StreamHandler)
-            ]
+        if not all([isinstance(h, logging.StreamHandler) is False for h in logger.handlers]):
+            logger.handlers = [h for h in logger.handlers if not isinstance(h, logging.StreamHandler)]
             logger.addHandler(fh)
 
 
@@ -67,9 +63,7 @@ def start_server(
     log_file.close()
 
 
-def start_client(
-    client: BasicClient, server_address: str, client_log_file_name: str
-) -> None:
+def start_client(client: BasicClient, server_address: str, client_log_file_name: str) -> None:
     """
     Function to start client. Redirects logging to console, stdout and stderr to file.
 
@@ -123,9 +117,7 @@ def launch_server(
     return server_process
 
 
-def launch_client(
-    client: BasicClient, server_address: str, client_log_file_name: str
-) -> None:
+def launch_client(client: BasicClient, server_address: str, client_log_file_name: str) -> None:
     """
     Function to that spawns a process that starts FL client.
 
@@ -134,9 +126,7 @@ def launch_client(
         server_address (str): String of <IP>:<PORT> to make server available.
         client_log_file_name: (Optional[str]): The name used for the client log file.
     """
-    client_process = Process(
-        target=start_client, args=(client, server_address, client_log_file_name)
-    )
+    client_process = Process(target=start_client, args=(client, server_address, client_log_file_name))
     client_process.start()
 
 
@@ -163,9 +153,7 @@ def launch(
             _{i}.out appended to name to get final client log file name.
     """
     server_log_file_name = f"{server_base_log_file_name}.out"
-    server_process = launch_server(
-        server_constructor, server_address, n_server_rounds, server_log_file_name
-    )
+    server_process = launch_server(server_constructor, server_address, n_server_rounds, server_log_file_name)
     for i, client in enumerate(clients):
         client_log_file_name = f"{client_base_log_file_name}_{i}.out"
         launch_client(client, server_address, client_log_file_name)
