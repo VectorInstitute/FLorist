@@ -13,7 +13,7 @@ from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader
 
-from florist.tests.api.utils.models import MnistNet
+from florist.tests.utils.api.models import MnistNet
 
 
 class MnistClient(BasicClient):
