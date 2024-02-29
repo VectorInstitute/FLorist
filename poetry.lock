@@ -3728,6 +3728,24 @@ lxml = ["lxml (>=4.3.0,<5.0.0)"]
 networkx = ["networkx (>=2.0.0,<3.0.0)"]
 
 [[package]]
+name = "redis"
+version = "5.0.2"
+description = "Python client for Redis database and key-value store"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "redis-5.0.2-py3-none-any.whl", hash = "sha256:4caa8e1fcb6f3c0ef28dba99535101d80934b7d4cd541bbb47f4a3826ee472d1"},
+    {file = "redis-5.0.2.tar.gz", hash = "sha256:3f82cc80d350e93042c8e6e7a5d0596e4dd68715babffba79492733e1f367037"},
+]
+
+[package.dependencies]
+async-timeout = ">=4.0.3"
+
+[package.extras]
+hiredis = ["hiredis (>=1.0.0)"]
+ocsp = ["cryptography (>=36.0.1)", "pyopenssl (==20.0.1)", "requests (>=2.26.0)"]
+
+[[package]]
 name = "referencing"
 version = "0.33.0"
 description = "JSON Referencing + Python"
@@ -5431,4 +5449,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9.0,<3.11"
-content-hash = "628ac8baf69c81be8760631c7a241627e38ff67c82b51403c758aa1f5b479dbe"
+content-hash = "87f16bbde88b2e6539d8d4e07fc5ef29553126d91265281f265df48250a7a29b"

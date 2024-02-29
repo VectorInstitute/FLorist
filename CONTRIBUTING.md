@@ -42,6 +42,12 @@ Then install the project dependencies:
 yarn
 ```
 
+Install Redis by following [these instructions](README.md#pulling-redis-docker).
+
+Then, run the server and client's Redis instance by following
+[these instructions](README.md#start-servers-redis-instance) and
+[these instructions](README.md#start-clients-redis-instance) respectively.
+
 ## Coding guidelines
 
 For code style, we recommend the [PEP 8 style guide](https://peps.python.org/pep-0008/).
