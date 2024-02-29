@@ -1,3 +1,4 @@
+"""Launcher functions for clients and servers."""
 import logging
 import sys
 import time
@@ -13,12 +14,11 @@ from flwr.server import ServerConfig
 
 def redirect_logging_from_console_to_file(log_file_path: str) -> None:
     """
-    Function that redirects loggers outputing to console to specified file.
+    Redirect loggers outputting to console to specified file.
 
     Args:
         log_file_path (str): The path to the file to log to.
     """
-
     # Define file handler to log to and set format
     fh = logging.FileHandler(log_file_path)
     fh.setFormatter(DEFAULT_FORMATTER)
@@ -27,7 +27,7 @@ def redirect_logging_from_console_to_file(log_file_path: str) -> None:
     # If they do, remove them (to prevent logging to the console) and add filehandler
     for name in logging.root.manager.loggerDict:
         logger = logging.getLogger(name)
-        if not all([isinstance(h, logging.StreamHandler) is False for h in logger.handlers]):
+        if not all([isinstance(h, logging.StreamHandler) is False for h in logger.handlers]):  # noqa: C419
             logger.handlers = [h for h in logger.handlers if not isinstance(h, logging.StreamHandler)]
             logger.addHandler(fh)
 
@@ -39,7 +39,7 @@ def start_server(
     server_log_file_name: str,
 ) -> None:
     """
-    Function to start server. Redirects logging to console, stdout and stderr to file.
+    Start server. Redirects logging to console, stdout and stderr to file.
 
     Args:
         server_constructor (Callable[FlServer]): Callable that constructs FL server.
@@ -48,24 +48,23 @@ def start_server(
         server_log_file_name (str): The name of the server log file.
     """
     redirect_logging_from_console_to_file(server_log_file_name)
-    log_file = open(server_log_file_name, "a")
-    # Send remaining ouput (ie print) from stdout and stderr to file
-    sys.stdout = log_file
-    sys.stderr = log_file
-    server = server_constructor()
-    fl.server.start_server(
-        server=server,
-        server_address=server_address,
-        config=ServerConfig(num_rounds=n_server_rounds),
-    )
-    server.shutdown()
-    server.metrics_reporter.dump()
-    log_file.close()
+    with open(server_log_file_name, "a") as log_file:
+        # Send remaining ouput (ie print) from stdout and stderr to file
+        sys.stdout = log_file
+        sys.stderr = log_file
+        server = server_constructor()
+        fl.server.start_server(
+            server=server,
+            server_address=server_address,
+            config=ServerConfig(num_rounds=n_server_rounds),
+        )
+        server.shutdown()
+        server.metrics_reporter.dump()
 
 
 def start_client(client: BasicClient, server_address: str, client_log_file_name: str) -> None:
     """
-    Function to start client. Redirects logging to console, stdout and stderr to file.
+    Start client. Redirects logging to console, stdout and stderr to file.
 
     Args:
         client (BasicClient): BasicClient instance to launch.
@@ -73,14 +72,13 @@ def start_client(client: BasicClient, server_address: str, client_log_file_name:
         client_log_file_name (str): The name of the client log file.
     """
     redirect_logging_from_console_to_file(client_log_file_name)
-    log_file = open(client_log_file_name, "a")
-    # Send remaining ouput (ie print) from stdout and stderr to file
-    sys.stdout = log_file
-    sys.stderr = log_file
-    fl.client.start_numpy_client(server_address=server_address, client=client)
-    client.shutdown()
-    client.metrics_reporter.dump()
-    log_file.close()
+    with open(client_log_file_name, "a") as log_file:
+        # Send remaining ouput (ie print) from stdout and stderr to file
+        sys.stdout = log_file
+        sys.stderr = log_file
+        fl.client.start_numpy_client(server_address=server_address, client=client)
+        client.shutdown()
+        client.metrics_reporter.dump()
 
 
 def launch_server(
@@ -91,7 +89,7 @@ def launch_server(
     seconds_to_sleep: int = 10,
 ) -> Process:
     """
-    Function that spawns a process that starts FL server.
+    Spawn a process that starts FL server.
 
     Args:
         server_constructor (Callable[FlServer]): Callable that constructs FL server.
@@ -100,7 +98,8 @@ def launch_server(
         server_log_file_name (str): The name of the log file for the server.
         seconds_to_sleep (int): The number of seconds to sleep before launching server.
 
-    Returns:
+    Returns
+    -------
         Process: The process running the FL server.
     """
     server_process = Process(
@@ -119,7 +118,7 @@ def launch_server(
 
 def launch_client(client: BasicClient, server_address: str, client_log_file_name: str) -> None:
     """
-    Function that spawns a process that starts FL client.
+    Spawn a process that starts FL client.
 
     Args:
         client (BasicClient): BasicClient instance to launch.
@@ -139,9 +138,11 @@ def launch(
     client_base_log_file_name: str = "client",
 ) -> None:
     """
-    Function to launch FL experiment. First launches server than subsequently clients.
-    Joins server process after clients are launched to block until FL is complete.
-    (Server is last to finish executing)
+    Launch an FL experiment.
+
+    First launches server than subsequently clients. Joins server
+    process after clients are launched to block until FL is complete.
+    (Server is last to finish executing).
 
     Args:
         server_constructor (Callable[FlServer]): Callable that constructs FL server.

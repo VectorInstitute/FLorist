@@ -1,7 +1,6 @@
 from typing import Callable, List, Tuple
 
 import torch
-import torch.nn as nn
 from fl4health.client_managers.base_sampling_manager import SimpleClientManager
 from fl4health.clients.basic_client import BasicClient
 from fl4health.server.base_server import FlServer
@@ -9,6 +8,7 @@ from fl4health.utils.load_data import load_mnist_data
 from flwr.common.parameter import ndarrays_to_parameters
 from flwr.common.typing import Config, Metrics, Parameters
 from flwr.server.strategy import FedAvg
+from torch import nn
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader
@@ -60,7 +60,7 @@ def normalize_metrics(total_examples: int, aggregated_metrics: Metrics) -> Metri
     # Normalize all metric values by the total count of examples seen.
     normalized_metrics: Metrics = {}
     for metric_name, metric_value in aggregated_metrics.items():
-        if isinstance(metric_value, float) or isinstance(metric_value, int):
+        if isinstance(metric_value, (float, int)):
             normalized_metrics[metric_name] = metric_value / total_examples
     return normalized_metrics
 
