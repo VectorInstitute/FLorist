@@ -166,3 +166,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /florist/tsconfig.json
+
+/metrics/
