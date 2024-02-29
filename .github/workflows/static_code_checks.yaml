@@ -1,26 +1,58 @@
-# only has to pass for python 3.9
-name: Static code checks
+name: code checks
 
 on:
   push:
     branches:
-      main
+      - main
+    paths:
+      - .pre-commit-config.yaml
+      - .github/workflows/code_checks.yml
+      - '**.py'
+      - poetry.lock
+      - pyproject.toml
+      - '**.ipynb'
   pull_request:
     branches:
-      main
+      - main
+    paths:
+      - .pre-commit-config.yaml
+      - .github/workflows/code_checks.yml
+      - '**.py'
+      - poetry.lock
+      - pyproject.toml
+      - '**.ipynb'
 
 jobs:
   run-code-check:
     runs-on: ubuntu-latest
     steps:
-
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v3
+      - uses: actions/checkout@v4.1.1
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
         with:
-          python-version: 3.9
-
-      - name: precommit checker
-        uses: pre-commit/action@v3.0.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - uses: actions/setup-python@v5.0.0
+        with:
+          python-version: '3.9'
+          cache: 'poetry'
+      - name: Install dependencies and check code
+        run: |
+          poetry env use '3.9'
+          source .venv/bin/activate
+          poetry install --with test --all-extras
+          pre-commit run --all-files
+      - name: pip-audit (gh-action-pip-audit)
+        uses: pypa/gh-action-pip-audit@v1.0.8
+        with:
+          virtual-environment: .venv/
+          # Ignoring security vulnerabilities in Pillow because pycyclops cannot update it to the
+          # version that fixes them (>10.0.1).
+          # Remove those when the issue below is fixed and pycyclops changes its requirements:
+          # https://github.com/SeldonIO/alibi/issues/991
+          ignore-vulns: |
+            PYSEC-2023-175
+            PYSEC-2023-227
+            GHSA-j7hp-h8jx-5ppr
+            GHSA-56pw-mpj4-fxww
+            GHSA-3f63-hfp8-52jq
