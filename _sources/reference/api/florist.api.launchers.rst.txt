@@ -1,0 +1,12 @@
+florist.api.launchers namespace
+===============================
+
+.. py:module:: florist.api.launchers
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.api.launchers.launch

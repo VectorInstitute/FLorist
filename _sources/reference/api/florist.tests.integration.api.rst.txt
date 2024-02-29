@@ -1,0 +1,15 @@
+florist.tests.integration.api package
+=====================================
+
+.. automodule:: florist.tests.integration.api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.tests.integration.api.launchers

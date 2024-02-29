@@ -1,0 +1,12 @@
+florist.tests.integration namespace
+===================================
+
+.. py:module:: florist.tests.integration
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.tests.integration.api

@@ -1,0 +1,24 @@
+florist.api package
+===================
+
+.. automodule:: florist.api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.api.launchers
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.api.client
+   florist.api.index

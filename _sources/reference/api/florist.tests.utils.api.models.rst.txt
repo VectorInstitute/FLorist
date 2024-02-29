@@ -1,0 +1,7 @@
+florist.tests.utils.api.models module
+=====================================
+
+.. automodule:: florist.tests.utils.api.models
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,12 @@
+florist.tests.integration.api.launchers namespace
+=================================================
+
+.. py:module:: florist.tests.integration.api.launchers
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.tests.integration.api.launchers.test_launch

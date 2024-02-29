@@ -1,0 +1,12 @@
+florist.tests namespace
+=======================
+
+.. py:module:: florist.tests
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.tests.unit
