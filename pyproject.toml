@@ -20,6 +20,7 @@ uvicorn = {version = "^0.23.2", extras = ["standard"]}
 fl4health = "^0.1.11"
 wandb = "^0.16.3"
 torchvision = "0.14.1"
+redis = "^5.0.1"
 
 [tool.poetry.group.test]
 optional = true
