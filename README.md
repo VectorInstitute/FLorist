@@ -37,11 +37,12 @@ yarn
 
 ### Pulling Redis' Docker
 
-Redis is used to facilitate the communication between FL4Health/Flower and
-FLorist's servers and clients.
+Redis is used to fetch the metrics reported by servers and clients during their runs.
+
 
 If you don't have Docker installed, follow [these instructions](https://docs.docker.com/desktop/)
-to install it. Then, pull Redis' official docker image (we currently use version 7.2.4):
+to install it. Then, pull [Redis' official docker image](https://hub.docker.com/_/redis)
+(we currently use version 7.2.4):
 ```shell
 docker pull redis:7.2.4
 ```
