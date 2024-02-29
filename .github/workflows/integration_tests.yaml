@@ -1,4 +1,4 @@
-name: tests
+name: integration-tests
 
 on:
   push:
@@ -33,7 +33,7 @@ on:
       - '**.md'
 
 jobs:
-  python-tests:
+  integration-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
