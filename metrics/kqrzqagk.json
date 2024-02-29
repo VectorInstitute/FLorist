@@ -1,0 +1,27 @@
+{
+    "type": "client",
+    "initialized": "2024-02-28 18:38:59.409896",
+    "rounds": {
+        "1": {
+            "fit_start": "2024-02-28 18:38:59.409917",
+            "fit_metrics": {},
+            "loss_dict": {
+                "backward": 0.7532860636711121
+            },
+            "evaluate_start": "2024-02-28 18:39:45.320589",
+            "evaluate_metrics": {},
+            "loss": 0.5441575050354004
+        },
+        "2": {
+            "fit_start": "2024-02-28 18:39:48.660324",
+            "fit_metrics": {},
+            "loss_dict": {
+                "backward": 0.2600597143173218
+            },
+            "evaluate_start": "2024-02-28 18:40:30.568890",
+            "evaluate_metrics": {},
+            "loss": 0.04285217449069023
+        }
+    },
+    "shutdown": "2024-02-28 18:40:34.334668"
+}

@@ -1,0 +1,25 @@
+{
+    "type": "server",
+    "fit_start": "2024-02-28 18:31:12.348438",
+    "rounds": {
+        "1": {
+            "fit_start": "2024-02-28 18:31:12.348867",
+            "metrics_aggregated": {},
+            "fit_end": "2024-02-28 18:32:11.488423",
+            "evaluate_start": "2024-02-28 18:32:11.488480",
+            "loss_aggregated": 0.06044915318489075,
+            "evaluate_end": "2024-02-28 18:32:14.629803"
+        },
+        "2": {
+            "fit_start": "2024-02-28 18:32:14.629823",
+            "metrics_aggregated": {},
+            "fit_end": "2024-02-28 18:32:56.613203",
+            "evaluate_start": "2024-02-28 18:32:56.613236",
+            "loss_aggregated": 0.043827299028635025,
+            "evaluate_end": "2024-02-28 18:33:00.122379"
+        }
+    },
+    "fit_end": "2024-02-28 18:33:00.122857",
+    "metrics_centralized": {},
+    "losses_centralized": []
+}

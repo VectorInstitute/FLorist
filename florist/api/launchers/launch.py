@@ -119,7 +119,7 @@ def launch_server(
 
 def launch_client(client: BasicClient, server_address: str, client_log_file_name: str) -> None:
     """
-    Function to that spawns a process that starts FL client.
+    Function that spawns a process that starts FL client.
 
     Args:
         client (BasicClient): BasicClient instance to launch.
