@@ -15,6 +15,9 @@ classifiers = [
 python = ">=3.9.0,<3.11"
 fastapi = "0.100.1"
 uvicorn = {version = "0.23.2", extras = ["standard"]}
+fl4health = "^0.1.11"
+wandb = "^0.16.3"
+torchvision = "0.14.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.1.1"
@@ -39,6 +42,7 @@ build-backend = "setuptools.build_meta"
 multi_line_output = 10
 skip_gitignore = true
 use_parentheses = true
+profile = "black"
 
 [tool.black]
 line-length = 119
