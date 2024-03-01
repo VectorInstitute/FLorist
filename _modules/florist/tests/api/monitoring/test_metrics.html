@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex.html" /><link rel="search" title="Search" href="../../../../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>florist.tests.unit.api.test_client - Vector AI Engineering template repository</title>
+        <title>florist.tests.api.monitoring.test_metrics - Vector AI Engineering template repository</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -216,21 +216,75 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.tests.unit.api.test_client</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Tests for FLorist&#39;s client FastAPI endpoints.&quot;&quot;&quot;</span>
+          <h1>Source code for florist.tests.api.monitoring.test_metrics</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span>
 
-<span class="kn">from</span> <span class="nn">florist.api</span> <span class="kn">import</span> <span class="n">client</span>
+<span class="kn">from</span> <span class="nn">fl4health.reporting.metrics</span> <span class="kn">import</span> <span class="n">DateTimeEncoder</span>
+<span class="kn">from</span> <span class="nn">freezegun</span> <span class="kn">import</span> <span class="n">freeze_time</span>
+
+<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">RedisMetricsReporter</span>
 
 
-<div class="viewcode-block" id="test_connect">
-<a class="viewcode-back" href="../../../../../reference/api/florist.tests.unit.api.test_client.html#florist.tests.unit.api.test_client.test_connect">[docs]</a>
-<span class="k">def</span> <span class="nf">test_connect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests the client&#39;s connect endpoint.&quot;&quot;&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<div class="viewcode-block" id="test_add_to_metrics">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.api.monitoring.test_metrics.html#florist.tests.api.monitoring.test_metrics.test_add_to_metrics">[docs]</a>
+<span class="nd">@freeze_time</span><span class="p">(</span><span class="s2">&quot;2012-12-11 10:09:08&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_add_to_metrics</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">mock_redis_connection</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">test_run_id</span> <span class="o">=</span> <span class="s2">&quot;123&quot;</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()}</span>
 
-    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
-    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="o">==</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;ok&quot;</span><span class="p">},</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">))</span></div>
+    <span class="n">redis_metric_reporter</span> <span class="o">=</span> <span class="n">RedisMetricsReporter</span><span class="p">(</span><span class="n">mock_redis_connection</span><span class="p">,</span> <span class="n">test_run_id</span><span class="p">)</span>
+    <span class="n">redis_metric_reporter</span><span class="o">.</span><span class="n">add_to_metrics</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+
+    <span class="n">mock_redis_connection</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_run_id</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">DateTimeEncoder</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="test_add_to_metrics_at_round">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.api.monitoring.test_metrics.html#florist.tests.api.monitoring.test_metrics.test_add_to_metrics_at_round">[docs]</a>
+<span class="nd">@freeze_time</span><span class="p">(</span><span class="s2">&quot;2012-12-11 10:09:08&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_add_to_metrics_at_round</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">mock_redis_connection</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">test_run_id</span> <span class="o">=</span> <span class="s2">&quot;123&quot;</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()}</span>
+    <span class="n">test_round</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="n">redis_metric_reporter</span> <span class="o">=</span> <span class="n">RedisMetricsReporter</span><span class="p">(</span><span class="n">mock_redis_connection</span><span class="p">,</span> <span class="n">test_run_id</span><span class="p">)</span>
+    <span class="n">redis_metric_reporter</span><span class="o">.</span><span class="n">add_to_metrics_at_round</span><span class="p">(</span><span class="n">test_round</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span>
+
+    <span class="n">expected_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;rounds&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">test_round</span><span class="p">):</span> <span class="n">test_data</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">mock_redis_connection</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_run_id</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">expected_data</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">DateTimeEncoder</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="test_dump">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.api.monitoring.test_metrics.html#florist.tests.api.monitoring.test_metrics.test_dump">[docs]</a>
+<span class="nd">@freeze_time</span><span class="p">(</span><span class="s2">&quot;2012-12-11 10:09:08&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_dump</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">mock_redis_connection</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">test_run_id</span> <span class="o">=</span> <span class="s2">&quot;123&quot;</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()}</span>
+    <span class="n">test_round</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="n">redis_metric_reporter</span> <span class="o">=</span> <span class="n">RedisMetricsReporter</span><span class="p">(</span><span class="n">mock_redis_connection</span><span class="p">,</span> <span class="n">test_run_id</span><span class="p">)</span>
+    <span class="n">redis_metric_reporter</span><span class="o">.</span><span class="n">add_to_metrics</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+    <span class="n">redis_metric_reporter</span><span class="o">.</span><span class="n">add_to_metrics_at_round</span><span class="p">(</span><span class="n">test_round</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span>
+    <span class="n">redis_metric_reporter</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
+
+    <span class="n">expected_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="o">**</span><span class="n">test_data</span><span class="p">,</span>
+        <span class="s2">&quot;rounds&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">test_round</span><span class="p">):</span> <span class="n">test_data</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+    <span class="k">assert</span> <span class="n">mock_redis_connection</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">call_args_list</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">test_run_id</span>
+    <span class="k">assert</span> <span class="n">mock_redis_connection</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">call_args_list</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">expected_data</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">DateTimeEncoder</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

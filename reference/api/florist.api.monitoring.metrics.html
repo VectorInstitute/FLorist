@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api package" href="florist.api.html" /><link rel="prev" title="API Reference" href="../../api.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.client module" href="florist.api.client.html" /><link rel="prev" title="florist.api.monitoring namespace" href="florist.api.monitoring.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>florist package - Vector AI Engineering template repository</title>
+        <title>florist.api.monitoring.metrics module - Vector AI Engineering template repository</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -166,14 +166,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide.html#todo-modify-this-when-working-on-updating-documentation">TODO: modify this when working on updating documentation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../api.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">florist package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of florist package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="florist.api.html">florist.api package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of florist.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="florist.html">florist package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of florist package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current has-children"><a class="reference internal" href="florist.api.html">florist.api package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of florist.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.launchers.html">florist.api.launchers namespace</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of florist.api.launchers namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.launchers.launch.html">florist.api.launchers.launch module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.monitoring.html">florist.api.monitoring namespace</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.monitoring namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="florist.api.monitoring.metrics.html">florist.api.monitoring.metrics module</a></li>
+<li class="toctree-l4 current has-children"><a class="reference internal" href="florist.api.monitoring.html">florist.api.monitoring namespace</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.monitoring namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">florist.api.monitoring.metrics module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="florist.api.client.html">florist.api.client module</a></li>
@@ -218,41 +218,76 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-florist">
-<span id="florist-package"></span><h1>florist package<a class="headerlink" href="#module-florist" title="Link to this heading">#</a></h1>
-<p>Root folder for FLorist source code.</p>
-<section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="florist.api.html">florist.api package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="florist.api.launchers.html">florist.api.launchers namespace</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="florist.api.launchers.html#submodules">Submodules</a></li>
+          <section id="module-florist.api.monitoring.metrics">
+<span id="florist-api-monitoring-metrics-module"></span><h1>florist.api.monitoring.metrics module<a class="headerlink" href="#module-florist.api.monitoring.metrics" title="Link to this heading">#</a></h1>
+<p>Classes for the instrumentation of metrics reporting from clients and servers.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="florist.api.monitoring.metrics.RedisMetricsReporter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RedisMetricsReporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">redis_connection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#RedisMetricsReporter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.RedisMetricsReporter" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MetricsReporter</span></code></p>
+<p>Save the metrics to a Redis instance while it records them.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.monitoring.metrics.RedisMetricsReporter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">redis_connection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#RedisMetricsReporter.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.RedisMetricsReporter.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Init an instance of RedisMetricsReporter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>redis_connection</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Redis</span></code></span>) – (redis.client.Redis) the connection object to a Redis. Should be the output
+of redis.Redis(host=host, port=port)</p></li>
+<li><p><strong>run_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – (Optional[str]) the identifier for the run which these metrics are from.
+It will be used as the name of the object in Redis. Optional, default is a random UUID.</p></li>
 </ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="florist.api.monitoring.html">florist.api.monitoring namespace</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="florist.api.monitoring.html#submodules">Submodules</a></li>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.monitoring.metrics.RedisMetricsReporter.add_to_metrics">
+<span class="sig-name descname"><span class="pre">add_to_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#RedisMetricsReporter.add_to_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.RedisMetricsReporter.add_to_metrics" title="Link to this definition">#</a></dt>
+<dd><p>Add a dictionary of data into the main metrics dictionary.</p>
+<p>At the end, dumps the current state of the metrics to Redis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – (Dict[str, Any]) Data to be added to the metrics dictionary via .update().</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.monitoring.metrics.RedisMetricsReporter.add_to_metrics_at_round">
+<span class="sig-name descname"><span class="pre">add_to_metrics_at_round</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fl_round</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#RedisMetricsReporter.add_to_metrics_at_round"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.RedisMetricsReporter.add_to_metrics_at_round" title="Link to this definition">#</a></dt>
+<dd><p>Add a dictionary of data into the metrics dictionary for a specific FL round.</p>
+<p>At the end, dumps the current state of the metrics to Redis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fl_round</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – (int) the FL round these metrics are from.</p></li>
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – (Dict[str, Any]) Data to be added to the round’s metrics dictionary via .update().</p></li>
 </ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="florist.api.client.html">florist.api.client module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="florist.api.client.html#florist.api.client.connect"><code class="docutils literal notranslate"><span class="pre">connect()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="florist.api.index.html">florist.api.index module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="florist.api.index.html#florist.api.index.hello_world"><code class="docutils literal notranslate"><span class="pre">hello_world()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.monitoring.metrics.RedisMetricsReporter.dump">
+<span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#RedisMetricsReporter.dump"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.RedisMetricsReporter.dump" title="Link to this definition">#</a></dt>
+<dd><p>Dump the current metrics to Redis under the run_id name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -260,23 +295,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="florist.api.html">
+          <a class="next-page" href="florist.api.client.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">florist.api package</div>
+                <div class="title">florist.api.client module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../../api.html">
+          <a class="prev-page" href="florist.api.monitoring.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">API Reference</div>
+                <div class="title">florist.api.monitoring namespace</div>
                 
               </div>
             </a>
@@ -319,8 +354,14 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">florist package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#">florist.api.monitoring.metrics module</a><ul>
+<li><a class="reference internal" href="#florist.api.monitoring.metrics.RedisMetricsReporter"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter</span></code></a><ul>
+<li><a class="reference internal" href="#florist.api.monitoring.metrics.RedisMetricsReporter.__init__"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.monitoring.metrics.RedisMetricsReporter.add_to_metrics"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter.add_to_metrics()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.monitoring.metrics.RedisMetricsReporter.add_to_metrics_at_round"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter.add_to_metrics_at_round()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.monitoring.metrics.RedisMetricsReporter.dump"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter.dump()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

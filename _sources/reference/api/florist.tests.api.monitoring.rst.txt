@@ -1,0 +1,12 @@
+florist.tests.api.monitoring namespace
+======================================
+
+.. py:module:: florist.tests.api.monitoring
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.tests.api.monitoring.test_metrics

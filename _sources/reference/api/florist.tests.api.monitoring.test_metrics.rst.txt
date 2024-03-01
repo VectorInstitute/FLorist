@@ -1,0 +1,7 @@
+florist.tests.api.monitoring.test\_metrics module
+=================================================
+
+.. automodule:: florist.tests.api.monitoring.test_metrics
+   :members:
+   :undoc-members:
+   :show-inheritance:

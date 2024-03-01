@@ -1,0 +1,12 @@
+florist.api.monitoring namespace
+================================
+
+.. py:module:: florist.api.monitoring
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.api.monitoring.metrics

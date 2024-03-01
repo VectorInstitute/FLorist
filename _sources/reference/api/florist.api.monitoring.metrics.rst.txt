@@ -1,0 +1,7 @@
+florist.api.monitoring.metrics module
+=====================================
+
+.. automodule:: florist.api.monitoring.metrics
+   :members:
+   :undoc-members:
+   :show-inheritance:
