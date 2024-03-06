@@ -72,7 +72,7 @@ class MnistNet(nn.Module):
         """
         Perform a forward pass for the given tensor.
 
-        :param x: (torch.Tensor) the tensor to perform the foward pass on.
+        :param x: (torch.Tensor) the tensor to perform the forward pass on.
         :return: (torch.Tensor) a result tensor after the forward pass.
         """
         x = self.pool(f.relu(self.conv1(x)))
