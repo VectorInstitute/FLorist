@@ -18,7 +18,6 @@ def test_connect() -> None:
 
 @patch("florist.api.client.launch_client")
 def test_start_success(mock_launch_client: Mock) -> None:
-    """Tests the success case of the start endpoint"""
     test_server_address = "test-server-address"
     test_client = "MNIST"
     test_data_path = "test/data/path"
@@ -46,7 +45,6 @@ def test_start_success(mock_launch_client: Mock) -> None:
 
 
 def test_start_fail_unsupported_client() -> None:
-    """Tests the failure case of the start endpoint when an unsupported client is passed in"""
     test_server_address = "test-server-address"
     test_client = "WRONG"
     test_data_path = "test/data/path"
@@ -63,7 +61,6 @@ def test_start_fail_unsupported_client() -> None:
 
 @patch("florist.api.client.launch_client", side_effect=Exception("test exception"))
 def test_start_fail_exception(mock_launch_client: Mock) -> None:
-    """Tests the failure case of the start endpoint when it throws an exception"""
     test_server_address = "test-server-address"
     test_client = "MNIST"
     test_data_path = "test/data/path"
