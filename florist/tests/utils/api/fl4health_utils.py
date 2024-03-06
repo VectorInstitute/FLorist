@@ -1,35 +1,11 @@
 from typing import Callable, List, Tuple
 
-import torch
 from fl4health.client_managers.base_sampling_manager import SimpleClientManager
-from fl4health.clients.basic_client import BasicClient
 from fl4health.server.base_server import FlServer
-from fl4health.utils.load_data import load_mnist_data
 from flwr.common.parameter import ndarrays_to_parameters
-from flwr.common.typing import Config, Metrics, Parameters
+from flwr.common.typing import Metrics, Parameters
 from flwr.server.strategy import FedAvg
 from torch import nn
-from torch.nn.modules.loss import _Loss
-from torch.optim import Optimizer
-from torch.utils.data import DataLoader
-
-from florist.tests.utils.api.models import MnistNet
-
-
-class MnistClient(BasicClient):
-    def get_data_loaders(self, config: Config) -> Tuple[DataLoader, DataLoader]:
-        train_loader, val_loader, _ = load_mnist_data(self.data_path, batch_size=config["batch_size"])
-        return train_loader, val_loader
-
-    def get_model(self, config: Config) -> nn.Module:
-        return MnistNet()
-
-    def get_optimizer(self, config: Config) -> Optimizer:
-        opt = torch.optim.SGD(self.model.parameters(), lr=0.001, momentum=0.9)
-        return opt
-
-    def get_criterion(self, config: Config) -> _Loss:
-        return torch.nn.CrossEntropyLoss()
 
 
 def metric_aggregation(
