@@ -9,23 +9,25 @@ from flwr.common.logger import log
 
 
 class RedisMetricsReporter(MetricsReporter):  # type: ignore
-    """Save the metrics to a Redis instance while it records them."""
+    """
+    Save the metrics to a Redis instance while it records them.
 
-    def __init__(
-        self,
-        redis_connection: redis.client.Redis,
-        run_id: Optional[str] = None,
-    ):
+    Lazily instantiates a Redis connection when the first metrics are recorded.
+    """
+
+    def __init__(self, host: str, port: str, run_id: Optional[str] = None):
         """
         Init an instance of RedisMetricsReporter.
 
-        :param redis_connection: (redis.client.Redis) the connection object to a Redis. Should be the output
-            of redis.Redis(host=host, port=port)
+        :param host: (str) The host address where the Redis instance is running.
+        :param port: (str) The port where the Redis instance is running on the host.
         :param run_id: (Optional[str]) the identifier for the run which these metrics are from.
             It will be used as the name of the object in Redis. Optional, default is a random UUID.
         """
         super().__init__(run_id)
-        self.redis_connection = redis_connection
+        self.host = host
+        self.port = port
+        self.redis_connection: Optional[redis.Redis] = None
 
     def add_to_metrics(self, data: Dict[str, Any]) -> None:
         """
@@ -51,7 +53,14 @@ class RedisMetricsReporter(MetricsReporter):  # type: ignore
         self.dump()
 
     def dump(self) -> None:
-        """Dump the current metrics to Redis under the run_id name."""
+        """
+        Dump the current metrics to Redis under the run_id name.
+
+        Will instantiate a Redis connection if it's the first time it runs for this instance.
+        """
+        if self.redis_connection is None:
+            self.redis_connection = redis.Redis(host=self.host, port=self.port)
+
         encoded_metrics = json.dumps(self.metrics, cls=DateTimeEncoder)
         log(DEBUG, f"Dumping metrics to redis at key '{self.run_id}': {encoded_metrics}")
         self.redis_connection.set(self.run_id, encoded_metrics)

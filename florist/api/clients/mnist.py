@@ -20,8 +20,9 @@ class MnistClient(BasicClient):  # type: ignore
         """
         Return the data loader for MNIST data.
 
-        :param config: the Config object for this client.
-        :return: a tuple with the train data loader and validation data loader respectively.
+        :param config: (Config) the Config object for this client.
+        :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader
+            and validation data loader respectively.
         """
         train_loader, val_loader, _ = load_mnist_data(self.data_path, batch_size=config["batch_size"])
         return train_loader, val_loader
@@ -30,8 +31,8 @@ class MnistClient(BasicClient):  # type: ignore
         """
         Return the model for MNIST data.
 
-        :param config: the Config object for this client.
-        :return: An instance of florist.api.clients.mnist.MnistNet.
+        :param config: (Config) the Config object for this client.
+        :return: (torch.nn.Module) An instance of florist.api.clients.mnist.MnistNet.
         """
         return MnistNet()
 
@@ -39,8 +40,9 @@ class MnistClient(BasicClient):  # type: ignore
         """
         Return the optimizer for MNIST data.
 
-        :param config: the Config object for this client.
-        :return: An instance of torch.optim.SGD with learning rate of 0.001 and momentum of 0.9.
+        :param config: (Config) the Config object for this client.
+        :return: (torch.optim.Optimizer) An instance of torch.optim.SGD with learning
+            rate of 0.001 and momentum of 0.9.
         """
         return torch.optim.SGD(self.model.parameters(), lr=0.001, momentum=0.9)
 
@@ -48,8 +50,8 @@ class MnistClient(BasicClient):  # type: ignore
         """
         Return the loss for MNIST data.
 
-        :param config:  the Config object for this client.
-        :return: an instance of torch.nn.CrossEntropyLoss.
+        :param config: (Config) the Config object for this client.
+        :return: (torch.nn.modules.loss._Loss) an instance of torch.nn.CrossEntropyLoss.
         """
         return torch.nn.CrossEntropyLoss()
 
@@ -70,8 +72,8 @@ class MnistNet(nn.Module):
         """
         Perform a forward pass for the given tensor.
 
-        :param x: the tensor to perform the foward pass on.
-        :return: a result tensor after the forward pass.
+        :param x: (torch.Tensor) the tensor to perform the foward pass on.
+        :return: (torch.Tensor) a result tensor after the forward pass.
         """
         x = self.pool(f.relu(self.conv1(x)))
         x = self.pool(f.relu(self.conv2(x)))
