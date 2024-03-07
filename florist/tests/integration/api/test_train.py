@@ -8,7 +8,7 @@ from florist.api.launchers.local import launch_server
 from florist.tests.utils.api.launch_utils import get_server
 
 
-def test_client_start():
+def test_train():
     test_server_address = "0.0.0.0:8080"
 
     with tempfile.TemporaryDirectory() as temp_dir:
