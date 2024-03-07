@@ -10,11 +10,11 @@ from florist.api.clients.mnist import MnistClient
 from florist.tests.utils.api.launch_utils import get_server
 
 
-def find_string_in_file(file_path: str, search_string: str) -> bool:
+def assert_string_in_file(file_path: str, search_string: str) -> bool:
     with open(file_path, "r") as f:
         file_contents = f.read()
         match = re.search(search_string, file_contents)
-        return match is not None
+        assert match is not None
 
 
 def test_launch() -> None:
@@ -39,4 +39,4 @@ def test_launch() -> None:
             client_base_path,
         )
 
-        assert find_string_in_file(f"{server_path}.out", "FL finished in")
+        assert_string_in_file(f"{server_path}.out", "FL finished in")
