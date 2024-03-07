@@ -2,61 +2,104 @@
 
 # User Guide
 
-# TODO: modify this when working on updating documentation
+## Setting up
 
-## pyproject.toml file and dependency management
+### Install dependencies
 
-If your project doesn't have a pyproject.toml file, simply copy the one from the
-template and update file according to your project.
+To install the project dependencies, first you need to create a virtual environment.
+The easiest way is by using the [virtualenv](https://pypi.org/project/virtualenv/) package:
 
-For managing dependencies, [Poetry](https://python-poetry.org/) is the recommended tool
-for our team. Hence, install Poetry to setup the development virtual environment. Poetry
-supports [optional dependency groups](https://python-poetry.org/docs/managing-dependencies/#optional-groups)
-which help manage dependencies for different parts of development such as `documentation`,
-`testing`, etc. The core dependencies are installed using the command:
-
-```bash
-python3 -m poetry install
+```shell
+virtualenv venv
+source venv/bin/activate
 ```
 
-Additional dependency groups can be installed using the `--with` flag. For example:
+We use [Poetry](https://python-poetry.org/) to manage back-end dependencies:
 
-```bash
-python3 -m poetry install --with docs,test
+```shell
+pip install --upgrade pip poetry
+poetry install
 ```
 
-## documentation
+### Install Yarn
 
-If your project doesn't have documentation, copy the directory named `docs` to the root
-directory of your repository. The provided source files use [Furo](https://pradyunsg.me/furo/),
-a clean and customisable Sphinx documentation theme.
+We use [Yarn](https://yarnpkg.com/) to manage front-end dependencies. Install it on MacOS
+using [Homebrew](https://brew.sh/):
 
-In order to build the documentation, install the documentation dependencies as mentioned
-in the previous section, navigate to the `docs` folder and run the command:
-
-```bash
-make html
+```shell
+brew install yarn
 ```
 
-You can configure the documentation by updating the `docs/source/conf.py`. The markdown
-files in `docs/source` can be updated to reflect the project's documentation.
+Then install the project dependencies:
+```shell
+yarn
+```
+
+### Pulling Redis' Docker
+
+Redis is used to fetch the metrics reported by servers and clients during their runs.
 
 
-## github actions
+If you don't have Docker installed, follow [these instructions](https://docs.docker.com/desktop/)
+to install it. Then, pull [Redis' official docker image](https://hub.docker.com/_/redis)
+(we currently use version 7.2.4):
+```shell
+docker pull redis:7.2.4
+```
 
-The template consists of some github action continuous integration workflows that you
-can add to your repository.
+## Running the server
 
-The available workflows are:
+### Start server's Redis instance
 
-- [code checks](https://github.com/VectorInstitute/FLorist/blob/main/.github/workflows/code_checks.yml): Static code analysis, code formatting and unit tests
-- [documentation](https://github.com/VectorInstitute/FLorist/blob/main/.github/workflows/docs_deploy.yml): Project documentation including example API reference
-- [integration tests](https://github.com/VectorInstitute/FLorist/blob/main/.github/workflows/integration_tests.yml): Integration tests
-- [publish](https://github.com/VectorInstitute/FLorist/blob/main/.github/workflows/publish.yml):
-Publishing python package to PyPI. Create a `PYPI_API_TOKEN` and add it to the
-repository's actions [secret variables](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions)
-in order to publish PyPI packages when new software releases are created on Github.
+If it's your first time running it, create a container and run it with the command below:
+```shell
+docker run --name redis-florist-server -d -p 6379:6379 redis:7.2.4 redis-server --save 60 1 --loglevel warning
+```
 
-The test workflows also compute coverage and upload code coverage metrics to
-[codecov.io](https://app.codecov.io/gh/VectorInstitute/FLorist). Create a
-`CODECOV_TOKEN` and add it to the repository's actions [secret variables](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions).
+From the second time on, you can just start it:
+```shell
+docker start redis-florist-server
+```
+
+### Start back-end and front-end servers
+
+Use Yarn to run both the back-end and front-end on server mode:
+
+```shell
+yarn dev
+```
+
+The front-end will be available at `http://localhost:3000`. If you want to access
+back-end APIs individually, they will be available at `https://localhost:8000`.
+
+## Running the client
+
+### Start client's Redis instance
+
+If it's your first time running it, create a container and run it with the command below:
+```shell
+docker run --name redis-florist-client -d -p 6380:6379 redis:7.2.4 redis-server --save 60 1 --loglevel warning
+```
+
+From the second time on, you can just start it:
+```shell
+docker start redis-florist-client
+```
+
+### Start back-end and front-end servers
+
+To start the client back-end service:
+
+```shell
+uvicorn florist.api.client:app --reload --port 8001
+```
+
+The service will be available at `http://localhost:8001`.
+
+# Contributing to the project
+
+If you are a developer of the team or someone who wants to contribute to the project,
+please refer to the [CONTRIBUTING.md](https://github.com/VectorInstitute/FLorist/blob/main/CONTRIBUTING.md) file.
+
+Please read and adhere to our [Code of Conduct](https://github.com/VectorInstitute/FLorist/blob/main/CODE_OF_CONDUCT.md)
+when making contributions to the project.
