@@ -8,9 +8,9 @@ from typing import Callable, Dict
 import torch
 from fl4health.server.base_server import FlServer
 
-from florist.api.launchers.launch import launch
-from florist.tests.utils.api.fl4health_utils import MnistClient, get_server_fedavg
-from florist.tests.utils.api.models import MnistNet
+from florist.api.launchers.local import launch
+from florist.api.clients.mnist import MnistClient, MnistNet
+from florist.tests.utils.api.fl4health_utils import get_server_fedavg
 
 
 def fit_config(batch_size: int, local_epochs: int, current_server_round: int) -> Dict[str, int]:
