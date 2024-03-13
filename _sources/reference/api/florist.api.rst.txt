@@ -12,6 +12,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   florist.api.clients
    florist.api.launchers
    florist.api.monitoring
 

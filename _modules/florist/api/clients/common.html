@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>florist.api.monitoring.metrics - Vector AI Engineering template repository</title>
+        <title>florist.api.clients.common - Vector AI Engineering template repository</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -221,86 +221,50 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.api.monitoring.metrics</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Classes for the instrumentation of metrics reporting from clients and servers.&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+          <h1>Source code for florist.api.clients.common</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Common functions and definitions for clients.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">import</span> <span class="nn">redis</span>
-<span class="kn">from</span> <span class="nn">fl4health.reporting.metrics</span> <span class="kn">import</span> <span class="n">DateTimeEncoder</span><span class="p">,</span> <span class="n">MetricsReporter</span>
-<span class="kn">from</span> <span class="nn">flwr.common.logger</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">fl4health.clients.basic_client</span> <span class="kn">import</span> <span class="n">BasicClient</span>
+
+<span class="kn">from</span> <span class="nn">florist.api.clients.mnist</span> <span class="kn">import</span> <span class="n">MnistClient</span>
 
 
-<div class="viewcode-block" id="RedisMetricsReporter">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter">[docs]</a>
-<span class="k">class</span> <span class="nc">RedisMetricsReporter</span><span class="p">(</span><span class="n">MetricsReporter</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Save the metrics to a Redis instance while it records them.</span>
+<div class="viewcode-block" id="Clients">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.common.html#florist.api.clients.common.Clients">[docs]</a>
+<span class="k">class</span> <span class="nc">Clients</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enumeration of supported clients.&quot;&quot;&quot;</span>
 
-<span class="sd">    Lazily instantiates a Redis connection when the first metrics are recorded.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">MNIST</span> <span class="o">=</span> <span class="s2">&quot;MNIST&quot;</span>
 
-<div class="viewcode-block" id="RedisMetricsReporter.__init__">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Clients.class_for_client">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.common.html#florist.api.clients.common.Clients.class_for_client">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">class_for_client</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="s2">&quot;Clients&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">BasicClient</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Init an instance of RedisMetricsReporter.</span>
+<span class="sd">        Return the class for a given client.</span>
 
-<span class="sd">        :param host: (str) The host address where the Redis instance is running.</span>
-<span class="sd">        :param port: (str) The port where the Redis instance is running on the host.</span>
-<span class="sd">        :param run_id: (Optional[str]) the identifier for the run which these metrics are from.</span>
-<span class="sd">            It will be used as the name of the object in Redis. Optional, default is a random UUID.</span>
+<span class="sd">        :param client: The client enumeration object.</span>
+<span class="sd">        :return: A subclass of BasicClient corresponding to the given client.</span>
+<span class="sd">        :raises ValueError: if the client is not supported.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">run_id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">redis_connection</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="k">if</span> <span class="n">client</span> <span class="o">==</span> <span class="n">Clients</span><span class="o">.</span><span class="n">MNIST</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">MnistClient</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client </span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="RedisMetricsReporter.add_to_metrics">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter.add_to_metrics">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_to_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Clients.list">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.common.html#florist.api.clients.common.Clients.list">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a dictionary of data into the main metrics dictionary.</span>
+<span class="sd">        List all the supported clients.</span>
 
-<span class="sd">        At the end, dumps the current state of the metrics to Redis.</span>
-
-<span class="sd">        :param data: (Dict[str, Any]) Data to be added to the metrics dictionary via .update().</span>
+<span class="sd">        :return: a list of supported clients.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_to_metrics</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="RedisMetricsReporter.add_to_metrics_at_round">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter.add_to_metrics_at_round">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_to_metrics_at_round</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fl_round</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a dictionary of data into the metrics dictionary for a specific FL round.</span>
-
-<span class="sd">        At the end, dumps the current state of the metrics to Redis.</span>
-
-<span class="sd">        :param fl_round: (int) the FL round these metrics are from.</span>
-<span class="sd">        :param data: (Dict[str, Any]) Data to be added to the round&#39;s metrics dictionary via .update().</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_to_metrics_at_round</span><span class="p">(</span><span class="n">fl_round</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="RedisMetricsReporter.dump">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter.dump">[docs]</a>
-    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Dump the current metrics to Redis under the run_id name.</span>
-
-<span class="sd">        Will instantiate a Redis connection if it&#39;s the first time it runs for this instance.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">redis_connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">redis_connection</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-
-        <span class="n">encoded_metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">DateTimeEncoder</span><span class="p">)</span>
-        <span class="n">log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Dumping metrics to redis at key &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">encoded_metrics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">redis_connection</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span> <span class="n">encoded_metrics</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">client</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">client</span> <span class="ow">in</span> <span class="n">Clients</span><span class="p">]</span></div>
 </div>
 
 </pre></div>

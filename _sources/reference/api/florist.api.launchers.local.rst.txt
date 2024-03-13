@@ -1,0 +1,7 @@
+florist.api.launchers.local module
+==================================
+
+.. automodule:: florist.api.launchers.local
+   :members:
+   :undoc-members:
+   :show-inheritance:

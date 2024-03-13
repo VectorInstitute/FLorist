@@ -168,11 +168,16 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="florist.html">florist package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of florist package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="florist.api.html">florist.api package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of florist.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.launchers.html">florist.api.launchers namespace</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of florist.api.launchers namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="florist.api.launchers.launch.html">florist.api.launchers.launch module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.clients.html">florist.api.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of florist.api.clients package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.clients.common.html">florist.api.clients.common module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.clients.mnist.html">florist.api.clients.mnist module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.monitoring.html">florist.api.monitoring namespace</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.monitoring namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.launchers.html">florist.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.launchers.local.html">florist.api.launchers.local module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.monitoring.html">florist.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.monitoring.metrics.html">florist.api.monitoring.metrics module</a></li>
 </ul>
 </li>
@@ -220,91 +225,6 @@
         <article role="main">
           <section id="module-florist.tests.utils.api.fl4health_utils">
 <span id="florist-tests-utils-api-fl4health-utils-module"></span><h1>florist.tests.utils.api.fl4health_utils module<a class="headerlink" href="#module-florist.tests.utils.api.fl4health_utils" title="Link to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="florist.tests.utils.api.fl4health_utils.MnistClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MnistClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_meter_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LossMeterType.AVERAGE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpointer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_reporter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/utils/api/fl4health_utils.html#MnistClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.utils.api.fl4health_utils.MnistClient" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasicClient</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="florist.tests.utils.api.fl4health_utils.MnistClient.get_criterion">
-<span class="sig-name descname"><span class="pre">get_criterion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/utils/api/fl4health_utils.html#MnistClient.get_criterion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.utils.api.fl4health_utils.MnistClient.get_criterion" title="Link to this definition">#</a></dt>
-<dd><p>User defined method that returns PyTorch loss to train model.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Loss</span></code></span></p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Args:</dt><dd><p>config (Config): The config from the server.</p>
-</dd>
-<dt>Raises:</dt><dd><p>NotImplementedError: To be defined in child class.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="florist.tests.utils.api.fl4health_utils.MnistClient.get_data_loaders">
-<span class="sig-name descname"><span class="pre">get_data_loaders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/utils/api/fl4health_utils.html#MnistClient.get_data_loaders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.utils.api.fl4health_utils.MnistClient.get_data_loaders" title="Link to this definition">#</a></dt>
-<dd><p>User defined method that returns a PyTorch Train DataLoader
-and a PyTorch Validation DataLoader</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code>]</span></p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Args:</dt><dd><p>config (Config): The config from the server.</p>
-</dd>
-<dt>Returns:</dt><dd><p>Tuple[DataLoader, …]: Tuple of length 2. The client train and validation loader.</p>
-</dd>
-<dt>Raises:</dt><dd><p>NotImplementedError: To be defined in child class.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="florist.tests.utils.api.fl4health_utils.MnistClient.get_model">
-<span class="sig-name descname"><span class="pre">get_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/utils/api/fl4health_utils.html#MnistClient.get_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.utils.api.fl4health_utils.MnistClient.get_model" title="Link to this definition">#</a></dt>
-<dd><p>User defined method that returns PyTorch model.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></span></p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Args:</dt><dd><p>config (Config): The config from the server.</p>
-</dd>
-<dt>Returns:</dt><dd><p>nn.Module: The client model.</p>
-</dd>
-<dt>Raises:</dt><dd><p>NotImplementedError: To be defined in child class.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="florist.tests.utils.api.fl4health_utils.MnistClient.get_optimizer">
-<span class="sig-name descname"><span class="pre">get_optimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/utils/api/fl4health_utils.html#MnistClient.get_optimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.utils.api.fl4health_utils.MnistClient.get_optimizer" title="Link to this definition">#</a></dt>
-<dd><p>Method to be defined by user that returns the PyTorch optimizer used to train models locally
-Return value can be a single torch optimizer or a dictionary of string and torch optimizer.
-Returning multiple optimizers is useful in methods like APFL which has a different optimizer
-for the local and global models.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></span></p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Args:</dt><dd><p>config (Config): The config sent from the server.</p>
-</dd>
-<dt>Returns:</dt><dd><p>Union[Optimizer, Dict[str, Optimizer]]: An optimizer or dictionary of optimizers to
-train model.</p>
-</dd>
-<dt>Raises:</dt><dd><p>NotImplementedError: To be defined in child class.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="florist.tests.utils.api.fl4health_utils.evaluate_metrics_aggregation_fn">
 <span class="sig-name descname"><span class="pre">evaluate_metrics_aggregation_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_client_metrics</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/utils/api/fl4health_utils.html#evaluate_metrics_aggregation_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.utils.api.fl4health_utils.evaluate_metrics_aggregation_fn" title="Link to this definition">#</a></dt>
@@ -424,13 +344,6 @@ train model.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">florist.tests.utils.api.fl4health_utils module</a><ul>
-<li><a class="reference internal" href="#florist.tests.utils.api.fl4health_utils.MnistClient"><code class="docutils literal notranslate"><span class="pre">MnistClient</span></code></a><ul>
-<li><a class="reference internal" href="#florist.tests.utils.api.fl4health_utils.MnistClient.get_criterion"><code class="docutils literal notranslate"><span class="pre">MnistClient.get_criterion()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.utils.api.fl4health_utils.MnistClient.get_data_loaders"><code class="docutils literal notranslate"><span class="pre">MnistClient.get_data_loaders()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.utils.api.fl4health_utils.MnistClient.get_model"><code class="docutils literal notranslate"><span class="pre">MnistClient.get_model()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.utils.api.fl4health_utils.MnistClient.get_optimizer"><code class="docutils literal notranslate"><span class="pre">MnistClient.get_optimizer()</span></code></a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#florist.tests.utils.api.fl4health_utils.evaluate_metrics_aggregation_fn"><code class="docutils literal notranslate"><span class="pre">evaluate_metrics_aggregation_fn()</span></code></a></li>
 <li><a class="reference internal" href="#florist.tests.utils.api.fl4health_utils.fit_metrics_aggregation_fn"><code class="docutils literal notranslate"><span class="pre">fit_metrics_aggregation_fn()</span></code></a></li>
 <li><a class="reference internal" href="#florist.tests.utils.api.fl4health_utils.get_fedavg_strategy"><code class="docutils literal notranslate"><span class="pre">get_fedavg_strategy()</span></code></a></li>

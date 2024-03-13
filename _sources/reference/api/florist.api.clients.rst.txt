@@ -1,0 +1,16 @@
+florist.api.clients package
+===========================
+
+.. automodule:: florist.api.clients
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.api.clients.common
+   florist.api.clients.mnist

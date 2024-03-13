@@ -1,7 +1,10 @@
-florist.api.launchers namespace
-===============================
+florist.api.launchers package
+=============================
 
-.. py:module:: florist.api.launchers
+.. automodule:: florist.api.launchers
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------
@@ -9,4 +12,4 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   florist.api.launchers.launch
+   florist.api.launchers.local

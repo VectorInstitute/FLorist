@@ -167,11 +167,16 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../reference/api/florist.html">florist package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of florist package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.html">florist.api package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of florist.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.launchers.html">florist.api.launchers namespace</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of florist.api.launchers namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.launchers.launch.html">florist.api.launchers.launch module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.clients.html">florist.api.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of florist.api.clients package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.clients.common.html">florist.api.clients.common module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.clients.mnist.html">florist.api.clients.mnist module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.monitoring.html">florist.api.monitoring namespace</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.monitoring namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.launchers.html">florist.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.launchers.local.html">florist.api.launchers.local module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.monitoring.html">florist.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.monitoring.metrics.html">florist.api.monitoring.metrics module</a></li>
 </ul>
 </li>
@@ -219,51 +224,12 @@
           <h1>Source code for florist.tests.utils.api.fl4health_utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">fl4health.client_managers.base_sampling_manager</span> <span class="kn">import</span> <span class="n">SimpleClientManager</span>
-<span class="kn">from</span> <span class="nn">fl4health.clients.basic_client</span> <span class="kn">import</span> <span class="n">BasicClient</span>
 <span class="kn">from</span> <span class="nn">fl4health.server.base_server</span> <span class="kn">import</span> <span class="n">FlServer</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.load_data</span> <span class="kn">import</span> <span class="n">load_mnist_data</span>
 <span class="kn">from</span> <span class="nn">flwr.common.parameter</span> <span class="kn">import</span> <span class="n">ndarrays_to_parameters</span>
-<span class="kn">from</span> <span class="nn">flwr.common.typing</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">Metrics</span><span class="p">,</span> <span class="n">Parameters</span>
+<span class="kn">from</span> <span class="nn">flwr.common.typing</span> <span class="kn">import</span> <span class="n">Metrics</span><span class="p">,</span> <span class="n">Parameters</span>
 <span class="kn">from</span> <span class="nn">flwr.server.strategy</span> <span class="kn">import</span> <span class="n">FedAvg</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
-<span class="kn">from</span> <span class="nn">torch.nn.modules.loss</span> <span class="kn">import</span> <span class="n">_Loss</span>
-<span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">Optimizer</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
-
-<span class="kn">from</span> <span class="nn">florist.tests.utils.api.models</span> <span class="kn">import</span> <span class="n">MnistNet</span>
-
-
-<div class="viewcode-block" id="MnistClient">
-<a class="viewcode-back" href="../../../../../reference/api/florist.tests.utils.api.fl4health_utils.html#florist.tests.utils.api.fl4health_utils.MnistClient">[docs]</a>
-<span class="k">class</span> <span class="nc">MnistClient</span><span class="p">(</span><span class="n">BasicClient</span><span class="p">):</span>
-<div class="viewcode-block" id="MnistClient.get_data_loaders">
-<a class="viewcode-back" href="../../../../../reference/api/florist.tests.utils.api.fl4health_utils.html#florist.tests.utils.api.fl4health_utils.MnistClient.get_data_loaders">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">]:</span>
-        <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_mnist_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span></div>
-
-
-<div class="viewcode-block" id="MnistClient.get_model">
-<a class="viewcode-back" href="../../../../../reference/api/florist.tests.utils.api.fl4health_utils.html#florist.tests.utils.api.fl4health_utils.MnistClient.get_model">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">MnistNet</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="MnistClient.get_optimizer">
-<a class="viewcode-back" href="../../../../../reference/api/florist.tests.utils.api.fl4health_utils.html#florist.tests.utils.api.fl4health_utils.MnistClient.get_optimizer">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optimizer</span><span class="p">:</span>
-        <span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">opt</span></div>
-
-
-<div class="viewcode-block" id="MnistClient.get_criterion">
-<a class="viewcode-back" href="../../../../../reference/api/florist.tests.utils.api.fl4health_utils.html#florist.tests.utils.api.fl4health_utils.MnistClient.get_criterion">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Loss</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span></div>
-</div>
-
 
 
 <div class="viewcode-block" id="metric_aggregation">

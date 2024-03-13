@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>florist.api.launchers.launch - Vector AI Engineering template repository</title>
+        <title>florist.api.launchers.local - Vector AI Engineering template repository</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -167,11 +167,16 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/api/florist.html">florist package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of florist package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.html">florist.api package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of florist.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.launchers.html">florist.api.launchers namespace</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of florist.api.launchers namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.launchers.launch.html">florist.api.launchers.launch module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.clients.html">florist.api.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of florist.api.clients package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.clients.common.html">florist.api.clients.common module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.clients.mnist.html">florist.api.clients.mnist module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.monitoring.html">florist.api.monitoring namespace</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.monitoring namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.launchers.html">florist.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.launchers.local.html">florist.api.launchers.local module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.monitoring.html">florist.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.monitoring.metrics.html">florist.api.monitoring.metrics module</a></li>
 </ul>
 </li>
@@ -216,8 +221,8 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.api.launchers.launch</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Launcher functions for clients and servers.&quot;&quot;&quot;</span>
+          <h1>Source code for florist.api.launchers.local</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Launcher functions for local clients and servers.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -232,7 +237,7 @@
 
 
 <div class="viewcode-block" id="redirect_logging_from_console_to_file">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.launch.html#florist.api.launchers.launch.redirect_logging_from_console_to_file">[docs]</a>
+<a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.local.html#florist.api.launchers.local.redirect_logging_from_console_to_file">[docs]</a>
 <span class="k">def</span> <span class="nf">redirect_logging_from_console_to_file</span><span class="p">(</span><span class="n">log_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Redirect loggers outputting to console to specified file.</span>
@@ -255,7 +260,7 @@
 
 
 <div class="viewcode-block" id="start_server">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.launch.html#florist.api.launchers.launch.start_server">[docs]</a>
+<a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.local.html#florist.api.launchers.local.start_server">[docs]</a>
 <span class="k">def</span> <span class="nf">start_server</span><span class="p">(</span>
     <span class="n">server_constructor</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">FlServer</span><span class="p">],</span>
     <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -288,7 +293,7 @@
 
 
 <div class="viewcode-block" id="start_client">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.launch.html#florist.api.launchers.launch.start_client">[docs]</a>
+<a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.local.html#florist.api.launchers.local.start_client">[docs]</a>
 <span class="k">def</span> <span class="nf">start_client</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">BasicClient</span><span class="p">,</span> <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_log_file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start client. Redirects logging to console, stdout and stderr to file.</span>
@@ -310,7 +315,7 @@
 
 
 <div class="viewcode-block" id="launch_server">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.launch.html#florist.api.launchers.launch.launch_server">[docs]</a>
+<a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.local.html#florist.api.launchers.local.launch_server">[docs]</a>
 <span class="k">def</span> <span class="nf">launch_server</span><span class="p">(</span>
     <span class="n">server_constructor</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">FlServer</span><span class="p">],</span>
     <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -348,7 +353,7 @@
 
 
 <div class="viewcode-block" id="launch_client">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.launch.html#florist.api.launchers.launch.launch_client">[docs]</a>
+<a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.local.html#florist.api.launchers.local.launch_client">[docs]</a>
 <span class="k">def</span> <span class="nf">launch_client</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">BasicClient</span><span class="p">,</span> <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_log_file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spawn a process that starts FL client.</span>
@@ -364,7 +369,7 @@
 
 
 <div class="viewcode-block" id="launch">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.launch.html#florist.api.launchers.launch.launch">[docs]</a>
+<a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.local.html#florist.api.launchers.local.launch">[docs]</a>
 <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span>
     <span class="n">server_constructor</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">FlServer</span><span class="p">],</span>
     <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>

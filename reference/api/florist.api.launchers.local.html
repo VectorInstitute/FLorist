@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.launchers.local module" href="florist.api.launchers.local.html" /><link rel="prev" title="florist.api.clients.mnist module" href="florist.api.clients.mnist.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.monitoring package" href="florist.api.monitoring.html" /><link rel="prev" title="florist.api.launchers package" href="florist.api.launchers.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>florist.api.launchers package - Vector AI Engineering template repository</title>
+        <title>florist.api.launchers.local module - Vector AI Engineering template repository</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -173,8 +173,8 @@
 <li class="toctree-l5"><a class="reference internal" href="florist.api.clients.mnist.html">florist.api.clients.mnist module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 current has-children current-page"><a class="current reference internal" href="#">florist.api.launchers package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="florist.api.launchers.local.html">florist.api.launchers.local module</a></li>
+<li class="toctree-l4 current has-children"><a class="reference internal" href="florist.api.launchers.html">florist.api.launchers package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">florist.api.launchers.local module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.monitoring.html">florist.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -223,25 +223,124 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-florist.api.launchers">
-<span id="florist-api-launchers-package"></span><h1>florist.api.launchers package<a class="headerlink" href="#module-florist.api.launchers" title="Link to this heading">#</a></h1>
-<p>Launchers for servers and clients.</p>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="florist.api.launchers.local.html">florist.api.launchers.local module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.launchers.local.html#florist.api.launchers.local.launch"><code class="docutils literal notranslate"><span class="pre">launch()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.launchers.local.html#florist.api.launchers.local.launch_client"><code class="docutils literal notranslate"><span class="pre">launch_client()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.launchers.local.html#florist.api.launchers.local.launch_server"><code class="docutils literal notranslate"><span class="pre">launch_server()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.launchers.local.html#florist.api.launchers.local.redirect_logging_from_console_to_file"><code class="docutils literal notranslate"><span class="pre">redirect_logging_from_console_to_file()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.launchers.local.html#florist.api.launchers.local.start_client"><code class="docutils literal notranslate"><span class="pre">start_client()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.launchers.local.html#florist.api.launchers.local.start_server"><code class="docutils literal notranslate"><span class="pre">start_server()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
+          <section id="module-florist.api.launchers.local">
+<span id="florist-api-launchers-local-module"></span><h1>florist.api.launchers.local module<a class="headerlink" href="#module-florist.api.launchers.local" title="Link to this heading">#</a></h1>
+<p>Launcher functions for local clients and servers.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.launchers.local.launch">
+<span class="sig-name descname"><span class="pre">launch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_constructor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_server_rounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_base_log_file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'server'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_base_log_file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'client'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/launchers/local.html#launch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.launchers.local.launch" title="Link to this definition">#</a></dt>
+<dd><p>Launch an FL experiment.</p>
+<p>First launches server than subsequently clients. Joins server
+process after clients are launched to block until FL is complete.
+(Server is last to finish executing).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+<dl>
+<dt>Args:</dt><dd><p>server_constructor (Callable[FlServer]): Callable that constructs FL server.
+server_address (str): String of &lt;IP&gt;:&lt;PORT&gt; to make server available.
+n_server_rounds (str): The number of rounds to perform FL
+clients (Sequence[BasicClient]): List of BasicClient instances to launch.
+server_base_log_file_name: (Optional[str]): The name used for the server log file.
+client_base_log_file_name: (Optional[str]): The base name used for the client log file.</p>
+<blockquote>
+<div><p>_{i}.out appended to name to get final client log file name.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.launchers.local.launch_client">
+<span class="sig-name descname"><span class="pre">launch_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_log_file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/launchers/local.html#launch_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.launchers.local.launch_client" title="Link to this definition">#</a></dt>
+<dd><p>Spawn a process that starts FL client.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Args:</dt><dd><p>client (BasicClient): BasicClient instance to launch.
+server_address (str): String of &lt;IP&gt;:&lt;PORT&gt; to make server available.
+client_log_file_name: (Optional[str]): The name used for the client log file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.launchers.local.launch_server">
+<span class="sig-name descname"><span class="pre">launch_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_constructor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_server_rounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_log_file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds_to_sleep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/launchers/local.html#launch_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.launchers.local.launch_server" title="Link to this definition">#</a></dt>
+<dd><p>Spawn a process that starts FL server.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>server_constructor (Callable[FlServer]): Callable that constructs FL server.
+server_address (str): String of &lt;IP&gt;:&lt;PORT&gt; to make server available.
+n_server_rounds (str): The number of rounds to perform FL.
+server_log_file_name (str): The name of the log file for the server.
+seconds_to_sleep (int): The number of seconds to sleep before launching server.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Process: The process running the FL server.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.launchers.local.redirect_logging_from_console_to_file">
+<span class="sig-name descname"><span class="pre">redirect_logging_from_console_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/launchers/local.html#redirect_logging_from_console_to_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.launchers.local.redirect_logging_from_console_to_file" title="Link to this definition">#</a></dt>
+<dd><p>Redirect loggers outputting to console to specified file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Args:</dt><dd><p>log_file_path (str): The path to the file to log to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.launchers.local.start_client">
+<span class="sig-name descname"><span class="pre">start_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_log_file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/launchers/local.html#start_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.launchers.local.start_client" title="Link to this definition">#</a></dt>
+<dd><p>Start client. Redirects logging to console, stdout and stderr to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Args:</dt><dd><p>client (BasicClient): BasicClient instance to launch.
+server_address (str): String of &lt;IP&gt;:&lt;PORT&gt; where the server is available.
+client_log_file_name (str): The name of the client log file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.launchers.local.start_server">
+<span class="sig-name descname"><span class="pre">start_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_constructor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_server_rounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_log_file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/launchers/local.html#start_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.launchers.local.start_server" title="Link to this definition">#</a></dt>
+<dd><p>Start server. Redirects logging to console, stdout and stderr to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Args:</dt><dd><p>server_constructor (Callable[FlServer]): Callable that constructs FL server.
+server_address (str): String of &lt;IP&gt;:&lt;PORT&gt; to make server available.
+n_server_rounds (str): The number of rounds to perform FL
+server_log_file_name (str): The name of the server log file.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
         </article>
@@ -249,23 +348,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="florist.api.launchers.local.html">
+          <a class="next-page" href="florist.api.monitoring.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">florist.api.launchers.local module</div>
+                <div class="title">florist.api.monitoring package</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="florist.api.clients.mnist.html">
+          <a class="prev-page" href="florist.api.launchers.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">florist.api.clients.mnist module</div>
+                <div class="title">florist.api.launchers package</div>
                 
               </div>
             </a>
@@ -308,8 +407,13 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">florist.api.launchers package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#">florist.api.launchers.local module</a><ul>
+<li><a class="reference internal" href="#florist.api.launchers.local.launch"><code class="docutils literal notranslate"><span class="pre">launch()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.launchers.local.launch_client"><code class="docutils literal notranslate"><span class="pre">launch_client()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.launchers.local.launch_server"><code class="docutils literal notranslate"><span class="pre">launch_server()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.launchers.local.redirect_logging_from_console_to_file"><code class="docutils literal notranslate"><span class="pre">redirect_logging_from_console_to_file()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.launchers.local.start_client"><code class="docutils literal notranslate"><span class="pre">start_client()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.launchers.local.start_server"><code class="docutils literal notranslate"><span class="pre">start_server()</span></code></a></li>
 </ul>
 </li>
 </ul>

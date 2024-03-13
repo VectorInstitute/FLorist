@@ -167,11 +167,16 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../reference/api/florist.html">florist package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of florist package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.html">florist.api package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of florist.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.launchers.html">florist.api.launchers namespace</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of florist.api.launchers namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.launchers.launch.html">florist.api.launchers.launch module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.clients.html">florist.api.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of florist.api.clients package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.clients.common.html">florist.api.clients.common module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.clients.mnist.html">florist.api.clients.mnist module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.monitoring.html">florist.api.monitoring namespace</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.monitoring namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.launchers.html">florist.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.launchers.local.html">florist.api.launchers.local module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.monitoring.html">florist.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.monitoring.metrics.html">florist.api.monitoring.metrics module</a></li>
 </ul>
 </li>
@@ -219,8 +224,11 @@
           <h1>Source code for florist.tests.unit.api.test_client</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Tests for FLorist&#39;s client FastAPI endpoints.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 
 <span class="kn">from</span> <span class="nn">florist.api</span> <span class="kn">import</span> <span class="n">client</span>
+<span class="kn">from</span> <span class="nn">florist.api.clients.mnist</span> <span class="kn">import</span> <span class="n">MnistClient</span>
+<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">RedisMetricsReporter</span>
 
 
 <div class="viewcode-block" id="test_connect">
@@ -230,7 +238,75 @@
     <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
-    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="o">==</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;ok&quot;</span><span class="p">},</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">))</span></div>
+    <span class="n">json_body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+    <span class="k">assert</span> <span class="n">json_body</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;ok&quot;</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_start_success">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.unit.api.test_client.html#florist.tests.unit.api.test_client.test_start_success">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.client.launch_client&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_start_success</span><span class="p">(</span><span class="n">mock_launch_client</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_server_address</span> <span class="o">=</span> <span class="s2">&quot;test-server-address&quot;</span>
+    <span class="n">test_client</span> <span class="o">=</span> <span class="s2">&quot;MNIST&quot;</span>
+    <span class="n">test_data_path</span> <span class="o">=</span> <span class="s2">&quot;test/data/path&quot;</span>
+    <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;test-redis-host&quot;</span>
+    <span class="n">test_redis_port</span> <span class="o">=</span> <span class="s2">&quot;test-redis-port&quot;</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">test_server_address</span><span class="p">,</span> <span class="n">test_client</span><span class="p">,</span> <span class="n">test_data_path</span><span class="p">,</span> <span class="n">test_redis_host</span><span class="p">,</span> <span class="n">test_redis_port</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="n">json_body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+    <span class="k">assert</span> <span class="n">json_body</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">}</span>
+
+    <span class="n">log_file_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">LOG_FOLDER</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">json_body</span><span class="p">[</span><span class="s1">&#39;uuid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.out&quot;</span><span class="p">)</span>
+    <span class="n">mock_launch_client</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">ANY</span><span class="p">,</span> <span class="n">test_server_address</span><span class="p">,</span> <span class="n">log_file_name</span><span class="p">)</span>
+
+    <span class="n">client_obj</span> <span class="o">=</span> <span class="n">mock_launch_client</span><span class="o">.</span><span class="n">call_args_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">client_obj</span><span class="p">,</span> <span class="n">MnistClient</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">client_obj</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span> <span class="o">==</span> <span class="n">test_data_path</span>
+
+    <span class="n">metrics_reporter</span> <span class="o">=</span> <span class="n">client_obj</span><span class="o">.</span><span class="n">metrics_reporter</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics_reporter</span><span class="p">,</span> <span class="n">RedisMetricsReporter</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">metrics_reporter</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">test_redis_host</span>
+    <span class="k">assert</span> <span class="n">metrics_reporter</span><span class="o">.</span><span class="n">port</span> <span class="o">==</span> <span class="n">test_redis_port</span>
+    <span class="k">assert</span> <span class="n">metrics_reporter</span><span class="o">.</span><span class="n">run_id</span> <span class="o">==</span> <span class="n">json_body</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="test_start_fail_unsupported_client">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.unit.api.test_client.html#florist.tests.unit.api.test_client.test_start_fail_unsupported_client">[docs]</a>
+<span class="k">def</span> <span class="nf">test_start_fail_unsupported_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_server_address</span> <span class="o">=</span> <span class="s2">&quot;test-server-address&quot;</span>
+    <span class="n">test_client</span> <span class="o">=</span> <span class="s2">&quot;WRONG&quot;</span>
+    <span class="n">test_data_path</span> <span class="o">=</span> <span class="s2">&quot;test/data/path&quot;</span>
+    <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;test-redis-host&quot;</span>
+    <span class="n">test_redis_port</span> <span class="o">=</span> <span class="s2">&quot;test-redis-port&quot;</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">test_server_address</span><span class="p">,</span> <span class="n">test_client</span><span class="p">,</span> <span class="n">test_data_path</span><span class="p">,</span> <span class="n">test_redis_host</span><span class="p">,</span> <span class="n">test_redis_port</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="n">json_body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+    <span class="k">assert</span> <span class="n">json_body</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">}</span>
+    <span class="k">assert</span> <span class="sa">f</span><span class="s2">&quot;Client &#39;</span><span class="si">{</span><span class="n">test_client</span><span class="si">}</span><span class="s2">&#39; not supported&quot;</span> <span class="ow">in</span> <span class="n">json_body</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="test_start_fail_exception">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.unit.api.test_client.html#florist.tests.unit.api.test_client.test_start_fail_exception">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.client.launch_client&quot;</span><span class="p">,</span> <span class="n">side_effect</span><span class="o">=</span><span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;test exception&quot;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_start_fail_exception</span><span class="p">(</span><span class="n">mock_launch_client</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_server_address</span> <span class="o">=</span> <span class="s2">&quot;test-server-address&quot;</span>
+    <span class="n">test_client</span> <span class="o">=</span> <span class="s2">&quot;MNIST&quot;</span>
+    <span class="n">test_data_path</span> <span class="o">=</span> <span class="s2">&quot;test/data/path&quot;</span>
+    <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;test-redis-host&quot;</span>
+    <span class="n">test_redis_port</span> <span class="o">=</span> <span class="s2">&quot;test-redis-port&quot;</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">test_server_address</span><span class="p">,</span> <span class="n">test_client</span><span class="p">,</span> <span class="n">test_data_path</span><span class="p">,</span> <span class="n">test_redis_host</span><span class="p">,</span> <span class="n">test_redis_port</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">500</span>
+    <span class="n">json_body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+    <span class="k">assert</span> <span class="n">json_body</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;test exception&quot;</span><span class="p">}</span></div>
 
 </pre></div>
         </article>

@@ -1,7 +1,10 @@
-florist.api.monitoring namespace
-================================
+florist.api.monitoring package
+==============================
 
-.. py:module:: florist.api.monitoring
+.. automodule:: florist.api.monitoring
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------

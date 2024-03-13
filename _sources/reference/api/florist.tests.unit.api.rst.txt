@@ -3,6 +3,14 @@ florist.tests.unit.api namespace
 
 .. py:module:: florist.tests.unit.api
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.tests.unit.api.monitoring
+
 Submodules
 ----------
 
