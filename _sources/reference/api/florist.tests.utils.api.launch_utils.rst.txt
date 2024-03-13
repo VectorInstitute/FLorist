@@ -1,0 +1,7 @@
+florist.tests.utils.api.launch\_utils module
+============================================
+
+.. automodule:: florist.tests.utils.api.launch_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

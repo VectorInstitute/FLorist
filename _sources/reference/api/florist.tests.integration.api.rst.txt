@@ -13,3 +13,11 @@ Subpackages
    :maxdepth: 4
 
    florist.tests.integration.api.launchers
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.tests.integration.api.test_train

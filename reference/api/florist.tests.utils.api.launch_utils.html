@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>florist.tests.integration namespace - Vector AI Engineering template repository</title>
+        <title>florist.tests.utils.api.launch_utils module - Vector AI Engineering template repository</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -223,32 +223,28 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-florist.tests.integration">
-<span id="florist-tests-integration-namespace"></span><h1>florist.tests.integration namespace<a class="headerlink" href="#module-florist.tests.integration" title="Link to this heading">#</a></h1>
-<section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="florist.tests.integration.api.html">florist.tests.integration.api package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="florist.tests.integration.api.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="florist.tests.integration.api.launchers.html">florist.tests.integration.api.launchers namespace</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="florist.tests.integration.api.launchers.html#submodules">Submodules</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="florist.tests.integration.api.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="florist.tests.integration.api.test_train.html">florist.tests.integration.api.test_train module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="florist.tests.integration.api.test_train.html#florist.tests.integration.api.test_train.test_train"><code class="docutils literal notranslate"><span class="pre">test_train()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
+          <section id="module-florist.tests.utils.api.launch_utils">
+<span id="florist-tests-utils-api-launch-utils-module"></span><h1>florist.tests.utils.api.launch_utils module<a class="headerlink" href="#module-florist.tests.utils.api.launch_utils" title="Link to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.tests.utils.api.launch_utils.fit_config">
+<span class="sig-name descname"><span class="pre">fit_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_epochs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_server_round</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/utils/api/launch_utils.html#fit_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.utils.api.launch_utils.fit_config" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.tests.utils.api.launch_utils.get_server">
+<span class="sig-name descname"><span class="pre">get_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_config=&lt;function</span> <span class="pre">fit_config&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clients=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size=8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_epochs=1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/utils/api/launch_utils.html#get_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.utils.api.launch_utils.get_server" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlServer</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
         </article>
@@ -297,8 +293,9 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">florist.tests.integration namespace</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#">florist.tests.utils.api.launch_utils module</a><ul>
+<li><a class="reference internal" href="#florist.tests.utils.api.launch_utils.fit_config"><code class="docutils literal notranslate"><span class="pre">fit_config()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.utils.api.launch_utils.get_server"><code class="docutils literal notranslate"><span class="pre">get_server()</span></code></a></li>
 </ul>
 </li>
 </ul>

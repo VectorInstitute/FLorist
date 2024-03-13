@@ -1,0 +1,7 @@
+florist.tests.integration.api.test\_train module
+================================================
+
+.. automodule:: florist.tests.integration.api.test_train
+   :members:
+   :undoc-members:
+   :show-inheritance:

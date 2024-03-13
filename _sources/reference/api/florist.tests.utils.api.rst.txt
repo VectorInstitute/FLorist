@@ -13,3 +13,4 @@ Submodules
    :maxdepth: 4
 
    florist.tests.utils.api.fl4health_utils
+   florist.tests.utils.api.launch_utils

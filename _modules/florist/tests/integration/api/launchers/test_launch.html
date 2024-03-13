@@ -225,41 +225,13 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">fl4health.server.base_server</span> <span class="kn">import</span> <span class="n">FlServer</span>
 
 <span class="kn">from</span> <span class="nn">florist.api.launchers.local</span> <span class="kn">import</span> <span class="n">launch</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.mnist</span> <span class="kn">import</span> <span class="n">MnistClient</span><span class="p">,</span> <span class="n">MnistNet</span>
-<span class="kn">from</span> <span class="nn">florist.tests.utils.api.fl4health_utils</span> <span class="kn">import</span> <span class="n">get_server_fedavg</span>
-
-
-<div class="viewcode-block" id="fit_config">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.launchers.test_launch.html#florist.tests.integration.api.launchers.test_launch.fit_config">[docs]</a>
-<span class="k">def</span> <span class="nf">fit_config</span><span class="p">(</span><span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">local_epochs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">current_server_round</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="n">batch_size</span><span class="p">,</span>
-        <span class="s2">&quot;current_server_round&quot;</span><span class="p">:</span> <span class="n">current_server_round</span><span class="p">,</span>
-        <span class="s2">&quot;local_epochs&quot;</span><span class="p">:</span> <span class="n">local_epochs</span><span class="p">,</span>
-    <span class="p">}</span></div>
-
-
-
-<div class="viewcode-block" id="get_server">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.launchers.test_launch.html#florist.tests.integration.api.launchers.test_launch.get_server">[docs]</a>
-<span class="k">def</span> <span class="nf">get_server</span><span class="p">(</span>
-    <span class="n">fit_config</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">fit_config</span><span class="p">,</span>
-    <span class="n">n_clients</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
-    <span class="n">local_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FlServer</span><span class="p">:</span>
-    <span class="n">fit_config_fn</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">fit_config</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">local_epochs</span><span class="p">)</span>
-    <span class="n">server</span> <span class="o">=</span> <span class="n">get_server_fedavg</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">MnistNet</span><span class="p">(),</span> <span class="n">n_clients</span><span class="o">=</span><span class="n">n_clients</span><span class="p">,</span> <span class="n">fit_config_fn</span><span class="o">=</span><span class="n">fit_config_fn</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">server</span></div>
-
+<span class="kn">from</span> <span class="nn">florist.api.clients.mnist</span> <span class="kn">import</span> <span class="n">MnistClient</span>
+<span class="kn">from</span> <span class="nn">florist.tests.utils.api.launch_utils</span> <span class="kn">import</span> <span class="n">get_server</span>
 
 
 <div class="viewcode-block" id="assert_string_in_file">
@@ -268,7 +240,7 @@
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">file_contents</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">search_string</span><span class="p">,</span> <span class="n">file_contents</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+        <span class="k">assert</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 
 
 
