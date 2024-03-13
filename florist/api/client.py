@@ -1,12 +1,15 @@
 """FLorist client FastAPI endpoints."""
 import uuid
+from enum import Enum
 from pathlib import Path
+from typing import List
 
 import torch
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from fl4health.clients.basic_client import BasicClient
 
-from florist.api.clients.common import Clients
+from florist.api.clients.mnist import MnistClient
 from florist.api.launchers.local import launch_client
 from florist.api.monitoring.metrics import RedisMetricsReporter
 
@@ -14,6 +17,35 @@ from florist.api.monitoring.metrics import RedisMetricsReporter
 LOG_FOLDER = Path("logs/client/")
 
 app = FastAPI()
+
+
+class Clients(Enum):
+    """Enumeration of supported clients."""
+
+    MNIST = "MNIST"
+
+    @classmethod
+    def class_for_client(cls, client: "Clients") -> type[BasicClient]:
+        """
+        Return the class for a given client.
+
+        :param client: The client enumeration object.
+        :return: A subclass of BasicClient corresponding to the given client.
+        :raises ValueError: if the client is not supported.
+        """
+        if client == Clients.MNIST:
+            return MnistClient
+
+        raise ValueError(f"Client {client.value} not supported.")
+
+    @classmethod
+    def list(cls) -> List[str]:
+        """
+        List all the supported clients.
+
+        :return: a list of supported clients.
+        """
+        return [client.value for client in Clients]
 
 
 @app.get("/api/client/connect")
