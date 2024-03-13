@@ -48,6 +48,19 @@ Then, run the server and client's Redis instance by following
 [these instructions](README.md#start-servers-redis-instance) and
 [these instructions](README.md#start-clients-redis-instance) respectively.
 
+## Running the tests
+
+To run the unit tests, simply execute:
+```shell
+pytest florist/tests/unit
+```
+
+To run the integration tests, first make sure you have a Redis server running on your
+local machine on port 6379, then execute:
+```shell
+pytest florist/tests/integration
+```
+
 ## Coding guidelines
 
 For code style, we recommend the [PEP 8 style guide](https://peps.python.org/pep-0008/).
