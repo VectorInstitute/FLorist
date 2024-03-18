@@ -164,7 +164,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide.html#todo-modify-this-when-working-on-updating-documentation">TODO: modify this when working on updating documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html#contributing-to-the-project">Contributing to the project</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="reference/api/florist.html">florist package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of florist package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="reference/api/florist.api.html">florist.api package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of florist.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -227,47 +227,20 @@
 <h1>FLorist<a class="headerlink" href="#florist" title="Link to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-</section>
-<section id="todo-modify-this-when-working-on-updating-documentation">
-<h1>TODO: modify this when working on updating documentation<a class="headerlink" href="#todo-modify-this-when-working-on-updating-documentation" title="Link to this heading">#</a></h1>
-<p>This template repository can be used to bootstrap AI Engineering project repositories
-on Github! The template is meant for python codebases since Python is the most commonly
-used language by our team.</p>
-<p>The template includes:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/">pyproject.toml</a>
-file to specify repository information and manage dependencies using
-<a class="reference external" href="https://python-poetry.org/">Poetry</a>.</p></li>
-<li><p><a class="reference external" href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes">README.md</a> which should have basic information on why the project is
-useful, installation instructions and other information on how users can get started.</p></li>
-<li><p><a class="reference external" href="https://pre-commit.com/">.pre-commit-config.yaml</a> for running pre-commit hooks that
-check for code-style, apply formatting, check for type hints and run tests.</p></li>
-<li><p><a class="reference external" href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository">.github/pull_request_template.md</a> for PRs.</p></li>
-<li><p><a class="reference external" href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository">.github/ISSUE_TEMPLATE</a> for bug reports and issues that can be raised on the repository.</p></li>
-<li><p><a class="reference external" href="https://docs.github.com/en/actions/using-workflows">.github/workflows</a> for running CI
-workflows using Github actions. The template includes CI workflows for code checks,
-documentation building and releasing python packages to PyPI.</p></li>
-<li><p><a class="reference external" href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository">LICENSE.md</a> for adding a license to the project repository.
-By default, this is the <a class="reference external" href="http://www.apache.org/licenses/">Apache-2.0 license</a>. Please
-change according to your project!</p></li>
-<li><p><a class="reference external" href="https://pradyunsg.me/furo/">docs</a> for adding project documentation. Typically
-projects should have API reference documentation, user guides and tutorials.</p></li>
-<li><p><a class="reference external" href="https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/setting-guidelines-for-repository-contributors">CONTRIBUTING.md</a> with basic guidelines on how others can
-contribute to the repository.</p></li>
-<li><p><a class="reference external" href="https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-a-code-of-conduct-to-your-project">CODE_OF_CONDUCT.md</a> with standards on how the community engages in
-a healthy and constructive manner.</p></li>
-<li><p><a class="reference external" href="https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files">.gitignore</a>
-with some standard file extensions to be ignored by git. Please add/modify as necessary.</p></li>
-<li><p><a class="reference external" href="https://docs.codecov.com/docs/codecov-yaml">codecov.yml</a> for using codecov.io to
-generate code coverage information for your repository. You would need to add codecov.io
-app as an <a class="reference external" href="https://docs.codecov.com/docs/how-to-create-a-github-app-for-codecov-enterprise">integration to your repository</a>.</p></li>
-</ul>
-<p>If you are starting a new project, you can navigate to the <a class="reference external" href="https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template">Use this template</a> button
-on the top right corner of the <a class="reference external" href="https://github.com/VectorInstitute/FLorist">template repository home page</a>
-which will allow you to bootstrap your project repo using this template.</p>
-<p>Please check out the user guide page for more detailed information on using the
-template features. For exisiting projects, the <a class="reference internal" href="user_guide.html"><span class="std std-doc">user guide</span></a>
-can be followed to migrate to following the template more closely.</p>
+<p>FLorist is a platform to launch and monitor Federated Learning (FL) training jobs. Its goal is
+to bridge the gap between state-of-the-art FL algorithm implementations and their applications
+by providing a system to easily kick off, orchestrate, manage, collect, and summarize the results
+of <a class="reference external" href="https://github.com/VectorInstitute/FL4Health">FL4Health</a> training jobs.</p>
+<p>As Federated Learning has a client and a server side, FLorist also has client and server-side
+“modes” to orchestrate the training process on both sides. FLorist will have long-running
+processes on the clients, which will be waiting for instructions from the FLorist server to
+start training. Once the FL server is started, FLorist will monitor both server and client
+processes as well as its own FL server process while collecting their progress to be displayed
+in a web UI for monitoring.</p>
+<p>At the end of training, it will save the results in a database and also provide access to the
+training artifacts (e.g. model files). For a visual representation of the system, please check
+the diagram below.</p>
+<p><img alt="system_diagram.png" src="_images/system_diagram.png" /></p>
 </section>
 
         </article>
