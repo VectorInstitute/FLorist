@@ -1,13 +1,14 @@
 import os
 import re
 import tempfile
+from functools import partial
 from pathlib import Path
 
 import torch
 
 from florist.api.launchers.local import launch
-from florist.api.clients.mnist import MnistClient
-from florist.tests.utils.api.launch_utils import get_server
+from florist.api.clients.mnist import MnistClient, MnistNet
+from florist.api.servers.utils import get_server
 
 
 def assert_string_in_file(file_path: str, search_string: str) -> bool:
@@ -28,10 +29,11 @@ def test_launch() -> None:
             os.mkdir(client_data_path)
         clients = [MnistClient(client_data_path, [], torch.device("cpu")) for client_data_path in client_data_paths]
 
+        server_constructor = partial(get_server, model=MnistNet())
         server_path = os.path.join(temp_dir, "server")
         client_base_path = f"{temp_dir}/client"
         launch(
-            get_server,
+            server_constructor,
             server_address,
             n_server_rounds,
             clients,

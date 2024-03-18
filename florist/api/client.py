@@ -8,10 +8,9 @@ from fastapi.responses import JSONResponse
 
 from florist.api.clients.common import Clients
 from florist.api.launchers.local import launch_client
+from florist.api.monitoring.common import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
 
-
-LOG_FOLDER = Path("logs/client/")
 
 app = FastAPI()
 
@@ -63,10 +62,8 @@ def start(server_address: str, client: str, data_path: str, redis_host: str, red
             metrics_reporter=metrics_reporter,
         )
 
-        LOG_FOLDER.mkdir(parents=True, exist_ok=True)
-        log_file_name = LOG_FOLDER / f"{client_uuid}.out"
-
-        launch_client(client_obj, server_address, str(log_file_name))
+        log_file_name = str(get_client_log_file_path(client_uuid))
+        launch_client(client_obj, server_address, log_file_name)
 
         return JSONResponse({"uuid": client_uuid})
 

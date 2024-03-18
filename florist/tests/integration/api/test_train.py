@@ -4,15 +4,16 @@ from functools import partial
 from unittest.mock import ANY
 
 from florist.api import client
+from florist.api.clients.mnist import MnistNet
 from florist.api.launchers.local import launch_server
-from florist.tests.utils.api.launch_utils import get_server
+from florist.api.servers.utils import get_server
 
 
 def test_train():
     test_server_address = "0.0.0.0:8080"
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        server_constructor = partial(get_server, n_clients=1)
+        server_constructor = partial(get_server, model=MnistNet(), n_clients=1)
         server_log_file = f"{temp_dir}/server.out"
         server_process = launch_server(server_constructor, test_server_address, 2, server_log_file)
 
