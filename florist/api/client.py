@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 
 from florist.api.clients.common import Clients
 from florist.api.launchers.local import launch_client
-from florist.api.monitoring.common import get_client_log_file_path
+from florist.api.monitoring.logging import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
 
 

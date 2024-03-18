@@ -7,7 +7,7 @@ from typing import Tuple
 from torch import nn
 
 from florist.api.launchers.local import launch_server
-from florist.api.monitoring.common import get_server_log_file_path
+from florist.api.monitoring.logging import get_server_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
 from florist.api.servers.utils import get_server
 
@@ -39,7 +39,11 @@ def launch_local_server(
 
     log_file_name = str(get_server_log_file_path(server_uuid))
     server_process = launch_server(
-        server_constructor, server_address, n_server_rounds, log_file_name, seconds_to_sleep=0
+        server_constructor,
+        server_address,
+        n_server_rounds,
+        log_file_name,
+        seconds_to_sleep=0,
     )
 
     return server_uuid, server_process
