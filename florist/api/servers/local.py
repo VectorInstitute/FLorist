@@ -7,7 +7,7 @@ from typing import Tuple
 from torch import nn
 
 from florist.api.launchers.local import launch_server
-from florist.api.monitoring.logging import get_server_log_file_path
+from florist.api.monitoring.logs import get_server_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
 from florist.api.servers.utils import get_server
 

@@ -7,7 +7,7 @@ import redis
 
 from florist.api import client
 from florist.api.clients.mnist import MnistNet
-from florist.api.monitoring.logging import get_server_log_file_path
+from florist.api.monitoring.logs import get_server_log_file_path
 from florist.api.servers.local import launch_local_server
 
 

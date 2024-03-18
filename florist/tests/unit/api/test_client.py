@@ -4,7 +4,7 @@ from unittest.mock import ANY, Mock, patch
 
 from florist.api import client
 from florist.api.clients.mnist import MnistClient
-from florist.api.monitoring.logging import get_client_log_file_path
+from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
 
 
