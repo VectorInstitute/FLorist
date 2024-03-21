@@ -1,4 +1,4 @@
-# Contributing to AI Engineering Projects
+# Contributing to FLorist
 
 Thanks for your interest in contributing!
 
