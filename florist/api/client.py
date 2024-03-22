@@ -6,7 +6,7 @@ import torch
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from florist.api.clients.common import Clients
+from florist.api.clients.common import Client
 from florist.api.launchers.local import launch_client
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
@@ -30,7 +30,7 @@ def start(server_address: str, client: str, data_path: str, redis_host: str, red
     """
     Start a client.
 
-    :param server_address: (str) the address of the server this client should report to.
+    :param server_address: (str) the address of the FL server the FL client should report to.
         It should be comprised of the host name and port separated by colon (e.g. "localhost:8080").
     :param client: (str) the name of the client. Should be one of the enum values of florist.api.client.Clients.
     :param data_path: (str) the path where the training data is located.
@@ -43,18 +43,16 @@ def start(server_address: str, client: str, data_path: str, redis_host: str, red
             {"error": <error message>}
     """
     try:
-        if client not in Clients.list():
-            return JSONResponse(
-                content={"error": f"Client '{client}' not supported. Supported clients: {Clients.list()}"},
-                status_code=400,
-            )
+        if client not in Client.list():
+            error_msg = f"Client '{client}' not supported. Supported clients: {Client.list()}"
+            return JSONResponse(content={"error": error_msg}, status_code=400)
 
         client_uuid = str(uuid.uuid4())
         metrics_reporter = RedisMetricsReporter(host=redis_host, port=redis_port, run_id=client_uuid)
 
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-        client_class = Clients.class_for_client(Clients[client])
+        client_class = Client.class_for_client(Client[client])
         client_obj = client_class(
             data_path=Path(data_path),
             metrics=[],

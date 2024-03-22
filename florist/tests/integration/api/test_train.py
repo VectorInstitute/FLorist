@@ -8,7 +8,7 @@ import redis
 from florist.api import client
 from florist.api.clients.mnist import MnistNet
 from florist.api.monitoring.logs import get_server_log_file_path
-from florist.api.servers.local import launch_local_server
+from florist.api.servers.launch import launch_local_server
 
 
 def test_train():

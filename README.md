@@ -63,10 +63,10 @@ docker start redis-florist-server
 
 ### Start back-end and front-end servers
 
-Use Yarn to run both the back-end and front-end on server mode:
+Use Yarn to run both the back-end and front-end on production server mode:
 
 ```shell
-yarn dev
+yarn prod
 ```
 
 The front-end will be available at `http://localhost:3000`. If you want to access

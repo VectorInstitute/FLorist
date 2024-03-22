@@ -48,6 +48,11 @@ Then, run the server and client's Redis instance by following
 [these instructions](README.md#start-servers-redis-instance) and
 [these instructions](README.md#start-clients-redis-instance) respectively.
 
+To start the server in development mode, run:
+```shell
+yarn dev
+```
+
 ## Running the tests
 
 To run the unit tests, simply execute:

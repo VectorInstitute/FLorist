@@ -3,7 +3,7 @@ from unittest.mock import ANY, Mock, patch
 from florist.api.clients.mnist import MnistNet
 from florist.api.monitoring.logs import get_server_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
-from florist.api.servers.local import launch_local_server
+from florist.api.servers.launch import launch_local_server
 from florist.api.servers.utils import get_server
 
 
