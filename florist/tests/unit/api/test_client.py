@@ -4,6 +4,7 @@ from unittest.mock import ANY, Mock, patch
 
 from florist.api import client
 from florist.api.clients.mnist import MnistClient
+from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
 
 
@@ -30,7 +31,7 @@ def test_start_success(mock_launch_client: Mock) -> None:
     json_body = json.loads(response.body.decode())
     assert json_body == {"uuid": ANY}
 
-    log_file_name = str(client.LOG_FOLDER / f"{json_body['uuid']}.out")
+    log_file_name = str(get_client_log_file_path(json_body["uuid"]))
     mock_launch_client.assert_called_once_with(ANY, test_server_address, log_file_name)
 
     client_obj = mock_launch_client.call_args_list[0][0][0]
