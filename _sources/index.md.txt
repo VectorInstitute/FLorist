@@ -18,13 +18,13 @@ by providing a system to easily kick off, orchestrate, manage, collect, and summ
 of [FL4Health](https://github.com/VectorInstitute/FL4Health) training jobs.
 
 As Federated Learning has a client and a server side, FLorist also has client and server-side
-“modes” to orchestrate the training process on both sides. FLorist will have long-running
-processes on the clients, which will be waiting for instructions from the FLorist server to
-start training. Once the FL server is started, FLorist will monitor both server and client
-processes as well as its own FL server process while collecting their progress to be displayed
-in a web UI for monitoring.
+“modes” to orchestrate the training process on both sides. When FLorist's client long-running
+process is started, they will be waiting for instructions from FLorist's server to start
+FL clients for training. Once FLorist's server starts the FL server, it sends instructions
+to FLorist's clients to start their own FL clients. Then, FLorist's server monitors the FL server
+and clients processes while collecting their progress to be displayed in the web UI.
 
-At the end of training, it will save the results in a database and also provide access to the
+At the end of training, it saves the results in a database and also provide access to the
 training artifacts (e.g. model files). For a visual representation of the system, please check
 the diagram below.
 
