@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex.html" /><link rel="search" title="Search" href="../../../../../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>florist.tests.integration.api.launchers.test_launch - Vector AI Engineering template repository</title>
+        <title>florist.tests.unit.api.servers.test_local - Vector AI Engineering template repository</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
@@ -227,56 +227,59 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.tests.integration.api.launchers.test_launch</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+          <h1>Source code for florist.tests.unit.api.servers.test_local</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-
-<span class="kn">from</span> <span class="nn">florist.api.launchers.local</span> <span class="kn">import</span> <span class="n">launch</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.mnist</span> <span class="kn">import</span> <span class="n">MnistClient</span><span class="p">,</span> <span class="n">MnistNet</span>
+<span class="kn">from</span> <span class="nn">florist.api.clients.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
+<span class="kn">from</span> <span class="nn">florist.api.monitoring.logs</span> <span class="kn">import</span> <span class="n">get_server_log_file_path</span>
+<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">RedisMetricsReporter</span>
+<span class="kn">from</span> <span class="nn">florist.api.servers.local</span> <span class="kn">import</span> <span class="n">launch_local_server</span>
 <span class="kn">from</span> <span class="nn">florist.api.servers.utils</span> <span class="kn">import</span> <span class="n">get_server</span>
 
 
-<div class="viewcode-block" id="assert_string_in_file">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.launchers.test_launch.html#florist.tests.integration.api.launchers.test_launch.assert_string_in_file">[docs]</a>
-<span class="k">def</span> <span class="nf">assert_string_in_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">search_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">file_contents</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">search_string</span><span class="p">,</span> <span class="n">file_contents</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+<div class="viewcode-block" id="test_launch_local_server">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.servers.test_local.html#florist.tests.unit.api.servers.test_local.test_launch_local_server">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.servers.local.launch_server&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_launch_local_server</span><span class="p">(</span><span class="n">mock_launch_server</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_model</span> <span class="o">=</span> <span class="n">MnistNet</span><span class="p">()</span>
+    <span class="n">test_n_clients</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">test_server_address</span> <span class="o">=</span> <span class="s2">&quot;test-server-address&quot;</span>
+    <span class="n">test_n_server_rounds</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;test-redis-host&quot;</span>
+    <span class="n">test_redis_port</span> <span class="o">=</span> <span class="s2">&quot;test-redis-port&quot;</span>
+    <span class="n">test_server_process</span> <span class="o">=</span> <span class="s2">&quot;test-server-process&quot;</span>
+    <span class="n">mock_launch_server</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">test_server_process</span>
 
+    <span class="n">server_uuid</span><span class="p">,</span> <span class="n">server_process</span> <span class="o">=</span> <span class="n">launch_local_server</span><span class="p">(</span>
+        <span class="n">test_model</span><span class="p">,</span>
+        <span class="n">test_n_clients</span><span class="p">,</span>
+        <span class="n">test_server_address</span><span class="p">,</span>
+        <span class="n">test_n_server_rounds</span><span class="p">,</span>
+        <span class="n">test_redis_host</span><span class="p">,</span>
+        <span class="n">test_redis_port</span><span class="p">,</span>
+    <span class="p">)</span>
 
+    <span class="k">assert</span> <span class="n">server_uuid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">server_process</span> <span class="o">==</span> <span class="n">test_server_process</span>
 
-<div class="viewcode-block" id="test_launch">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.launchers.test_launch.html#florist.tests.integration.api.launchers.test_launch.test_launch">[docs]</a>
-<span class="k">def</span> <span class="nf">test_launch</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">n_clients</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">n_server_rounds</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">server_address</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0:8080&quot;</span>
+    <span class="n">mock_launch_server</span><span class="o">.</span><span class="n">assert_called_once</span><span class="p">()</span>
+    <span class="n">call_args</span> <span class="o">=</span> <span class="n">mock_launch_server</span><span class="o">.</span><span class="n">call_args_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">call_kwargs</span> <span class="o">=</span> <span class="n">mock_launch_server</span><span class="o">.</span><span class="n">call_args_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">call_args</span> <span class="o">==</span> <span class="p">(</span>
+        <span class="n">ANY</span><span class="p">,</span>
+        <span class="n">test_server_address</span><span class="p">,</span>
+        <span class="n">test_n_server_rounds</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">get_server_log_file_path</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">)),</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">call_kwargs</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;seconds_to_sleep&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="k">assert</span> <span class="n">call_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">func</span> <span class="o">==</span> <span class="n">get_server</span>
+    <span class="k">assert</span> <span class="n">call_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keywords</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">test_model</span><span class="p">,</span> <span class="s2">&quot;n_clients&quot;</span><span class="p">:</span> <span class="n">test_n_clients</span><span class="p">,</span> <span class="s2">&quot;metrics_reporter&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">}</span>
 
-    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp_dir</span><span class="p">:</span>
-        <span class="n">client_data_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">temp_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_clients</span><span class="p">)]</span>
-        <span class="k">for</span> <span class="n">client_data_path</span> <span class="ow">in</span> <span class="n">client_data_paths</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">client_data_path</span><span class="p">)</span>
-        <span class="n">clients</span> <span class="o">=</span> <span class="p">[</span><span class="n">MnistClient</span><span class="p">(</span><span class="n">client_data_path</span><span class="p">,</span> <span class="p">[],</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">client_data_path</span> <span class="ow">in</span> <span class="n">client_data_paths</span><span class="p">]</span>
-
-        <span class="n">server_constructor</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">get_server</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">MnistNet</span><span class="p">())</span>
-        <span class="n">server_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">)</span>
-        <span class="n">client_base_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">temp_dir</span><span class="si">}</span><span class="s2">/client&quot;</span>
-        <span class="n">launch</span><span class="p">(</span>
-            <span class="n">server_constructor</span><span class="p">,</span>
-            <span class="n">server_address</span><span class="p">,</span>
-            <span class="n">n_server_rounds</span><span class="p">,</span>
-            <span class="n">clients</span><span class="p">,</span>
-            <span class="n">server_path</span><span class="p">,</span>
-            <span class="n">client_base_path</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">assert_string_in_file</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_path</span><span class="si">}</span><span class="s2">.out&quot;</span><span class="p">,</span> <span class="s2">&quot;FL finished in&quot;</span><span class="p">)</span></div>
+    <span class="n">metrics_reporter</span> <span class="o">=</span> <span class="n">call_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="s2">&quot;metrics_reporter&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics_reporter</span><span class="p">,</span> <span class="n">RedisMetricsReporter</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">metrics_reporter</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">test_redis_host</span>
+    <span class="k">assert</span> <span class="n">metrics_reporter</span><span class="o">.</span><span class="n">port</span> <span class="o">==</span> <span class="n">test_redis_port</span>
+    <span class="k">assert</span> <span class="n">metrics_reporter</span><span class="o">.</span><span class="n">run_id</span> <span class="o">==</span> <span class="n">server_uuid</span></div>
 
 </pre></div>
         </article>

@@ -177,7 +177,13 @@
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.monitoring.html">florist.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.monitoring.logs.html">florist.api.monitoring.logs module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.monitoring.metrics.html">florist.api.monitoring.metrics module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.servers.html">florist.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of florist.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.servers.local.html">florist.api.servers.local module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.servers.utils.html">florist.api.servers.utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../reference/api/florist.api.client.html">florist.api.client module</a></li>
@@ -228,6 +234,7 @@
 
 <span class="kn">from</span> <span class="nn">florist.api</span> <span class="kn">import</span> <span class="n">client</span>
 <span class="kn">from</span> <span class="nn">florist.api.clients.mnist</span> <span class="kn">import</span> <span class="n">MnistClient</span>
+<span class="kn">from</span> <span class="nn">florist.api.monitoring.logs</span> <span class="kn">import</span> <span class="n">get_client_log_file_path</span>
 <span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">RedisMetricsReporter</span>
 
 
@@ -259,7 +266,7 @@
     <span class="n">json_body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
     <span class="k">assert</span> <span class="n">json_body</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">}</span>
 
-    <span class="n">log_file_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">LOG_FOLDER</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">json_body</span><span class="p">[</span><span class="s1">&#39;uuid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.out&quot;</span><span class="p">)</span>
+    <span class="n">log_file_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_client_log_file_path</span><span class="p">(</span><span class="n">json_body</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]))</span>
     <span class="n">mock_launch_client</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">ANY</span><span class="p">,</span> <span class="n">test_server_address</span><span class="p">,</span> <span class="n">log_file_name</span><span class="p">)</span>
 
     <span class="n">client_obj</span> <span class="o">=</span> <span class="n">mock_launch_client</span><span class="o">.</span><span class="n">call_args_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>

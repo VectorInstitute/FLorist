@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>florist.api.clients.mnist - Vector AI Engineering template repository</title>
+        <title>florist.api.monitoring.logs - Vector AI Engineering template repository</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -227,112 +227,44 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.api.clients.mnist</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Implementation of the MNIST client and model.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
-
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">f</span>
-<span class="kn">from</span> <span class="nn">fl4health.clients.basic_client</span> <span class="kn">import</span> <span class="n">BasicClient</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.dataset</span> <span class="kn">import</span> <span class="n">MnistDataset</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.load_data</span> <span class="kn">import</span> <span class="n">load_mnist_data</span>
-<span class="kn">from</span> <span class="nn">flwr.common.typing</span> <span class="kn">import</span> <span class="n">Config</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
-<span class="kn">from</span> <span class="nn">torch.nn.modules.loss</span> <span class="kn">import</span> <span class="n">_Loss</span>
-<span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">Optimizer</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+          <h1>Source code for florist.api.monitoring.logs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;General functions and definitions for monitoring.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 
-<div class="viewcode-block" id="MnistClient">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient">[docs]</a>
-<span class="k">class</span> <span class="nc">MnistClient</span><span class="p">(</span><span class="n">BasicClient</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of the MNIST client.&quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="MnistClient.get_data_loaders">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient.get_data_loaders">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">[</span><span class="n">MnistDataset</span><span class="p">],</span> <span class="n">DataLoader</span><span class="p">[</span><span class="n">MnistDataset</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the data loader for MNIST data.</span>
-
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader</span>
-<span class="sd">            and validation data loader respectively.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_mnist_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span></div>
+<span class="n">CLIENT_LOG_FOLDER</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;logs/client/&quot;</span><span class="p">)</span>
+<span class="n">SERVER_LOG_FOLDER</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;logs/server/&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="MnistClient.get_model">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient.get_model">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the model for MNIST data.</span>
+<div class="viewcode-block" id="get_client_log_file_path">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.logs.html#florist.api.monitoring.logs.get_client_log_file_path">[docs]</a>
+<span class="k">def</span> <span class="nf">get_client_log_file_path</span><span class="p">(</span><span class="n">client_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make the client log file path given its UUID.</span>
 
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (torch.nn.Module) An instance of florist.api.clients.mnist.MnistNet.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">MnistNet</span><span class="p">()</span></div>
+<span class="sd">    Will use the default client log folder defined in this class.</span>
 
-
-<div class="viewcode-block" id="MnistClient.get_optimizer">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient.get_optimizer">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optimizer</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the optimizer for MNIST data.</span>
-
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (torch.optim.Optimizer) An instance of torch.optim.SGD with learning</span>
-<span class="sd">            rate of 0.001 and momentum of 0.9.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="MnistClient.get_criterion">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient.get_criterion">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Loss</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the loss for MNIST data.</span>
-
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (torch.nn.modules.loss._Loss) an instance of torch.nn.CrossEntropyLoss.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span></div>
-</div>
+<span class="sd">    :param client_uuid: (str) the uuid for the client to generate the log file.</span>
+<span class="sd">    :return: (pathlib.Path) The client log file path in the format f&quot;{CLIENT_LOG_FOLDER}/{client_uuid}.out&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">CLIENT_LOG_FOLDER</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">CLIENT_LOG_FOLDER</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">client_uuid</span><span class="si">}</span><span class="s2">.out&quot;</span></div>
 
 
 
-<div class="viewcode-block" id="MnistNet">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistNet">[docs]</a>
-<span class="k">class</span> <span class="nc">MnistNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of the Mnist model.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_server_log_file_path">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.logs.html#florist.api.monitoring.logs.get_server_log_file_path">[docs]</a>
+<span class="k">def</span> <span class="nf">get_server_log_file_path</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make the default server log file path given its UUID.</span>
 
-<div class="viewcode-block" id="MnistNet.__init__">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistNet.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize an instance of MnistNet.&quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">16</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">120</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span></div>
+<span class="sd">    Will use the default server log folder defined in this class.</span>
 
-
-<div class="viewcode-block" id="MnistNet.forward">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistNet.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform a forward pass for the given tensor.</span>
-
-<span class="sd">        :param x: (torch.Tensor) the tensor to perform the forward pass on.</span>
-<span class="sd">        :return: (torch.Tensor) a result tensor after the forward pass.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span></div>
-</div>
+<span class="sd">    :param server_uuid: (str) the uuid for the server to generate the log file.</span>
+<span class="sd">    :return: (Path) The server log file path in the format f&quot;{SERVER_LOG_FOLDER}/{server_uuid}.out&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SERVER_LOG_FOLDER</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">SERVER_LOG_FOLDER</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_uuid</span><span class="si">}</span><span class="s2">.out&quot;</span></div>
 
 </pre></div>
         </article>

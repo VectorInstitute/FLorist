@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>florist.api.clients.mnist - Vector AI Engineering template repository</title>
+        <title>florist.api.servers.utils - Vector AI Engineering template repository</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -227,112 +227,78 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.api.clients.mnist</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Implementation of the MNIST client and model.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+          <h1>Source code for florist.api.servers.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utilities functions and definitions for starting a server.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">f</span>
-<span class="kn">from</span> <span class="nn">fl4health.clients.basic_client</span> <span class="kn">import</span> <span class="n">BasicClient</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.dataset</span> <span class="kn">import</span> <span class="n">MnistDataset</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.load_data</span> <span class="kn">import</span> <span class="n">load_mnist_data</span>
-<span class="kn">from</span> <span class="nn">flwr.common.typing</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">fl4health.client_managers.base_sampling_manager</span> <span class="kn">import</span> <span class="n">SimpleClientManager</span>
+<span class="kn">from</span> <span class="nn">fl4health.reporting.metrics</span> <span class="kn">import</span> <span class="n">MetricsReporter</span>
+<span class="kn">from</span> <span class="nn">fl4health.server.base_server</span> <span class="kn">import</span> <span class="n">FlServer</span>
+<span class="kn">from</span> <span class="nn">fl4health.utils.metric_aggregation</span> <span class="kn">import</span> <span class="n">evaluate_metrics_aggregation_fn</span><span class="p">,</span> <span class="n">fit_metrics_aggregation_fn</span>
+<span class="kn">from</span> <span class="nn">flwr.common.parameter</span> <span class="kn">import</span> <span class="n">ndarrays_to_parameters</span>
+<span class="kn">from</span> <span class="nn">flwr.server.strategy</span> <span class="kn">import</span> <span class="n">FedAvg</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
-<span class="kn">from</span> <span class="nn">torch.nn.modules.loss</span> <span class="kn">import</span> <span class="n">_Loss</span>
-<span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">Optimizer</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
 
 
-<div class="viewcode-block" id="MnistClient">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient">[docs]</a>
-<span class="k">class</span> <span class="nc">MnistClient</span><span class="p">(</span><span class="n">BasicClient</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of the MNIST client.&quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="MnistClient.get_data_loaders">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient.get_data_loaders">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">[</span><span class="n">MnistDataset</span><span class="p">],</span> <span class="n">DataLoader</span><span class="p">[</span><span class="n">MnistDataset</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the data loader for MNIST data.</span>
-
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader</span>
-<span class="sd">            and validation data loader respectively.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_mnist_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span></div>
+<span class="n">FitConfigFn</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span>
 
 
-<div class="viewcode-block" id="MnistClient.get_model">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient.get_model">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the model for MNIST data.</span>
+<div class="viewcode-block" id="fit_config">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.servers.utils.html#florist.api.servers.utils.fit_config">[docs]</a>
+<span class="k">def</span> <span class="nf">fit_config</span><span class="p">(</span><span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">local_epochs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">current_server_round</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a dictionary used to configure the server&#39;s fit function.</span>
 
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (torch.nn.Module) An instance of florist.api.clients.mnist.MnistNet.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">MnistNet</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="MnistClient.get_optimizer">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient.get_optimizer">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optimizer</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the optimizer for MNIST data.</span>
-
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (torch.optim.Optimizer) An instance of torch.optim.SGD with learning</span>
-<span class="sd">            rate of 0.001 and momentum of 0.9.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="MnistClient.get_criterion">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient.get_criterion">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Loss</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the loss for MNIST data.</span>
-
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (torch.nn.modules.loss._Loss) an instance of torch.nn.CrossEntropyLoss.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span></div>
-</div>
+<span class="sd">    :param batch_size: (int) the size of the batch of samples.</span>
+<span class="sd">    :param local_epochs: (int) the number of local epochs the clients will run.</span>
+<span class="sd">    :param current_server_round: (int) the current server round</span>
+<span class="sd">    :return: (Dict[str, int]) A dictionary to the used at the config for the fit function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="n">batch_size</span><span class="p">,</span>
+        <span class="s2">&quot;current_server_round&quot;</span><span class="p">:</span> <span class="n">current_server_round</span><span class="p">,</span>
+        <span class="s2">&quot;local_epochs&quot;</span><span class="p">:</span> <span class="n">local_epochs</span><span class="p">,</span>
+    <span class="p">}</span></div>
 
 
 
-<div class="viewcode-block" id="MnistNet">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistNet">[docs]</a>
-<span class="k">class</span> <span class="nc">MnistNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of the Mnist model.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_server">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.servers.utils.html#florist.api.servers.utils.get_server">[docs]</a>
+<span class="k">def</span> <span class="nf">get_server</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+    <span class="n">fit_config</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">fit_config</span><span class="p">,</span>
+    <span class="n">n_clients</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">local_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">metrics_reporter</span><span class="p">:</span> <span class="n">MetricsReporter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FlServer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a server instance with FedAvg aggregation strategy.</span>
 
-<div class="viewcode-block" id="MnistNet.__init__">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistNet.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize an instance of MnistNet.&quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">16</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">120</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="MnistNet.forward">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistNet.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform a forward pass for the given tensor.</span>
-
-<span class="sd">        :param x: (torch.Tensor) the tensor to perform the forward pass on.</span>
-<span class="sd">        :return: (torch.Tensor) a result tensor after the forward pass.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span></div>
-</div>
+<span class="sd">    :param model: (torch.nn.Model) the model the server and clients will be using.</span>
+<span class="sd">    :param fit_config: (Callable[[int, int, int], Dict[str, int]]) the function to configure the fit method.</span>
+<span class="sd">    :param n_clients: (int) the number of clients that will participate on training. Optional, default is 2.</span>
+<span class="sd">    :param batch_size: (int) the size of the batch of samples. Optional, default is 8.</span>
+<span class="sd">    :param local_epochs: (int) the number of local epochs the clients will run. Optional, default is 1.</span>
+<span class="sd">    :param metrics_reporter: (fl4health.reporting.metrics.MetricsReporter) An optional metrics reporter instance.</span>
+<span class="sd">        Default is None.</span>
+<span class="sd">    :return: (fl4health.server.base_server.FlServer) An instance of FlServer with FedAvg as strategy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fit_config_fn</span><span class="p">:</span> <span class="n">FitConfigFn</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">fit_config</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">local_epochs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="n">initial_model_parameters</span> <span class="o">=</span> <span class="n">ndarrays_to_parameters</span><span class="p">([</span><span class="n">val</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+    <span class="n">strategy</span> <span class="o">=</span> <span class="n">FedAvg</span><span class="p">(</span>
+        <span class="n">min_fit_clients</span><span class="o">=</span><span class="n">n_clients</span><span class="p">,</span>
+        <span class="n">min_evaluate_clients</span><span class="o">=</span><span class="n">n_clients</span><span class="p">,</span>
+        <span class="n">min_available_clients</span><span class="o">=</span><span class="n">n_clients</span><span class="p">,</span>
+        <span class="n">on_fit_config_fn</span><span class="o">=</span><span class="n">fit_config_fn</span><span class="p">,</span>
+        <span class="n">on_evaluate_config_fn</span><span class="o">=</span><span class="n">fit_config_fn</span><span class="p">,</span>
+        <span class="n">fit_metrics_aggregation_fn</span><span class="o">=</span><span class="n">fit_metrics_aggregation_fn</span><span class="p">,</span>
+        <span class="n">evaluate_metrics_aggregation_fn</span><span class="o">=</span><span class="n">evaluate_metrics_aggregation_fn</span><span class="p">,</span>
+        <span class="n">initial_parameters</span><span class="o">=</span><span class="n">initial_model_parameters</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">client_manager</span> <span class="o">=</span> <span class="n">SimpleClientManager</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">FlServer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span> <span class="n">client_manager</span><span class="o">=</span><span class="n">client_manager</span><span class="p">,</span> <span class="n">metrics_reporter</span><span class="o">=</span><span class="n">metrics_reporter</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

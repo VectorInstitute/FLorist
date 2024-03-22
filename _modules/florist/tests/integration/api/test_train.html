@@ -177,7 +177,13 @@
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.monitoring.html">florist.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.monitoring.logs.html">florist.api.monitoring.logs module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.monitoring.metrics.html">florist.api.monitoring.metrics module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.servers.html">florist.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of florist.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.servers.local.html">florist.api.servers.local module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.servers.utils.html">florist.api.servers.utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../reference/api/florist.api.client.html">florist.api.client module</a></li>
@@ -224,36 +230,49 @@
           <h1>Source code for florist.tests.integration.api.test_train</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span>
 
+<span class="kn">import</span> <span class="nn">redis</span>
+
 <span class="kn">from</span> <span class="nn">florist.api</span> <span class="kn">import</span> <span class="n">client</span>
-<span class="kn">from</span> <span class="nn">florist.api.launchers.local</span> <span class="kn">import</span> <span class="n">launch_server</span>
-<span class="kn">from</span> <span class="nn">florist.tests.utils.api.launch_utils</span> <span class="kn">import</span> <span class="n">get_server</span>
+<span class="kn">from</span> <span class="nn">florist.api.clients.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
+<span class="kn">from</span> <span class="nn">florist.api.monitoring.logs</span> <span class="kn">import</span> <span class="n">get_server_log_file_path</span>
+<span class="kn">from</span> <span class="nn">florist.api.servers.local</span> <span class="kn">import</span> <span class="n">launch_local_server</span>
 
 
 <div class="viewcode-block" id="test_train">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.test_train.html#florist.tests.integration.api.test_train.test_train">[docs]</a>
 <span class="k">def</span> <span class="nf">test_train</span><span class="p">():</span>
-    <span class="n">test_server_address</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0:8080&quot;</span>
-
     <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp_dir</span><span class="p">:</span>
-        <span class="n">server_constructor</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">get_server</span><span class="p">,</span> <span class="n">n_clients</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">server_log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">temp_dir</span><span class="si">}</span><span class="s2">/server.out&quot;</span>
-        <span class="n">server_process</span> <span class="o">=</span> <span class="n">launch_server</span><span class="p">(</span><span class="n">server_constructor</span><span class="p">,</span> <span class="n">test_server_address</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">server_log_file</span><span class="p">)</span>
-
+        <span class="n">test_server_address</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0:8080&quot;</span>
         <span class="n">test_client</span> <span class="o">=</span> <span class="s2">&quot;MNIST&quot;</span>
         <span class="n">test_data_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">temp_dir</span><span class="si">}</span><span class="s2">/data&quot;</span>
         <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
         <span class="n">test_redis_port</span> <span class="o">=</span> <span class="s2">&quot;6379&quot;</span>
 
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">test_server_address</span><span class="p">,</span> <span class="n">test_client</span><span class="p">,</span> <span class="n">test_data_path</span><span class="p">,</span> <span class="n">test_redis_host</span><span class="p">,</span> <span class="n">test_redis_port</span><span class="p">)</span>
+        <span class="n">server_uuid</span><span class="p">,</span> <span class="n">server_process</span> <span class="o">=</span> <span class="n">launch_local_server</span><span class="p">(</span>
+            <span class="n">MnistNet</span><span class="p">(),</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="n">test_server_address</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">,</span>
+            <span class="n">test_redis_host</span><span class="p">,</span>
+            <span class="n">test_redis_port</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># giving time to start the server</span>
 
-        <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">test_server_address</span><span class="p">,</span> <span class="n">test_client</span><span class="p">,</span> <span class="n">test_data_path</span><span class="p">,</span> <span class="n">test_redis_host</span><span class="p">,</span> <span class="n">test_redis_port</span><span class="p">)</span>
+        <span class="n">json_body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+
+        <span class="k">assert</span> <span class="n">json_body</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">}</span>
 
         <span class="n">server_process</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">server_log_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">redis_conn</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">test_redis_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">test_redis_port</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">redis_conn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">json_body</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">redis_conn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">get_server_log_file_path</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">file_contents</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="k">assert</span> <span class="s2">&quot;FL finished in&quot;</span> <span class="ow">in</span> <span class="n">file_contents</span></div>
 

@@ -1,0 +1,12 @@
+florist.tests.unit.api.servers namespace
+========================================
+
+.. py:module:: florist.tests.unit.api.servers
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.tests.unit.api.servers.test_local

@@ -1,0 +1,7 @@
+florist.api.monitoring.logs module
+==================================
+
+.. automodule:: florist.api.monitoring.logs
+   :members:
+   :undoc-members:
+   :show-inheritance:

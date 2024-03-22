@@ -10,6 +10,7 @@ Subpackages
    :maxdepth: 4
 
    florist.tests.unit.api.monitoring
+   florist.tests.unit.api.servers
 
 Submodules
 ----------

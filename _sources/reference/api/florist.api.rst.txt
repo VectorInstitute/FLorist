@@ -15,6 +15,7 @@ Subpackages
    florist.api.clients
    florist.api.launchers
    florist.api.monitoring
+   florist.api.servers
 
 Submodules
 ----------

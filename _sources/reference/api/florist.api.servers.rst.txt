@@ -1,0 +1,16 @@
+florist.api.servers package
+===========================
+
+.. automodule:: florist.api.servers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.api.servers.local
+   florist.api.servers.utils
