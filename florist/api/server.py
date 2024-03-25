@@ -93,6 +93,9 @@ def start_training(
             json_response = response.json()
             LOGGER.debug(f"Client response: {json_response}")
 
+            if response.status_code != 200:
+                raise Exception(f"Client response returned {response.status_code}. Response: {json_response}")
+
             if "uuid" not in json_response:
                 raise Exception(f"Client response did not return a UUID. Response: {json_response}")
 
