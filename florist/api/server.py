@@ -7,8 +7,9 @@ from fastapi import FastAPI, Form
 from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 
+from florist.api.monitoring.metrics import wait_for_metric
 from florist.api.servers.common import ClientInfo, ClientInfoParseError, Model
-from florist.api.servers.launch import launch_local_server, wait_until_server_is_started
+from florist.api.servers.launch import launch_local_server
 
 
 app = FastAPI()
@@ -76,7 +77,7 @@ def start_training(
             redis_host=redis_host,
             redis_port=redis_port,
         )
-        wait_until_server_is_started(server_uuid, redis_host, redis_port, logger=LOGGER)
+        wait_for_metric(server_uuid, "fit_start", redis_host, redis_port, logger=LOGGER)
 
         # Start the clients
         client_uuids: List[str] = []

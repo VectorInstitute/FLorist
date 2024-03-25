@@ -1,6 +1,7 @@
 """Classes for the instrumentation of metrics reporting from clients and servers."""
 import json
-from logging import DEBUG
+import time
+from logging import DEBUG, Logger
 from typing import Any, Dict, Optional
 
 import redis
@@ -64,3 +65,56 @@ class RedisMetricsReporter(MetricsReporter):  # type: ignore
         encoded_metrics = json.dumps(self.metrics, cls=DateTimeEncoder)
         log(DEBUG, f"Dumping metrics to redis at key '{self.run_id}': {encoded_metrics}")
         self.redis_connection.set(self.run_id, encoded_metrics)
+
+
+def wait_for_metric(
+    uuid: str,
+    metric: str,
+    redis_host: str,
+    redis_port: str,
+    logger: Logger,
+    max_retries: int = 20,
+    seconds_to_sleep_between_retries: int = 1,
+) -> None:
+    """
+    Check metrics on Redis under the given UUID and wait until it appears.
+
+    If the metrics are not there yet, it will retry up to max_retries times,
+    sleeping and amount of seconds_to_sleep_between_retries between them.
+
+    :param uuid: (str) The UUID to pull the metrics from Redis.
+    :param metric: (str) The metric to look for.
+    :param redis_host: (str) The hostname of the Redis instance the metrics are being reported to.
+    :param redis_port: (str) The port of the Redis instance the metrics are being reported to.
+    :param logger: (logging.Logger) A logger instance to write logs to.
+    :param max_retries: (int) The maximum number of retries. Optional, default is 20.
+    :param seconds_to_sleep_between_retries: (int) The amount of seconds to sleep between retries.
+        Optional, default is 1.
+    :raises Exception: If it retries MAX_RETRIES times and the right metrics have not been found.
+    """
+    redis_connection = redis.Redis(host=redis_host, port=redis_port)
+
+    retry = 0
+    while retry < max_retries:
+        result = redis_connection.get(uuid)
+
+        if result is not None:
+            assert isinstance(result, bytes)
+            json_result = json.loads(result.decode("utf8"))
+            if metric in json_result:
+                logger.debug(f"Metric '{metric}' has been found. Result: {json_result}")
+                return
+
+            logger.debug(
+                f"Metric '{metric}' has not been found yet, sleeping for {seconds_to_sleep_between_retries}s. "
+                f"Retry: {retry}. Result: {json_result}"
+            )
+        else:
+            logger.debug(
+                f"Metric '{metric}' has not been found yet, sleeping for {seconds_to_sleep_between_retries}s. "
+                f"Retry: {retry}. Result is None."
+            )
+        time.sleep(seconds_to_sleep_between_retries)
+        retry += 1
+
+    raise Exception(f"Metric '{metric}' not been found after {max_retries} retries.")
