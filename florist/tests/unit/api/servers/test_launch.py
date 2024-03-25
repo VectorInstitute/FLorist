@@ -7,7 +7,7 @@ from florist.api.servers.launch import launch_local_server
 from florist.api.servers.utils import get_server
 
 
-@patch("florist.api.servers.local.launch_server")
+@patch("florist.api.servers.launch.launch_server")
 def test_launch_local_server(mock_launch_server: Mock) -> None:
     test_model = MnistNet()
     test_n_clients = 2
