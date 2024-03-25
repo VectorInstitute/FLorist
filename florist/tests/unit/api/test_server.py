@@ -262,8 +262,8 @@ def test_start_wait_for_metric_exception(mock_redis: Mock, mock_launch_local_ser
 
 @patch("florist.api.server.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
-@patch("florist.api.monitoring.metrics.time")
-def test_start_wait_for_metric_timeout(mock_time: Mock, mock_redis: Mock, mock_launch_local_server: Mock) -> None:
+@patch("florist.api.monitoring.metrics.time")  # just so time.sleep does not actually sleep
+def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_launch_local_server: Mock) -> None:
     # Arrange
     test_model = "MNIST"
     test_server_address = "test-server-address"
