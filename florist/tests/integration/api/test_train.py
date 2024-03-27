@@ -31,6 +31,8 @@ def test_train():
                     "model": (None, "MNIST"),
                     "server_address": (None, "localhost:8080"),
                     "n_server_rounds": (None, test_n_server_rounds),
+                    "batch_size": (None, 8),
+                    "local_epochs": (None, 1),
                     "redis_host": (None, test_redis_host),
                     "redis_port": (None, test_redis_port),
                     "clients_info": (None, json.dumps(

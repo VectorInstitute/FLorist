@@ -13,6 +13,8 @@ def test_start_training_success(mock_requests: Mock, mock_redis: Mock, mock_laun
     test_model = "MNIST"
     test_server_address = "test-server-address"
     test_n_server_rounds = 2
+    test_batch_size = 8
+    test_local_epochs = 1
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
     test_clients_info = [
@@ -49,6 +51,8 @@ def test_start_training_success(mock_requests: Mock, mock_redis: Mock, mock_laun
         test_model,
         test_server_address,
         test_n_server_rounds,
+        test_batch_size,
+        test_local_epochs,
         test_redis_host,
         test_redis_port,
         json.dumps(test_clients_info),
@@ -65,6 +69,8 @@ def test_start_training_success(mock_requests: Mock, mock_redis: Mock, mock_laun
         n_clients=len(test_clients_info),
         server_address=test_server_address,
         n_server_rounds=test_n_server_rounds,
+        batch_size=test_batch_size,
+        local_epochs=test_local_epochs,
         redis_host=test_redis_host,
         redis_port=test_redis_port,
     )
@@ -97,6 +103,8 @@ def test_start_fail_unsupported_server_model() -> None:
     test_model = "WRONG MODEL"
     test_server_address = "test-server-address"
     test_n_server_rounds = 2
+    test_batch_size = 8
+    test_local_epochs = 1
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
     test_clients_info = [
@@ -120,6 +128,8 @@ def test_start_fail_unsupported_server_model() -> None:
         test_model,
         test_server_address,
         test_n_server_rounds,
+        test_batch_size,
+        test_local_epochs,
         test_redis_host,
         test_redis_port,
         json.dumps(test_clients_info),
@@ -137,6 +147,8 @@ def test_start_fail_unsupported_client() -> None:
     test_model = "MNIST"
     test_server_address = "test-server-address"
     test_n_server_rounds = 2
+    test_batch_size = 8
+    test_local_epochs = 1
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
     test_clients_info = [
@@ -160,6 +172,8 @@ def test_start_fail_unsupported_client() -> None:
         test_model,
         test_server_address,
         test_n_server_rounds,
+        test_batch_size,
+        test_local_epochs,
         test_redis_host,
         test_redis_port,
         json.dumps(test_clients_info),
@@ -178,6 +192,8 @@ def test_start_training_launch_server_exception(mock_launch_local_server: Mock) 
     test_model = "MNIST"
     test_server_address = "test-server-address"
     test_n_server_rounds = 2
+    test_batch_size = 8
+    test_local_epochs = 1
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
     test_clients_info = [
@@ -203,6 +219,8 @@ def test_start_training_launch_server_exception(mock_launch_local_server: Mock) 
         test_model,
         test_server_address,
         test_n_server_rounds,
+        test_batch_size,
+        test_local_epochs,
         test_redis_host,
         test_redis_port,
         json.dumps(test_clients_info),
@@ -221,6 +239,8 @@ def test_start_wait_for_metric_exception(mock_redis: Mock, mock_launch_local_ser
     test_model = "MNIST"
     test_server_address = "test-server-address"
     test_n_server_rounds = 2
+    test_batch_size = 8
+    test_local_epochs = 1
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
     test_clients_info = [
@@ -249,6 +269,8 @@ def test_start_wait_for_metric_exception(mock_redis: Mock, mock_launch_local_ser
         test_model,
         test_server_address,
         test_n_server_rounds,
+        test_batch_size,
+        test_local_epochs,
         test_redis_host,
         test_redis_port,
         json.dumps(test_clients_info),
@@ -268,6 +290,8 @@ def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_launch_lo
     test_model = "MNIST"
     test_server_address = "test-server-address"
     test_n_server_rounds = 2
+    test_batch_size = 8
+    test_local_epochs = 1
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
     test_clients_info = [
@@ -297,6 +321,8 @@ def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_launch_lo
         test_model,
         test_server_address,
         test_n_server_rounds,
+        test_batch_size,
+        test_local_epochs,
         test_redis_host,
         test_redis_port,
         json.dumps(test_clients_info),
@@ -316,6 +342,8 @@ def test_start_training_fail_response(mock_requests: Mock, mock_redis: Mock, moc
     test_model = "MNIST"
     test_server_address = "test-server-address"
     test_n_server_rounds = 2
+    test_batch_size = 8
+    test_local_epochs = 1
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
     test_clients_info = [
@@ -350,6 +378,8 @@ def test_start_training_fail_response(mock_requests: Mock, mock_redis: Mock, moc
         test_model,
         test_server_address,
         test_n_server_rounds,
+        test_batch_size,
+        test_local_epochs,
         test_redis_host,
         test_redis_port,
         json.dumps(test_clients_info),
@@ -369,6 +399,8 @@ def test_start_training_no_uuid_in_response(mock_requests: Mock, mock_redis: Moc
     test_model = "MNIST"
     test_server_address = "test-server-address"
     test_n_server_rounds = 2
+    test_batch_size = 8
+    test_local_epochs = 1
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
     test_clients_info = [
@@ -403,6 +435,8 @@ def test_start_training_no_uuid_in_response(mock_requests: Mock, mock_redis: Moc
         test_model,
         test_server_address,
         test_n_server_rounds,
+        test_batch_size,
+        test_local_epochs,
         test_redis_host,
         test_redis_port,
         json.dumps(test_clients_info),

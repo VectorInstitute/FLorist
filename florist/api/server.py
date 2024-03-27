@@ -23,6 +23,8 @@ def start_training(
     model: Annotated[str, Form()],
     server_address: Annotated[str, Form()],
     n_server_rounds: Annotated[int, Form()],
+    batch_size: Annotated[int, Form()],
+    local_epochs: Annotated[int, Form()],
     redis_host: Annotated[str, Form()],
     redis_port: Annotated[str, Form()],
     clients_info: Annotated[str, Form()],
@@ -37,6 +39,8 @@ def start_training(
     :param server_address: (str) The address of the FL server to be started. It should be comprised of
         the host name and port separated by colon (e.g. "localhost:8080")
     :param n_server_rounds: (int) The number of rounds the FL server should run.
+    :param batch_size: (int) The size of the batch for training
+    :param local_epochs: (int) The number of epochs to run by the clients
     :param redis_host: (str) The host name for the Redis instance for metrics reporting.
     :param redis_port: (str) The port for the Redis instance for metrics reporting.
     :param clients_info: (str) A JSON string containing the client information. It will be parsed by
@@ -74,6 +78,8 @@ def start_training(
             n_clients=len(clients_info_list),
             server_address=server_address,
             n_server_rounds=n_server_rounds,
+            batch_size=batch_size,
+            local_epochs=local_epochs,
             redis_host=redis_host,
             redis_port=redis_port,
         )
