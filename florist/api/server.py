@@ -5,17 +5,36 @@ from typing import List
 import requests
 from fastapi import FastAPI, Form
 from fastapi.responses import JSONResponse
+from pymongo import MongoClient
 from typing_extensions import Annotated
 
 from florist.api.monitoring.metrics import wait_for_metric
+from florist.api.routes.job import router as job_router
 from florist.api.servers.common import ClientInfo, ClientInfoParseError, Model
 from florist.api.servers.launch import launch_local_server
 
 
 app = FastAPI()
+app.include_router(job_router, tags=["job"], prefix="/job")
+
 LOGGER = logging.getLogger("uvicorn.error")
 
+MONGODB_URI = "mongodb://localhost:27017/"
+DATABASE_NAME = "florist-server"
 START_CLIENT_API = "api/client/start"
+
+
+@app.on_event("startup")
+def startup_db_client() -> None:
+    """Start up the MongoDB client."""
+    app.mongodb_client = MongoClient(MONGODB_URI)  # type: ignore[attr-defined]
+    app.database = app.mongodb_client[DATABASE_NAME]  # type: ignore[attr-defined]
+
+
+@app.on_event("shutdown")
+def shutdown_db_client() -> None:
+    """Shut down the MongoDB client."""
+    app.mongodb_client.close()  # type: ignore[attr-defined]
 
 
 @app.post("/api/server/start_training")
@@ -35,20 +54,20 @@ def start_training(
     Should be called with a POST request and the parameters should be contained in the request's form.
 
     :param model: (str) The name of the model to train. Should be one of the values in the enum
-        florist.api.servers.common.Model
+        `florist.api.servers.common.Model`
     :param server_address: (str) The address of the FL server to be started. It should be comprised of
-        the host name and port separated by colon (e.g. "localhost:8080")
+        the host name and port separated by colon (e.g. `localhost:8080`)
     :param n_server_rounds: (int) The number of rounds the FL server should run.
     :param batch_size: (int) The size of the batch for training
     :param local_epochs: (int) The number of epochs to run by the clients
     :param redis_host: (str) The host name for the Redis instance for metrics reporting.
     :param redis_port: (str) The port for the Redis instance for metrics reporting.
     :param clients_info: (str) A JSON string containing the client information. It will be parsed by
-        florist.api.servers.common.ClientInfo and should be in the following format:
+        `florist.api.servers.common.ClientInfo` and should be in the following format:
         [
             {
-                "client": <client name as defined in florist.api.clients.common.Client>,
-                "client_address": <Florist's client hostname and port, e.g. localhost:8081>,
+                "client": <client name as defined in `florist.api.clients.common.Client`>,
+                "client_address": <Florist's client hostname and port, e.g. `localhost:8081`>,
                 "data_path": <path where the data is located in the FL client's machine>,
                 "redis_host": <hostname of the Redis instance the FL client will be reporting to>,
                 "redis_port": <port of the Redis instance the FL client will be reporting to>,
@@ -60,8 +79,8 @@ def start_training(
                 "server_uuid": <client uuid>,
                 "client_uuids": [<client_uuid_1>, <client_uuid_2>, ..., <client_uuid_n>],
             }
-        If not successful, returns the appropriate error code with a JSON with the format below:
-            {"error": <error message>}
+        If not successful, returns the appropriate error code with a JSON with the format:
+            `{"error": <error message>}`
     """
     try:
         # Parse input data

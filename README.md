@@ -37,7 +37,7 @@ yarn
 
 ### Pulling Redis' Docker
 
-Redis is used to fetch the metrics reported by servers and clients during their runs.
+[Redis](https://redis.io/) is used to fetch the metrics reported by servers and clients during their runs.
 
 
 If you don't have Docker installed, follow [these instructions](https://docs.docker.com/desktop/)
@@ -47,7 +47,30 @@ to install it. Then, pull [Redis' official docker image](https://hub.docker.com/
 docker pull redis:7.2.4
 ```
 
+### Pulling MongoDB's Docker
+
+[MongoDB](https://www.mongodb.com) is used to store information about the training jobs.
+
+If you don't have Docker installed, follow [these instructions](https://docs.docker.com/desktop/)
+to install it. Then, pull [MongoDB' official docker image](https://hub.docker.com/_/mongo)
+(we currently use version 7.0.8):
+```shell
+docker pull mongo:7.0.8
+```
+
 ## Running the server
+
+### Start MongoDB's instance
+
+If it's your first time running it, create a container and run it with the command below:
+```shell
+docker run --name mongodb-florist -d -p 27017:27017 mongo:7.0.8
+```
+
+From the second time on, you can just start it:
+```shell
+docker start mongodb-florist
+```
 
 ### Start server's Redis instance
 

@@ -22,6 +22,8 @@ wandb = "^0.16.3"
 torchvision = "0.14.1"
 redis = "^5.0.1"
 python-multipart = "^0.0.9"
+pymongo = {extras = ["srv"], version = "^4.6.3"}
+pydantic = "^1.10.15"
 
 [tool.poetry.group.test]
 optional = true
