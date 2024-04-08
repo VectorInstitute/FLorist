@@ -26,14 +26,14 @@ START_CLIENT_API = "api/client/start"
 
 @app.on_event("startup")
 def startup_db_client() -> None:
-    """Start up the MongoDB client."""
+    """Start up the MongoDB client on app startup."""
     app.mongodb_client = MongoClient(MONGODB_URI)  # type: ignore[attr-defined]
     app.database = app.mongodb_client[DATABASE_NAME]  # type: ignore[attr-defined]
 
 
 @app.on_event("shutdown")
 def shutdown_db_client() -> None:
-    """Shut down the MongoDB client."""
+    """Shut down the MongoDB client on app shutdown."""
     app.mongodb_client.close()  # type: ignore[attr-defined]
 
 

@@ -46,6 +46,10 @@ jobs:
         uses: supercharge/redis-github-action@1.2.0
         with:
           redis-version: 7.2.4
+      - name: Setup MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+          mongodb-version: 7.0.8
       - name: Install dependencies and check code
         run: |
           poetry env use '3.9'
