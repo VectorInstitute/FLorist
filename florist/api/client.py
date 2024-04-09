@@ -1,8 +1,10 @@
 """FLorist client FastAPI endpoints."""
 import uuid
+import json
 from pathlib import Path
 
 import torch
+import redis
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
@@ -67,3 +69,22 @@ def start(server_address: str, client: str, data_path: str, redis_host: str, red
 
     except Exception as ex:
         return JSONResponse({"error": str(ex)}, status_code=500)
+
+
+@app.get("/api/client/check_status")
+def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResponse:
+    """
+    Retrieve value at key client_uuid in redis if it exists.
+
+    :param redis_port: (str) the uuid of the client to fetch from redis.
+    :param redis_host: (str) the host name for the Redis instance for metrics reporting.
+    :param redis_port: (str) the port for the Redis instance for metrics reporting.
+    """
+    redis_connection = redis.Redis(host=redis_host, port=redis_port)
+
+    result = redis_connection.get(client_uuid)
+
+    if result is not None:
+        return JSONResponse(json.loads(result))
+    
+    return JSONResponse({"error": f"Client {client_uuid} Not Found"}, status_code=404)
