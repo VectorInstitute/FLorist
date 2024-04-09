@@ -27,9 +27,10 @@ def new_job(request: Request, job: Job = Body(...)) -> Dict[str, Any]:  # noqa: 
     :param job: (Job) The Job instance to be saved in the database.
     :return: (Dict[str, Any]) A dictionary with the attributes of the new Job instance as saved in the database.
     """
-    job = jsonable_encoder(job)
-    result = request.app.database[JOB_DATABASE_NAME].insert_one(job)
-    created_job = request.app.database[JOB_DATABASE_NAME].find_one({"_id": result.inserted_id})
+    json_job = jsonable_encoder(job)
+    result = request.app.database[JOB_DATABASE_NAME].insert_one(json_job)
 
+    created_job = request.app.database[JOB_DATABASE_NAME].find_one({"_id": result.inserted_id})
     assert isinstance(created_job, dict)
+
     return created_job
