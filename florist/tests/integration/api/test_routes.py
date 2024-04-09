@@ -38,7 +38,7 @@ def test_new_job() -> None:
 
 # TODO delete database at the end
 
-class MockApp():
+class MockApp:
     def __init__(self):
         mongo_client = MongoClient(MONGODB_URI)
         self.database = mongo_client[DATABASE_NAME]
