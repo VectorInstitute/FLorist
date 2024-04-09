@@ -77,3 +77,10 @@ analysis. Ruff checks various rules including [flake8](https://docs.astral.sh/ru
 
 Last but not the least, we use type hints in our code which is then checked using
 [mypy](https://mypy.readthedocs.io/en/stable/).
+
+## Documentation
+
+Backend code API documentation can be found at https://vectorinstitute.github.io/FLorist/.
+
+Backend REST API documentation can be found at https://localhost:8000/docs once the server
+is running locally.

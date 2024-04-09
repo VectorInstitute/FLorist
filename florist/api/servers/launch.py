@@ -29,8 +29,8 @@ def launch_local_server(
     :param n_clients: (int) The number of clients that will report to this server.
     :param server_address: (str) The address the server should start at.
     :param n_server_rounds: (int) The number of rounds the training should run for.
-    :param batch_size: (int) The size of the batch for training
-    :param local_epochs: (int) The number of epochs to run by the clients
+    :param batch_size: (int) The size of the batch for training.
+    :param local_epochs: (int) The number of epochs to run by the clients.
     :param redis_host: (str) the host name for the Redis instance for metrics reporting.
     :param redis_port: (str) the port for the Redis instance for metrics reporting.
     :return: (Tuple[str, multiprocessing.Process]) the UUID of the server, which can be used to pull
