@@ -2,13 +2,13 @@ import json
 from unittest.mock import Mock, patch, ANY
 
 from florist.api.models.mnist import MnistNet
-from florist.api.server import start_training
+from florist.api.routes.server.training import start
 
 
-@patch("florist.api.server.launch_local_server")
+@patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
-@patch("florist.api.server.requests")
-def test_start_training_success(mock_requests: Mock, mock_redis: Mock, mock_launch_local_server: Mock) -> None:
+@patch("florist.api.routes.server.training.requests")
+def test_start_success(mock_requests: Mock, mock_redis: Mock, mock_launch_local_server: Mock) -> None:
     # Arrange
     test_model = "MNIST"
     test_server_address = "test-server-address"
@@ -47,7 +47,7 @@ def test_start_training_success(mock_requests: Mock, mock_redis: Mock, mock_laun
     mock_requests.get.return_value = mock_response
 
     # Act
-    response = start_training(
+    response = start(
         test_model,
         test_server_address,
         test_n_server_rounds,
@@ -124,7 +124,7 @@ def test_start_fail_unsupported_server_model() -> None:
     ]
 
     # Act
-    response = start_training(
+    response = start(
         test_model,
         test_server_address,
         test_n_server_rounds,
@@ -168,7 +168,7 @@ def test_start_fail_unsupported_client() -> None:
     ]
 
     # Act
-    response = start_training(
+    response = start(
         test_model,
         test_server_address,
         test_n_server_rounds,
@@ -186,8 +186,8 @@ def test_start_fail_unsupported_client() -> None:
     assert "Client 'WRONG CLIENT' not supported." in json_body["error"]
 
 
-@patch("florist.api.server.launch_local_server")
-def test_start_training_launch_server_exception(mock_launch_local_server: Mock) -> None:
+@patch("florist.api.routes.server.training.launch_local_server")
+def test_start_launch_server_exception(mock_launch_local_server: Mock) -> None:
     # Arrange
     test_model = "MNIST"
     test_server_address = "test-server-address"
@@ -215,7 +215,7 @@ def test_start_training_launch_server_exception(mock_launch_local_server: Mock) 
     mock_launch_local_server.side_effect = test_exception
 
     # Act
-    response = start_training(
+    response = start(
         test_model,
         test_server_address,
         test_n_server_rounds,
@@ -232,7 +232,7 @@ def test_start_training_launch_server_exception(mock_launch_local_server: Mock) 
     assert json_body == {"error": str(test_exception)}
 
 
-@patch("florist.api.server.launch_local_server")
+@patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 def test_start_wait_for_metric_exception(mock_redis: Mock, mock_launch_local_server: Mock) -> None:
     # Arrange
@@ -265,7 +265,7 @@ def test_start_wait_for_metric_exception(mock_redis: Mock, mock_launch_local_ser
     mock_redis.Redis.side_effect = test_exception
 
     # Act
-    response = start_training(
+    response = start(
         test_model,
         test_server_address,
         test_n_server_rounds,
@@ -282,7 +282,7 @@ def test_start_wait_for_metric_exception(mock_redis: Mock, mock_launch_local_ser
     assert json_body == {"error": str(test_exception)}
 
 
-@patch("florist.api.server.launch_local_server")
+@patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.monitoring.metrics.time")  # just so time.sleep does not actually sleep
 def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_launch_local_server: Mock) -> None:
@@ -317,7 +317,7 @@ def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_launch_lo
     mock_redis.Redis.return_value = mock_redis_connection
 
     # Act
-    response = start_training(
+    response = start(
         test_model,
         test_server_address,
         test_n_server_rounds,
@@ -334,10 +334,10 @@ def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_launch_lo
     assert json_body == {"error": "Metric 'fit_start' not been found after 20 retries."}
 
 
-@patch("florist.api.server.launch_local_server")
+@patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
-@patch("florist.api.server.requests")
-def test_start_training_fail_response(mock_requests: Mock, mock_redis: Mock, mock_launch_local_server: Mock) -> None:
+@patch("florist.api.routes.server.training.requests")
+def test_start_fail_response(mock_requests: Mock, mock_redis: Mock, mock_launch_local_server: Mock) -> None:
     # Arrange
     test_model = "MNIST"
     test_server_address = "test-server-address"
@@ -374,7 +374,7 @@ def test_start_training_fail_response(mock_requests: Mock, mock_redis: Mock, moc
     mock_requests.get.return_value = mock_response
 
     # Act
-    response = start_training(
+    response = start(
         test_model,
         test_server_address,
         test_n_server_rounds,
@@ -391,10 +391,10 @@ def test_start_training_fail_response(mock_requests: Mock, mock_redis: Mock, moc
     assert json_body == {"error": f"Client response returned 403. Response: error"}
 
 
-@patch("florist.api.server.launch_local_server")
+@patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
-@patch("florist.api.server.requests")
-def test_start_training_no_uuid_in_response(mock_requests: Mock, mock_redis: Mock, mock_launch_local_server: Mock) -> None:
+@patch("florist.api.routes.server.training.requests")
+def test_start_no_uuid_in_response(mock_requests: Mock, mock_redis: Mock, mock_launch_local_server: Mock) -> None:
     # Arrange
     test_model = "MNIST"
     test_server_address = "test-server-address"
@@ -431,7 +431,7 @@ def test_start_training_no_uuid_in_response(mock_requests: Mock, mock_redis: Moc
     mock_requests.get.return_value = mock_response
 
     # Act
-    response = start_training(
+    response = start(
         test_model,
         test_server_address,
         test_n_server_rounds,

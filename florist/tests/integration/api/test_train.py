@@ -7,16 +7,16 @@ import redis
 import uvicorn
 
 from florist.api.monitoring.metrics import wait_for_metric
-from florist.api.server import LOGGER
-from florist.tests.integration.api.utils import Server
+from florist.api.routes.server.training import LOGGER
+from florist.tests.integration.api.utils import TestUvicornServer
 
 
 def test_train():
     # Define services
     server_config = uvicorn.Config("florist.api.server:app", host="localhost", port=8000, log_level="debug")
-    server_service = Server(config=server_config)
+    server_service = TestUvicornServer(config=server_config)
     client_config = uvicorn.Config("florist.api.client:app", host="localhost", port=8001, log_level="debug")
-    client_service = Server(config=client_config)
+    client_service = TestUvicornServer(config=client_config)
 
     # Start services
     with server_service.run_in_thread():
@@ -49,7 +49,7 @@ def test_train():
                 }
                 request = requests.Request(
                     method="POST",
-                    url=f"http://localhost:8000/api/server/start_training",
+                    url=f"http://localhost:8000/api/server/training/start",
                     files=data,
                 ).prepare()
                 session = requests.Session()

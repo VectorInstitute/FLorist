@@ -80,7 +80,7 @@ def wait_for_metric(
     Check metrics on Redis under the given UUID and wait until it appears.
 
     If the metrics are not there yet, it will retry up to max_retries times,
-    sleeping and amount of seconds_to_sleep_between_retries between them.
+    sleeping an amount of `seconds_to_sleep_between_retries` between them.
 
     :param uuid: (str) The UUID to pull the metrics from Redis.
     :param metric: (str) The metric to look for.
@@ -90,7 +90,7 @@ def wait_for_metric(
     :param max_retries: (int) The maximum number of retries. Optional, default is 20.
     :param seconds_to_sleep_between_retries: (int) The amount of seconds to sleep between retries.
         Optional, default is 1.
-    :raises Exception: If it retries MAX_RETRIES times and the right metrics have not been found.
+    :raises Exception: If it retries `max_retries` times and the right metrics have not been found.
     """
     redis_connection = redis.Redis(host=redis_host, port=redis_port)
 
