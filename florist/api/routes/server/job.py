@@ -1,4 +1,4 @@
-"""The /job FastAPI routes."""
+"""FastAPI routes for the job."""
 from typing import Any, Dict
 
 from fastapi import APIRouter, Body, Request, status
