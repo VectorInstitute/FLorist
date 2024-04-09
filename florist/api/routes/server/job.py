@@ -39,9 +39,9 @@ def new_job(request: Request, job: Job = Body(...)) -> Dict[str, Any]:  # noqa: 
             raise HTTPException(status_code=400, detail=error_message) from e
 
     json_job = jsonable_encoder(job)
-
     result = request.app.database[JOB_DATABASE_NAME].insert_one(json_job)
-    created_job = request.app.database[JOB_DATABASE_NAME].find_one({"_id": result.inserted_id})
 
+    created_job = request.app.database[JOB_DATABASE_NAME].find_one({"_id": result.inserted_id})
     assert isinstance(created_job, dict)
+
     return created_job
