@@ -2,6 +2,7 @@
 import json
 from unittest.mock import ANY, Mock, patch
 
+from fastapi.responses import JSONResponse
 from florist.api import client
 from florist.api.clients.mnist import MnistClient
 from florist.api.monitoring.logs import get_client_log_file_path
@@ -81,17 +82,15 @@ def test_start_fail_exception(mock_launch_client: Mock) -> None:
 
 @patch("florist.api.client.redis")
 def test_check_status(mock_redis: Mock) -> None:
-    test_redis_val = b"{\"info:\": test}"
     mock_redis_connection = Mock()
-    mock_redis_connection.get.return_value = test_redis_val
+    mock_redis_connection.get.return_value = b"{\"info\": \"test\"}"
 
     test_uuid = "test_uuid"
     test_redis_host = "localhost"
-    test_redis_port = "6381"
+    test_redis_port = "testport"
 
     mock_redis.Redis.return_value = mock_redis_connection
 
     response = client.check_status(test_uuid, test_redis_host, test_redis_port)
-    print(response)
 
-    assert response == mock_redis_connection()
+    assert json.loads(response.body.decode()) == {"info": "test"}
