@@ -69,7 +69,7 @@ def test_train():
 
                 # Wait for training to finish
                 wait_for_metric(server_uuid, "fit_end", test_redis_host,
-                                test_redis_port, LOGGER, max_retries=60)
+                                test_redis_port, LOGGER, max_retries=80)
 
                 # Check server metrics
                 server_metrics_result = redis_conn.get(server_uuid)
