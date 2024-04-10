@@ -1,4 +1,5 @@
 """Definitions for the MongoDB database entities."""
+import json
 import uuid
 from enum import Enum
 from typing import List, Optional
@@ -58,6 +59,19 @@ class Job(BaseModel):
     redis_host: Optional[Annotated[str, Field(...)]]
     redis_port: Optional[Annotated[str, Field(...)]]
     clients_info: Optional[Annotated[List[ClientInfo], Field(...)]]
+
+    @classmethod
+    def is_valid_server_info(cls, server_info: Optional[str]) -> bool:
+        """
+        Validate if server info is a json string.
+
+        :param server_info: (str) the json string with the server info.
+        :return: True if server_info is None or a valid JSON string, False otherwise.
+        :raises: (json.JSONDecodeError) if there is an error decoding the server info into json
+        """
+        if server_info is not None:
+            json.loads(server_info)
+        return True
 
     class Config:
         """MongoDB config for the Job DB entity."""

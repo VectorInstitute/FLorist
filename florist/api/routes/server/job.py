@@ -1,5 +1,5 @@
 """FastAPI routes for the job."""
-import json
+from json import JSONDecodeError
 from typing import Any, Dict
 
 from fastapi import APIRouter, Body, HTTPException, Request, status
@@ -29,14 +29,14 @@ def new_job(request: Request, job: Job = Body(...)) -> Dict[str, Any]:  # noqa: 
     :return: (Dict[str, Any]) A dictionary with the attributes of the new Job instance as saved in the database.
     :raises: (HTTPException) a 400 if job.server_info is not None and cannot be parsed into JSON.
     """
-    if job.server_info is not None:
-        try:
-            json.loads(job.server_info)
-        except json.JSONDecodeError as e:
-            error_message = (
-                "job.server_info could not be parsed into JSON. " f"job.server_info: {job.server_info}. Error: {e}"
-            )
-            raise HTTPException(status_code=400, detail=error_message) from e
+    try:
+        is_valid = Job.is_valid_server_info(job.server_info)
+        if not is_valid:
+            msg = f"job.server_info is not valid. job.server_info: {job.server_info}."
+            raise HTTPException(status_code=400, detail=msg)
+    except JSONDecodeError as e:
+        msg = f"job.server_info could not be parsed into JSON. job.server_info: {job.server_info}. Error: {e}"
+        raise HTTPException(status_code=400, detail=msg) from e
 
     json_job = jsonable_encoder(job)
     result = request.app.database[JOB_DATABASE_NAME].insert_one(json_job)
