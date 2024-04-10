@@ -2,7 +2,6 @@
 import json
 from unittest.mock import ANY, Mock, patch
 
-from fastapi.responses import JSONResponse
 from florist.api import client
 from florist.api.clients.mnist import MnistClient
 from florist.api.monitoring.logs import get_client_log_file_path
