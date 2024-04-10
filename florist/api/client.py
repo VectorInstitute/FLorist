@@ -76,7 +76,7 @@ def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResp
     """
     Retrieve value at key client_uuid in redis if it exists.
 
-    :param redis_port: (str) the uuid of the client to fetch from redis.
+    :param client_uuid: (str) the uuid of the client to fetch from redis.
     :param redis_host: (str) the host name for the Redis instance for metrics reporting.
     :param redis_port: (str) the port for the Redis instance for metrics reporting.
     """
@@ -86,5 +86,5 @@ def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResp
 
     if result is not None:
         return JSONResponse(json.loads(result))
-    
+
     return JSONResponse({"error": f"Client {client_uuid} Not Found"}, status_code=404)

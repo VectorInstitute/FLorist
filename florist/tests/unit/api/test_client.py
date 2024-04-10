@@ -25,14 +25,16 @@ def test_start_success(mock_launch_client: Mock) -> None:
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
 
-    response = client.start(test_server_address, test_client, test_data_path, test_redis_host, test_redis_port)
+    response = client.start(test_server_address, test_client,
+                            test_data_path, test_redis_host, test_redis_port)
 
     assert response.status_code == 200
     json_body = json.loads(response.body.decode())
     assert json_body == {"uuid": ANY}
 
     log_file_name = str(get_client_log_file_path(json_body["uuid"]))
-    mock_launch_client.assert_called_once_with(ANY, test_server_address, log_file_name)
+    mock_launch_client.assert_called_once_with(
+        ANY, test_server_address, log_file_name)
 
     client_obj = mock_launch_client.call_args_list[0][0][0]
     assert isinstance(client_obj, MnistClient)
@@ -52,7 +54,8 @@ def test_start_fail_unsupported_client() -> None:
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
 
-    response = client.start(test_server_address, test_client, test_data_path, test_redis_host, test_redis_port)
+    response = client.start(test_server_address, test_client,
+                            test_data_path, test_redis_host, test_redis_port)
 
     assert response.status_code == 400
     json_body = json.loads(response.body.decode())
@@ -68,8 +71,27 @@ def test_start_fail_exception(mock_launch_client: Mock) -> None:
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
 
-    response = client.start(test_server_address, test_client, test_data_path, test_redis_host, test_redis_port)
+    response = client.start(test_server_address, test_client,
+                            test_data_path, test_redis_host, test_redis_port)
 
     assert response.status_code == 500
     json_body = json.loads(response.body.decode())
     assert json_body == {"error": "test exception"}
+
+
+@patch("florist.api.client.redis")
+def test_check_status(mock_redis: Mock) -> None:
+    test_redis_val = b"{\"info:\": test}"
+    mock_redis_connection = Mock()
+    mock_redis_connection.get.return_value = test_redis_val
+
+    test_uuid = "test_uuid"
+    test_redis_host = "localhost"
+    test_redis_port = "6381"
+
+    mock_redis.Redis.return_value = mock_redis_connection
+
+    response = client.check_status(test_uuid, test_redis_host, test_redis_port)
+    print(response)
+
+    assert response == mock_redis_connection()
