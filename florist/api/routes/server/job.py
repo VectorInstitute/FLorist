@@ -27,7 +27,7 @@ def new_job(request: Request, job: Job = Body(...)) -> Dict[str, Any]:  # noqa: 
     :param request: (fastapi.Request) the FastAPI request object.
     :param job: (Job) The Job instance to be saved in the database.
     :return: (Dict[str, Any]) A dictionary with the attributes of the new Job instance as saved in the database.
-    :raises: (HTTPException) a 400 if job.server_info is not None and cannot be parsed into JSON.
+    :raises: (HTTPException) status 400 if job.server_info is not None and cannot be parsed into JSON.
     """
     try:
         is_valid = Job.is_valid_server_info(job.server_info)
