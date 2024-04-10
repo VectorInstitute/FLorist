@@ -1,10 +1,10 @@
 """FLorist client FastAPI endpoints."""
-import uuid
 import json
+import uuid
 from pathlib import Path
 
-import torch
 import redis
+import torch
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
@@ -83,6 +83,7 @@ def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResp
     redis_connection = redis.Redis(host=redis_host, port=redis_port)
 
     result = redis_connection.get(client_uuid)
+    assert isinstance(result, bytes)
 
     if result is not None:
         return JSONResponse(json.loads(result))
