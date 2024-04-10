@@ -1,7 +1,10 @@
-florist.tests.integration.api.launchers namespace
-=================================================
+florist.tests.integration.api.launchers package
+===============================================
 
-.. py:module:: florist.tests.integration.api.launchers
+.. automodule:: florist.tests.integration.api.launchers
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------

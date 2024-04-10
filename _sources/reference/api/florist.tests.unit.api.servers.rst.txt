@@ -1,7 +1,10 @@
-florist.tests.unit.api.servers namespace
-========================================
+florist.tests.unit.api.servers package
+======================================
 
-.. py:module:: florist.tests.unit.api.servers
+.. automodule:: florist.tests.unit.api.servers
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------
@@ -9,4 +12,5 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   florist.tests.unit.api.servers.test_local
+   florist.tests.unit.api.servers.test_common
+   florist.tests.unit.api.servers.test_launch

@@ -1,0 +1,7 @@
+florist.tests.unit.api.routes.server.test\_training module
+==========================================================
+
+.. automodule:: florist.tests.unit.api.routes.server.test_training
+   :members:
+   :undoc-members:
+   :show-inheritance:

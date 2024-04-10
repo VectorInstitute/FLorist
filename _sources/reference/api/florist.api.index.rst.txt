@@ -1,7 +1,0 @@
-florist.api.index module
-========================
-
-.. automodule:: florist.api.index
-   :members:
-   :undoc-members:
-   :show-inheritance:

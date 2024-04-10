@@ -1,0 +1,15 @@
+florist.api.models package
+==========================
+
+.. automodule:: florist.api.models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.api.models.mnist

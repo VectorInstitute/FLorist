@@ -21,3 +21,4 @@ Submodules
    :maxdepth: 4
 
    florist.tests.integration.api.test_train
+   florist.tests.integration.api.utils

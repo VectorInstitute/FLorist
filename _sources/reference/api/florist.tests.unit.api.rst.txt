@@ -1,7 +1,10 @@
-florist.tests.unit.api namespace
-================================
+florist.tests.unit.api package
+==============================
 
-.. py:module:: florist.tests.unit.api
+.. automodule:: florist.tests.unit.api
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Subpackages
 -----------
@@ -10,6 +13,7 @@ Subpackages
    :maxdepth: 4
 
    florist.tests.unit.api.monitoring
+   florist.tests.unit.api.routes
    florist.tests.unit.api.servers
 
 Submodules

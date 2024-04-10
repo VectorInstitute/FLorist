@@ -1,7 +1,10 @@
-florist.tests namespace
-=======================
+florist.tests package
+=====================
 
-.. py:module:: florist.tests
+.. automodule:: florist.tests
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Subpackages
 -----------

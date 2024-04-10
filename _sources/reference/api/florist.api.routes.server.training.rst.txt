@@ -1,0 +1,7 @@
+florist.api.routes.server.training module
+=========================================
+
+.. automodule:: florist.api.routes.server.training
+   :members:
+   :undoc-members:
+   :show-inheritance:

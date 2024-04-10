@@ -1,7 +1,0 @@
-florist.tests.unit.api.servers.test\_local module
-=================================================
-
-.. automodule:: florist.tests.unit.api.servers.test_local
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -14,7 +14,9 @@ Subpackages
 
    florist.api.clients
    florist.api.launchers
+   florist.api.models
    florist.api.monitoring
+   florist.api.routes
    florist.api.servers
 
 Submodules
@@ -24,4 +26,4 @@ Submodules
    :maxdepth: 4
 
    florist.api.client
-   florist.api.index
+   florist.api.server
