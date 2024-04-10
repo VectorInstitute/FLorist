@@ -3,16 +3,18 @@ from unittest.mock import ANY, Mock, patch
 from florist.api.clients.mnist import MnistNet
 from florist.api.monitoring.logs import get_server_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
-from florist.api.servers.local import launch_local_server
+from florist.api.servers.launch import launch_local_server
 from florist.api.servers.utils import get_server
 
 
-@patch("florist.api.servers.local.launch_server")
+@patch("florist.api.servers.launch.launch_server")
 def test_launch_local_server(mock_launch_server: Mock) -> None:
     test_model = MnistNet()
     test_n_clients = 2
     test_server_address = "test-server-address"
     test_n_server_rounds = 5
+    test_batch_size = 8
+    test_local_epochs = 1
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
     test_server_process = "test-server-process"
@@ -23,6 +25,8 @@ def test_launch_local_server(mock_launch_server: Mock) -> None:
         test_n_clients,
         test_server_address,
         test_n_server_rounds,
+        test_batch_size,
+        test_local_epochs,
         test_redis_host,
         test_redis_port,
     )
@@ -41,7 +45,13 @@ def test_launch_local_server(mock_launch_server: Mock) -> None:
     )
     assert call_kwargs == {"seconds_to_sleep": 0}
     assert call_args[0].func == get_server
-    assert call_args[0].keywords == {"model": test_model, "n_clients": test_n_clients, "metrics_reporter": ANY}
+    assert call_args[0].keywords == {
+        "model": test_model,
+        "n_clients": test_n_clients,
+        "batch_size": test_batch_size,
+        "local_epochs": test_local_epochs,
+        "metrics_reporter": ANY,
+    }
 
     metrics_reporter = call_args[0].keywords["metrics_reporter"]
     assert isinstance(metrics_reporter, RedisMetricsReporter)

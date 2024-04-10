@@ -63,10 +63,10 @@ docker start redis-florist-server
 
 ### Start back-end and front-end servers
 
-Use Yarn to run both the back-end and front-end on server mode:
+Use Yarn to run both the back-end and front-end on production server mode:
 
 ```shell
-yarn dev
+yarn prod
 ```
 
 The front-end will be available at `http://localhost:3000`. If you want to access
@@ -95,3 +95,8 @@ uvicorn florist.api.client:app --reload --port 8001
 ```
 
 The service will be available at `http://localhost:8001`.
+
+# Contributing
+If you are interested in contributing to the library, please see [CONTRIBUTING.MD](CONTRIBUTING.md).
+This file contains many details around contributing to the code base, including development
+practices, code checks, tests, and more.

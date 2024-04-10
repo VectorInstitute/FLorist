@@ -7,21 +7,21 @@ from fl4health.clients.basic_client import BasicClient
 from florist.api.clients.mnist import MnistClient
 
 
-class Clients(Enum):
+class Client(Enum):
     """Enumeration of supported clients."""
 
     MNIST = "MNIST"
 
     @classmethod
-    def class_for_client(cls, client: "Clients") -> type[BasicClient]:
+    def class_for_client(cls, client: "Client") -> type[BasicClient]:
         """
         Return the class for a given client.
 
-        :param client: The client enumeration object.
-        :return: A subclass of BasicClient corresponding to the given client.
+        :param client: (Client) The client enumeration object.
+        :return: (type[BasicClient]) A subclass of BasicClient corresponding to the given client.
         :raises ValueError: if the client is not supported.
         """
-        if client == Clients.MNIST:
+        if client == Client.MNIST:
             return MnistClient
 
         raise ValueError(f"Client {client.value} not supported.")
@@ -31,6 +31,6 @@ class Clients(Enum):
         """
         List all the supported clients.
 
-        :return: a list of supported clients.
+        :return: (List[str]) a list of supported clients.
         """
-        return [client.value for client in Clients]
+        return [client.value for client in Client]
