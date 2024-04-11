@@ -79,13 +79,21 @@ def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResp
     :param client_uuid: (str) the uuid of the client to fetch from redis.
     :param redis_host: (str) the host name for the Redis instance for metrics reporting.
     :param redis_port: (str) the port for the Redis instance for metrics reporting.
+
+    :return: (JSONResponse) If successful, returns 200 with JSON containing the val at `client_uuid`.
+        If not successful, returns the appropriate error code with a JSON with the format below:
+            {"error": <error message>}
     """
-    redis_connection = redis.Redis(host=redis_host, port=redis_port)
+    try:
+        redis_connection = redis.Redis(host=redis_host, port=redis_port)
 
-    result = redis_connection.get(client_uuid)
-    assert isinstance(result, bytes)
+        result = redis_connection.get(client_uuid)
+        assert isinstance(result, bytes)
 
-    if result is not None:
-        return JSONResponse(json.loads(result))
+        if result is not None:
+            return JSONResponse(json.loads(result))
 
-    return JSONResponse({"error": f"Client {client_uuid} Not Found"}, status_code=404)
+        return JSONResponse({"error": f"Client {client_uuid} Not Found"}, status_code=404)
+
+    except Exception as ex:
+        return JSONResponse({"error": str(ex)}, status_code=500)
