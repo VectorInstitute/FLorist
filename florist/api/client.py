@@ -1,5 +1,6 @@
 """FLorist client FastAPI endpoints."""
 import json
+import logging
 import uuid
 from pathlib import Path
 
@@ -15,6 +16,9 @@ from florist.api.monitoring.metrics import RedisMetricsReporter
 
 
 app = FastAPI()
+
+
+LOGGER = logging.getLogger("uvicorn.error")
 
 
 @app.get("/api/client/connect")
@@ -96,4 +100,5 @@ def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResp
         return JSONResponse({"error": f"Client {client_uuid} Not Found"}, status_code=404)
 
     except Exception as ex:
+        LOGGER.exception(ex)
         return JSONResponse({"error": str(ex)}, status_code=500)

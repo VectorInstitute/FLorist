@@ -64,7 +64,7 @@ def test_train():
                 client_uuid = response.json()["client_uuids"][0]
 
                 # Wait for training to finish
-                wait_for_metric(server_uuid, "fit_end", test_redis_host,test_redis_port, LOGGER, max_retries=80)
+                wait_for_metric(server_uuid, "fit_end", test_redis_host, test_redis_port, LOGGER, max_retries=80)
 
                 # Check server metrics
                 server_metrics_result = redis_conn.get(server_uuid)
