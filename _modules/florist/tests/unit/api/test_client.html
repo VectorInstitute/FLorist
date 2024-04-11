@@ -353,6 +353,61 @@
     <span class="n">json_body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
     <span class="k">assert</span> <span class="n">json_body</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;test exception&quot;</span><span class="p">}</span></div>
 
+
+
+<div class="viewcode-block" id="test_check_status">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.unit.api.test_client.html#florist.tests.unit.api.test_client.test_check_status">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.client.redis&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_check_status</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">mock_redis_connection</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_redis_connection</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">info</span><span class="se">\&quot;</span><span class="s2">: </span><span class="se">\&quot;</span><span class="s2">test</span><span class="se">\&quot;</span><span class="s2">}&quot;</span>
+
+    <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test_uuid&quot;</span>
+    <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+    <span class="n">test_redis_port</span> <span class="o">=</span> <span class="s2">&quot;testport&quot;</span>
+
+    <span class="n">mock_redis</span><span class="o">.</span><span class="n">Redis</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_redis_connection</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">check_status</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">,</span> <span class="n">test_redis_host</span><span class="p">,</span> <span class="n">test_redis_port</span><span class="p">)</span>
+
+    <span class="n">mock_redis</span><span class="o">.</span><span class="n">Redis</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">test_redis_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">test_redis_port</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="test_check_status_not_found">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.unit.api.test_client.html#florist.tests.unit.api.test_client.test_check_status_not_found">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.client.redis&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_check_status_not_found</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">mock_redis_connection</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_redis_connection</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test_uuid&quot;</span>
+    <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+    <span class="n">test_redis_port</span> <span class="o">=</span> <span class="s2">&quot;testport&quot;</span>
+
+    <span class="n">mock_redis</span><span class="o">.</span><span class="n">Redis</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_redis_connection</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">check_status</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">,</span> <span class="n">test_redis_host</span><span class="p">,</span> <span class="n">test_redis_port</span><span class="p">)</span>
+
+    <span class="n">mock_redis</span><span class="o">.</span><span class="n">Redis</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">test_redis_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">test_redis_port</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Client </span><span class="si">{</span><span class="n">test_uuid</span><span class="si">}</span><span class="s2"> Not Found&quot;</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="test_check_status_fail_exception">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.unit.api.test_client.html#florist.tests.unit.api.test_client.test_check_status_fail_exception">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.client.redis.Redis&quot;</span><span class="p">,</span> <span class="n">side_effect</span><span class="o">=</span><span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;test exception&quot;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_check_status_fail_exception</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+    <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test_uuid&quot;</span>
+    <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+    <span class="n">test_redis_port</span> <span class="o">=</span> <span class="s2">&quot;testport&quot;</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">check_status</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">,</span> <span class="n">test_redis_host</span><span class="p">,</span> <span class="n">test_redis_port</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">500</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;test exception&quot;</span><span class="p">}</span></div>
+
 </pre></div>
         </article>
       </div>

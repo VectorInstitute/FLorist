@@ -271,6 +271,32 @@
 <span id="florist-api-client-module"></span><h1>florist.api.client module<a class="headerlink" href="#module-florist.api.client" title="Link to this heading">#</a></h1>
 <p>FLorist client FastAPI endpoints.</p>
 <dl class="py function">
+<dt class="sig sig-object py" id="florist.api.client.check_status">
+<span class="sig-name descname"><span class="pre">check_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client_uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_port</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/client.html#check_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.client.check_status" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve value at key client_uuid in redis if it exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client_uuid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the uuid of the client to fetch from redis.</p></li>
+<li><p><strong>redis_host</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the host name for the Redis instance for metrics reporting.</p></li>
+<li><p><strong>redis_port</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the port for the Redis instance for metrics reporting.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONResponse</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>(JSONResponse) If successful, returns 200 with JSON containing the val at <cite>client_uuid</cite>.
+If not successful, returns the appropriate error code with a JSON with the format below:</p>
+<blockquote>
+<div><p>{“error”: &lt;error message&gt;}</p>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="florist.api.client.connect">
 <span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/client.html#connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.client.connect" title="Link to this definition">#</a></dt>
 <dd><p>Confirm the client is up and ready to accept instructions.</p>
@@ -384,6 +410,7 @@ format below, which can be used to pull metrics from Redis.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">florist.api.client module</a><ul>
+<li><a class="reference internal" href="#florist.api.client.check_status"><code class="docutils literal notranslate"><span class="pre">check_status()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.client.connect"><code class="docutils literal notranslate"><span class="pre">connect()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.client.start"><code class="docutils literal notranslate"><span class="pre">start()</span></code></a></li>
 </ul>
