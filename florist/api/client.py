@@ -88,9 +88,9 @@ def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResp
         redis_connection = redis.Redis(host=redis_host, port=redis_port)
 
         result = redis_connection.get(client_uuid)
-        assert isinstance(result, bytes)
 
         if result is not None:
+            assert isinstance(result, bytes)
             return JSONResponse(json.loads(result))
 
         return JSONResponse({"error": f"Client {client_uuid} Not Found"}, status_code=404)
