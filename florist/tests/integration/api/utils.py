@@ -4,7 +4,7 @@ import time
 import threading
 import uvicorn
 
-from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
 from starlette.requests import Request
 
 from florist.api.server import MONGODB_URI
@@ -29,8 +29,8 @@ class TestUvicornServer(uvicorn.Server):
 
 class MockApp:
     def __init__(self, database_name: str):
-        self.mongo_client = MongoClient(MONGODB_URI)
-        self.database = self.mongo_client[database_name]
+        self.db_client = AsyncIOMotorClient(MONGODB_URI)
+        self.database = self.db_client[database_name]
 
 
 class MockRequest(Request):
@@ -51,7 +51,7 @@ TEST_DATABASE_NAME = "test-database"
 
 
 @pytest.fixture
-def mock_request() -> MockRequest:
+async def mock_request() -> MockRequest:
     print(f"Creating test detabase '{TEST_DATABASE_NAME}'")
     app = MockApp(TEST_DATABASE_NAME)
     request = MockRequest(app)
@@ -59,4 +59,4 @@ def mock_request() -> MockRequest:
     yield request
 
     print(f"Deleting test detabase '{TEST_DATABASE_NAME}'")
-    app.mongo_client.drop_database(TEST_DATABASE_NAME)
+    await app.db_client.drop_database(TEST_DATABASE_NAME)

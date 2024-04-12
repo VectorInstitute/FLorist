@@ -17,7 +17,7 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
     response_model=Job,
 )
-def new_job(request: Request, job: Job = Body(...)) -> Dict[str, Any]:  # noqa: B008
+async def new_job(request: Request, job: Job = Body(...)) -> Dict[str, Any]:  # noqa: B008
     """
     Create a new training job.
 
@@ -39,9 +39,9 @@ def new_job(request: Request, job: Job = Body(...)) -> Dict[str, Any]:  # noqa: 
         raise HTTPException(status_code=400, detail=msg) from e
 
     json_job = jsonable_encoder(job)
-    result = request.app.database[JOB_DATABASE_NAME].insert_one(json_job)
+    result = await request.app.database[JOB_DATABASE_NAME].insert_one(json_job)
 
-    created_job = request.app.database[JOB_DATABASE_NAME].find_one({"_id": result.inserted_id})
+    created_job = await request.app.database[JOB_DATABASE_NAME].find_one({"_id": result.inserted_id})
     assert isinstance(created_job, dict)
 
     return created_job

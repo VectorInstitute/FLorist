@@ -10,9 +10,9 @@ from florist.api.servers.common import Model
 from florist.tests.integration.api.utils import mock_request
 
 
-def test_new_job_success(mock_request) -> None:
+async def test_new_job(mock_request) -> None:
     test_empty_job = Job()
-    result = new_job(mock_request, test_empty_job)
+    result = await new_job(mock_request, test_empty_job)
 
     assert result == {
         "_id": ANY,
@@ -51,7 +51,7 @@ def test_new_job_success(mock_request) -> None:
             ),
         ]
     )
-    result = new_job(mock_request, test_job)
+    result = await new_job(mock_request, test_job)
 
     assert result == {
         "_id": test_job.id,
@@ -83,10 +83,10 @@ def test_new_job_success(mock_request) -> None:
     assert isinstance(result["clients_info"][1]["_id"], str)
 
 
-def test_new_job_fail_bad_server_info(mock_request) -> None:
+async def test_new_job_fail_bad_server_info(mock_request) -> None:
     test_job = Job(server_info="not json")
     with raises(HTTPException) as exception_info:
-        new_job(mock_request, test_job)
+        await new_job(mock_request, test_job)
 
     assert exception_info.value.status_code == 400
     assert "job.server_info could not be parsed into JSON" in exception_info.value.detail

@@ -2,10 +2,9 @@
 import json
 import uuid
 from enum import Enum
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
 from pydantic import BaseModel, Field
-from typing_extensions import Annotated
 
 from florist.api.clients.common import Client
 from florist.api.servers.common import Model
