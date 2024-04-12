@@ -1,9 +1,8 @@
 """Definitions for the MongoDB database entities."""
 import uuid
-from typing import Optional
+from typing import Annotated, Optional
 
 from pydantic import BaseModel, Field
-from typing_extensions import Annotated
 
 from florist.api.servers.common import Model
 

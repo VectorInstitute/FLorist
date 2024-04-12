@@ -22,8 +22,8 @@ wandb = "^0.16.3"
 torchvision = "0.14.1"
 redis = "^5.0.1"
 python-multipart = "^0.0.9"
-pymongo = {extras = ["srv"], version = "^4.6.3"}
 pydantic = "^1.10.15"
+motor = "^3.4.0"
 
 [tool.poetry.group.test]
 optional = true
@@ -38,6 +38,7 @@ ruff = "^0.2.0"
 pip-audit = "^2.7.1"
 nbqa = {extras = ["toolchain"], version = "^1.7.1"}
 freezegun = "^1.4.0"
+pytest-asyncio = "^0.23.6"
 
 [tool.poetry.group.docs]
 optional = true

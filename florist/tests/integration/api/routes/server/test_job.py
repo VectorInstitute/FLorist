@@ -6,9 +6,9 @@ from florist.api.servers.common import Model
 from florist.tests.integration.api.utils import mock_request
 
 
-def test_new_job(mock_request) -> None:
+async def test_new_job(mock_request) -> None:
     test_empty_job = Job()
-    result = new_job(mock_request, test_empty_job)
+    result = await new_job(mock_request, test_empty_job)
 
     assert result == {
         "_id": ANY,
@@ -19,7 +19,7 @@ def test_new_job(mock_request) -> None:
     assert isinstance(result["_id"], str)
 
     test_job = Job(id="test-id", model=Model.MNIST, redis_host="test-redis-host", redis_port="test-redis-port")
-    result = new_job(mock_request, test_job)
+    result = await new_job(mock_request, test_job)
 
     assert result == {
         "_id": test_job.id,
