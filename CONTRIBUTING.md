@@ -60,8 +60,11 @@ To run the unit tests, simply execute:
 pytest florist/tests/unit
 ```
 
-To run the integration tests, first make sure you have a Redis server running on your
-local machine on port 6379, then execute:
+To run the integration tests, first make sure you:
+- Have a Redis server running on your local machine on port 6379 by following [these instructions](README.md#start-servers-redis-instance).
+- Have a MongoDB server running on your local machine on port 27017 by following [these instructions](README.md#start-mongodbs-instance).
+
+Then execute:
 ```shell
 pytest florist/tests/integration
 ```
@@ -73,7 +76,8 @@ For code style, we recommend the [PEP 8 style guide](https://peps.python.org/pep
 For docstrings we use [numpy format](https://numpydoc.readthedocs.io/en/latest/format.html).
 
 We use [ruff](https://docs.astral.sh/ruff/) for code formatting and static code
-analysis. Ruff checks various rules including [flake8](https://docs.astral.sh/ruff/faq/#how-does-ruff-compare-to-flake8). The pre-commit hooks show errors which you need to fix before submitting a PR.
+analysis. Ruff checks various rules including [flake8](https://docs.astral.sh/ruff/faq/#how-does-ruff-compare-to-flake8). The pre-commit hooks
+show errors which you need to fix before submitting a PR.
 
 Last but not the least, we use type hints in our code which is then checked using
 [mypy](https://mypy.readthedocs.io/en/stable/).

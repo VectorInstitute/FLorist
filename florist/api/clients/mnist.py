@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 from florist.api.models.mnist import MnistNet
 
 
-class MnistClient(BasicClient):  # type: ignore
+class MnistClient(BasicClient):  # type: ignore[misc]
     """Implementation of the MNIST client."""
 
     def get_data_loaders(self, config: Config) -> Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]:
