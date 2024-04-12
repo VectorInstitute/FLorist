@@ -1,7 +1,10 @@
-florist.tests.integration namespace
-===================================
+florist.tests.integration package
+=================================
 
-.. py:module:: florist.tests.integration
+.. automodule:: florist.tests.integration
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Subpackages
 -----------

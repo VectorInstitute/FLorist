@@ -13,6 +13,7 @@ Subpackages
    :maxdepth: 4
 
    florist.tests.integration.api.launchers
+   florist.tests.integration.api.routes
 
 Submodules
 ----------

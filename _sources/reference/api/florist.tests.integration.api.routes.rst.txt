@@ -1,0 +1,15 @@
+florist.tests.integration.api.routes package
+============================================
+
+.. automodule:: florist.tests.integration.api.routes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.tests.integration.api.routes.server

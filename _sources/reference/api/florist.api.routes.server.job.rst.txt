@@ -1,0 +1,7 @@
+florist.api.routes.server.job module
+====================================
+
+.. automodule:: florist.api.routes.server.job
+   :members:
+   :undoc-members:
+   :show-inheritance:

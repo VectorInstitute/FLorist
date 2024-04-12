@@ -13,6 +13,7 @@ Subpackages
    :maxdepth: 4
 
    florist.api.clients
+   florist.api.db
    florist.api.launchers
    florist.api.models
    florist.api.monitoring
