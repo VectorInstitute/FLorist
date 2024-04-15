@@ -291,8 +291,12 @@
         <article role="main">
           <h1>Source code for florist.tests.integration.api.routes.server.test_job</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span>
+<span class="kn">from</span> <span class="nn">pytest</span> <span class="kn">import</span> <span class="n">raises</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">Job</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">HTTPException</span>
+
+<span class="kn">from</span> <span class="nn">florist.api.clients.common</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">ClientInfo</span><span class="p">,</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span>
 <span class="kn">from</span> <span class="nn">florist.api.routes.server.job</span> <span class="kn">import</span> <span class="n">new_job</span>
 <span class="kn">from</span> <span class="nn">florist.api.servers.common</span> <span class="kn">import</span> <span class="n">Model</span>
 <span class="kn">from</span> <span class="nn">florist.tests.integration.api.utils</span> <span class="kn">import</span> <span class="n">mock_request</span>
@@ -306,21 +310,83 @@
 
     <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">{</span>
         <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
+        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">JobStatus</span><span class="o">.</span><span class="n">NOT_STARTED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;server_info&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span>
 
-    <span class="n">test_job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;test-id&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span> <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host&quot;</span><span class="p">,</span> <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port&quot;</span><span class="p">)</span>
+    <span class="n">test_job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;test-id&quot;</span><span class="p">,</span>
+        <span class="n">status</span><span class="o">=</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">IN_PROGRESS</span><span class="p">,</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
+        <span class="n">server_address</span><span class="o">=</span><span class="s2">&quot;test-server-address&quot;</span><span class="p">,</span>
+        <span class="n">server_info</span><span class="o">=</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host&quot;</span><span class="p">,</span>
+        <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port&quot;</span><span class="p">,</span>
+        <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ClientInfo</span><span class="p">(</span>
+                <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
+                <span class="n">service_address</span><span class="o">=</span><span class="s2">&quot;test-addr-1&quot;</span><span class="p">,</span>
+                <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test/data/path-1&quot;</span><span class="p">,</span>
+                <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host-1&quot;</span><span class="p">,</span>
+                <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-1&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">ClientInfo</span><span class="p">(</span>
+                <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
+                <span class="n">service_address</span><span class="o">=</span><span class="s2">&quot;test-addr-2&quot;</span><span class="p">,</span>
+                <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test/data/path-2&quot;</span><span class="p">,</span>
+                <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host-2&quot;</span><span class="p">,</span>
+                <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-2&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">new_job</span><span class="p">(</span><span class="n">mock_request</span><span class="p">,</span> <span class="n">test_job</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">{</span>
         <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="s2">&quot;test-server-address&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;server_info&quot;</span><span class="p">:</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
         <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span>
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
-    <span class="p">}</span></div>
+        <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
+                <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;service_address&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">service_address</span><span class="p">,</span>
+                <span class="s2">&quot;data_path&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span>
+                <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span>
+                <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
+            <span class="p">},</span> <span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
+                <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;service_address&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">service_address</span><span class="p">,</span>
+                <span class="s2">&quot;data_path&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span>
+                <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span>
+                <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;clients_info&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;clients_info&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_new_job_fail_bad_server_info">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_new_job_fail_bad_server_info">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_new_job_fail_bad_server_info</span><span class="p">(</span><span class="n">mock_request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">server_info</span><span class="o">=</span><span class="s2">&quot;not json&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span> <span class="k">as</span> <span class="n">exception_info</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">new_job</span><span class="p">(</span><span class="n">mock_request</span><span class="p">,</span> <span class="n">test_job</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">exception_info</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="k">assert</span> <span class="s2">&quot;job.server_info could not be parsed into JSON&quot;</span> <span class="ow">in</span> <span class="n">exception_info</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">detail</span></div>
 
 </pre></div>
         </article>

@@ -295,6 +295,60 @@
 <span id="florist-api-db-entities-module"></span><h1>florist.api.db.entities module<a class="headerlink" href="#module-florist.api.db.entities" title="Link to this heading">#</a></h1>
 <p>Definitions for the MongoDB database entities.</p>
 <dl class="py class">
+<dt class="sig sig-object py" id="florist.api.db.entities.ClientInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ClientInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/entities.html#ClientInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.entities.ClientInfo" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Define the information of an FL client.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="florist.api.db.entities.ClientInfo.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="../../_modules/florist/api/db/entities.html#ClientInfo.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.entities.ClientInfo.Config" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>MongoDB config for the ClientInfo DB entity.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.ClientInfo.Config.allow_population_by_field_name">
+<span class="sig-name descname"><span class="pre">allow_population_by_field_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#florist.api.db.entities.ClientInfo.Config.allow_population_by_field_name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.ClientInfo.Config.schema_extra">
+<span class="sig-name descname"><span class="pre">schema_extra</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'example':</span> <span class="pre">{'client':</span> <span class="pre">'MNIST',</span> <span class="pre">'data_path':</span> <span class="pre">'path/to/data',</span> <span class="pre">'redis_host':</span> <span class="pre">'localhost',</span> <span class="pre">'redis_port':</span> <span class="pre">'6880',</span> <span class="pre">'service_address':</span> <span class="pre">'locahost:8081'}}</span></em><a class="headerlink" href="#florist.api.db.entities.ClientInfo.Config.schema_extra" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.ClientInfo.client">
+<span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="florist.api.clients.common.html#florist.api.clients.common.Client" title="florist.api.clients.common.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a></em><a class="headerlink" href="#florist.api.db.entities.ClientInfo.client" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.ClientInfo.data_path">
+<span class="sig-name descname"><span class="pre">data_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#florist.api.db.entities.ClientInfo.data_path" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.ClientInfo.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#florist.api.db.entities.ClientInfo.id" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.ClientInfo.redis_host">
+<span class="sig-name descname"><span class="pre">redis_host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#florist.api.db.entities.ClientInfo.redis_host" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.ClientInfo.redis_port">
+<span class="sig-name descname"><span class="pre">redis_port</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#florist.api.db.entities.ClientInfo.redis_port" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.ClientInfo.service_address">
+<span class="sig-name descname"><span class="pre">service_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#florist.api.db.entities.ClientInfo.service_address" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="florist.api.db.entities.Job">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/entities.html#Job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.entities.Job" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
@@ -311,15 +365,40 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="florist.api.db.entities.Job.Config.schema_extra">
-<span class="sig-name descname"><span class="pre">schema_extra</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'example':</span> <span class="pre">{'_id':</span> <span class="pre">'066de609-b04a-4b30-b46c-32537c7f1f6e',</span> <span class="pre">'model':</span> <span class="pre">'MNIST',</span> <span class="pre">'redis_host':</span> <span class="pre">'locahost',</span> <span class="pre">'redis_port':</span> <span class="pre">'6879'}}</span></em><a class="headerlink" href="#florist.api.db.entities.Job.Config.schema_extra" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">schema_extra</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'example':</span> <span class="pre">{'_id':</span> <span class="pre">'066de609-b04a-4b30-b46c-32537c7f1f6e',</span> <span class="pre">'client_info':</span> <span class="pre">[{'client':</span> <span class="pre">'MNIST',</span> <span class="pre">'data_path':</span> <span class="pre">'path/to/data',</span> <span class="pre">'redis_host':</span> <span class="pre">'localhost',</span> <span class="pre">'redis_port':</span> <span class="pre">'6880',</span> <span class="pre">'service_address':</span> <span class="pre">'locahost:8081'}],</span> <span class="pre">'model':</span> <span class="pre">'MNIST',</span> <span class="pre">'redis_host':</span> <span class="pre">'localhost',</span> <span class="pre">'redis_port':</span> <span class="pre">'6879',</span> <span class="pre">'server_address':</span> <span class="pre">'localhost:8080',</span> <span class="pre">'server_info':</span> <span class="pre">'{&quot;n_server_rounds&quot;:</span> <span class="pre">3,</span> <span class="pre">&quot;batch_size&quot;:</span> <span class="pre">8}',</span> <span class="pre">'status':</span> <span class="pre">'NOT_STARTED'}}</span></em><a class="headerlink" href="#florist.api.db.entities.Job.Config.schema_extra" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.Job.clients_info">
+<span class="sig-name descname"><span class="pre">clients_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a><span class="pre">[</span><a class="reference internal" href="#florist.api.db.entities.ClientInfo" title="florist.api.db.entities.ClientInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientInfo</span></code></a><span class="pre">]]</span></em><a class="headerlink" href="#florist.api.db.entities.Job.clients_info" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="florist.api.db.entities.Job.id">
 <span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#florist.api.db.entities.Job.id" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.db.entities.Job.is_valid_server_info">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_valid_server_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/entities.html#Job.is_valid_server_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.entities.Job.is_valid_server_info" title="Link to this definition">#</a></dt>
+<dd><p>Validate if server info is a json string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>server_info</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – (str) the json string with the server info.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if server_info is None or a valid JSON string, False otherwise.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>(json.JSONDecodeError) if there is an error decoding the server info into json</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="florist.api.db.entities.Job.model">
@@ -334,6 +413,48 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="florist.api.db.entities.Job.redis_port">
 <span class="sig-name descname"><span class="pre">redis_port</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#florist.api.db.entities.Job.redis_port" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.Job.server_address">
+<span class="sig-name descname"><span class="pre">server_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#florist.api.db.entities.Job.server_address" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.Job.server_info">
+<span class="sig-name descname"><span class="pre">server_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#florist.api.db.entities.Job.server_info" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.Job.status">
+<span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#florist.api.db.entities.JobStatus" title="florist.api.db.entities.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a></em><a class="headerlink" href="#florist.api.db.entities.Job.status" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="florist.api.db.entities.JobStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">JobStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/entities.html#JobStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.entities.JobStatus" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/enum.html#enum.Enum" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Enumeration of all possible statuses of a Job.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.JobStatus.FINISHED_SUCCESSFULLY">
+<span class="sig-name descname"><span class="pre">FINISHED_SUCCESSFULLY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FINISHED_SUCCESSFULLY'</span></em><a class="headerlink" href="#florist.api.db.entities.JobStatus.FINISHED_SUCCESSFULLY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.JobStatus.FINISHED_WITH_ERROR">
+<span class="sig-name descname"><span class="pre">FINISHED_WITH_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FINISHED_WITH_ERROR'</span></em><a class="headerlink" href="#florist.api.db.entities.JobStatus.FINISHED_WITH_ERROR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.JobStatus.IN_PROGRESS">
+<span class="sig-name descname"><span class="pre">IN_PROGRESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'IN_PROGRESS'</span></em><a class="headerlink" href="#florist.api.db.entities.JobStatus.IN_PROGRESS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.entities.JobStatus.NOT_STARTED">
+<span class="sig-name descname"><span class="pre">NOT_STARTED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'NOT_STARTED'</span></em><a class="headerlink" href="#florist.api.db.entities.JobStatus.NOT_STARTED" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -405,16 +526,42 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">florist.api.db.entities module</a><ul>
+<li><a class="reference internal" href="#florist.api.db.entities.ClientInfo"><code class="docutils literal notranslate"><span class="pre">ClientInfo</span></code></a><ul>
+<li><a class="reference internal" href="#florist.api.db.entities.ClientInfo.Config"><code class="docutils literal notranslate"><span class="pre">ClientInfo.Config</span></code></a><ul>
+<li><a class="reference internal" href="#florist.api.db.entities.ClientInfo.Config.allow_population_by_field_name"><code class="docutils literal notranslate"><span class="pre">ClientInfo.Config.allow_population_by_field_name</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.ClientInfo.Config.schema_extra"><code class="docutils literal notranslate"><span class="pre">ClientInfo.Config.schema_extra</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#florist.api.db.entities.ClientInfo.client"><code class="docutils literal notranslate"><span class="pre">ClientInfo.client</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.ClientInfo.data_path"><code class="docutils literal notranslate"><span class="pre">ClientInfo.data_path</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.ClientInfo.id"><code class="docutils literal notranslate"><span class="pre">ClientInfo.id</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.ClientInfo.redis_host"><code class="docutils literal notranslate"><span class="pre">ClientInfo.redis_host</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.ClientInfo.redis_port"><code class="docutils literal notranslate"><span class="pre">ClientInfo.redis_port</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.ClientInfo.service_address"><code class="docutils literal notranslate"><span class="pre">ClientInfo.service_address</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#florist.api.db.entities.Job"><code class="docutils literal notranslate"><span class="pre">Job</span></code></a><ul>
 <li><a class="reference internal" href="#florist.api.db.entities.Job.Config"><code class="docutils literal notranslate"><span class="pre">Job.Config</span></code></a><ul>
 <li><a class="reference internal" href="#florist.api.db.entities.Job.Config.allow_population_by_field_name"><code class="docutils literal notranslate"><span class="pre">Job.Config.allow_population_by_field_name</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.db.entities.Job.Config.schema_extra"><code class="docutils literal notranslate"><span class="pre">Job.Config.schema_extra</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#florist.api.db.entities.Job.clients_info"><code class="docutils literal notranslate"><span class="pre">Job.clients_info</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.db.entities.Job.id"><code class="docutils literal notranslate"><span class="pre">Job.id</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.Job.is_valid_server_info"><code class="docutils literal notranslate"><span class="pre">Job.is_valid_server_info()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.db.entities.Job.model"><code class="docutils literal notranslate"><span class="pre">Job.model</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.db.entities.Job.redis_host"><code class="docutils literal notranslate"><span class="pre">Job.redis_host</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.db.entities.Job.redis_port"><code class="docutils literal notranslate"><span class="pre">Job.redis_port</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.Job.server_address"><code class="docutils literal notranslate"><span class="pre">Job.server_address</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.Job.server_info"><code class="docutils literal notranslate"><span class="pre">Job.server_info</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.Job.status"><code class="docutils literal notranslate"><span class="pre">Job.status</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#florist.api.db.entities.JobStatus"><code class="docutils literal notranslate"><span class="pre">JobStatus</span></code></a><ul>
+<li><a class="reference internal" href="#florist.api.db.entities.JobStatus.FINISHED_SUCCESSFULLY"><code class="docutils literal notranslate"><span class="pre">JobStatus.FINISHED_SUCCESSFULLY</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.JobStatus.FINISHED_WITH_ERROR"><code class="docutils literal notranslate"><span class="pre">JobStatus.FINISHED_WITH_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.JobStatus.IN_PROGRESS"><code class="docutils literal notranslate"><span class="pre">JobStatus.IN_PROGRESS</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.entities.JobStatus.NOT_STARTED"><code class="docutils literal notranslate"><span class="pre">JobStatus.NOT_STARTED</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -313,6 +313,9 @@ See <cite>florist.api.db.entities.Job</cite> to check the list of attributes and
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(Dict[str, Any]) A dictionary with the attributes of the new Job instance as saved in the database.</p>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>(HTTPException) status 400 if job.server_info is not None and cannot be parsed into JSON.</p>
+</dd>
 </dl>
 </dd></dl>
 
