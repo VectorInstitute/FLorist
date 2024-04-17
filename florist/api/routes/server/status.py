@@ -1,17 +1,19 @@
+"""FastAPI routes for checking server status."""
 import json
 import logging
 
 import redis
-
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+
 
 router = APIRouter()
 
 LOGGER = logging.getLogger("uvicorn.error")
 
+
 @router.get(
-    path="/",
+    path="/{server_uuid}",
     response_description="Check status of the server",
 )
 def check_status(server_uuid: str, redis_host: str, redis_port: str) -> JSONResponse:
@@ -40,5 +42,3 @@ def check_status(server_uuid: str, redis_host: str, redis_port: str) -> JSONResp
     except Exception as ex:
         LOGGER.exception(ex)
         return JSONResponse({"error": str(ex)}, status_code=500)
-
-
