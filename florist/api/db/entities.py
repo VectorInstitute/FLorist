@@ -11,6 +11,7 @@ from florist.api.servers.common import Model
 
 
 JOB_DATABASE_NAME = "job"
+MAX_RECORDS_TO_FETCH = 1000
 
 
 class JobStatus(Enum):
