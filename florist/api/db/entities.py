@@ -25,7 +25,7 @@ class JobStatus(Enum):
     @classmethod
     def list(cls) -> List[str]:
         """
-        List all the supported clients.
+        List all the valid statuses.
 
         :return: (List[str]) a list of valid job statuses.
         """
