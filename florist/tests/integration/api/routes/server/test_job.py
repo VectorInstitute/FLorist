@@ -331,4 +331,5 @@ async def test_list_jobs_with_invalid_status(mock_request) -> None:
         await list_jobs_with_status("NON_EXISTENT_STATUS", mock_request)
 
     assert exception_info.value.status_code == 400
-    assert "status is not valid. status: NON_EXISTENT_STATUS" in exception_info.value.detail
+    exc_str = f"status NON_EXISTENT_STATUS is not valid. Valid statuses: {JobStatus.list()}"
+    assert exc_str in exception_info.value.detail

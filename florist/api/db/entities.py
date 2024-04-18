@@ -22,6 +22,15 @@ class JobStatus(Enum):
     FINISHED_WITH_ERROR = "FINISHED_WITH_ERROR"
     FINISHED_SUCCESSFULLY = "FINISHED_SUCCESSFULLY"
 
+    @classmethod
+    def list(cls) -> List[str]:
+        """
+        List all the supported clients.
+
+        :return: (List[str]) a list of valid job statuses.
+        """
+        return [status.value for status in JobStatus]
+
 
 class ClientInfo(BaseModel):
     """Define the information of an FL client."""

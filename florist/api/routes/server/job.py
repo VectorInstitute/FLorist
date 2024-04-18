@@ -63,8 +63,8 @@ async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Dic
     status = jsonable_encoder(status)
 
     assert isinstance(status, str)
-    if status not in JobStatus._member_names_:
-        msg = f"status is not valid. status: {status}."
+    if status not in JobStatus.list():
+        msg = f"status {status} is not valid. Valid statuses: {JobStatus.list()}"
         raise HTTPException(status_code=400, detail=msg)
 
     job_db = request.app.database[JOB_DATABASE_NAME]
