@@ -325,11 +325,3 @@ async def test_list_jobs_with_status(mock_request) -> None:
     }
     assert isinstance(result_finished_successfully[0]["clients_info"][0]["_id"], str)
     assert isinstance(result_finished_successfully[0]["clients_info"][1]["_id"], str)
-
-async def test_list_jobs_with_invalid_status(mock_request) -> None:
-    with raises(HTTPException) as exception_info:
-        await list_jobs_with_status("NON_EXISTENT_STATUS", mock_request)
-
-    assert exception_info.value.status_code == 400
-    exc_str = f"status NON_EXISTENT_STATUS is not valid. Valid statuses: {JobStatus.list()}"
-    assert exc_str in exception_info.value.detail

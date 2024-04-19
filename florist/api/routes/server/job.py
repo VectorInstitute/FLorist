@@ -58,14 +58,8 @@ async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Dic
     :param request: (fastapi.Request) the FastAPI request object.
     :return: (List[Dict[str, Any]]) A list where each entry is a dictionary with the attributes
         of a Job instance with the specified status.
-    :raises: (HTTPException) status 400 if status is not a member of the JobStatus Enum.
     """
     status = jsonable_encoder(status)
-
-    assert isinstance(status, str)
-    if status not in JobStatus.list():
-        msg = f"status {status} is not valid. Valid statuses: {JobStatus.list()}"
-        raise HTTPException(status_code=400, detail=msg)
 
     job_db = request.app.database[JOB_DATABASE_NAME]
     result = await job_db.find({"status": status}).to_list(MAX_RECORDS_TO_FETCH)
