@@ -303,6 +303,7 @@
 
 
 <span class="n">JOB_DATABASE_NAME</span> <span class="o">=</span> <span class="s2">&quot;job&quot;</span>
+<span class="n">MAX_RECORDS_TO_FETCH</span> <span class="o">=</span> <span class="mi">1000</span>
 
 
 <div class="viewcode-block" id="JobStatus">
@@ -313,7 +314,19 @@
     <span class="n">NOT_STARTED</span> <span class="o">=</span> <span class="s2">&quot;NOT_STARTED&quot;</span>
     <span class="n">IN_PROGRESS</span> <span class="o">=</span> <span class="s2">&quot;IN_PROGRESS&quot;</span>
     <span class="n">FINISHED_WITH_ERROR</span> <span class="o">=</span> <span class="s2">&quot;FINISHED_WITH_ERROR&quot;</span>
-    <span class="n">FINISHED_SUCCESSFULLY</span> <span class="o">=</span> <span class="s2">&quot;FINISHED_SUCCESSFULLY&quot;</span></div>
+    <span class="n">FINISHED_SUCCESSFULLY</span> <span class="o">=</span> <span class="s2">&quot;FINISHED_SUCCESSFULLY&quot;</span>
+
+<div class="viewcode-block" id="JobStatus.list">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.JobStatus.list">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List all the valid statuses.</span>
+
+<span class="sd">        :return: (List[str]) a list of valid job statuses.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">JobStatus</span><span class="p">]</span></div>
+</div>
 
 
 
