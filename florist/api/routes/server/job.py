@@ -1,11 +1,11 @@
 """FastAPI routes for the job."""
 from json import JSONDecodeError
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, Body, HTTPException, Request, status
 from fastapi.encoders import jsonable_encoder
 
-from florist.api.db.entities import JOB_DATABASE_NAME, Job
+from florist.api.db.entities import JOB_DATABASE_NAME, MAX_RECORDS_TO_FETCH, Job, JobStatus
 
 
 router = APIRouter()
@@ -45,3 +45,23 @@ async def new_job(request: Request, job: Job = Body(...)) -> Dict[str, Any]:  # 
     assert isinstance(created_job, dict)
 
     return created_job
+
+
+@router.get(path="/{status}", response_description="List jobs with the specified status", response_model=List[Job])
+async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Dict[str, Any]]:
+    """
+    List jobs with specified status.
+
+    Fetches list of Job with max length MAX_RECORDS_TO_FETCH.
+
+    :param status: (JobStatus) The status of jobs to query the Job DB for.
+    :param request: (fastapi.Request) the FastAPI request object.
+    :return: (List[Dict[str, Any]]) A list where each entry is a dictionary with the attributes
+        of a Job instance with the specified status.
+    """
+    status = jsonable_encoder(status)
+
+    job_db = request.app.database[JOB_DATABASE_NAME]
+    result = await job_db.find({"status": status}).to_list(MAX_RECORDS_TO_FETCH)
+    assert isinstance(result, list)
+    return result

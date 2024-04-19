@@ -11,6 +11,7 @@ from florist.api.servers.common import Model
 
 
 JOB_DATABASE_NAME = "job"
+MAX_RECORDS_TO_FETCH = 1000
 
 
 class JobStatus(Enum):
@@ -20,6 +21,15 @@ class JobStatus(Enum):
     IN_PROGRESS = "IN_PROGRESS"
     FINISHED_WITH_ERROR = "FINISHED_WITH_ERROR"
     FINISHED_SUCCESSFULLY = "FINISHED_SUCCESSFULLY"
+
+    @classmethod
+    def list(cls) -> List[str]:
+        """
+        List all the valid statuses.
+
+        :return: (List[str]) a list of valid job statuses.
+        """
+        return [status.value for status in JobStatus]
 
 
 class ClientInfo(BaseModel):
