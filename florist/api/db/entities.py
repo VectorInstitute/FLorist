@@ -106,9 +106,3 @@ class Job(BaseModel):
                 ],
             },
         }
-
-
-class IncompleteJobError(Exception):
-    """Defines errors in jobs that have incomplete information."""
-
-    pass

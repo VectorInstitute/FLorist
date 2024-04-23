@@ -36,7 +36,7 @@ class MnistNet(AbstractModel):
     @classmethod
     def mandatory_server_info_fields(cls) -> List[str]:
         """
-        Define the mandatory server info fields for training the MNIST model.
+        Define the list of mandatory server info fields for training the MNIST model.
 
         :return: a list of mandatory fields for this model, namely `["n_server_rounds", "batch_size", "local_epochs"]`.
         """
