@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 from fastapi import APIRouter, Body, HTTPException, Request, status
 from fastapi.encoders import jsonable_encoder
 
-from florist.api.db.entities import JOB_DATABASE_NAME, MAX_RECORDS_TO_FETCH, Job, JobStatus
+from florist.api.db.entities import JOB_COLLECTION_NAME, MAX_RECORDS_TO_FETCH, Job, JobStatus
 
 
 router = APIRouter()
@@ -39,9 +39,9 @@ async def new_job(request: Request, job: Job = Body(...)) -> Dict[str, Any]:  # 
         raise HTTPException(status_code=400, detail=msg) from e
 
     json_job = jsonable_encoder(job)
-    result = await request.app.database[JOB_DATABASE_NAME].insert_one(json_job)
+    result = await request.app.database[JOB_COLLECTION_NAME].insert_one(json_job)
 
-    created_job = await request.app.database[JOB_DATABASE_NAME].find_one({"_id": result.inserted_id})
+    created_job = await request.app.database[JOB_COLLECTION_NAME].find_one({"_id": result.inserted_id})
     assert isinstance(created_job, dict)
 
     return created_job
@@ -61,7 +61,7 @@ async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Dic
     """
     status = jsonable_encoder(status)
 
-    job_db = request.app.database[JOB_DATABASE_NAME]
-    result = await job_db.find({"status": status}).to_list(MAX_RECORDS_TO_FETCH)
+    job_collection = request.app.database[JOB_COLLECTION_NAME]
+    result = await job_collection.find({"status": status}).to_list(MAX_RECORDS_TO_FETCH)
     assert isinstance(result, list)
     return result

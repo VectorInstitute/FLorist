@@ -92,6 +92,8 @@ def wait_for_metric(
         Optional, default is 1.
     :raises Exception: If it retries `max_retries` times and the right metrics have not been found.
     """
+    print(f"2 host: {redis_host}, port: {redis_port}")
+
     redis_connection = redis.Redis(host=redis_host, port=redis_port)
 
     retry = 0
