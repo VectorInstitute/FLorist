@@ -1,6 +1,5 @@
 """Definitions for the MNIST model."""
-import json
-from typing import Dict, Any, List
+from typing import List
 
 import torch
 import torch.nn.functional as f
@@ -36,4 +35,9 @@ class MnistNet(AbstractModel):
 
     @classmethod
     def mandatory_server_info_fields(cls) -> List[str]:
+        """
+        Define the mandatory server info fields for training the MNIST model.
+
+        :return: a list of mandatory fields for this model, namely `["n_server_rounds", "batch_size", "local_epochs"]`.
+        """
         return ["n_server_rounds", "batch_size", "local_epochs"]

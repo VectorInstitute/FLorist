@@ -82,20 +82,6 @@ class Job(BaseModel):
             json.loads(server_info)
         return True
 
-    def check_if_ready_for_training(self):
-        if self.model is None:
-            raise IncompleteJobError("Job's 'model' is None.")
-        if self.server_address is None:
-            raise IncompleteJobError("Job's 'server_address' is None.")
-        if self.redis_host is None:
-            raise IncompleteJobError("Job's 'redis_host' is None.")
-        if self.redis_port is None:
-            raise IncompleteJobError("Job's 'redis_port' is None.")
-        if self.server_info is None:
-            raise IncompleteJobError("Job's 'server_info' is None.")
-        if self.clients_info is None or len(self.clients_info) == 0:
-            raise IncompleteJobError("Job's 'clients_info' is None or Empty.")
-
     class Config:
         """MongoDB config for the Job DB entity."""
 

@@ -1,5 +1,4 @@
 """Common functions and definitions for servers."""
-import json
 from enum import Enum
 from typing import List
 
