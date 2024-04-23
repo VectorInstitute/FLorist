@@ -75,7 +75,7 @@ def start(server_address: str, client: str, data_path: str, redis_host: str, red
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-@app.get("/api/client/check_status")
+@app.get("/api/client/check_status/{client_uuid}")
 def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResponse:
     """
     Retrieve value at key client_uuid in redis if it exists.
