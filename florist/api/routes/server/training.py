@@ -41,11 +41,6 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         result = await job_collection.find_one({"_id": job_id})
         job = Job(**result)
 
-        import redis
-        redis_connection = redis.Redis(host=job.redis_host, port=job.redis_port)
-        result = redis_connection.get("123")
-        print(result)
-
         job.check_if_ready_for_training()
 
         model_class = Model.class_for_model(job.model)
