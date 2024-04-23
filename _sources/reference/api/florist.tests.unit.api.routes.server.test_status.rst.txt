@@ -1,0 +1,7 @@
+florist.tests.unit.api.routes.server.test\_status module
+========================================================
+
+.. automodule:: florist.tests.unit.api.routes.server.test_status
+   :members:
+   :undoc-members:
+   :show-inheritance:

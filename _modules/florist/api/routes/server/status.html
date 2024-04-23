@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex.html" /><link rel="search" title="Search" href="../../../../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>florist.api.routes.server.training - Vector AI Engineering template repository</title>
+        <title>florist.api.routes.server.status - Vector AI Engineering template repository</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -291,124 +291,49 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.api.routes.server.training</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;FastAPI routes for training.&quot;&quot;&quot;</span>
+          <h1>Source code for florist.api.routes.server.status</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;FastAPI routes for checking server status.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Form</span>
+<span class="kn">import</span> <span class="nn">redis</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span>
 <span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
-
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">wait_for_metric</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.common</span> <span class="kn">import</span> <span class="n">ClientInfo</span><span class="p">,</span> <span class="n">ClientInfoParseError</span><span class="p">,</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.launch</span> <span class="kn">import</span> <span class="n">launch_local_server</span>
 
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;uvicorn.error&quot;</span><span class="p">)</span>
 
-<span class="n">START_CLIENT_API</span> <span class="o">=</span> <span class="s2">&quot;api/client/start&quot;</span>
 
-
-<div class="viewcode-block" id="start">
-<a class="viewcode-back" href="../../../../../reference/api/florist.api.routes.server.training.html#florist.api.routes.server.training.start">[docs]</a>
-<span class="nd">@router</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/start&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">start</span><span class="p">(</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Form</span><span class="p">()],</span>
-    <span class="n">server_address</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Form</span><span class="p">()],</span>
-    <span class="n">n_server_rounds</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Form</span><span class="p">()],</span>
-    <span class="n">batch_size</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Form</span><span class="p">()],</span>
-    <span class="n">local_epochs</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Form</span><span class="p">()],</span>
-    <span class="n">redis_host</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Form</span><span class="p">()],</span>
-    <span class="n">redis_port</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Form</span><span class="p">()],</span>
-    <span class="n">clients_info</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Form</span><span class="p">()],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+<div class="viewcode-block" id="check_status">
+<a class="viewcode-back" href="../../../../../reference/api/florist.api.routes.server.status.html#florist.api.routes.server.status.check_status">[docs]</a>
+<span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">{server_uuid}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">response_description</span><span class="o">=</span><span class="s2">&quot;Check status of the server&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">check_status</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">redis_host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">redis_port</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Start FL training by starting a FL server and its clients.</span>
+<span class="sd">    Retrieve value at key server_uuid in redis if it exists.</span>
 
-<span class="sd">    Should be called with a POST request and the parameters should be contained in the request&#39;s form.</span>
+<span class="sd">    :param server_uuid: (str) the uuid of the server to fetch from redis.</span>
+<span class="sd">    :param redis_host: (str) the host name for the Redis instance for metrics reporting.</span>
+<span class="sd">    :param redis_port: (str) the port for the Redis instance for metrics reporting.</span>
 
-<span class="sd">    :param model: (str) The name of the model to train. Should be one of the values in the enum</span>
-<span class="sd">        florist.api.servers.common.Model</span>
-<span class="sd">    :param server_address: (str) The address of the FL server to be started. It should be comprised of</span>
-<span class="sd">        the host name and port separated by colon (e.g. &quot;localhost:8080&quot;)</span>
-<span class="sd">    :param n_server_rounds: (int) The number of rounds the FL server should run.</span>
-<span class="sd">    :param batch_size: (int) The size of the batch for training.</span>
-<span class="sd">    :param local_epochs: (int) The number of epochs to run by the clients.</span>
-<span class="sd">    :param redis_host: (str) The host name for the Redis instance for metrics reporting.</span>
-<span class="sd">    :param redis_port: (str) The port for the Redis instance for metrics reporting.</span>
-<span class="sd">    :param clients_info: (str) A JSON string containing the client information. It will be parsed by</span>
-<span class="sd">        florist.api.servers.common.ClientInfo and should be in the following format:</span>
-<span class="sd">        [</span>
-<span class="sd">            {</span>
-<span class="sd">                &quot;client&quot;: &lt;client name as defined in florist.api.clients.common.Client&gt;,</span>
-<span class="sd">                &quot;client_address&quot;: &lt;Florist&#39;s client hostname and port, e.g. localhost:8081&gt;,</span>
-<span class="sd">                &quot;data_path&quot;: &lt;path where the data is located in the FL client&#39;s machine&gt;,</span>
-<span class="sd">                &quot;redis_host&quot;: &lt;hostname of the Redis instance the FL client will be reporting to&gt;,</span>
-<span class="sd">                &quot;redis_port&quot;: &lt;port of the Redis instance the FL client will be reporting to&gt;,</span>
-<span class="sd">            }</span>
-<span class="sd">        ]</span>
-<span class="sd">    :return: (JSONResponse) If successful, returns 200 with a JSON containing the UUID for the server and</span>
-<span class="sd">        the clients in the format below. The UUIDs can be used to pull metrics from Redis.</span>
-<span class="sd">            {</span>
-<span class="sd">                &quot;server_uuid&quot;: &lt;client uuid&gt;,</span>
-<span class="sd">                &quot;client_uuids&quot;: [&lt;client_uuid_1&gt;, &lt;client_uuid_2&gt;, ..., &lt;client_uuid_n&gt;],</span>
-<span class="sd">            }</span>
+<span class="sd">    :return: (JSONResponse) If successful, returns 200 with JSON containing the val at `server_uuid`.</span>
 <span class="sd">        If not successful, returns the appropriate error code with a JSON with the format below:</span>
 <span class="sd">            {&quot;error&quot;: &lt;error message&gt;}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># Parse input data</span>
-        <span class="k">if</span> <span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
-            <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Model &#39;</span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">&#39; not supported. Supported models: </span><span class="si">{</span><span class="n">Model</span><span class="o">.</span><span class="n">list</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">error_msg</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+        <span class="n">redis_connection</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">redis_port</span><span class="p">)</span>
 
-        <span class="n">model_class</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">class_for_model</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="n">model</span><span class="p">])</span>
-        <span class="n">clients_info_list</span> <span class="o">=</span> <span class="n">ClientInfo</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">clients_info</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">redis_connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">)</span>
 
-        <span class="c1"># Start the server</span>
-        <span class="n">server_uuid</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">launch_local_server</span><span class="p">(</span>
-            <span class="n">model</span><span class="o">=</span><span class="n">model_class</span><span class="p">(),</span>
-            <span class="n">n_clients</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">clients_info_list</span><span class="p">),</span>
-            <span class="n">server_address</span><span class="o">=</span><span class="n">server_address</span><span class="p">,</span>
-            <span class="n">n_server_rounds</span><span class="o">=</span><span class="n">n_server_rounds</span><span class="p">,</span>
-            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-            <span class="n">local_epochs</span><span class="o">=</span><span class="n">local_epochs</span><span class="p">,</span>
-            <span class="n">redis_host</span><span class="o">=</span><span class="n">redis_host</span><span class="p">,</span>
-            <span class="n">redis_port</span><span class="o">=</span><span class="n">redis_port</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">wait_for_metric</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">,</span> <span class="s2">&quot;fit_start&quot;</span><span class="p">,</span> <span class="n">redis_host</span><span class="p">,</span> <span class="n">redis_port</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">LOGGER</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
 
-        <span class="c1"># Start the clients</span>
-        <span class="n">client_uuids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">client_info</span> <span class="ow">in</span> <span class="n">clients_info_list</span><span class="p">:</span>
-            <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="n">server_address</span><span class="p">,</span>
-                <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="s2">&quot;data_path&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span>
-                <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span>
-                <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
-            <span class="p">}</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">client_address</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">START_CLIENT_API</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">)</span>
-            <span class="n">json_response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client response: </span><span class="si">{</span><span class="n">json_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client response returned </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">. Response: </span><span class="si">{</span><span class="n">json_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="s2">&quot;uuid&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">json_response</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client response did not return a UUID. Response: </span><span class="si">{</span><span class="n">json_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-            <span class="n">client_uuids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">])</span>
-
-        <span class="c1"># Return the UUIDs</span>
-        <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;server_uuid&quot;</span><span class="p">:</span> <span class="n">server_uuid</span><span class="p">,</span> <span class="s2">&quot;client_uuids&quot;</span><span class="p">:</span> <span class="n">client_uuids</span><span class="p">})</span>
-
-    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">ClientInfoParseError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Server </span><span class="si">{</span><span class="n">server_uuid</span><span class="si">}</span><span class="s2"> Not Found&quot;</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>

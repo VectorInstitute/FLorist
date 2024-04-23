@@ -1,0 +1,7 @@
+florist.api.routes.server.status module
+=======================================
+
+.. automodule:: florist.api.routes.server.status
+   :members:
+   :undoc-members:
+   :show-inheritance:

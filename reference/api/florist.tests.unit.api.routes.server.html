@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.tests.unit.api.routes.server.test_training module" href="florist.tests.unit.api.routes.server.test_training.html" /><link rel="prev" title="florist.tests.unit.api.routes package" href="florist.tests.unit.api.routes.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.tests.unit.api.routes.server.test_status module" href="florist.tests.unit.api.routes.server.test_status.html" /><link rel="prev" title="florist.tests.unit.api.routes package" href="florist.tests.unit.api.routes.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
         <title>florist.tests.unit.api.routes.server package - Vector AI Engineering template repository</title>
@@ -193,6 +193,7 @@
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.routes.html">florist.api.routes package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of florist.api.routes package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="florist.api.routes.server.html">florist.api.routes.server package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of florist.api.routes.server package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="florist.api.routes.server.job.html">florist.api.routes.server.job module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="florist.api.routes.server.status.html">florist.api.routes.server.status module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="florist.api.routes.server.training.html">florist.api.routes.server.training module</a></li>
 </ul>
 </li>
@@ -236,6 +237,7 @@
 </li>
 <li class="toctree-l6 current has-children"><a class="reference internal" href="florist.tests.unit.api.routes.html">florist.tests.unit.api.routes package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.routes package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l7 current has-children current-page"><a class="current reference internal" href="#">florist.tests.unit.api.routes.server package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.routes.server package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l8"><a class="reference internal" href="florist.tests.unit.api.routes.server.test_status.html">florist.tests.unit.api.routes.server.test_status module</a></li>
 <li class="toctree-l8"><a class="reference internal" href="florist.tests.unit.api.routes.server.test_training.html">florist.tests.unit.api.routes.server.test_training module</a></li>
 </ul>
 </li>
@@ -297,6 +299,12 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="florist.tests.unit.api.routes.server.test_status.html">florist.tests.unit.api.routes.server.test_status module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="florist.tests.unit.api.routes.server.test_status.html#florist.tests.unit.api.routes.server.test_status.test_check_status"><code class="docutils literal notranslate"><span class="pre">test_check_status()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="florist.tests.unit.api.routes.server.test_status.html#florist.tests.unit.api.routes.server.test_status.test_check_status_fail_exception"><code class="docutils literal notranslate"><span class="pre">test_check_status_fail_exception()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="florist.tests.unit.api.routes.server.test_status.html#florist.tests.unit.api.routes.server.test_status.test_check_status_not_found"><code class="docutils literal notranslate"><span class="pre">test_check_status_not_found()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="florist.tests.unit.api.routes.server.test_training.html">florist.tests.unit.api.routes.server.test_training module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_start_fail_response"><code class="docutils literal notranslate"><span class="pre">test_start_fail_response()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_start_fail_unsupported_client"><code class="docutils literal notranslate"><span class="pre">test_start_fail_unsupported_client()</span></code></a></li>
@@ -318,12 +326,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="florist.tests.unit.api.routes.server.test_training.html">
+          <a class="next-page" href="florist.tests.unit.api.routes.server.test_status.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">florist.tests.unit.api.routes.server.test_training module</div>
+                <div class="title">florist.tests.unit.api.routes.server.test_status module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
