@@ -22,6 +22,7 @@ async def test_train():
     client_config = uvicorn.Config("florist.api.client:app", host="localhost", port=8001, log_level="debug")
     client_service = TestUvicornServer(config=client_config)
 
+    # TODO figure out how to run fastapi with the test DB so we can use the fixture here
     test_request = MockRequest(MockApp(DATABASE_NAME))
 
     # Start services
