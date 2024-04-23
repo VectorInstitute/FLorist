@@ -18,7 +18,7 @@ export default function Sidebar(): ReactElement {
             <div className="collapse navbar-collapse  w-auto  max-height-vh-100" id="sidenav-collapse-main">
                 <ul className="navbar-nav">
                     <li className="nav-item">
-                        <a className="nav-link text-white active bg-gradient-primary" href="#">
+                        <a className="nav-link text-white active bg-gradient-primary" href="/">
                             <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
                                 <i className="material-icons opacity-10">home</i>
                             </div>
@@ -30,7 +30,7 @@ export default function Sidebar(): ReactElement {
                     <li className="nav-item">
                         <Link className="nav-link text-white active bg-gradient-primary" href="/jobs">
                             <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                                <i className="material-icons opacity-10">home</i>
+                                <i className="material-icons opacity-10">list</i>
                             </div>
                             <span className="nav-link-text ms-1">Jobs</span>
                         </Link>
