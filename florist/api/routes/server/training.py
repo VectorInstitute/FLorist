@@ -1,5 +1,6 @@
 """FastAPI routes for training."""
 import logging
+from json import JSONDecodeError
 from typing import List
 
 import requests
@@ -43,11 +44,14 @@ async def start(job_id: str, request: Request) -> JSONResponse:
 
         assert job.model is not None, "Missing Job information: model"
         assert job.server_info is not None, "Missing Job information: server_info"
-        assert Job.is_valid_server_info(job.server_info), "server_info is not valid"
         assert job.clients_info is not None and len(job.clients_info) > 0, "Missing Job information: clients_info"
         assert job.server_address is not None, "Missing Job information: server_address"
         assert job.redis_host is not None, "Missing Job information: redis_host"
         assert job.redis_port is not None, "Missing Job information: redis_port"
+        try:
+            assert Job.is_valid_server_info(job.server_info), "server_info is not valid"
+        except JSONDecodeError as err:
+            raise AssertionError("server_info is not valid") from err
 
         model_class = Model.class_for_model(job.model)
         server_info = model_class.parse_server_info(job.server_info)

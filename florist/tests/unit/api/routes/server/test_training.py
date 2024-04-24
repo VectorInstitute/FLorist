@@ -107,6 +107,57 @@ async def test_start_fail_unsupported_client() -> None:
     assert "value is not a valid enumeration member" in json_body["error"]
 
 
+async def test_start_fail_missing_info() -> None:
+    fields_to_be_removed = ["model", "server_info", "clients_info", "server_address", "redis_host", "redis_port"]
+
+    for field_to_be_removed in fields_to_be_removed:
+        # Arrange
+        test_job_id = "test-job-id"
+        _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
+        del test_job[field_to_be_removed]
+
+        # Act
+        response = await start(test_job_id, mock_fastapi_request)
+
+        # Assert
+        assert response.status_code == 400
+        json_body = json.loads(response.body.decode())
+        assert json_body == {"error": ANY}
+        assert f"Missing Job information: {field_to_be_removed}" in json_body["error"]
+
+
+async def test_start_fail_invalid_server_info() -> None:
+    # Arrange
+    test_job_id = "test-job-id"
+    _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
+    test_job["server_info"] = "not json"
+
+    # Act
+    response = await start(test_job_id, mock_fastapi_request)
+
+    # Assert
+    assert response.status_code == 400
+    json_body = json.loads(response.body.decode())
+    assert json_body == {"error": ANY}
+    assert f"server_info is not valid" in json_body["error"]
+
+
+async def test_start_fail_empty_clients_info() -> None:
+    # Arrange
+    test_job_id = "test-job-id"
+    _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
+    test_job["clients_info"] = []
+
+    # Act
+    response = await start(test_job_id, mock_fastapi_request)
+
+    # Assert
+    assert response.status_code == 400
+    json_body = json.loads(response.body.decode())
+    assert json_body == {"error": ANY}
+    assert f"Missing Job information: clients_info" in json_body["error"]
+
+
 @patch("florist.api.routes.server.training.launch_local_server")
 async def test_start_launch_server_exception(mock_launch_local_server: Mock) -> None:
     # Arrange

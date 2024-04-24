@@ -36,7 +36,7 @@ class AbstractModel(nn.Module, ABC):
 
         for mandatory_field in mandatory_fields:
             if mandatory_field not in json_server_info:
-                raise IncompleteServerInfoError(f"Server info does not contain '{mandatory_fields}'")
+                raise IncompleteServerInfoError(f"Server info does not contain '{mandatory_field}'")
 
         assert isinstance(json_server_info, dict)
         return json_server_info
