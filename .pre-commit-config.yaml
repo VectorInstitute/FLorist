@@ -46,3 +46,10 @@ repos:
       entry: python3 -m doctest -o NORMALIZE_WHITESPACE
       files: "(^florist/api/|florist/tests/api/)"
       language: system
+
+  - repo: local
+    hooks:
+      - id: nextjs-lint
+        name: nextjs-lint
+        entry: yarn lint
+        language: system

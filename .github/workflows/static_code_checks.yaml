@@ -36,18 +36,15 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'poetry'
-      - name: Install python dependencies and check code
+      - name: Setup yarn
+        uses: mskelton/setup-yarn@v1
+      - name: Install dependencies and check code
         run: |
+          yarn
           poetry env use '3.9'
           source .venv/bin/activate
           poetry install --with test --all-extras
           pre-commit run --all-files
-      - name: Setup yarn
-        uses: mskelton/setup-yarn@v1
-      - name: Install next.js dependencies and check code
-        run: |
-          yarn
-          yarn lint
       - name: pip-audit (gh-action-pip-audit)
         uses: pypa/gh-action-pip-audit@v1.0.8
         with:
