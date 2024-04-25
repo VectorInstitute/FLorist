@@ -10,7 +10,7 @@
     "prod": "concurrently \"npm run next-dev\" \"npm run fastapi-prod\"",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint florist"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
