@@ -30,7 +30,7 @@ using [Homebrew](https://brew.sh/):
 brew install yarn
 ```
 
-Then install the project dependencies in `prod` mode:
+Then install the project dependencies in production mode:
 ```shell
 yarn --prod
 ```
