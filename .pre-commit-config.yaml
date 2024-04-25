@@ -41,15 +41,23 @@ repos:
 
   - repo: local
     hooks:
+      - id: nextjs-lint
+        name: nextjs-lint
+        entry: yarn lint
+        language: system
+
+  - repo: local
+    hooks:
+      - id: prettier-js-format
+        name: prettier-js-format
+        entry: yarn prettier
+        files: "florist/app"
+        language: system
+
+  - repo: local
+    hooks:
     - id: doctest
       name: doctest
       entry: python3 -m doctest -o NORMALIZE_WHITESPACE
       files: "(^florist/api/|florist/tests/api/)"
       language: system
-
-  - repo: local
-    hooks:
-      - id: nextjs-lint
-        name: nextjs-lint
-        entry: yarn lint
-        language: system
