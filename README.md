@@ -30,9 +30,9 @@ using [Homebrew](https://brew.sh/):
 brew install yarn
 ```
 
-Then install the project dependencies:
+Then install the project dependencies in `prod` mode:
 ```shell
-yarn
+yarn --prod
 ```
 
 ### Pulling Redis' Docker
