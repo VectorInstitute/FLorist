@@ -44,6 +44,7 @@ repos:
       - id: nextjs-lint
         name: nextjs-lint
         entry: yarn lint
+        files: "florist/app"
         language: system
 
   - repo: local
