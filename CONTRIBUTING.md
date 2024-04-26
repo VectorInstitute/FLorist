@@ -62,7 +62,7 @@ pytest florist/tests/unit
 
 To run the nextjs unit tests, simply execute:
 ```shell
-yarn test
+yarn unit-test
 ```
 
 To run the integration tests, first make sure you:

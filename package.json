@@ -12,7 +12,8 @@
     "start": "next start",
     "lint": "next lint florist",
     "prettier": "prettier florist/app florist/tests/unit/app --write",
-    "test": "jest --coverage"
+    "unit-test": "jest --coverage florist/tests/unit/",
+    "integration-test": "jest --coverage florist/tests/integration/"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",

@@ -54,7 +54,7 @@ jobs:
       - name: Install nextjs dependencies and check code
         run: |
           yarn
-          yarn test
+          yarn unit-test
 #      - name: Upload coverage to Codecov
 #        uses: Wandalen/wretry.action@v1.4.4
 #        with:
