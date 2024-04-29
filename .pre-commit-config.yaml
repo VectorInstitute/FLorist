@@ -41,8 +41,53 @@ repos:
 
   - repo: local
     hooks:
+      - id: nextjs-lint
+        name: nextjs-lint
+        entry: yarn lint-gh-action florist
+        files: "florist/app"
+        language: system
+
+  - repo: local
+    hooks:
+      - id: prettier-js-format
+        name: prettier-js-format
+        entry: yarn prettier
+        files: "florist/app"
+        language: system
+
+  - repo: local
+    hooks:
     - id: doctest
       name: doctest
       entry: python3 -m doctest -o NORMALIZE_WHITESPACE
       files: "(^florist/api/|florist/tests/api/)"
       language: system
+
+  - repo: local
+    hooks:
+    - id: pytest-unit
+      name: pytest-unit
+      entry: python -m pytest florist/tests/unit
+      language: system
+      pass_filenames: false
+      always_run: true
+
+  - repo: local
+    hooks:
+      - id: nextjs-unit
+        name: nextjs-unit
+        entry: yarn unit-test
+        language: system
+        pass_filenames: false
+        always_run: true
+
+ci:
+    autofix_commit_msg: |
+        [pre-commit.ci] Add auto fixes from pre-commit.com hooks
+        for more information, see https://pre-commit.ci
+    autofix_prs: true
+    autoupdate_branch: ''
+    autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+    autoupdate_schedule: weekly
+    skip: [pytest-unit,nextjs-unit,doctest,mypy,nextjs-lint]
+    submodules: false

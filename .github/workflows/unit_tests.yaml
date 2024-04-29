@@ -42,12 +42,19 @@ jobs:
       - uses: actions/setup-python@v5.0.0
         with:
           python-version: '3.9'
-      - name: Install dependencies and check code
+          cache: 'poetry'
+      - name: Install python dependencies and check code
         run: |
           poetry env use '3.9'
           source $(poetry env info --path)/bin/activate
           poetry install --with docs,test
           coverage run -m pytest florist/tests/unit && coverage xml && coverage report -m
+      - name: Setup yarn
+        uses: mskelton/setup-yarn@v1
+      - name: Install nextjs dependencies and check code
+        run: |
+          yarn
+          yarn unit-test
 #      - name: Upload coverage to Codecov
 #        uses: Wandalen/wretry.action@v1.4.4
 #        with:

@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from florist.api.routes.server.job import router as job_router
+from florist.api.routes.server.status import router as status_router
 from florist.api.routes.server.training import router as training_router
 
 
@@ -37,3 +38,4 @@ app.add_middleware(
 )
 app.include_router(training_router, tags=["training"], prefix="/api/server/training")
 app.include_router(job_router, tags=["job"], prefix="/api/server/job")
+app.include_router(status_router, tags=["status"], prefix="/api/server/check_status")
