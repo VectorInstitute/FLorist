@@ -8,28 +8,37 @@ import Script from "next/script";
 import { useEffect } from "react";
 
 import Sidebar from "./sidebar";
-import ClientImports from './client_imports';
+import ClientImports from "./client_imports";
 
 export const metadata: Metadata = {
-  title: "Florist",
+    title: "Florist",
 };
 
 export default function RootLayout({
     children,
 }: {
-    children: React.ReactNode
+    children: React.ReactNode;
 }): ReactElement {
     return (
         <html lang="en">
             <head>
                 {/*     Fonts and icons     */}
-                <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+                <link
+                    rel="stylesheet"
+                    type="text/css"
+                    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700"
+                />
                 {/*     Font Awesome Icons  */}
                 <Script src="https://kit.fontawesome.com/42d5adcbca.js" />
                 {/*     Material Icons      */}
-                <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+                <link
+                    href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+                    rel="stylesheet"
+                />
                 {/*     Copyright Notice    */}
-                <script dangerouslySetInnerHTML={{ __html: `
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
                             <!--
                             =========================================================
                             * Material Dashboard 2 - v3.0.0
@@ -44,7 +53,9 @@ export default function RootLayout({
 
                             * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
                             -->
-                `}} />
+                `,
+                    }}
+                />
             </head>
             <body className="g-sidenav-show  bg-gray-200">
                 {/* Sidebar */}
@@ -52,14 +63,21 @@ export default function RootLayout({
                 {/* Body */}
                 <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
                     {/* Navbar */}
-                    <nav className="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
+                    <nav
+                        className="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl"
+                        id="navbarBlur"
+                        navbar-scroll="true"
+                    >
                         <div className="container-fluid py-1 px-3">
                             <nav aria-label="breadcrumb">
                                 <ol className="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                                     {/* Breadcrumbs */}
                                 </ol>
                             </nav>
-                            <div className="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                            <div
+                                className="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4"
+                                id="navbar"
+                            >
                                 <div className="ms-md-auto pe-md-3 d-flex align-items-center">
                                     <div className="input-group input-group-outline">
                                         {/* Left aligned elements */}
@@ -71,9 +89,7 @@ export default function RootLayout({
                     {/* End Navbar */}
                     <div className="container-fluid py-4">
                         <div className="row min-vh-80 h-100">
-                            <div className="col-12">
-                                {children}
-                            </div>
+                            <div className="col-12">{children}</div>
                         </div>
                         {/* Footer */}
                         <footer className="footer pt-5">
@@ -96,7 +112,6 @@ export default function RootLayout({
                 </main>
 
                 <ClientImports />
-
             </body>
         </html>
     );
