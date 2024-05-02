@@ -28,8 +28,12 @@ interface ClientInfo {
     redis_port: string;
 }
 
+interface StatusProp {
+    status: string;
+}
+
 export default function Page(): ReactElement {
-    const status_components = Object.keys(valid_statuses).map((key) => (
+    const status_components = Object.keys(valid_statuses).map((key, i) => (
         <Status key={key} status={key} />
     ));
     return (
@@ -40,7 +44,7 @@ export default function Page(): ReactElement {
     );
 }
 
-function Status({ status }: { status: string }): ReactElement {
+export function Status({ status }: StatusProp): ReactElement {
     const endpoint = "/api/server/job/".concat(status);
     const { data, error, isLoading } = useSWR(endpoint, fetcher, {
         refresh_interval: 1000,
@@ -49,23 +53,30 @@ function Status({ status }: { status: string }): ReactElement {
     if (isLoading) return <span> </span>;
 
     return (
-        <span>
-            <h4> {valid_statuses[status]} </h4>
+        <div>
+            <h4 data-testid={`status-header-${status}`}>
+                {" "}
+                {valid_statuses[status]}{" "}
+            </h4>
             <StatusTable data={data} />
-        </span>
+        </div>
     );
 }
 
-function StatusTable({ data }: { data: Array<JobData> }): ReactElement {
+export function StatusTable({ data }: { data: Array<JobData> }): ReactElement {
     if (data.length > 0) {
         return (
             <table className="table">
-                <tr>
-                    <th style={{ width: "25%" }}>Model</th>
-                    <th style={{ width: "25%" }}>Server Address</th>
-                    <th style={{ width: "50%" }}>Client Service Addresses </th>
-                </tr>
-                <TableRows data={data} />
+                <tbody>
+                    <tr>
+                        <th style={{ width: "25%" }}>Model</th>
+                        <th style={{ width: "25%" }}>Server Address</th>
+                        <th style={{ width: "50%" }}>
+                            Client Service Addresses{" "}
+                        </th>
+                    </tr>
+                    <TableRows data={data} />
+                </tbody>
             </table>
         );
     } else {
@@ -77,7 +88,7 @@ function StatusTable({ data }: { data: Array<JobData> }): ReactElement {
     }
 }
 
-function TableRows({ data }: { data: Array<JobData> }): ReactElement {
+export function TableRows({ data }: { data: Array<JobData> }): ReactElement {
     const table_rows = data.map((d, i) => (
         <TableRow
             key={i}
@@ -90,7 +101,7 @@ function TableRows({ data }: { data: Array<JobData> }): ReactElement {
     return table_rows;
 }
 
-function TableRow({
+export function TableRow({
     model,
     server_address,
     clients_info,
@@ -108,7 +119,7 @@ function TableRow({
     );
 }
 
-function ClientListTableData({
+export function ClientListTableData({
     clients_info,
 }: {
     clients_info: Array<ClientInfo>;
