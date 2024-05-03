@@ -1,8 +1,9 @@
 "use client";
 import { ReactElement } from "react/React";
-import useJobStatus from "./hooks";
+import useGetJobsByStatus from "./hooks";
+import useGetJobsByJobStatus from "./hooks";
 
-const validStatuses = {
+export const validStatuses = {
     NOT_STARTED: "Not Started",
     IN_PROGRESS: "In Progress",
     FINISHED_WITH_ERROR: "Finished with Error",
@@ -44,7 +45,7 @@ export default function Page(): ReactElement {
 }
 
 export function Status({ status }: StatusProp): ReactElement {
-    const { data, error, isLoading } = useJobStatus(status);
+    const { data, error, isLoading } = useGetJobsByJobStatus(status);
     if (error) return <span> Help1</span>;
     if (isLoading) return <span> Help2 </span>;
 
