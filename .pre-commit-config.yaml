@@ -45,7 +45,7 @@ repos:
         name: nextjs-lint
         entry: yarn lint-gh-action florist
         files: "florist/app"
-        language: node
+        language: system
 
   - repo: local
     hooks:
@@ -53,7 +53,7 @@ repos:
         name: prettier-js-format
         entry: yarn prettier
         files: "florist/app"
-        language: node
+        language: system
 
   - repo: local
     hooks:
@@ -89,5 +89,5 @@ ci:
     autoupdate_branch: ''
     autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
     autoupdate_schedule: weekly
-    skip: [pytest-unit,nextjs-unit,doctest,mypy,nextjs-lint]
+    skip: [prettier-js-format,pytest-unit,nextjs-unit,doctest,mypy,nextjs-lint]
     submodules: false
