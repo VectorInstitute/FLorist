@@ -53,7 +53,11 @@ repos:
         name: prettier-js-format
         entry: yarn prettier
         files: "florist/app"
-        language: system
+        language: node
+        types: [javascript]
+        additional_dependencies:
+          - yarn
+          - prettier
 
   - repo: local
     hooks:

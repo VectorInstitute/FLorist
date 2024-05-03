@@ -1,6 +1,7 @@
 import logo_ct from "./assets/img/logo-ct.png";
 
 import Image from "next/image";
+import Link from "next/link";
 import { ReactElement } from "react/React";
 
 export default function Sidebar(): ReactElement {
@@ -37,7 +38,7 @@ export default function Sidebar(): ReactElement {
                     <li className="nav-item">
                         <a
                             className="nav-link text-white active bg-gradient-primary"
-                            href="#"
+                            href="/"
                         >
                             <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
                                 <i className="material-icons opacity-10">
@@ -46,6 +47,21 @@ export default function Sidebar(): ReactElement {
                             </div>
                             <span className="nav-link-text ms-1">Home</span>
                         </a>
+                    </li>
+                </ul>
+                <ul className="navbar-nav">
+                    <li className="nav-item">
+                        <Link
+                            className="nav-link text-white active bg-gradient-primary"
+                            href="/jobs"
+                        >
+                            <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                <i className="material-icons opacity-10">
+                                    list
+                                </i>
+                            </div>
+                            <span className="nav-link-text ms-1">Jobs</span>
+                        </Link>
                     </li>
                 </ul>
             </div>

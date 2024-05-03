@@ -95,7 +95,7 @@ class Job(BaseModel):
                 "server_info": '{"n_server_rounds": 3, "batch_size": 8}',
                 "redis_host": "localhost",
                 "redis_port": "6879",
-                "client_info": [
+                "clients_info": [
                     {
                         "client": "MNIST",
                         "service_address": "locahost:8081",

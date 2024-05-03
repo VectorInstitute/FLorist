@@ -12,4 +12,6 @@ function ClientImports(): null {
     return null;
 }
 
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
+export { fetcher };
 export default ClientImports;
