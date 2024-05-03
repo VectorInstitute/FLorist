@@ -2,7 +2,7 @@
 import { ReactElement } from "react/React";
 import useJobStatus from "./hooks";
 
-const valid_statuses = {
+const validStatuses = {
     NOT_STARTED: "Not Started",
     IN_PROGRESS: "In Progress",
     FINISHED_WITH_ERROR: "Finished with Error",
@@ -32,13 +32,13 @@ interface StatusProp {
 }
 
 export default function Page(): ReactElement {
-    const status_components = Object.keys(valid_statuses).map((key, i) => (
+    const statusComponents = Object.keys(validStatuses).map((key, i) => (
         <Status key={key} status={key} />
     ));
     return (
         <div className="mx-4">
             <h1> Job Status </h1>
-            {status_components}
+            {statusComponents}
         </div>
     );
 }
@@ -51,7 +51,7 @@ export function Status({ status }: StatusProp): ReactElement {
     return (
         <div>
             <h4 data-testid={`status-header-${status}`}>
-                {valid_statuses[status]}
+                {validStatuses[status]}
             </h4>
             <StatusTable data={data} status={status} />
         </div>
@@ -93,43 +93,43 @@ export function StatusTable({
 }
 
 export function TableRows({ data }: { data: Array<JobData> }): ReactElement {
-    const table_rows = data.map((d, i) => (
+    const tableRows = data.map((d, i) => (
         <TableRow
             key={i}
             model={d.model}
-            server_address={d.server_address}
-            clients_info={d.clients_info}
+            serverAddress={d.server_address}
+            clientsInfo={d.clients_info}
         />
     ));
 
-    return <tbody>{table_rows}</tbody>;
+    return <tbody>{tableRows}</tbody>;
 }
 
 export function TableRow({
     model,
-    server_address,
-    clients_info,
+    serverAddress,
+    clientsInfo,
 }: {
     model: string;
-    server_address: string;
-    clients_info: Array<ClientInfo>;
+    serverAddress: string;
+    clientsInfo: Array<ClientInfo>;
 }): ReactElement {
     return (
         <tr>
             <td>{model}</td>
-            <td>{server_address}</td>
-            <ClientListTableData clients_info={clients_info} />
+            <td>{serverAddress}</td>
+            <ClientListTableData clientsInfo={clientsInfo} />
         </tr>
     );
 }
 
 export function ClientListTableData({
-    clients_info,
+    clientsInfo,
 }: {
-    clients_info: Array<ClientInfo>;
+    clientsInfo: Array<ClientInfo>;
 }): ReactElement {
-    const client_service_addresses_string = clients_info
+    const clientServiceAddressesString = clientsInfo
         .map((c) => c.service_address)
         .join(", ");
-    return <td> {client_service_addresses_string} </td>;
+    return <td> {clientServiceAddressesString} </td>;
 }
