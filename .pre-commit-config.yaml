@@ -55,7 +55,9 @@ repos:
         files: "florist/app"
         language: node
         types: [javascript]
-        additional_dependencies: ['yarn']
+        additional_dependencies:
+          - yarn
+          - prettier
 
   - repo: local
     hooks:
