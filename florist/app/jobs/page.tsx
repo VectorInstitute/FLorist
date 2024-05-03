@@ -55,19 +55,24 @@ export function Status({ status }: StatusProp): ReactElement {
     return (
         <div>
             <h4 data-testid={`status-header-${status}`}>
-                {" "}
-                {valid_statuses[status]}{" "}
+                {valid_statuses[status]}
             </h4>
-            <StatusTable data={data} />
+            <StatusTable data={data} status={status} />
         </div>
     );
 }
 
-export function StatusTable({ data }: { data: Array<JobData> }): ReactElement {
+export function StatusTable({
+    data,
+    status,
+}: {
+    data: Array<JobData>;
+    status: StatusProp;
+}): ReactElement {
     if (data.length > 0) {
         return (
-            <table className="table">
-                <tbody>
+            <table data-testid={`status-table-${status}`} className="table">
+                <thead>
                     <tr>
                         <th style={{ width: "25%" }}>Model</th>
                         <th style={{ width: "25%" }}>Server Address</th>
@@ -75,8 +80,8 @@ export function StatusTable({ data }: { data: Array<JobData> }): ReactElement {
                             Client Service Addresses{" "}
                         </th>
                     </tr>
-                    <TableRows data={data} />
-                </tbody>
+                </thead>
+                <TableRows data={data} />
             </table>
         );
     } else {
@@ -98,7 +103,7 @@ export function TableRows({ data }: { data: Array<JobData> }): ReactElement {
         />
     ));
 
-    return table_rows;
+    return <tbody>{table_rows}</tbody>;
 }
 
 export function TableRow({
