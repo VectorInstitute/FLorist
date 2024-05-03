@@ -1,14 +1,16 @@
-import useSWR from "swr";
 import "@testing-library/jest-dom";
 import { getByText, render, cleanup } from "@testing-library/react";
-import { describe, beforeEach, afterEach, it, expect } from "@jest/globals";
+import { describe, afterEach, it, expect } from "@jest/globals";
 
 import Page from "../../../../app/jobs/page";
+import useJobStatus from "../../../../app/jobs/hooks";
 
-jest.mock("swr", () => ({
-    __esModule: true,
-    default: jest.fn(),
-}));
+jest.mock("../../../../app/jobs/hooks");
+
+afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+});
 
 function mock_job_data(
     model: string,
@@ -27,19 +29,32 @@ function mock_job_data(
     return data;
 }
 
-beforeEach(() => {
-    const mock_jobs = [
-        mock_job_data("MNIST", "localhost:8080", ["localhost:7080"]),
-    ];
-    useSWR.mockImplementation(() => ({
-        data: mock_jobs,
-        error: null,
-        isLoading: false,
-    }));
-});
+function setupMock(
+    valid_statuses: Array<string>,
+    data: Array<object>,
+    error: boolean,
+    isLoading: boolean,
+) {
+    useJobStatus.mockImplementation((status: string) => {
+        if (valid_statuses.includes(status)) {
+            return {
+                data,
+                error,
+                isLoading,
+            };
+        } else {
+            return {
+                data: [],
+                error: false,
+                isLoading: false,
+            };
+        }
+    });
+}
 
 describe("List Jobs Page", () => {
     it("Renders Page Title correct", () => {
+        setupMock([], [], false, false);
         const { container } = render(<Page />);
         const h1 = container.querySelector("h1");
         expect(h1).toBeInTheDocument();
@@ -47,6 +62,20 @@ describe("List Jobs Page", () => {
     });
 
     it("Renders Status Components Headers", () => {
+        const data = [
+            mock_job_data("MNIST", "localhost:8080", ["localhost:7080"]),
+        ];
+        setupMock(
+            [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "FINISHED_SUCCESSFULLY",
+                "FINISHED_WITH_ERROR",
+            ],
+            data,
+            false,
+            false,
+        );
         const { getByTestId } = render(<Page />);
         const ns_status = getByTestId("status-header-NOT_STARTED");
         const ip_status = getByTestId("status-header-IN_PROGRESS");
@@ -62,7 +91,21 @@ describe("List Jobs Page", () => {
         expect(fe_status).toHaveTextContent("Finished with Error");
     });
 
-    it("Renders Status Table", () => {
+    it("Renders Status Table With Table with Data", () => {
+        const data = [
+            mock_job_data("MNIST", "localhost:8080", ["localhost:7080"]),
+        ];
+        setupMock(
+            [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "FINISHED_SUCCESSFULLY",
+                "FINISHED_WITH_ERROR",
+            ],
+            data,
+            false,
+            false,
+        );
         const { getByTestId } = render(<Page />);
         const ns_table = getByTestId("status-table-NOT_STARTED");
 
@@ -107,5 +150,34 @@ describe("List Jobs Page", () => {
         expect(getByText(fe_table, "MNIST")).toBeInTheDocument();
         expect(getByText(fe_table, "localhost:8080")).toBeInTheDocument();
         expect(getByText(fe_table, "localhost:7080")).toBeInTheDocument();
+    });
+
+    it("Renders Status Table With Table without Data", () => {
+        setupMock([], [], false, false);
+        const { getByTestId } = render(<Page />);
+
+        const not_started = getByTestId("status-no-jobs-NOT_STARTED");
+        expect(
+            getByText(not_started, "No jobs to display."),
+        ).toBeInTheDocument();
+
+        const in_progress = getByTestId("status-no-jobs-IN_PROGRESS");
+        expect(
+            getByText(in_progress, "No jobs to display."),
+        ).toBeInTheDocument();
+
+        const finished_success = getByTestId(
+            "status-no-jobs-FINISHED_SUCCESSFULLY",
+        );
+        expect(
+            getByText(finished_success, "No jobs to display."),
+        ).toBeInTheDocument();
+
+        const finished_error = getByTestId(
+            "status-no-jobs-FINISHED_WITH_ERROR",
+        );
+        expect(
+            getByText(finished_error, "No jobs to display."),
+        ).toBeInTheDocument();
     });
 });

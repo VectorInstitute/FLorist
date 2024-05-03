@@ -1,7 +1,6 @@
 "use client";
 import { ReactElement } from "react/React";
-import useSWR from "swr";
-import { fetcher } from "../client_imports";
+import useJobStatus from "./hooks";
 
 const valid_statuses = {
     NOT_STARTED: "Not Started",
@@ -45,12 +44,9 @@ export default function Page(): ReactElement {
 }
 
 export function Status({ status }: StatusProp): ReactElement {
-    const endpoint = "/api/server/job/".concat(status);
-    const { data, error, isLoading } = useSWR(endpoint, fetcher, {
-        refresh_interval: 1000,
-    });
-    if (error) return <span> </span>;
-    if (isLoading) return <span> </span>;
+    const { data, error, isLoading } = useJobStatus(status);
+    if (error) return <span> Help1</span>;
+    if (isLoading) return <span> Help2 </span>;
 
     return (
         <div>
@@ -87,7 +83,10 @@ export function StatusTable({
     } else {
         return (
             <div>
-                <span> No jobs to display. </span>
+                <span data-testid={`status-no-jobs-${status}`}>
+                    {" "}
+                    No jobs to display.{" "}
+                </span>
             </div>
         );
     }
