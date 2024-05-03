@@ -53,7 +53,8 @@ repos:
         name: prettier-js-format
         entry: yarn prettier
         files: "florist/app"
-        language: system
+        language: node 
+        types: [javascript, typescript, tsx, jsx]
 
   - repo: local
     hooks:
@@ -89,5 +90,5 @@ ci:
     autoupdate_branch: ''
     autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
     autoupdate_schedule: weekly
-    skip: [prettier-js-format,pytest-unit,nextjs-unit,doctest,mypy,nextjs-lint]
+    skip: [pytest-unit,nextjs-unit,doctest,mypy,nextjs-lint]
     submodules: false
