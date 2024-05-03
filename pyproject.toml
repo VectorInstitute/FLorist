@@ -24,6 +24,7 @@ redis = "^5.0.1"
 python-multipart = "^0.0.9"
 pydantic = "^1.10.15"
 motor = "^3.4.0"
+tqdm = "^4.66.3"
 
 [tool.poetry.group.test]
 optional = true
