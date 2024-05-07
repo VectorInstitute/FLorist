@@ -1,13 +1,14 @@
 """FastAPI routes for training."""
 import logging
 from json import JSONDecodeError
-from typing import List
+from typing import List, Dict, Any
 
 import requests
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from fastapi import APIRouter, Request, BackgroundTasks
 from fastapi.responses import JSONResponse
 
-from florist.api.db.entities import Job
+from florist.api.db.entities import Job, JobStatus
 from florist.api.monitoring.metrics import wait_for_metric, get_subscriber, get_from_redis
 from florist.api.servers.common import Model
 from florist.api.servers.launch import launch_local_server
@@ -18,6 +19,7 @@ router = APIRouter()
 LOGGER = logging.getLogger("uvicorn.error")
 
 START_CLIENT_API = "api/client/start"
+CHECK_CLIENT_STATUS_API = "api/client/check_status"
 
 
 @router.post("/start")
@@ -42,6 +44,8 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
     try:
         job = await Job.find_by_id(job_id, request.app.database)
 
+        assert job.status == JobStatus.NOT_STARTED, f"Job status ({job.status.value}) is not NOT_STARTED"
+    
         assert job.model is not None, "Missing Job information: model"
         assert job.server_info is not None, "Missing Job information: server_info"
         assert job.clients_info is not None and len(job.clients_info) > 0, "Missing Job information: clients_info"
@@ -89,11 +93,11 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
 
             client_uuids.append(json_response["uuid"])
 
-        # Update the job with the UUIDs
-        await job.update_uuids(server_uuid, client_uuids, request.app.database)
+        await job.set_status(JobStatus.IN_PROGRESS, request.app.database)
+        await job.set_uuids(server_uuid, client_uuids, request.app.database)
 
         # Start the server training listener to update the job's status
-        background_tasks.add_task(server_training_listener, job)
+        background_tasks.add_task(server_training_listener, job, request.app.database)
 
         # Return the UUIDs
         return JSONResponse({"server_uuid": server_uuid, "client_uuids": client_uuids})
@@ -106,10 +110,33 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-def server_training_listener(job: Job) -> None:
+def server_training_listener(job: Job, database: AsyncIOMotorDatabase) -> None:
     LOGGER.info(f"Starting listener for server messages from job {job.id} at channel {job.server_uuid}")
     subscriber = get_subscriber(job.server_uuid, job.redis_host, job.redis_port)
-    for message in subscriber.listen():
+    for message in subscriber.listen():  # TODO add a timeout mechanism, maybe?
         if message["type"] == "message":
+            # The contents of the message do not matter right now, only "update" messages are being sent.
             server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
-            LOGGER.debug(f"Message received! metrics: {server_metrics}")
+            LOGGER.debug(f"Message received. Metrics: {server_metrics}")
+
+            if "fit_end" in server_metrics:
+                LOGGER.info(f"Training finished for job {job.id}")
+
+                clients_metrics: List[Dict[str, Any]] = []
+                for client_info in job.clients_info:
+                    response = requests.get(
+                        url=f"http://{client_info.service_address}/{CHECK_CLIENT_STATUS_API}/{client_info.uuid}",
+                        params={
+                            "redis_host": client_info.redis_host,
+                            "redis_port": client_info.redis_port,
+                        },
+                    )
+                    client_metrics = response.json()
+                    clients_metrics.append(client_metrics)
+
+                job.set_status(JobStatus.FINISHED_SUCCESSFULLY, database)
+                job.set_metrics(server_metrics, clients_metrics, database)
+
+                LOGGER.info(f"Job {job.id} has finished processing")
+
+                return
