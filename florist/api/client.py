@@ -9,6 +9,7 @@ import torch
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
+from florist.api.monitoring.metrics import get_from_redis
 from florist.api.clients.common import Client
 from florist.api.launchers.local import launch_client
 from florist.api.monitoring.logs import get_client_log_file_path
@@ -89,13 +90,10 @@ def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResp
             {"error": <error message>}
     """
     try:
-        redis_connection = redis.Redis(host=redis_host, port=redis_port)
+        client_metrics = get_from_redis(client_uuid, redis_host, redis_port)
 
-        result = redis_connection.get(client_uuid)
-
-        if result is not None:
-            assert isinstance(result, bytes)
-            return JSONResponse(json.loads(result))
+        if client_metrics is not None:
+            return JSONResponse(client_metrics)
 
         return JSONResponse({"error": f"Client {client_uuid} Not Found"}, status_code=404)
 

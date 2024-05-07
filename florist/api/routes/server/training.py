@@ -4,11 +4,11 @@ from json import JSONDecodeError
 from typing import List
 
 import requests
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, BackgroundTasks
 from fastapi.responses import JSONResponse
 
-from florist.api.db.entities import JOB_COLLECTION_NAME, Job
-from florist.api.monitoring.metrics import wait_for_metric
+from florist.api.db.entities import Job
+from florist.api.monitoring.metrics import wait_for_metric, get_subscriber, get_from_redis
 from florist.api.servers.common import Model
 from florist.api.servers.launch import launch_local_server
 
@@ -21,13 +21,15 @@ START_CLIENT_API = "api/client/start"
 
 
 @router.post("/start")
-async def start(job_id: str, request: Request) -> JSONResponse:
+async def start(job_id: str, request: Request, background_tasks: BackgroundTasks) -> JSONResponse:
     """
     Start FL training for a job id by starting a FL server and its clients.
 
     :param job_id: (str) The id of the Job record in the DB which contains the information
         necessary to start training.
     :param request: (fastapi.Request) the FastAPI request object.
+    :param background_tasks: (BackgroundTasks) A BackgroundTasks instance to launch the training listener,
+        which will update the progress of the training job.
     :return: (JSONResponse) If successful, returns 200 with a JSON containing the UUID for the server and
         the clients in the format below. The UUIDs can be used to pull metrics from Redis.
             {
@@ -38,9 +40,7 @@ async def start(job_id: str, request: Request) -> JSONResponse:
             {"error": <error message>}
     """
     try:
-        job_collection = request.app.database[JOB_COLLECTION_NAME]
-        result = await job_collection.find_one({"_id": job_id})
-        job = Job(**result)
+        job = await Job.find_by_id(job_id, request.app.database)
 
         assert job.model is not None, "Missing Job information: model"
         assert job.server_info is not None, "Missing Job information: server_info"
@@ -89,6 +89,12 @@ async def start(job_id: str, request: Request) -> JSONResponse:
 
             client_uuids.append(json_response["uuid"])
 
+        # Update the job with the UUIDs
+        await job.update_uuids(server_uuid, client_uuids, request.app.database)
+
+        # Start the server training listener to update the job's status
+        background_tasks.add_task(server_training_listener, job)
+
         # Return the UUIDs
         return JSONResponse({"server_uuid": server_uuid, "client_uuids": client_uuids})
 
@@ -98,3 +104,12 @@ async def start(job_id: str, request: Request) -> JSONResponse:
     except Exception as ex:
         LOGGER.exception(ex)
         return JSONResponse({"error": str(ex)}, status_code=500)
+
+
+def server_training_listener(job: Job) -> None:
+    LOGGER.info(f"Starting listener for server messages from job {job.id} at channel {job.server_uuid}")
+    subscriber = get_subscriber(job.server_uuid, job.redis_host, job.redis_port)
+    for message in subscriber.listen():
+        if message["type"] == "message":
+            server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
+            LOGGER.debug(f"Message received! metrics: {server_metrics}")

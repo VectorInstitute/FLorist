@@ -2,8 +2,9 @@
 import json
 import uuid
 from enum import Enum
-from typing import Annotated, List, Optional
+from typing import Annotated, List, Optional, Any, Dict
 
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field
 
 from florist.api.clients.common import Client
@@ -41,6 +42,7 @@ class ClientInfo(BaseModel):
     data_path: str = Field(...)
     redis_host: str = Field(...)
     redis_port: str = Field(...)
+    client_uuid: Optional[Annotated[str, Field(...)]]
 
     class Config:
         """MongoDB config for the ClientInfo DB entity."""
@@ -53,6 +55,7 @@ class ClientInfo(BaseModel):
                 "data_path": "path/to/data",
                 "redis_host": "localhost",
                 "redis_port": "6880",
+                "client_uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
             },
         }
 
@@ -64,6 +67,7 @@ class Job(BaseModel):
     status: JobStatus = Field(default=JobStatus.NOT_STARTED)
     model: Optional[Annotated[Model, Field(...)]]
     server_address: Optional[Annotated[str, Field(...)]]
+    server_uuid: Optional[Annotated[str, Field(...)]]
     server_info: Optional[Annotated[str, Field(...)]]
     redis_host: Optional[Annotated[str, Field(...)]]
     redis_port: Optional[Annotated[str, Field(...)]]
@@ -82,6 +86,35 @@ class Job(BaseModel):
             json.loads(server_info)
         return True
 
+    @classmethod
+    async def find_by_id(cls, id: str, database) -> "Job":
+        job_collection = database[JOB_COLLECTION_NAME]
+        result = await job_collection.find_one({"_id": id})
+        return Job(**result)
+
+    @classmethod
+    async def find_by_status(cls, status: JobStatus, limit: int, database) -> List[Dict[str, Any]]:
+        status = jsonable_encoder(status)
+
+        job_collection = database[JOB_COLLECTION_NAME]
+        result = await job_collection.find({"status": status}).to_list(limit)
+        assert isinstance(result, list)
+        return result
+
+    async def update_uuids(self, server_uuid: str, client_uuids: List[str], database) -> None:
+        job_collection = database[JOB_COLLECTION_NAME]
+
+        self.server_uuid = server_uuid
+        await job_collection.update_one({"_id": self.id}, {"$set": {"server_uuid": server_uuid}})
+        for i in range(len(client_uuids)):
+            self.clients_info[i].client_uuid = client_uuids[i]
+            await job_collection.update_one({"_id": self.id}, {"$set": {f"clients_info.{i}.client_uuid": client_uuids[i]}})
+
+    async def save(self, database) -> str:
+        json_job = jsonable_encoder(self)
+        result = await database[JOB_COLLECTION_NAME].insert_one(json_job)
+        return result.inserted_id
+
     class Config:
         """MongoDB config for the Job DB entity."""
 
@@ -92,6 +125,7 @@ class Job(BaseModel):
                 "status": "NOT_STARTED",
                 "model": "MNIST",
                 "server_address": "localhost:8080",
+                "server_uuid": "d73243cf-8b89-473b-9607-8cd0253a101d",
                 "server_info": '{"n_server_rounds": 3, "batch_size": 8}',
                 "redis_host": "localhost",
                 "redis_port": "6879",
@@ -102,6 +136,7 @@ class Job(BaseModel):
                         "data_path": "path/to/data",
                         "redis_host": "localhost",
                         "redis_port": "6880",
+                        "client_uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
                     },
                 ],
             },
