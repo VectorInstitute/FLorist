@@ -1,4 +1,5 @@
 """Implementation of the MNIST client and model."""
+
 from typing import Tuple
 
 import torch

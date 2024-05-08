@@ -1,4 +1,5 @@
 """FastAPI routes for training."""
+
 import logging
 from json import JSONDecodeError
 from typing import Any, Dict, List

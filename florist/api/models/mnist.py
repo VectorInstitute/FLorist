@@ -1,4 +1,5 @@
 """Definitions for the MNIST model."""
+
 from typing import List
 
 import torch

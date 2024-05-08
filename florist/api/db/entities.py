@@ -1,4 +1,5 @@
 """Definitions for the MongoDB database entities."""
+
 import json
 import uuid
 from enum import Enum
@@ -221,7 +222,7 @@ class Job(BaseModel):
                 "server_metrics": '{"type": "server", "fit_start": "2024-04-23 15:33:12.865604", "rounds": {"1": {"fit_start": "2024-04-23 15:33:12.869001"}}}',
                 "redis_host": "localhost",
                 "redis_port": "6879",
-                "client_info": [
+                "clients_info": [
                     {
                         "client": "MNIST",
                         "service_address": "locahost:8081",

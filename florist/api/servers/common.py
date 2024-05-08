@@ -1,4 +1,5 @@
 """Common functions and definitions for servers."""
+
 from enum import Enum
 from typing import List
 

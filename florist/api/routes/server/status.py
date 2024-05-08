@@ -1,4 +1,5 @@
 """FastAPI routes for checking server status."""
+
 import json
 import logging
 

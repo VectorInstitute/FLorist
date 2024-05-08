@@ -1,4 +1,5 @@
 """FastAPI routes for the job."""
+
 from json import JSONDecodeError
 from typing import List
 

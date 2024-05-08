@@ -1,4 +1,5 @@
 """FLorist server FastAPI endpoints and routes."""
+
 from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator
 

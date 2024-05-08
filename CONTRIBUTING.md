@@ -37,7 +37,7 @@ using [Homebrew](https://brew.sh/):
 brew install yarn
 ```
 
-Then install the project dependencies:
+Then install the project dependencies in development mode:
 ```shell
 yarn
 ```
@@ -55,9 +55,14 @@ yarn dev
 
 ## Running the tests
 
-To run the unit tests, simply execute:
+To run the python unit tests, simply execute:
 ```shell
 pytest florist/tests/unit
+```
+
+To run the nextjs unit tests, simply execute:
+```shell
+yarn unit-test
 ```
 
 To run the integration tests, first make sure you:

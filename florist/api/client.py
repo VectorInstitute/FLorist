@@ -1,4 +1,5 @@
 """FLorist client FastAPI endpoints."""
+
 import json
 import logging
 import uuid
