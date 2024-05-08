@@ -1,6 +1,6 @@
 """FastAPI routes for the job."""
 from json import JSONDecodeError
-from typing import Any, Dict, List
+from typing import List
 
 from fastapi import APIRouter, Body, HTTPException, Request, status
 
@@ -16,7 +16,7 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
     response_model=Job,
 )
-async def new_job(request: Request, job: Job = Body(...)) -> Job:
+async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
     """
     Create a new training job.
 
@@ -38,13 +38,14 @@ async def new_job(request: Request, job: Job = Body(...)) -> Job:
         raise HTTPException(status_code=400, detail=msg) from e
 
     job_id = await job.create(request.app.database)
+    job_in_db = await Job.find_by_id(job_id, request.app.database)
 
-    created_job = await Job.find_by_id(job_id, request.app.database)
-    return created_job
+    assert job_in_db is not None
+    return job_in_db
 
 
 @router.get(path="/{status}", response_description="List jobs with the specified status", response_model=List[Job])
-async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Dict[str, Any]]:
+async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Job]:
     """
     List jobs with specified status.
 

@@ -44,6 +44,8 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
     try:
         job = await Job.find_by_id(job_id, request.app.database)
 
+        assert job is not None, f"Job with id {job_id} not found."
+
         assert job.status == JobStatus.NOT_STARTED, f"Job status ({job.status.value}) is not NOT_STARTED"
 
         assert job.model is not None, "Missing Job information: model"
@@ -110,44 +112,74 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-def server_training_listener(job: Job, database: Database) -> None:
+def server_training_listener(job: Job, database: Database[Dict[str, Any]]) -> None:
+    """
+    Listen to the Redis' channel that reports updates on the training process of a FL server.
+
+    Keeps consuming updates to the channel until it finds `fit_end` in the server metrics,
+    then closes the job with FINISHED_SUCCESSFULLY and saves both the clients and server's metrics
+    to the job in the database.
+
+    :param job: (Job) The job with the server_uuid to listen to.
+    :param database: (pymongo.database.Database) An instance of the database to save the information
+        into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async
+        because of limitations with FastAPI's BrackgroundTasks.
+    """
     LOGGER.info(f"Starting listener for server messages from job {job.id} at channel {job.server_uuid}")
+
+    assert job.server_uuid is not None, "job.server_uuid is None."
+    assert job.redis_host is not None, "job.redis_host is None."
+    assert job.redis_port is not None, "job.redis_port is None."
 
     # check if training has already finished before start listening
     server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
     LOGGER.debug(f"Listener: Current metrics for job {job.id}: {server_metrics}")
-    if "fit_end" in server_metrics:
+    if server_metrics is not None and "fit_end" in server_metrics:
         close_job(job, server_metrics, database)
         return
 
     subscriber = get_subscriber(job.server_uuid, job.redis_host, job.redis_port)
-    for message in subscriber.listen():  # TODO add a timeout mechanism, maybe?
+    # TODO add a timeout mechanism, maybe?
+    for message in subscriber.listen():  # type: ignore[no-untyped-call]
         if message["type"] == "message":
             # The contents of the message do not matter, we just use it to get notified
             server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
             LOGGER.debug(f"Listener: Message received for job {job.id}. Metrics: {server_metrics}")
 
-            if "fit_end" in server_metrics:
+            if server_metrics is not None and "fit_end" in server_metrics:
                 close_job(job, server_metrics, database)
                 return
 
 
-def close_job(job: Job, server_metrics: Dict[str, Any], database: Database) -> None:
+def close_job(job: Job, server_metrics: Dict[str, Any], database: Database[Dict[str, Any]]) -> None:
+    """
+    Close the job.
+
+    Collect the job's clients metrics, saving them and the server's metrics to the job and marking its
+    status as FINISHED_SUCCESSFULLY.
+
+    :param job: (Job) The job to be closed.
+    :param server_metrics: (Dict[str, Any]) The server's metrics to be saved into the job.
+    :param database: (pymongo.database.Database) An instance of the database to save the information
+        into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async
+        because of limitations with FastAPI's BrackgroundTasks.
+    """
     LOGGER.info(f"Listener: Training finished for job {job.id}")
 
     clients_metrics: List[Dict[str, Any]] = []
-    for client_info in job.clients_info:
-        response = requests.get(
-            url=f"http://{client_info.service_address}/{CHECK_CLIENT_STATUS_API}/{client_info.uuid}",
-            params={
-                "redis_host": client_info.redis_host,
-                "redis_port": client_info.redis_port,
-            },
-        )
-        client_metrics = response.json()
-        clients_metrics.append(client_metrics)
+    if job.clients_info is not None:
+        for client_info in job.clients_info:
+            response = requests.get(
+                url=f"http://{client_info.service_address}/{CHECK_CLIENT_STATUS_API}/{client_info.uuid}",
+                params={
+                    "redis_host": client_info.redis_host,
+                    "redis_port": client_info.redis_port,
+                },
+            )
+            client_metrics = response.json()
+            clients_metrics.append(client_metrics)
 
     job.set_status_sync(JobStatus.FINISHED_SUCCESSFULLY, database)
     job.set_metrics(server_metrics, clients_metrics, database)
 
-    LOGGER.info(f"Listener: Job {job.id} status has been set to {job.status}.")
+    LOGGER.info(f"Listener: Job {job.id} status has been set to {job.status.value}.")

@@ -92,31 +92,62 @@ class Job(BaseModel):
         return True
 
     @classmethod
-    async def find_by_id(cls, id: str, database: AsyncIOMotorDatabase) -> "Job":
+    async def find_by_id(cls, job_id: str, database: AsyncIOMotorDatabase) -> Optional["Job"]:
+        """
+        Find a job in the database by its id.
+
+        :param job_id: (str) the job's id.
+        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
+        :return: (Optional[Job]) An instance of the job record with the given ID, or `None` if it can't be found.
+        """
         job_collection = database[JOB_COLLECTION_NAME]
-        result = await job_collection.find_one({"_id": id})
+        result = await job_collection.find_one({"_id": job_id})
+        if result is None:
+            return result
         return Job(**result)
 
     @classmethod
-    async def find_by_status(
-        cls,
-        status: JobStatus,
-        limit: int,
-        database: AsyncIOMotorDatabase,
-    ) -> List[Dict[str, Any]]:
+    async def find_by_status(cls, status: JobStatus, limit: int, database: AsyncIOMotorDatabase) -> List["Job"]:
+        """
+        Return all jobs with the given status.
+
+        :param status: (JobStatus) The status of the jobs to be returned.
+        :param limit: (int) the limit amount of records that should be returned.
+        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
+        :return: (List[Job]) The list of jobs with the given status int the database.
+        """
         status = jsonable_encoder(status)
 
         job_collection = database[JOB_COLLECTION_NAME]
         result = await job_collection.find({"status": status}).to_list(limit)
         assert isinstance(result, list)
-        return result
+        return [Job(**r) for r in result]
 
     async def create(self, database: AsyncIOMotorDatabase) -> str:
+        """
+        Save this instance under a new record in the database.
+
+        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
+        :return: (str) the new job record's id.
+        """
         json_job = jsonable_encoder(self)
         result = await database[JOB_COLLECTION_NAME].insert_one(json_job)
+        assert isinstance(result.inserted_id, str)
         return result.inserted_id
 
     async def set_uuids(self, server_uuid: str, client_uuids: List[str], database: AsyncIOMotorDatabase) -> None:
+        """
+        Save the server and clients' UUIDs in the database under the current job's id.
+
+        :param server_uuid: [str] the server_uuid to be saved in the database.
+        :param client_uuids: List[str] the list of client_uuids to be saved in the database.
+        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
+        """
+        assert self.clients_info is not None and len(self.clients_info) == len(client_uuids), (
+            "self.clients_info and client_uuids must have the same length "
+            f"({'None' if self.clients_info is None else len(self.clients_info)} =/= {len(client_uuids)})."
+        )
+
         job_collection = database[JOB_COLLECTION_NAME]
 
         self.server_uuid = server_uuid
@@ -126,23 +157,54 @@ class Job(BaseModel):
             await job_collection.update_one({"_id": self.id}, {"$set": {f"clients_info.{i}.uuid": client_uuids[i]}})
 
     async def set_status(self, status: JobStatus, database: AsyncIOMotorDatabase) -> None:
+        """
+        Save the status in the database under the current job's id.
+
+        :param status: (JobStatus) the status to be saved in the database.
+        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
+        """
         job_collection = database[JOB_COLLECTION_NAME]
         self.status = status
         await job_collection.update_one({"_id": self.id}, {"$set": {"status": status.value}})
 
-    def set_status_sync(self, status: JobStatus, database: Database) -> None:
+    def set_status_sync(self, status: JobStatus, database: Database[Dict[str, Any]]) -> None:
+        """
+        Sync function to save the status in the database under the current job's id.
+
+        :param status: (JobStatus) the status to be saved in the database.
+        :param database: (pymongo.database.Database) The database where the job collection is stored.
+        """
         job_collection = database[JOB_COLLECTION_NAME]
         self.status = status
         job_collection.update_one({"_id": self.id}, {"$set": {"status": status.value}})
 
-    def set_metrics(self, server_metrics: str, client_metrics: List[str], database: Database) -> None:
+    def set_metrics(
+        self,
+        server_metrics: Dict[str, Any],
+        client_metrics: List[Dict[str, Any]],
+        database: Database[Dict[str, Any]],
+    ) -> None:
+        """
+        Sync function to save the server and clients' metrics in the database under the current job's id.
+
+        :param server_metrics: (Dict[str, Any]) the server metrics to be saved.
+        :param client_metrics: (List[Dict[str, Any]]) the clients metrics to be saved.
+        :param database: (pymongo.database.Database) The database where the job collection is stored.
+        """
+        assert self.clients_info is not None and len(self.clients_info) == len(client_metrics), (
+            "self.clients_info and client_metrics must have the same length "
+            f"({'None' if self.clients_info is None else len(self.clients_info)} =/= {len(client_metrics)})."
+        )
+
         job_collection = database[JOB_COLLECTION_NAME]
 
-        self.server_metrics = server_metrics
-        job_collection.update_one({"_id": self.id}, {"$set": {"server_metrics": server_metrics}})
+        self.server_metrics = json.dumps(server_metrics)
+        job_collection.update_one({"_id": self.id}, {"$set": {"server_metrics": self.server_metrics}})
         for i in range(len(client_metrics)):
-            self.clients_info[i].metrics = client_metrics[i]
-            job_collection.update_one({"_id": self.id}, {"$set": {f"clients_info.{i}.metrics": client_metrics[i]}})
+            self.clients_info[i].metrics = json.dumps(client_metrics[i])
+            job_collection.update_one(
+                {"_id": self.id}, {"$set": {f"clients_info.{i}.metrics": self.clients_info[i].metrics}}
+            )
 
     class Config:
         """MongoDB config for the Job DB entity."""

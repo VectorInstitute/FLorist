@@ -5,9 +5,9 @@ from logging import DEBUG, Logger
 from typing import Any, Dict, Optional
 
 import redis
-from redis.client import PubSub
 from fl4health.reporting.metrics import DateTimeEncoder, MetricsReporter
 from flwr.common.logger import log
+from redis.client import PubSub
 
 
 class RedisMetricsReporter(MetricsReporter):  # type: ignore
@@ -124,19 +124,37 @@ def wait_for_metric(
 
 
 def get_subscriber(channel: str, redis_host: str, redis_port: str) -> PubSub:
+    """
+    Return a PubSub instance with a subscription to the given channel.
+
+    :param channel: (str) The name of the channel to add a subscriber to.
+    :param redis_host: (str) the hostname of the redis instance.
+    :param redis_port: (str) the port of the redis instance.
+    :return: (redis.client.PubSub) The PubSub instance subscribed to the given channel.
+    """
     redis_connection = redis.Redis(host=redis_host, port=redis_port)
-    pubsub = redis_connection.pubsub()
-    pubsub.subscribe(channel)
+    pubsub: PubSub = redis_connection.pubsub()  # type: ignore[no-untyped-call]
+    pubsub.subscribe(channel)  # type: ignore[no-untyped-call]
     return pubsub
 
 
-def get_from_redis(uuid: str, redis_host: str, redis_port: str) -> Optional[Dict[str, Any]]:
+def get_from_redis(name: str, redis_host: str, redis_port: str) -> Optional[Dict[str, Any]]:
+    """
+    Get the contents of what's saved on Redis under the name.
+
+    :param name: (str) the name to look into Redis.
+    :param redis_host: (str) the hostname of the redis instance.
+    :param redis_port: (str) the port of the redis instance.
+    :return: (Optional[Dict[str, Any]]) the contents under the name.
+    """
     redis_connection = redis.Redis(host=redis_host, port=redis_port)
 
-    result = redis_connection.get(uuid)
+    result = redis_connection.get(name)
 
     if result is None:
         return result
 
     assert isinstance(result, bytes)
-    return json.loads(result)
+    result_dict = json.loads(result)
+    assert isinstance(result_dict, dict)
+    return result_dict
