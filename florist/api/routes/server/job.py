@@ -37,7 +37,7 @@ async def new_job(request: Request, job: Job = Body(...)) -> Job:
         msg = f"job.server_info could not be parsed into JSON. job.server_info: {job.server_info}. Error: {e}"
         raise HTTPException(status_code=400, detail=msg) from e
 
-    job_id = await job.save(request.app.database)
+    job_id = await job.create(request.app.database)
 
     created_job = await Job.find_by_id(job_id, request.app.database)
     return created_job

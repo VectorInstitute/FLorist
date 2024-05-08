@@ -2,11 +2,12 @@
 import json
 import uuid
 from enum import Enum
-from typing import Annotated, List, Optional, Any, Dict
+from typing import Annotated, Any, Dict, List, Optional
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from fastapi.encoders import jsonable_encoder
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import BaseModel, Field
+from pymongo.database import Database
 
 from florist.api.clients.common import Client
 from florist.api.servers.common import Model
@@ -58,7 +59,7 @@ class ClientInfo(BaseModel):
                 "redis_host": "localhost",
                 "redis_port": "6880",
                 "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
-                "metrics": '{"type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}'
+                "metrics": '{"type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
             },
         }
 
@@ -110,34 +111,38 @@ class Job(BaseModel):
         assert isinstance(result, list)
         return result
 
+    async def create(self, database: AsyncIOMotorDatabase) -> str:
+        json_job = jsonable_encoder(self)
+        result = await database[JOB_COLLECTION_NAME].insert_one(json_job)
+        return result.inserted_id
+
     async def set_uuids(self, server_uuid: str, client_uuids: List[str], database: AsyncIOMotorDatabase) -> None:
         job_collection = database[JOB_COLLECTION_NAME]
 
         self.server_uuid = server_uuid
         await job_collection.update_one({"_id": self.id}, {"$set": {"server_uuid": server_uuid}})
         for i in range(len(client_uuids)):
-            self.clients_info[i].client_uuid = client_uuids[i]
+            self.clients_info[i].uuid = client_uuids[i]
             await job_collection.update_one({"_id": self.id}, {"$set": {f"clients_info.{i}.uuid": client_uuids[i]}})
 
     async def set_status(self, status: JobStatus, database: AsyncIOMotorDatabase) -> None:
-        print(type(database))
         job_collection = database[JOB_COLLECTION_NAME]
         self.status = status
         await job_collection.update_one({"_id": self.id}, {"$set": {"status": status.value}})
 
-    async def set_metrics(self, server_metrics: str, client_metrics: List[str], database: AsyncIOMotorDatabase) -> None:
+    def set_status_sync(self, status: JobStatus, database: Database) -> None:
+        job_collection = database[JOB_COLLECTION_NAME]
+        self.status = status
+        job_collection.update_one({"_id": self.id}, {"$set": {"status": status.value}})
+
+    def set_metrics(self, server_metrics: str, client_metrics: List[str], database: Database) -> None:
         job_collection = database[JOB_COLLECTION_NAME]
 
         self.server_metrics = server_metrics
-        await job_collection.update_one({"_id": self.id}, {"$set": {"server_metrics": server_metrics}})
+        job_collection.update_one({"_id": self.id}, {"$set": {"server_metrics": server_metrics}})
         for i in range(len(client_metrics)):
             self.clients_info[i].metrics = client_metrics[i]
-            await job_collection.update_one({"_id": self.id}, {"$set": {f"clients_info.{i}.metrics": client_metrics[i]}})
-
-    async def save(self, database: AsyncIOMotorDatabase) -> str:
-        json_job = jsonable_encoder(self)
-        result = await database[JOB_COLLECTION_NAME].insert_one(json_job)
-        return result.inserted_id
+            job_collection.update_one({"_id": self.id}, {"$set": {f"clients_info.{i}.metrics": client_metrics[i]}})
 
     class Config:
         """MongoDB config for the Job DB entity."""
