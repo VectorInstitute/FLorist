@@ -1,4 +1,5 @@
 """Common classes and functions for models."""
+
 import json
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
