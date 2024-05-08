@@ -1,4 +1,5 @@
 """Definitions for the MNIST model."""
+
 import torch
 import torch.nn.functional as f
 from torch import nn

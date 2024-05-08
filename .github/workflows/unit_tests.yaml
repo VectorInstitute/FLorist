@@ -50,7 +50,7 @@ jobs:
           poetry install --with docs,test
           coverage run -m pytest florist/tests/unit && coverage xml && coverage report -m
       - name: Upload python coverage to Codecov
-        uses: Wandalen/wretry.action@v1.4.4
+        uses: Wandalen/wretry.action@v3.4.0
         with:
           action: codecov/codecov-action@v4.0.1
           with: |
@@ -66,7 +66,7 @@ jobs:
           yarn
           yarn unit-test
       - name: Upload js coverage to Codecov
-        uses: Wandalen/wretry.action@v1.4.4
+        uses: Wandalen/wretry.action@v3.4.0
         with:
           action: codecov/codecov-action@v4.0.1
           with: |
