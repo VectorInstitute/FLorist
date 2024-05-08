@@ -1,4 +1,5 @@
 """Definitions for the MongoDB database entities."""
+
 import json
 import uuid
 from enum import Enum

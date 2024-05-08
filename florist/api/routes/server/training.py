@@ -1,4 +1,5 @@
 """FastAPI routes for training."""
+
 import logging
 from typing import List
 
