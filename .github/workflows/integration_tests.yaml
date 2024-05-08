@@ -43,7 +43,7 @@ jobs:
         with:
           python-version: '3.9'
       - name: Setup redis
-        uses: supercharge/redis-github-action@1.2.0
+        uses: supercharge/redis-github-action@1.8.0
         with:
           redis-version: 7.2.4
       - name: Setup MongoDB
