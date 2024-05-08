@@ -36,14 +36,14 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.1.5
       - name: Install poetry
         run: python3 -m pip install --upgrade pip && python3 -m pip install poetry
       - uses: actions/setup-python@v5.1.0
         with:
           python-version: '3.9'
       - name: Setup redis
-        uses: supercharge/redis-github-action@1.2.0
+        uses: supercharge/redis-github-action@1.8.0
         with:
           redis-version: 7.2.4
       - name: Setup MongoDB
@@ -57,7 +57,7 @@ jobs:
           poetry install --with docs,test
           coverage run -m pytest florist/tests/integration && coverage xml && coverage report -m
       - name: Upload python coverage to Codecov
-        uses: Wandalen/wretry.action@v1.4.4
+        uses: Wandalen/wretry.action@v3.4.0
         with:
           action: codecov/codecov-action@v4.0.1
           with: |
@@ -75,7 +75,7 @@ jobs:
 #          yarn
 #          yarn integration-test
 #      - name: Upload js coverage to Codecov
-#        uses: Wandalen/wretry.action@v1.4.4
+#        uses: Wandalen/wretry.action@v3.4.0
 #        with:
 #          action: codecov/codecov-action@v4.0.1
 #          with: |
