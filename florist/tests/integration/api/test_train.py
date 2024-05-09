@@ -33,7 +33,7 @@ async def test_train():
                 test_redis_port = "6379"
                 test_n_server_rounds = 2
 
-                job_dict = await new_job(test_request, Job(
+                job = await new_job(test_request, Job(
                     status=JobStatus.NOT_STARTED,
                     model="MNIST",
                     server_address="localhost:8080",
@@ -55,9 +55,11 @@ async def test_train():
                     ]
                 ))
 
+                # TODO assert job status is not started
+
                 request = requests.Request(
                     method="POST",
-                    url=f"http://localhost:8000/api/server/training/start?job_id={job_dict['_id']}",
+                    url=f"http://localhost:8000/api/server/training/start?job_id={job.id}",
                 ).prepare()
                 session = requests.Session()
                 response = session.send(request)
@@ -65,6 +67,8 @@ async def test_train():
                 # Check response
                 assert response.status_code == 200
                 assert response.json() == {"server_uuid": ANY, "client_uuids": [ANY]}
+
+                # TODO assert job status is in progress
 
                 redis_conn = redis.Redis(host=test_redis_host, port=test_redis_port)
                 server_uuid = response.json()["server_uuid"]
@@ -90,3 +94,5 @@ async def test_train():
                 assert "initialized" in client_metrics
                 assert "shutdown" in client_metrics
                 assert len(client_metrics["rounds"]) == test_n_server_rounds
+
+                # TODO assert job status is finished successfully
