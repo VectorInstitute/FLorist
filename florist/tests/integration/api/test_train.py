@@ -6,17 +6,24 @@ from unittest.mock import ANY
 import redis
 import uvicorn
 
+from florist.api.clients.common import Client
+from florist.api.db.entities import Job, JobStatus, ClientInfo
 from florist.api.monitoring.metrics import wait_for_metric
 from florist.api.routes.server.training import LOGGER
-from florist.tests.integration.api.utils import TestUvicornServer
+from florist.api.routes.server.job import new_job
+from florist.api.server import DATABASE_NAME
+from florist.tests.integration.api.utils import TestUvicornServer, MockRequest, MockApp
 
 
-def test_train():
+async def test_train():
     # Define services
     server_config = uvicorn.Config("florist.api.server:app", host="localhost", port=8000, log_level="debug")
     server_service = TestUvicornServer(config=server_config)
     client_config = uvicorn.Config("florist.api.client:app", host="localhost", port=8001, log_level="debug")
     client_service = TestUvicornServer(config=client_config)
+
+    # TODO figure out how to run fastapi with the test DB so we can use the fixture here
+    test_request = MockRequest(MockApp(DATABASE_NAME))
 
     # Start services
     with server_service.run_in_thread():
@@ -26,31 +33,31 @@ def test_train():
                 test_redis_port = "6379"
                 test_n_server_rounds = 2
 
-                # Send the POST request to start training
-                data = {
-                    "model": (None, "MNIST"),
-                    "server_address": (None, "localhost:8080"),
-                    "n_server_rounds": (None, test_n_server_rounds),
-                    "batch_size": (None, 8),
-                    "local_epochs": (None, 1),
-                    "redis_host": (None, test_redis_host),
-                    "redis_port": (None, test_redis_port),
-                    "clients_info": (None, json.dumps(
-                        [
-                            {
-                                "client": "MNIST",
-                                "client_address": "localhost:8001",
-                                "data_path": f"{temp_dir}/data",
-                                "redis_host": test_redis_host,
-                                "redis_port": test_redis_port,
-                            },
-                        ],
-                    )),
-                }
+                job_dict = await new_job(test_request, Job(
+                    status=JobStatus.NOT_STARTED,
+                    model="MNIST",
+                    server_address="localhost:8080",
+                    server_config=json.dumps({
+                        "n_server_rounds": test_n_server_rounds,
+                        "batch_size": 8,
+                        "local_epochs": 1,
+                    }),
+                    redis_host=test_redis_host,
+                    redis_port=test_redis_port,
+                    clients_info=[
+                        ClientInfo(
+                            client=Client.MNIST,
+                            service_address="localhost:8001",
+                            data_path=f"{temp_dir}/data",
+                            redis_host=test_redis_host,
+                            redis_port=test_redis_port,
+                        )
+                    ]
+                ))
+
                 request = requests.Request(
                     method="POST",
-                    url=f"http://localhost:8000/api/server/training/start",
-                    files=data,
+                    url=f"http://localhost:8000/api/server/training/start?job_id={job_dict['_id']}",
                 ).prepare()
                 session = requests.Session()
                 response = session.send(request)

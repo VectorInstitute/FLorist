@@ -1,15 +1,17 @@
 """FastAPI routes for training."""
 
 import logging
+from json import JSONDecodeError
 from typing import List
 
 import requests
-from fastapi import APIRouter, Form
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from typing_extensions import Annotated
 
+from florist.api.db.entities import JOB_COLLECTION_NAME, Job
 from florist.api.monitoring.metrics import wait_for_metric
-from florist.api.servers.common import ClientInfo, ClientInfoParseError, Model
+from florist.api.servers.common import Model
+from florist.api.servers.config_parsers import ConfigParser
 from florist.api.servers.launch import launch_local_server
 
 
@@ -21,41 +23,13 @@ START_CLIENT_API = "api/client/start"
 
 
 @router.post("/start")
-def start(
-    model: Annotated[str, Form()],
-    server_address: Annotated[str, Form()],
-    n_server_rounds: Annotated[int, Form()],
-    batch_size: Annotated[int, Form()],
-    local_epochs: Annotated[int, Form()],
-    redis_host: Annotated[str, Form()],
-    redis_port: Annotated[str, Form()],
-    clients_info: Annotated[str, Form()],
-) -> JSONResponse:
+async def start(job_id: str, request: Request) -> JSONResponse:
     """
-    Start FL training by starting a FL server and its clients.
+    Start FL training for a job id by starting a FL server and its clients.
 
-    Should be called with a POST request and the parameters should be contained in the request's form.
-
-    :param model: (str) The name of the model to train. Should be one of the values in the enum
-        florist.api.servers.common.Model
-    :param server_address: (str) The address of the FL server to be started. It should be comprised of
-        the host name and port separated by colon (e.g. "localhost:8080")
-    :param n_server_rounds: (int) The number of rounds the FL server should run.
-    :param batch_size: (int) The size of the batch for training.
-    :param local_epochs: (int) The number of epochs to run by the clients.
-    :param redis_host: (str) The host name for the Redis instance for metrics reporting.
-    :param redis_port: (str) The port for the Redis instance for metrics reporting.
-    :param clients_info: (str) A JSON string containing the client information. It will be parsed by
-        florist.api.servers.common.ClientInfo and should be in the following format:
-        [
-            {
-                "client": <client name as defined in florist.api.clients.common.Client>,
-                "client_address": <Florist's client hostname and port, e.g. localhost:8081>,
-                "data_path": <path where the data is located in the FL client's machine>,
-                "redis_host": <hostname of the Redis instance the FL client will be reporting to>,
-                "redis_port": <port of the Redis instance the FL client will be reporting to>,
-            }
-        ]
+    :param job_id: (str) The id of the Job record in the DB which contains the information
+        necessary to start training.
+    :param request: (fastapi.Request) the FastAPI request object.
     :return: (JSONResponse) If successful, returns 200 with a JSON containing the UUID for the server and
         the clients in the format below. The UUIDs can be used to pull metrics from Redis.
             {
@@ -66,38 +40,50 @@ def start(
             {"error": <error message>}
     """
     try:
-        # Parse input data
-        if model not in Model.list():
-            error_msg = f"Model '{model}' not supported. Supported models: {Model.list()}"
-            return JSONResponse(content={"error": error_msg}, status_code=400)
+        job_collection = request.app.database[JOB_COLLECTION_NAME]
+        result = await job_collection.find_one({"_id": job_id})
+        job = Job(**result)
 
-        model_class = Model.class_for_model(Model[model])
-        clients_info_list = ClientInfo.parse(clients_info)
+        if job.config_parser is None:
+            job.config_parser = ConfigParser.BASIC
+
+        assert job.model is not None, "Missing Job information: model"
+        assert job.server_config is not None, "Missing Job information: server_config"
+        assert job.clients_info is not None and len(job.clients_info) > 0, "Missing Job information: clients_info"
+        assert job.server_address is not None, "Missing Job information: server_address"
+        assert job.redis_host is not None, "Missing Job information: redis_host"
+        assert job.redis_port is not None, "Missing Job information: redis_port"
+
+        try:
+            config_parser = ConfigParser.class_for_parser(job.config_parser)
+            server_config = config_parser.parse(job.server_config)
+        except JSONDecodeError as err:
+            raise AssertionError("server_config is not a valid json string.") from err
+
+        model_class = Model.class_for_model(job.model)
 
         # Start the server
         server_uuid, _ = launch_local_server(
             model=model_class(),
-            n_clients=len(clients_info_list),
-            server_address=server_address,
-            n_server_rounds=n_server_rounds,
-            batch_size=batch_size,
-            local_epochs=local_epochs,
-            redis_host=redis_host,
-            redis_port=redis_port,
+            n_clients=len(job.clients_info),
+            server_address=job.server_address,
+            redis_host=job.redis_host,
+            redis_port=job.redis_port,
+            **server_config,
         )
-        wait_for_metric(server_uuid, "fit_start", redis_host, redis_port, logger=LOGGER)
+        wait_for_metric(server_uuid, "fit_start", job.redis_host, job.redis_port, logger=LOGGER)
 
         # Start the clients
         client_uuids: List[str] = []
-        for client_info in clients_info_list:
+        for client_info in job.clients_info:
             parameters = {
-                "server_address": server_address,
+                "server_address": job.server_address,
                 "client": client_info.client.value,
                 "data_path": client_info.data_path,
                 "redis_host": client_info.redis_host,
                 "redis_port": client_info.redis_port,
             }
-            response = requests.get(url=f"http://{client_info.client_address}/{START_CLIENT_API}", params=parameters)
+            response = requests.get(url=f"http://{client_info.service_address}/{START_CLIENT_API}", params=parameters)
             json_response = response.json()
             LOGGER.debug(f"Client response: {json_response}")
 
@@ -112,8 +98,8 @@ def start(
         # Return the UUIDs
         return JSONResponse({"server_uuid": server_uuid, "client_uuids": client_uuids})
 
-    except (ValueError, ClientInfoParseError) as ex:
-        return JSONResponse(content={"error": str(ex)}, status_code=400)
+    except AssertionError as err:
+        return JSONResponse(content={"error": str(err)}, status_code=400)
 
     except Exception as ex:
         LOGGER.exception(ex)

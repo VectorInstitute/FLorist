@@ -10,7 +10,7 @@
     "prod": "concurrently \"npm run next-dev\" \"npm run fastapi-prod\"",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint florist",
+    "lint": "next lint florist **/*.tsx",
     "lint-gh-action": "next lint",
     "prettier": "prettier florist/app florist/tests/unit/app --write",
     "unit-test": "jest --coverage florist/tests/unit/",
