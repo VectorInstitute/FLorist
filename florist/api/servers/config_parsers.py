@@ -67,6 +67,6 @@ class ConfigParser(Enum):
 
 
 class IncompleteConfigError(Exception):
-    """Defines errors in server info strings that have incomplete information."""
+    """Defines errors in server config strings that have incomplete information."""
 
     pass
