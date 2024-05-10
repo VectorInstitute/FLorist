@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.monitoring.logs module" href="florist.api.monitoring.logs.html" /><link rel="prev" title="florist.api.models.mnist module" href="florist.api.models.mnist.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.servers.launch module" href="florist.api.servers.launch.html" /><link rel="prev" title="florist.api.servers.common module" href="florist.api.servers.common.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>florist.api.monitoring package - Vector AI Engineering template repository</title>
+        <title>florist.api.servers.config_parsers module - Vector AI Engineering template repository</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -185,7 +185,7 @@
 <li class="toctree-l5"><a class="reference internal" href="florist.api.models.mnist.html">florist.api.models.mnist module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 current has-children current-page"><a class="current reference internal" href="#">florist.api.monitoring package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.monitoring.html">florist.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.monitoring.logs.html">florist.api.monitoring.logs module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.monitoring.metrics.html">florist.api.monitoring.metrics module</a></li>
 </ul>
@@ -199,9 +199,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.servers.html">florist.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of florist.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 current has-children"><a class="reference internal" href="florist.api.servers.html">florist.api.servers package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of florist.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="florist.api.servers.common.html">florist.api.servers.common module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="florist.api.servers.config_parsers.html">florist.api.servers.config_parsers module</a></li>
+<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">florist.api.servers.config_parsers module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.servers.launch.html">florist.api.servers.launch module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.servers.utils.html">florist.api.servers.utils module</a></li>
 </ul>
@@ -294,32 +294,100 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-florist.api.monitoring">
-<span id="florist-api-monitoring-package"></span><h1>florist.api.monitoring package<a class="headerlink" href="#module-florist.api.monitoring" title="Link to this heading">#</a></h1>
-<p>Classes and functions for monitoring of clients and servers’ execution.</p>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="florist.api.monitoring.logs.html">florist.api.monitoring.logs module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.monitoring.logs.html#florist.api.monitoring.logs.get_client_log_file_path"><code class="docutils literal notranslate"><span class="pre">get_client_log_file_path()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.monitoring.logs.html#florist.api.monitoring.logs.get_server_log_file_path"><code class="docutils literal notranslate"><span class="pre">get_server_log_file_path()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="florist.api.monitoring.metrics.html">florist.api.monitoring.metrics module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter.__init__"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter.add_to_metrics"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter.add_to_metrics()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter.add_to_metrics_at_round"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter.add_to_metrics_at_round()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter.dump"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter.dump()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.wait_for_metric"><code class="docutils literal notranslate"><span class="pre">wait_for_metric()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
+          <section id="module-florist.api.servers.config_parsers">
+<span id="florist-api-servers-config-parsers-module"></span><h1>florist.api.servers.config_parsers module<a class="headerlink" href="#module-florist.api.servers.config_parsers" title="Link to this heading">#</a></h1>
+<p>Parsers for FL server configurations.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="florist.api.servers.config_parsers.BasicConfigParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BasicConfigParser</span></span><a class="reference internal" href="../../_modules/florist/api/servers/config_parsers.html#BasicConfigParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.config_parsers.BasicConfigParser" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Parser for basic server configurations.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.servers.config_parsers.BasicConfigParser.mandatory_fields">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mandatory_fields</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/config_parsers.html#BasicConfigParser.mandatory_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.config_parsers.BasicConfigParser.mandatory_fields" title="Link to this definition">#</a></dt>
+<dd><p>Define the mandatory fields for basic configuration, namely <cite>n_server_rounds</cite>, <cite>batch_size</cite> and <cite>local_epochs</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(List[str]) the list of fields for basic server configuration.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.servers.config_parsers.BasicConfigParser.parse">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_json_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/config_parsers.html#BasicConfigParser.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.config_parsers.BasicConfigParser.parse" title="Link to this definition">#</a></dt>
+<dd><p>Parse a configuration JSON string into a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_json_str</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the configuration JSON string</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(Dict[str, Any]) The configuration JSON string parsed as a dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="florist.api.servers.config_parsers.ConfigParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ConfigParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/config_parsers.html#ConfigParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.config_parsers.ConfigParser" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/enum.html#enum.Enum" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Enum to define the types of server configuration parsers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.servers.config_parsers.ConfigParser.BASIC">
+<span class="sig-name descname"><span class="pre">BASIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BASIC'</span></em><a class="headerlink" href="#florist.api.servers.config_parsers.ConfigParser.BASIC" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.servers.config_parsers.ConfigParser.class_for_parser">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_for_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_parser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/config_parsers.html#ConfigParser.class_for_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.config_parsers.ConfigParser.class_for_parser" title="Link to this definition">#</a></dt>
+<dd><p>Return the class for a given config parser.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_parser</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#florist.api.servers.config_parsers.ConfigParser" title="florist.api.servers.config_parsers.ConfigParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigParser</span></code></a></span>) – (ConfigParser) The config parser enumeration instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#type" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference internal" href="#florist.api.servers.config_parsers.BasicConfigParser" title="florist.api.servers.config_parsers.BasicConfigParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicConfigParser</span></code></a>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(type[BasicConfigParser]) A subclass of BasicConfigParser corresponding to the given config parser.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if the config_parser is not supported.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.servers.config_parsers.ConfigParser.list">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/config_parsers.html#ConfigParser.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.config_parsers.ConfigParser.list" title="Link to this definition">#</a></dt>
+<dd><p>List all the supported config parsers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(List[str]) a list of supported config parsers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="florist.api.servers.config_parsers.IncompleteConfigError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">IncompleteConfigError</span></span><a class="reference internal" href="../../_modules/florist/api/servers/config_parsers.html#IncompleteConfigError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.config_parsers.IncompleteConfigError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/exceptions.html#Exception" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Defines errors in server config strings that have incomplete information.</p>
+</dd></dl>
+
 </section>
 
         </article>
@@ -327,23 +395,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="florist.api.monitoring.logs.html">
+          <a class="next-page" href="florist.api.servers.launch.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">florist.api.monitoring.logs module</div>
+                <div class="title">florist.api.servers.launch module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="florist.api.models.mnist.html">
+          <a class="prev-page" href="florist.api.servers.common.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">florist.api.models.mnist module</div>
+                <div class="title">florist.api.servers.common module</div>
                 
               </div>
             </a>
@@ -386,8 +454,19 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">florist.api.monitoring package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#">florist.api.servers.config_parsers module</a><ul>
+<li><a class="reference internal" href="#florist.api.servers.config_parsers.BasicConfigParser"><code class="docutils literal notranslate"><span class="pre">BasicConfigParser</span></code></a><ul>
+<li><a class="reference internal" href="#florist.api.servers.config_parsers.BasicConfigParser.mandatory_fields"><code class="docutils literal notranslate"><span class="pre">BasicConfigParser.mandatory_fields()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.servers.config_parsers.BasicConfigParser.parse"><code class="docutils literal notranslate"><span class="pre">BasicConfigParser.parse()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#florist.api.servers.config_parsers.ConfigParser"><code class="docutils literal notranslate"><span class="pre">ConfigParser</span></code></a><ul>
+<li><a class="reference internal" href="#florist.api.servers.config_parsers.ConfigParser.BASIC"><code class="docutils literal notranslate"><span class="pre">ConfigParser.BASIC</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.servers.config_parsers.ConfigParser.class_for_parser"><code class="docutils literal notranslate"><span class="pre">ConfigParser.class_for_parser()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.servers.config_parsers.ConfigParser.list"><code class="docutils literal notranslate"><span class="pre">ConfigParser.list()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#florist.api.servers.config_parsers.IncompleteConfigError"><code class="docutils literal notranslate"><span class="pre">IncompleteConfigError</span></code></a></li>
 </ul>
 </li>
 </ul>

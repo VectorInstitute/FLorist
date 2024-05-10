@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>florist.api.db.entities - Vector AI Engineering template repository</title>
+        <title>florist.api.servers.config_parsers - Vector AI Engineering template repository</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -292,121 +292,99 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.api.db.entities</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Definitions for the MongoDB database entities.&quot;&quot;&quot;</span>
+          <h1>Source code for florist.api.servers.config_parsers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Parsers for FL server configurations.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
-
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
-
-<span class="kn">from</span> <span class="nn">florist.api.clients.common</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.common</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.config_parsers</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
 
 
-<span class="n">JOB_COLLECTION_NAME</span> <span class="o">=</span> <span class="s2">&quot;job&quot;</span>
-<span class="n">MAX_RECORDS_TO_FETCH</span> <span class="o">=</span> <span class="mi">1000</span>
+<div class="viewcode-block" id="BasicConfigParser">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.BasicConfigParser">[docs]</a>
+<span class="k">class</span> <span class="nc">BasicConfigParser</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parser for basic server configurations.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BasicConfigParser.mandatory_fields">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.BasicConfigParser.mandatory_fields">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">mandatory_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define the mandatory fields for basic configuration, namely `n_server_rounds`, `batch_size` and `local_epochs`.</span>
+
+<span class="sd">        :return: (List[str]) the list of fields for basic server configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;n_server_rounds&quot;</span><span class="p">,</span> <span class="s2">&quot;batch_size&quot;</span><span class="p">,</span> <span class="s2">&quot;local_epochs&quot;</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="JobStatus">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.JobStatus">[docs]</a>
-<span class="k">class</span> <span class="nc">JobStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enumeration of all possible statuses of a Job.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BasicConfigParser.parse">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.BasicConfigParser.parse">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config_json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse a configuration JSON string into a dictionary.</span>
 
-    <span class="n">NOT_STARTED</span> <span class="o">=</span> <span class="s2">&quot;NOT_STARTED&quot;</span>
-    <span class="n">IN_PROGRESS</span> <span class="o">=</span> <span class="s2">&quot;IN_PROGRESS&quot;</span>
-    <span class="n">FINISHED_WITH_ERROR</span> <span class="o">=</span> <span class="s2">&quot;FINISHED_WITH_ERROR&quot;</span>
-    <span class="n">FINISHED_SUCCESSFULLY</span> <span class="o">=</span> <span class="s2">&quot;FINISHED_SUCCESSFULLY&quot;</span>
+<span class="sd">        :param config_json_str: (str) the configuration JSON string</span>
+<span class="sd">        :return: (Dict[str, Any]) The configuration JSON string parsed as a dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">config_json_str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
 
-<div class="viewcode-block" id="JobStatus.list">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.JobStatus.list">[docs]</a>
+        <span class="n">mandatory_fields</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mandatory_fields</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">mandatory_field</span> <span class="ow">in</span> <span class="n">mandatory_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mandatory_field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">IncompleteConfigError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Server config does not contain &#39;</span><span class="si">{</span><span class="n">mandatory_field</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">config</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ConfigParser">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.ConfigParser">[docs]</a>
+<span class="k">class</span> <span class="nc">ConfigParser</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum to define the types of server configuration parsers.&quot;&quot;&quot;</span>
+
+    <span class="n">BASIC</span> <span class="o">=</span> <span class="s2">&quot;BASIC&quot;</span>
+
+<div class="viewcode-block" id="ConfigParser.class_for_parser">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.ConfigParser.class_for_parser">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">class_for_parser</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config_parser</span><span class="p">:</span> <span class="s2">&quot;ConfigParser&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">BasicConfigParser</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the class for a given config parser.</span>
+
+<span class="sd">        :param config_parser: (ConfigParser) The config parser enumeration instance.</span>
+<span class="sd">        :return: (type[BasicConfigParser]) A subclass of BasicConfigParser corresponding to the given config parser.</span>
+<span class="sd">        :raises ValueError: if the config_parser is not supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">config_parser</span> <span class="o">==</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">BASIC</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">BasicConfigParser</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config parser </span><span class="si">{</span><span class="n">config_parser</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConfigParser.list">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.ConfigParser.list">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        List all the valid statuses.</span>
+<span class="sd">        List all the supported config parsers.</span>
 
-<span class="sd">        :return: (List[str]) a list of valid job statuses.</span>
+<span class="sd">        :return: (List[str]) a list of supported config parsers.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">JobStatus</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">config_parser</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">config_parser</span> <span class="ow">in</span> <span class="n">ConfigParser</span><span class="p">]</span></div>
 </div>
 
 
 
-<div class="viewcode-block" id="ClientInfo">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.ClientInfo">[docs]</a>
-<span class="k">class</span> <span class="nc">ClientInfo</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Define the information of an FL client.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="IncompleteConfigError">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.IncompleteConfigError">[docs]</a>
+<span class="k">class</span> <span class="nc">IncompleteConfigError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Defines errors in server config strings that have incomplete information.&quot;&quot;&quot;</span>
 
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
-    <span class="n">client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-    <span class="n">service_address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-    <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-    <span class="n">redis_host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-    <span class="n">redis_port</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-
-<div class="viewcode-block" id="ClientInfo.Config">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.ClientInfo.Config">[docs]</a>
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;MongoDB config for the ClientInfo DB entity.&quot;&quot;&quot;</span>
-
-        <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">schema_extra</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;example&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="s2">&quot;MNIST&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;service_address&quot;</span><span class="p">:</span> <span class="s2">&quot;locahost:8081&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;data_path&quot;</span><span class="p">:</span> <span class="s2">&quot;path/to/data&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="s2">&quot;6880&quot;</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">}</span></div>
-</div>
-
-
-
-<div class="viewcode-block" id="Job">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.Job">[docs]</a>
-<span class="k">class</span> <span class="nc">Job</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Define the Job DB entity.&quot;&quot;&quot;</span>
-
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
-    <span class="n">status</span><span class="p">:</span> <span class="n">JobStatus</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">NOT_STARTED</span><span class="p">)</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">Model</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
-    <span class="n">server_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
-    <span class="n">server_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
-    <span class="n">config_parser</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">ConfigParser</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
-    <span class="n">redis_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
-    <span class="n">redis_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
-    <span class="n">clients_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ClientInfo</span><span class="p">],</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
-
-<div class="viewcode-block" id="Job.Config">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.Config">[docs]</a>
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;MongoDB config for the Job DB entity.&quot;&quot;&quot;</span>
-
-        <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">schema_extra</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;example&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;066de609-b04a-4b30-b46c-32537c7f1f6e&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;NOT_STARTED&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;MNIST&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost:8080&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;server_config&quot;</span><span class="p">:</span> <span class="s1">&#39;{&quot;n_server_rounds&quot;: 3, &quot;batch_size&quot;: 8}&#39;</span><span class="p">,</span>
-                <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="s2">&quot;6879&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="p">{</span>
-                        <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="s2">&quot;MNIST&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;service_address&quot;</span><span class="p">:</span> <span class="s2">&quot;locahost:8081&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;data_path&quot;</span><span class="p">:</span> <span class="s2">&quot;path/to/data&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="s2">&quot;6880&quot;</span><span class="p">,</span>
-                    <span class="p">},</span>
-                <span class="p">],</span>
-            <span class="p">},</span>
-        <span class="p">}</span></div>
-</div>
+    <span class="k">pass</span></div>
 
 </pre></div>
         </article>

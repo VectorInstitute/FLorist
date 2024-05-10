@@ -200,6 +200,7 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.servers.html">florist.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of florist.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.servers.common.html">florist.api.servers.common module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.servers.config_parsers.html">florist.api.servers.config_parsers module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.servers.launch.html">florist.api.servers.launch module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.servers.utils.html">florist.api.servers.utils module</a></li>
 </ul>
@@ -243,7 +244,7 @@
 </ul>
 </li>
 <li class="toctree-l6 has-children"><a class="reference internal" href="../../../../../reference/api/florist.tests.unit.api.servers.html">florist.tests.unit.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7"><a class="reference internal" href="../../../../../reference/api/florist.tests.unit.api.servers.test_common.html">florist.tests.unit.api.servers.test_common module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../../reference/api/florist.tests.unit.api.servers.test_config_parsers.html">florist.tests.unit.api.servers.test_config_parsers module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="../../../../../reference/api/florist.tests.unit.api.servers.test_launch.html">florist.tests.unit.api.servers.test_launch module</a></li>
 </ul>
 </li>
@@ -294,13 +295,12 @@
           <h1>Source code for florist.api.routes.server.job</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;FastAPI routes for the job.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">JSONDecodeError</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Body</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">status</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Body</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">status</span>
 <span class="kn">from</span> <span class="nn">fastapi.encoders</span> <span class="kn">import</span> <span class="n">jsonable_encoder</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">JOB_DATABASE_NAME</span><span class="p">,</span> <span class="n">MAX_RECORDS_TO_FETCH</span><span class="p">,</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span>
+<span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">JOB_COLLECTION_NAME</span><span class="p">,</span> <span class="n">MAX_RECORDS_TO_FETCH</span><span class="p">,</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span>
 
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
@@ -326,19 +326,10 @@
 <span class="sd">    :return: (Dict[str, Any]) A dictionary with the attributes of the new Job instance as saved in the database.</span>
 <span class="sd">    :raises: (HTTPException) status 400 if job.server_info is not None and cannot be parsed into JSON.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">is_valid</span> <span class="o">=</span> <span class="n">Job</span><span class="o">.</span><span class="n">is_valid_server_info</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">server_info</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;job.server_info is not valid. job.server_info: </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">server_info</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;job.server_info could not be parsed into JSON. job.server_info: </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">server_info</span><span class="si">}</span><span class="s2">. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-
     <span class="n">json_job</span> <span class="o">=</span> <span class="n">jsonable_encoder</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">[</span><span class="n">JOB_DATABASE_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">json_job</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">[</span><span class="n">JOB_COLLECTION_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">json_job</span><span class="p">)</span>
 
-    <span class="n">created_job</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">[</span><span class="n">JOB_DATABASE_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">})</span>
+    <span class="n">created_job</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">[</span><span class="n">JOB_COLLECTION_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">})</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">created_job</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">created_job</span></div>
@@ -361,8 +352,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">status</span> <span class="o">=</span> <span class="n">jsonable_encoder</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
 
-    <span class="n">job_db</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">[</span><span class="n">JOB_DATABASE_NAME</span><span class="p">]</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">job_db</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="p">})</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">MAX_RECORDS_TO_FETCH</span><span class="p">)</span>
+    <span class="n">job_collection</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">[</span><span class="n">JOB_COLLECTION_NAME</span><span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">job_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="p">})</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">MAX_RECORDS_TO_FETCH</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span></div>
 

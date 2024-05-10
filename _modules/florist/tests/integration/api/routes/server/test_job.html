@@ -200,6 +200,7 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../../reference/api/florist.api.servers.html">florist.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of florist.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../../reference/api/florist.api.servers.common.html">florist.api.servers.common module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../../reference/api/florist.api.servers.config_parsers.html">florist.api.servers.config_parsers module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../../reference/api/florist.api.servers.launch.html">florist.api.servers.launch module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../../reference/api/florist.api.servers.utils.html">florist.api.servers.utils module</a></li>
 </ul>
@@ -243,7 +244,7 @@
 </ul>
 </li>
 <li class="toctree-l6 has-children"><a class="reference internal" href="../../../../../../../reference/api/florist.tests.unit.api.servers.html">florist.tests.unit.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7"><a class="reference internal" href="../../../../../../../reference/api/florist.tests.unit.api.servers.test_common.html">florist.tests.unit.api.servers.test_common module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../../../../reference/api/florist.tests.unit.api.servers.test_config_parsers.html">florist.tests.unit.api.servers.test_config_parsers module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="../../../../../../../reference/api/florist.tests.unit.api.servers.test_launch.html">florist.tests.unit.api.servers.test_launch module</a></li>
 </ul>
 </li>
@@ -293,15 +294,13 @@
         <article role="main">
           <h1>Source code for florist.tests.integration.api.routes.server.test_job</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span>
-<span class="kn">from</span> <span class="nn">pytest</span> <span class="kn">import</span> <span class="n">raises</span>
-
-<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">HTTPException</span>
 
 <span class="kn">from</span> <span class="nn">florist.api.clients.common</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">ClientInfo</span><span class="p">,</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span>
 <span class="kn">from</span> <span class="nn">florist.api.routes.server.job</span> <span class="kn">import</span> <span class="n">list_jobs_with_status</span><span class="p">,</span> <span class="n">new_job</span>
 <span class="kn">from</span> <span class="nn">florist.api.servers.common</span> <span class="kn">import</span> <span class="n">Model</span>
 <span class="kn">from</span> <span class="nn">florist.tests.integration.api.utils</span> <span class="kn">import</span> <span class="n">mock_request</span>
+<span class="kn">from</span> <span class="nn">florist.api.servers.config_parsers</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
 
 
 <div class="viewcode-block" id="test_new_job">
@@ -315,7 +314,8 @@
         <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">JobStatus</span><span class="o">.</span><span class="n">NOT_STARTED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;server_info&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;server_config&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;config_parser&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
@@ -327,7 +327,8 @@
         <span class="n">status</span><span class="o">=</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">IN_PROGRESS</span><span class="p">,</span>
         <span class="n">model</span><span class="o">=</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
         <span class="n">server_address</span><span class="o">=</span><span class="s2">&quot;test-server-address&quot;</span><span class="p">,</span>
-        <span class="n">server_info</span><span class="o">=</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="n">server_config</span><span class="o">=</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="n">config_parser</span><span class="o">=</span><span class="n">ConfigParser</span><span class="o">.</span><span class="n">BASIC</span><span class="p">,</span>
         <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host&quot;</span><span class="p">,</span>
         <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port&quot;</span><span class="p">,</span>
         <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
@@ -354,9 +355,10 @@
         <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="s2">&quot;test-server-address&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;server_info&quot;</span><span class="p">:</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;server_config&quot;</span><span class="p">:</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
         <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span>
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
+        <span class="s2">&quot;config_parser&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">config_parser</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
@@ -380,17 +382,6 @@
 
 
 
-<div class="viewcode-block" id="test_new_job_fail_bad_server_info">
-<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_new_job_fail_bad_server_info">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_new_job_fail_bad_server_info</span><span class="p">(</span><span class="n">mock_request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">test_job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">server_info</span><span class="o">=</span><span class="s2">&quot;not json&quot;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span> <span class="k">as</span> <span class="n">exception_info</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">new_job</span><span class="p">(</span><span class="n">mock_request</span><span class="p">,</span> <span class="n">test_job</span><span class="p">)</span>
-
-    <span class="k">assert</span> <span class="n">exception_info</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
-    <span class="k">assert</span> <span class="s2">&quot;job.server_info could not be parsed into JSON&quot;</span> <span class="ow">in</span> <span class="n">exception_info</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">detail</span></div>
-
-
 <div class="viewcode-block" id="test_list_jobs_with_status">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_list_jobs_with_status">[docs]</a>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_list_jobs_with_status</span><span class="p">(</span><span class="n">mock_request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -399,7 +390,8 @@
         <span class="n">status</span><span class="o">=</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">NOT_STARTED</span><span class="p">,</span>
         <span class="n">model</span><span class="o">=</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
         <span class="n">server_address</span><span class="o">=</span><span class="s2">&quot;test-server-address1&quot;</span><span class="p">,</span>
-        <span class="n">server_info</span><span class="o">=</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="n">server_config</span><span class="o">=</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="n">config_parser</span><span class="o">=</span><span class="n">ConfigParser</span><span class="o">.</span><span class="n">BASIC</span><span class="p">,</span>
         <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host1&quot;</span><span class="p">,</span>
         <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port1&quot;</span><span class="p">,</span>
         <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
@@ -425,7 +417,8 @@
         <span class="n">status</span><span class="o">=</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">IN_PROGRESS</span><span class="p">,</span>
         <span class="n">model</span><span class="o">=</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
         <span class="n">server_address</span><span class="o">=</span><span class="s2">&quot;test-server-address2&quot;</span><span class="p">,</span>
-        <span class="n">server_info</span><span class="o">=</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="n">server_config</span><span class="o">=</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="n">config_parser</span><span class="o">=</span><span class="n">ConfigParser</span><span class="o">.</span><span class="n">BASIC</span><span class="p">,</span>
         <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host2&quot;</span><span class="p">,</span>
         <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port2&quot;</span><span class="p">,</span>
         <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
@@ -451,7 +444,8 @@
         <span class="n">status</span><span class="o">=</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_WITH_ERROR</span><span class="p">,</span>
         <span class="n">model</span><span class="o">=</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
         <span class="n">server_address</span><span class="o">=</span><span class="s2">&quot;test-server-address3&quot;</span><span class="p">,</span>
-        <span class="n">server_info</span><span class="o">=</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="n">server_config</span><span class="o">=</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="n">config_parser</span><span class="o">=</span><span class="n">ConfigParser</span><span class="o">.</span><span class="n">BASIC</span><span class="p">,</span>
         <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host3&quot;</span><span class="p">,</span>
         <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port3&quot;</span><span class="p">,</span>
         <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
@@ -477,7 +471,8 @@
         <span class="n">status</span><span class="o">=</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_SUCCESSFULLY</span><span class="p">,</span>
         <span class="n">model</span><span class="o">=</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
         <span class="n">server_address</span><span class="o">=</span><span class="s2">&quot;test-server-address4&quot;</span><span class="p">,</span>
-        <span class="n">server_info</span><span class="o">=</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="n">server_config</span><span class="o">=</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="n">config_parser</span><span class="o">=</span><span class="n">ConfigParser</span><span class="o">.</span><span class="n">BASIC</span><span class="p">,</span>
         <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host4&quot;</span><span class="p">,</span>
         <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port4&quot;</span><span class="p">,</span>
         <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
@@ -517,7 +512,8 @@
         <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="s2">&quot;test-server-address1&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;server_info&quot;</span><span class="p">:</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;server_config&quot;</span><span class="p">:</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;config_parser&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">config_parser</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span>
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -546,7 +542,8 @@
         <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="s2">&quot;test-server-address2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;server_info&quot;</span><span class="p">:</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;server_config&quot;</span><span class="p">:</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;config_parser&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">config_parser</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span>
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -575,7 +572,8 @@
         <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="s2">&quot;test-server-address3&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;server_info&quot;</span><span class="p">:</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;server_config&quot;</span><span class="p">:</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;config_parser&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">config_parser</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span>
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -604,7 +602,8 @@
         <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="s2">&quot;test-server-address4&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;server_info&quot;</span><span class="p">:</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;server_config&quot;</span><span class="p">:</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">test-server-info</span><span class="se">\&quot;</span><span class="s2">: 123}&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;config_parser&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">config_parser</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span>
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>

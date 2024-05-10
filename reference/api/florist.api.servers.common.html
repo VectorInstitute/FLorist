@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.servers.launch module" href="florist.api.servers.launch.html" /><link rel="prev" title="florist.api.servers package" href="florist.api.servers.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.servers.config_parsers module" href="florist.api.servers.config_parsers.html" /><link rel="prev" title="florist.api.servers package" href="florist.api.servers.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
         <title>florist.api.servers.common module - Vector AI Engineering template repository</title>
@@ -201,6 +201,7 @@
 </li>
 <li class="toctree-l4 current has-children"><a class="reference internal" href="florist.api.servers.html">florist.api.servers package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of florist.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5 current current-page"><a class="current reference internal" href="#">florist.api.servers.common module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.servers.config_parsers.html">florist.api.servers.config_parsers module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.servers.launch.html">florist.api.servers.launch module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.servers.utils.html">florist.api.servers.utils module</a></li>
 </ul>
@@ -244,7 +245,7 @@
 </ul>
 </li>
 <li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.unit.api.servers.html">florist.tests.unit.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7"><a class="reference internal" href="florist.tests.unit.api.servers.test_common.html">florist.tests.unit.api.servers.test_common module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="florist.tests.unit.api.servers.test_config_parsers.html">florist.tests.unit.api.servers.test_config_parsers module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="florist.tests.unit.api.servers.test_launch.html">florist.tests.unit.api.servers.test_launch module</a></li>
 </ul>
 </li>
@@ -296,56 +297,6 @@
           <section id="module-florist.api.servers.common">
 <span id="florist-api-servers-common-module"></span><h1>florist.api.servers.common module<a class="headerlink" href="#module-florist.api.servers.common" title="Link to this heading">#</a></h1>
 <p>Common functions and definitions for servers.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="florist.api.servers.common.ClientInfo">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ClientInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_port</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/common.html#ClientInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.common.ClientInfo" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Define the input information necessary to start a client.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="florist.api.servers.common.ClientInfo.parse">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clients_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/common.html#ClientInfo.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.common.ClientInfo.parse" title="Link to this definition">#</a></dt>
-<dd><p>Parse the client information JSON string into a ClientInfo instance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>clients_info</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – <p>(str) A JSON string containing the client information.
-Should be in the following format:
-[</p>
-<blockquote>
-<div><dl class="simple">
-<dt>{</dt><dd><p>“client”: &lt;client name as defined in florist.api.clients.common.Client&gt;,
-“client_address”: &lt;Florist’s client hostname and port, e.g. localhost:8081&gt;,
-“data_path”: &lt;path where the data is located in the FL client’s machine&gt;,
-“redis_host”: &lt;hostname of the Redis instance the FL client will be reporting to&gt;,
-“redis_port”: &lt;port of the Redis instance the FL client will be reporting to&gt;,</p>
-</dd>
-</dl>
-<p>}</p>
-</div></blockquote>
-<p>]</p>
-</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference internal" href="#florist.api.servers.common.ClientInfo" title="florist.api.servers.common.ClientInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientInfo</span></code></a>]</span></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(ClientInfo) an instance of ClientInfo containing the information given.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#florist.api.servers.common.ClientInfoParseError" title="florist.api.servers.common.ClientInfoParseError"><strong>ClientInfoParseError</strong></a> – If any of the required information is missing or has the
-wrong type.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py exception">
-<dt class="sig sig-object py" id="florist.api.servers.common.ClientInfoParseError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ClientInfoParseError</span></span><a class="reference internal" href="../../_modules/florist/api/servers/common.html#ClientInfoParseError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.common.ClientInfoParseError" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/exceptions.html#Exception" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
-<p>Defines errors in parsing client info.</p>
-</dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="florist.api.servers.common.Model">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/common.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.common.Model" title="Link to this definition">#</a></dt>
@@ -399,12 +350,12 @@ wrong type.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="florist.api.servers.launch.html">
+          <a class="next-page" href="florist.api.servers.config_parsers.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">florist.api.servers.launch module</div>
+                <div class="title">florist.api.servers.config_parsers module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -459,11 +410,6 @@ wrong type.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">florist.api.servers.common module</a><ul>
-<li><a class="reference internal" href="#florist.api.servers.common.ClientInfo"><code class="docutils literal notranslate"><span class="pre">ClientInfo</span></code></a><ul>
-<li><a class="reference internal" href="#florist.api.servers.common.ClientInfo.parse"><code class="docutils literal notranslate"><span class="pre">ClientInfo.parse()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#florist.api.servers.common.ClientInfoParseError"><code class="docutils literal notranslate"><span class="pre">ClientInfoParseError</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.servers.common.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
 <li><a class="reference internal" href="#florist.api.servers.common.Model.MNIST"><code class="docutils literal notranslate"><span class="pre">Model.MNIST</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.servers.common.Model.class_for_model"><code class="docutils literal notranslate"><span class="pre">Model.class_for_model()</span></code></a></li>

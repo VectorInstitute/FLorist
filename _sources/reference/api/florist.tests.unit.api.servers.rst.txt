@@ -12,5 +12,5 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   florist.tests.unit.api.servers.test_common
+   florist.tests.unit.api.servers.test_config_parsers
    florist.tests.unit.api.servers.test_launch
