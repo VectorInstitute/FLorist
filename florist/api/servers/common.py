@@ -3,7 +3,8 @@
 from enum import Enum
 from typing import List
 
-from florist.api.models.common import AbstractModel
+from torch import nn
+
 from florist.api.models.mnist import MnistNet
 
 
@@ -13,7 +14,7 @@ class Model(Enum):
     MNIST = "MNIST"
 
     @classmethod
-    def class_for_model(cls, model: "Model") -> type[AbstractModel]:
+    def class_for_model(cls, model: "Model") -> type[nn.Module]:
         """
         Return the class for a given model.
 

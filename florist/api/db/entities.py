@@ -12,6 +12,7 @@ from pymongo.database import Database
 
 from florist.api.clients.common import Client
 from florist.api.servers.common import Model
+from florist.api.servers.config_parsers import ConfigParser
 
 
 JOB_COLLECTION_NAME = "job"
@@ -72,8 +73,9 @@ class Job(BaseModel):
     status: JobStatus = Field(default=JobStatus.NOT_STARTED)
     model: Optional[Annotated[Model, Field(...)]]
     server_address: Optional[Annotated[str, Field(...)]]
+    server_config: Optional[Annotated[str, Field(...)]]
+    config_parser: Optional[Annotated[ConfigParser, Field(...)]]
     server_uuid: Optional[Annotated[str, Field(...)]]
-    server_info: Optional[Annotated[str, Field(...)]]
     server_metrics: Optional[Annotated[str, Field(...)]]
     redis_host: Optional[Annotated[str, Field(...)]]
     redis_port: Optional[Annotated[str, Field(...)]]
@@ -217,7 +219,7 @@ class Job(BaseModel):
                 "status": "NOT_STARTED",
                 "model": "MNIST",
                 "server_address": "localhost:8080",
-                "server_info": '{"n_server_rounds": 3, "batch_size": 8}',
+                "server_config": '{"n_server_rounds": 3, "batch_size": 8}',
                 "server_uuid": "d73243cf-8b89-473b-9607-8cd0253a101d",
                 "server_metrics": '{"type": "server", "fit_start": "2024-04-23 15:33:12.865604", "rounds": {"1": {"fit_start": "2024-04-23 15:33:12.869001"}}}',
                 "redis_host": "localhost",

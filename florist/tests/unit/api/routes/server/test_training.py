@@ -22,7 +22,7 @@ async def test_start_success(
 ) -> None:
     # Arrange
     test_job_id = "test-job-id"
-    test_server_info, test_job, mock_job_collection, mock_fastapi_request = _setup_test_job_and_mocks()
+    test_server_config, test_job, mock_job_collection, mock_fastapi_request = _setup_test_job_and_mocks()
 
     test_server_uuid = "test-server-uuid"
     mock_launch_local_server.return_value = (test_server_uuid, None)
@@ -55,9 +55,9 @@ async def test_start_success(
         model=ANY,
         n_clients=len(test_job["clients_info"]),
         server_address=test_job["server_address"],
-        n_server_rounds=test_server_info["n_server_rounds"],
-        batch_size=test_server_info["batch_size"],
-        local_epochs=test_server_info["local_epochs"],
+        n_server_rounds=test_server_config["n_server_rounds"],
+        batch_size=test_server_config["batch_size"],
+        local_epochs=test_server_config["local_epochs"],
         redis_host=test_job["redis_host"],
         redis_port=test_job["redis_port"],
     )
@@ -135,7 +135,7 @@ async def test_start_fail_unsupported_client() -> None:
 
 
 async def test_start_fail_missing_info() -> None:
-    fields_to_be_removed = ["model", "server_info", "clients_info", "server_address", "redis_host", "redis_port"]
+    fields_to_be_removed = ["model", "server_config", "clients_info", "server_address", "redis_host", "redis_port"]
 
     for field_to_be_removed in fields_to_be_removed:
         # Arrange
@@ -153,11 +153,11 @@ async def test_start_fail_missing_info() -> None:
         assert f"Missing Job information: {field_to_be_removed}" in json_body["error"]
 
 
-async def test_start_fail_invalid_server_info() -> None:
+async def test_start_fail_invalid_server_config() -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
-    test_job["server_info"] = "not json"
+    test_job["server_config"] = "not json"
 
     # Act
     response = await start(test_job_id, mock_fastapi_request, Mock())
@@ -166,7 +166,7 @@ async def test_start_fail_invalid_server_info() -> None:
     assert response.status_code == 400
     json_body = json.loads(response.body.decode())
     assert json_body == {"error": ANY}
-    assert f"server_info is not valid" in json_body["error"]
+    assert f"server_config is not a valid json string." in json_body["error"]
 
 
 async def test_start_fail_empty_clients_info() -> None:
@@ -308,7 +308,7 @@ async def test_start_no_uuid_in_response(mock_requests: Mock, mock_redis: Mock, 
 
 
 def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, Mock]:
-    test_server_info = {
+    test_server_config = {
         "n_server_rounds": 2,
         "batch_size": 8,
         "local_epochs": 1,
@@ -317,7 +317,8 @@ def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, M
         "status": "NOT_STARTED",
         "model": "MNIST",
         "server_address": "test-server-address",
-        "server_info": json.dumps(test_server_info),
+        "server_config": json.dumps(test_server_config),
+        "config_parser": "BASIC",
         "redis_host": "test-redis-host",
         "redis_port": "test-redis-port",
         "server_uuid": "test-server-uuid",
@@ -352,4 +353,4 @@ def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, M
     mock_fastapi_request.app.database = {JOB_COLLECTION_NAME: mock_job_collection}
     mock_fastapi_request.app.synchronous_database = {JOB_COLLECTION_NAME: mock_job_collection}
 
-    return test_server_info, test_job, mock_job_collection, mock_fastapi_request
+    return test_server_config, test_job, mock_job_collection, mock_fastapi_request

@@ -37,7 +37,7 @@ async def test_train():
                     status=JobStatus.NOT_STARTED,
                     model="MNIST",
                     server_address="localhost:8080",
-                    server_info=json.dumps({
+                    server_config=json.dumps({
                         "n_server_rounds": test_n_server_rounds,
                         "batch_size": 8,
                         "local_epochs": 1,

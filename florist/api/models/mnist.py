@@ -1,15 +1,11 @@
 """Definitions for the MNIST model."""
 
-from typing import List
-
 import torch
 import torch.nn.functional as f
 from torch import nn
 
-from florist.api.models.common import AbstractModel
 
-
-class MnistNet(AbstractModel):
+class MnistNet(nn.Module):
     """Implementation of the Mnist model."""
 
     def __init__(self) -> None:
@@ -33,12 +29,3 @@ class MnistNet(AbstractModel):
         x = x.view(-1, 16 * 4 * 4)
         x = f.relu(self.fc1(x))
         return f.relu(self.fc2(x))
-
-    @classmethod
-    def mandatory_server_info_fields(cls) -> List[str]:
-        """
-        Define the list of mandatory server info fields for training the MNIST model.
-
-        :return: a list of mandatory fields for this model, namely `["n_server_rounds", "batch_size", "local_epochs"]`.
-        """
-        return ["n_server_rounds", "batch_size", "local_epochs"]
