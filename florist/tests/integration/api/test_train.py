@@ -10,7 +10,7 @@ from florist.api.clients.common import Client
 from florist.api.db.entities import Job, JobStatus, ClientInfo
 from florist.api.monitoring.metrics import wait_for_metric
 from florist.api.routes.server.training import LOGGER
-from florist.api.routes.server.job import new_job
+from florist.api.routes.server.job import new_job, list_jobs_with_status
 from florist.api.server import DATABASE_NAME
 from florist.tests.integration.api.utils import TestUvicornServer, MockRequest, MockApp
 
@@ -55,8 +55,6 @@ async def test_train():
                     ]
                 ))
 
-                # TODO assert job status is not started
-
                 request = requests.Request(
                     method="POST",
                     url=f"http://localhost:8000/api/server/training/start?job_id={job.id}",
@@ -68,7 +66,8 @@ async def test_train():
                 assert response.status_code == 200
                 assert response.json() == {"server_uuid": ANY, "client_uuids": [ANY]}
 
-                # TODO assert job status is in progress
+                in_progress_jobs = await list_jobs_with_status(JobStatus.IN_PROGRESS, test_request)
+                assert job.id in [j.id for j in in_progress_jobs]
 
                 redis_conn = redis.Redis(host=test_redis_host, port=test_redis_port)
                 server_uuid = response.json()["server_uuid"]
@@ -95,4 +94,5 @@ async def test_train():
                 assert "shutdown" in client_metrics
                 assert len(client_metrics["rounds"]) == test_n_server_rounds
 
-                # TODO assert job status is finished successfully
+                finished_jobs = await list_jobs_with_status(JobStatus.FINISHED_SUCCESSFULLY, test_request)
+                assert job.id in [j.id for j in finished_jobs]
