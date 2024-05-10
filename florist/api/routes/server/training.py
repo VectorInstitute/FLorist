@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from florist.api.db.entities import JOB_COLLECTION_NAME, Job
 from florist.api.monitoring.metrics import wait_for_metric
 from florist.api.servers.common import Model
+from florist.api.servers.config_parsers import ConfigParser
 from florist.api.servers.launch import launch_local_server
 
 
@@ -43,19 +44,23 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         result = await job_collection.find_one({"_id": job_id})
         job = Job(**result)
 
+        if job.config_parser is None:
+            job.config_parser = ConfigParser.BASIC
+
         assert job.model is not None, "Missing Job information: model"
-        assert job.server_info is not None, "Missing Job information: server_info"
+        assert job.server_config is not None, "Missing Job information: server_config"
         assert job.clients_info is not None and len(job.clients_info) > 0, "Missing Job information: clients_info"
         assert job.server_address is not None, "Missing Job information: server_address"
         assert job.redis_host is not None, "Missing Job information: redis_host"
         assert job.redis_port is not None, "Missing Job information: redis_port"
+
         try:
-            assert Job.is_valid_server_info(job.server_info), "server_info is not valid"
+            config_parser = ConfigParser.class_for_parser(job.config_parser)
+            server_config = config_parser.parse(job.server_config)
         except JSONDecodeError as err:
-            raise AssertionError("server_info is not valid") from err
+            raise AssertionError("server_config is not a valid json string.") from err
 
         model_class = Model.class_for_model(job.model)
-        server_info = model_class.parse_server_info(job.server_info)
 
         # Start the server
         server_uuid, _ = launch_local_server(
@@ -64,7 +69,7 @@ async def start(job_id: str, request: Request) -> JSONResponse:
             server_address=job.server_address,
             redis_host=job.redis_host,
             redis_port=job.redis_port,
-            **server_info,
+            **server_config,
         )
         wait_for_metric(server_uuid, "fit_start", job.redis_host, job.redis_port, logger=LOGGER)
 

@@ -1,6 +1,5 @@
 """Definitions for the MongoDB database entities."""
 
-import json
 import uuid
 from enum import Enum
 from typing import Annotated, List, Optional
@@ -9,6 +8,7 @@ from pydantic import BaseModel, Field
 
 from florist.api.clients.common import Client
 from florist.api.servers.common import Model
+from florist.api.servers.config_parsers import ConfigParser
 
 
 JOB_COLLECTION_NAME = "job"
@@ -65,23 +65,11 @@ class Job(BaseModel):
     status: JobStatus = Field(default=JobStatus.NOT_STARTED)
     model: Optional[Annotated[Model, Field(...)]]
     server_address: Optional[Annotated[str, Field(...)]]
-    server_info: Optional[Annotated[str, Field(...)]]
+    server_config: Optional[Annotated[str, Field(...)]]
+    config_parser: Optional[Annotated[ConfigParser, Field(...)]]
     redis_host: Optional[Annotated[str, Field(...)]]
     redis_port: Optional[Annotated[str, Field(...)]]
     clients_info: Optional[Annotated[List[ClientInfo], Field(...)]]
-
-    @classmethod
-    def is_valid_server_info(cls, server_info: Optional[str]) -> bool:
-        """
-        Validate if server info is a json string.
-
-        :param server_info: (str) the json string with the server info.
-        :return: True if server_info is None or a valid JSON string, False otherwise.
-        :raises: (json.JSONDecodeError) if there is an error decoding the server info into json
-        """
-        if server_info is not None:
-            json.loads(server_info)
-        return True
 
     class Config:
         """MongoDB config for the Job DB entity."""
@@ -93,7 +81,7 @@ class Job(BaseModel):
                 "status": "NOT_STARTED",
                 "model": "MNIST",
                 "server_address": "localhost:8080",
-                "server_info": '{"n_server_rounds": 3, "batch_size": 8}',
+                "server_config": '{"n_server_rounds": 3, "batch_size": 8}',
                 "redis_host": "localhost",
                 "redis_port": "6879",
                 "clients_info": [
