@@ -135,7 +135,7 @@ class Job(BaseModel):
         """
         assert self.clients_info is not None and len(self.clients_info) == len(client_uuids), (
             "self.clients_info and client_uuids must have the same length "
-            f"({'None' if self.clients_info is None else len(self.clients_info)} =/= {len(client_uuids)})."
+            f"({'None' if self.clients_info is None else len(self.clients_info)}<>{len(client_uuids)})."
         )
 
         job_collection = database[JOB_COLLECTION_NAME]
@@ -183,7 +183,7 @@ class Job(BaseModel):
         """
         assert self.clients_info is not None and len(self.clients_info) == len(client_metrics), (
             "self.clients_info and client_metrics must have the same length "
-            f"({'None' if self.clients_info is None else len(self.clients_info)} =/= {len(client_metrics)})."
+            f"({'None' if self.clients_info is None else len(self.clients_info)}<>{len(client_metrics)})."
         )
 
         job_collection = database[JOB_COLLECTION_NAME]
