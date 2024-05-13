@@ -1,20 +1,17 @@
 """FLorist client FastAPI endpoints."""
 
-import json
 import logging
 import uuid
 from pathlib import Path
 
-import redis
 import torch
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from florist.api.monitoring.metrics import get_from_redis
 from florist.api.clients.common import Client
 from florist.api.launchers.local import launch_client
 from florist.api.monitoring.logs import get_client_log_file_path
-from florist.api.monitoring.metrics import RedisMetricsReporter
+from florist.api.monitoring.metrics import RedisMetricsReporter, get_from_redis
 
 
 app = FastAPI()
