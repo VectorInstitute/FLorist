@@ -27,6 +27,12 @@ async def test_job_find_by_id_success(mock_request) -> None:
     assert test_job == result_job
 
 
+async def test_job_find_by_id_not_found(mock_request) -> None:
+    result_job = await Job.find_by_id("does-not-exist", mock_request.app.database)
+
+    assert result_job is None
+
+
 async def test_job_find_by_status_success(mock_request) -> None:
     test_job = get_test_job()
     test_job.status = JobStatus.FINISHED_SUCCESSFULLY
