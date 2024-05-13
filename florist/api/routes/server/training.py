@@ -146,7 +146,7 @@ def server_training_listener(job: Job, database: Database[Dict[str, Any]]) -> No
         return
 
     subscriber = get_subscriber(job.server_uuid, job.redis_host, job.redis_port)
-    # TODO add a timeout mechanism, maybe?
+    # TODO add a max retries mechanism, maybe?
     for message in subscriber.listen():  # type: ignore[no-untyped-call]
         if message["type"] == "message":
             # The contents of the message do not matter, we just use it to get notified
