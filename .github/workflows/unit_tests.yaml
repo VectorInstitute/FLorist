@@ -60,7 +60,7 @@ jobs:
           attempt_limit: 5
           attempt_delay: 30000
       - name: Setup yarn
-        uses: mskelton/setup-yarn@v1
+        uses: mskelton/setup-yarn@v2
       - name: Install nextjs dependencies and check code
         run: |
           yarn

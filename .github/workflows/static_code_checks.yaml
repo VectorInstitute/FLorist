@@ -37,7 +37,7 @@ jobs:
           python-version: '3.9'
           cache: 'poetry'
       - name: Setup yarn
-        uses: mskelton/setup-yarn@v1
+        uses: mskelton/setup-yarn@v2
       - name: Install dependencies and check code
         run: |
           yarn
