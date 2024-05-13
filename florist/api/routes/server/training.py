@@ -104,7 +104,8 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
         await job.set_status(JobStatus.IN_PROGRESS, request.app.database)
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
 
-        # Start the server training listener to update the job's status
+        # Start the server training listener as a background task to update
+        # the job's status once the training is done
         background_tasks.add_task(server_training_listener, job, request.app.synchronous_database)
 
         # Return the UUIDs

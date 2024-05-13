@@ -1,11 +1,12 @@
 import asyncio
 import json
+from pytest import raises
 from typing import Dict, Any, Tuple
 from unittest.mock import Mock, patch, ANY
 
 from florist.api.db.entities import Job, JobStatus, JOB_COLLECTION_NAME
 from florist.api.models.mnist import MnistNet
-from florist.api.routes.server.training import start, server_training_listener
+from florist.api.routes.server.training import start, server_training_listener, CHECK_CLIENT_STATUS_API
 
 
 @patch("florist.api.routes.server.training.launch_local_server")
@@ -305,6 +306,142 @@ async def test_start_no_uuid_in_response(mock_requests: Mock, mock_redis: Mock, 
     assert response.status_code == 500
     json_body = json.loads(response.body.decode())
     assert json_body == {"error": "Client response did not return a UUID. Response: {'foo': 'bar'}"}
+
+
+@patch("florist.api.routes.server.training.get_from_redis")
+@patch("florist.api.routes.server.training.get_subscriber")
+@patch("florist.api.routes.server.training.requests")
+def test_server_training_listener(mock_requests: Mock(), mock_get_subscriber: Mock, mock_get_from_redis: Mock) -> None:
+    # Setup
+    test_job = Job(**{
+        "server_uuid": "test-server-uuid",
+        "redis_host": "test-redis-host",
+        "redis_port": "test-redis-port",
+        "clients_info": [
+            {
+                "service_address": "test-service-address",
+                "uuid": "test-uuid",
+                "redis_host": "test-client-redis-host",
+                "redis_port": "test-client-redis-port",
+                "client": "MNIST",
+                "data_path": "test-data-path",
+            }
+        ]
+    })
+    test_client_metrics = {"test": 123}
+    test_server_final_metrics = {"fit_start": "2022-02-02 02:02:02", "rounds": [], "fit_end": "2022-02-02 03:03:03"}
+    mock_get_from_redis.side_effect = [
+        {"fit_start": "2022-02-02 02:02:02"},
+        {"fit_start": "2022-02-02 02:02:02", "rounds": []},
+        test_server_final_metrics,
+    ]
+    mock_subscriber = Mock()
+    mock_subscriber.listen.return_value = [
+        {"type": "message"},
+        {"type": "not message"},
+        {"type": "message"},
+        {"type": "message"},
+        {"type": "message"},
+    ]
+    mock_get_subscriber.return_value = mock_subscriber
+    mock_database = Mock()
+    mock_response = Mock()
+    mock_response.json.return_value = test_client_metrics
+    mock_requests.get.return_value = mock_response
+
+    with patch.object(Job, "set_status_sync", Mock()) as mock_set_status_sync:
+        with patch.object(Job, "set_metrics", Mock()) as mock_set_metrics:
+            # Act
+            server_training_listener(test_job, mock_database)
+
+            # Assert
+            mock_set_status_sync.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_database)
+            mock_set_metrics.assert_called_once_with(test_server_final_metrics, [test_client_metrics], mock_database)
+    assert mock_get_from_redis.call_count == 3
+    mock_get_subscriber.assert_called_once_with(test_job.server_uuid, test_job.redis_host, test_job.redis_port)
+    mock_requests.get.assert_called_once_with(
+        url=f"http://{test_job.clients_info[0].service_address}/{CHECK_CLIENT_STATUS_API}/{test_job.clients_info[0].uuid}",
+        params={
+            "redis_host": test_job.clients_info[0].redis_host,
+            "redis_port": test_job.clients_info[0].redis_port,
+        },
+    )
+
+
+@patch("florist.api.routes.server.training.get_from_redis")
+@patch("florist.api.routes.server.training.requests")
+def test_server_training_listener_already_finished(mock_requests: Mock, mock_get_from_redis: Mock) -> None:
+    # Setup
+    test_job = Job(**{
+        "server_uuid": "test-server-uuid",
+        "redis_host": "test-redis-host",
+        "redis_port": "test-redis-port",
+        "clients_info": [
+            {
+                "service_address": "test-service-address",
+                "uuid": "test-uuid",
+                "redis_host": "test-client-redis-host",
+                "redis_port": "test-client-redis-port",
+                "client": "MNIST",
+                "data_path": "test-data-path",
+            }
+        ]
+    })
+    test_client_metrics = {"test": 123}
+    test_server_final_metrics = {"fit_start": "2022-02-02 02:02:02", "rounds": [], "fit_end": "2022-02-02 03:03:03"}
+    mock_get_from_redis.side_effect = [test_server_final_metrics]
+    mock_database = Mock()
+    mock_response = Mock()
+    mock_response.json.return_value = test_client_metrics
+    mock_requests.get.return_value = mock_response
+
+    with patch.object(Job, "set_status_sync", Mock()) as mock_set_status_sync:
+        with patch.object(Job, "set_metrics", Mock()) as mock_set_metrics:
+            # Act
+            server_training_listener(test_job, mock_database)
+
+            # Assert
+            mock_set_status_sync.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_database)
+            mock_set_metrics.assert_called_once_with(test_server_final_metrics, [test_client_metrics],
+                                                     mock_database)
+    assert mock_get_from_redis.call_count == 1
+    mock_requests.get.assert_called_once_with(
+        url=f"http://{test_job.clients_info[0].service_address}/{CHECK_CLIENT_STATUS_API}/{test_job.clients_info[0].uuid}",
+        params={
+            "redis_host": test_job.clients_info[0].redis_host,
+            "redis_port": test_job.clients_info[0].redis_port,
+        },
+    )
+
+
+def test_server_training_listener_fail_no_server_uuid() -> None:
+    test_job = Job(**{
+        "redis_host": "test-redis-host",
+        "redis_port": "test-redis-port",
+    })
+
+    with raises(AssertionError, match="job.server_uuid is None."):
+        server_training_listener(test_job, Mock())
+
+
+def test_server_training_listener_fail_no_redis_host() -> None:
+    test_job = Job(**{
+        "server_uuid": "test-server-uuid",
+        "redis_port": "test-redis-port",
+    })
+
+    with raises(AssertionError, match="job.redis_host is None."):
+        server_training_listener(test_job, Mock())
+
+
+def test_server_training_listener_fail_no_redis_port() -> None:
+    test_job = Job(**{
+        "server_uuid": "test-server-uuid",
+        "redis_host": "test-redis-host",
+    })
+
+    with raises(AssertionError, match="job.redis_port is None."):
+        server_training_listener(test_job, Mock())
 
 
 def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, Mock]:
