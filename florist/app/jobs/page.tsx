@@ -3,6 +3,8 @@ import { ReactElement } from "react/React";
 import useGetJobsByStatus from "./hooks";
 import useGetJobsByJobStatus from "./hooks";
 
+import NewJob from "./new";
+
 export const validStatuses = {
     NOT_STARTED: "Not Started",
     IN_PROGRESS: "In Progress",
@@ -37,9 +39,16 @@ export default function Page(): ReactElement {
         <Status key={key} status={key} />
     ));
     return (
-        <div className="mx-4">
-            <h1> Job Status </h1>
-            {statusComponents}
+        <div>
+            <div className="row">
+                <div className="col-6 d-flex align-items-center">
+                    <h1> Jobs By Status </h1>
+                </div>
+
+                <NewJob />
+
+                {statusComponents}
+            </div>
         </div>
     );
 }
