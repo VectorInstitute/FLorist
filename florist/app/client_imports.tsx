@@ -6,7 +6,7 @@ function ClientImports(): null {
     useEffect(() => {
         require("./assets/js/core/popper.min.js");
         require("./assets/js/core/bootstrap.min.js");
-        require("./assets/js/material-dashboard.min.js?v=3.0.0");
+        require("./assets/js/material-dashboard.js?v=3.1.0");
     }, []);
 
     return null;
