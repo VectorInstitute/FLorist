@@ -1,7 +1,6 @@
 "use client";
 import { ReactElement } from "react/React";
-import useGetJobsByStatus from "./hooks";
-import useGetJobsByJobStatus from "./hooks";
+import { useGetJobsByJobStatus } from "./hooks";
 
 import NewJob from "./new";
 

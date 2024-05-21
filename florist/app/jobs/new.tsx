@@ -1,4 +1,8 @@
+"use client";
+
 import { ReactElement } from "react/React";
+
+import { useGetModels } from "./hooks";
 
 export default function NewJob(): ReactElement {
     return (
@@ -45,12 +49,40 @@ export function NewJobHeader(): ReactElement {
 export function NewJobForm(): ReactElement {
     return (
         <div className="card-body pt-sm-3 pt-0">
-            <form>
-                <div className="input-group input-group-outline">
-                    <label className="form-label">Model</label>
-                    <input type="text" className="form-control" />
+            <form className="text-start">
+                <div className="input-group input-group-outline mb-3">
+                    <label className="form-label form-row" htmlFor="jobModel">
+                        Model
+                    </label>
+                    <select className="form-control" id="jobModel">
+                        <option value="empty"></option>
+                        <NewJobModelOptions />
+                    </select>
+                </div>
+
+                <div className="input-group input-group-outline mb-3">
+                    <label className="form-label" htmlFor="jobServerAddress">
+                        Server Address
+                    </label>
+                    <input
+                        className="form-control"
+                        type="text"
+                        id="jobServerAddress"
+                    />
                 </div>
             </form>
         </div>
     );
+}
+
+export function NewJobModelOptions(): ReactElement {
+    const { data, error, isLoading } = useGetModels();
+    if (data) {
+        return data.map((d, i) => (
+            <option key={i} value={d}>
+                {d}
+            </option>
+        ));
+    }
+    return null;
 }

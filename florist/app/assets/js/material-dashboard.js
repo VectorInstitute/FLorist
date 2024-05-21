@@ -592,7 +592,16 @@ function getEventTarget(e) {
 // End tabs navigation
 function onWindowLoadFunction() {
     // Material Design Input function
-    var inputs = document.querySelectorAll("input");
+    const textFields = document.querySelectorAll("input");
+    const selects = document.querySelectorAll("select");
+    const allResults = [textFields, selects];
+
+    const inputs = [];
+    for (var i = 0; i < allResults.length; i++) {
+        for (var j = 0; j < allResults[i].length; j++) {
+            inputs.push(allResults[i][j]);
+        }
+    }
 
     for (var i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener(
