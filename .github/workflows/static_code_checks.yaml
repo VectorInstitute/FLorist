@@ -26,7 +26,7 @@ jobs:
   run-code-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.5
+      - uses: actions/checkout@v4.1.6
       - name: Install and configure Poetry
         uses: snok/install-poetry@v1
         with:
@@ -49,13 +49,10 @@ jobs:
         uses: pypa/gh-action-pip-audit@v1.0.8
         with:
           virtual-environment: .venv/
-          # Ignoring security vulnerabilities in Pillow because pycyclops cannot update it to the
-          # version that fixes them (>10.3.0).
-          # Remove those when FL4Health is released with the update to pillow > 10
+          # Skipping 3 cryptography issues that can't be patched because of Flower
+          # Skipping 1 wandb issue that was rolled back, seems like a pip-audit bug
           ignore-vulns: |
-            PYSEC-2023-175
-            PYSEC-2023-227
-            GHSA-j7hp-h8jx-5ppr
-            GHSA-56pw-mpj4-fxww
-            GHSA-3f63-hfp8-52jq
-            GHSA-44wm-f244-xhp3
+            GHSA-3ww4-gg4f-jr7f
+            GHSA-9v9h-cgj8-h64p
+            GHSA-6vqw-3v5j-54x4
+            GHSA-cqh9-jfqr-h9jj
