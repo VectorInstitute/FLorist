@@ -49,5 +49,10 @@ jobs:
         uses: pypa/gh-action-pip-audit@v1.0.8
         with:
           virtual-environment: .venv/
+          # Skipping 3 cryptography issues that can't be patched because of Flower
+          # Skipping 1 wandb issue that was rolled back, seems like a pip-audit bug
           ignore-vulns: |
+            GHSA-3ww4-gg4f-jr7f
+            GHSA-9v9h-cgj8-h64p
+            GHSA-6vqw-3v5j-54x4
             GHSA-cqh9-jfqr-h9jj
