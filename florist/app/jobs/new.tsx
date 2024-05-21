@@ -131,7 +131,9 @@ export function NewJobServerConfig(): ReactElement {
                 <span>Name</span>
                 <span>Value</span>
             </div>
-            {serverConfig.map((c, i) => (<NewJobServerConfigItem key={i} serverConfigItem={c} index={i} />))}
+            {serverConfig.map((c, i) => (
+                <NewJobServerConfigItem key={i} serverConfigItem={c} index={i} />
+            ))}
         </div>
     )
 }
