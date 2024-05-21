@@ -302,6 +302,11 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MnistClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_meter_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LossMeterType.AVERAGE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpointer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_reporter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/clients/mnist.html#MnistClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.clients.mnist.MnistClient" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasicClient</span></code></p>
 <p>Implementation of the MNIST client.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.clients.mnist.MnistClient.context">
+<span class="sig-name descname"><span class="pre">context</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></em><a class="headerlink" href="#florist.api.clients.mnist.MnistClient.context" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="florist.api.clients.mnist.MnistClient.get_criterion">
 <span class="sig-name descname"><span class="pre">get_criterion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/clients/mnist.html#MnistClient.get_criterion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.clients.mnist.MnistClient.get_criterion" title="Link to this definition">#</a></dt>
@@ -442,6 +447,7 @@ rate of 0.001 and momentum of 0.9.</p>
             <ul>
 <li><a class="reference internal" href="#">florist.api.clients.mnist module</a><ul>
 <li><a class="reference internal" href="#florist.api.clients.mnist.MnistClient"><code class="docutils literal notranslate"><span class="pre">MnistClient</span></code></a><ul>
+<li><a class="reference internal" href="#florist.api.clients.mnist.MnistClient.context"><code class="docutils literal notranslate"><span class="pre">MnistClient.context</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.clients.mnist.MnistClient.get_criterion"><code class="docutils literal notranslate"><span class="pre">MnistClient.get_criterion()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.clients.mnist.MnistClient.get_data_loaders"><code class="docutils literal notranslate"><span class="pre">MnistClient.get_data_loaders()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.clients.mnist.MnistClient.get_model"><code class="docutils literal notranslate"><span class="pre">MnistClient.get_model()</span></code></a></li>
