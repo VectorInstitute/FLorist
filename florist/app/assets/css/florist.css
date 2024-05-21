@@ -1,0 +1,21 @@
+.label-group {
+    display: flex;
+}
+
+.label-group span {
+    flex-basis: 50%;
+}
+
+.input-group-margin input {
+    margin-right: 5px;
+}
+
+.input-group-header {
+    display: flex;
+}
+
+.input-group-header .input-group-action {
+    margin-left: auto;
+    margin-top: 2px;
+    cursor: pointer;
+}

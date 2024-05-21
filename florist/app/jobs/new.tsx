@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import { ReactElement } from "react/React";
 
 import { useGetModels } from "./hooks";
@@ -50,6 +51,7 @@ export function NewJobForm(): ReactElement {
     return (
         <div className="card-body pt-sm-3 pt-0">
             <form className="text-start">
+
                 <div className="input-group input-group-outline mb-3">
                     <label className="form-label form-row" htmlFor="jobModel">
                         Model
@@ -64,12 +66,25 @@ export function NewJobForm(): ReactElement {
                     <label className="form-label" htmlFor="jobServerAddress">
                         Server Address
                     </label>
-                    <input
-                        className="form-control"
-                        type="text"
-                        id="jobServerAddress"
-                    />
+                    <input className="form-control" type="text" id="jobServerAddress" />
                 </div>
+
+                <div className="input-group input-group-outline mb-3">
+                    <label className="form-label" htmlFor="jobRedisHost">
+                        Redis Host
+                    </label>
+                    <input className="form-control" type="text" id="jobRedisHost" />
+                </div>
+
+                <div className="input-group input-group-outline mb-3">
+                    <label className="form-label" htmlFor="jobRedisPort">
+                        Redis Port
+                    </label>
+                    <input className="form-control" type="text" id="jobRedisPort" />
+                </div>
+
+                <NewJobServerConfig />
+
             </form>
         </div>
     );
@@ -85,4 +100,53 @@ export function NewJobModelOptions(): ReactElement {
         ));
     }
     return null;
+}
+
+interface ServerConfig {
+    name: string;
+    value: string;
+}
+
+export function NewJobServerConfig(): ReactElement {
+    const [serverConfig, setServerConfig] = useState([{ key: '', value: '' }]);
+
+    const handleAddServerConfig = () => {
+        setServerConfig([...serverConfig, { name: "", value: "" }]);
+    };
+
+    return (
+        <div>
+            <div className="input-group-header">
+                <h6 className="mb-0">
+                    Server Configuration
+                </h6>
+                <i
+                    className="material-icons opacity-10 input-group-action"
+                    onClick={() => handleAddServerConfig()}
+                >
+                    add
+                </i>
+            </div>
+            <div className="label-group">
+                <span>Name</span>
+                <span>Value</span>
+            </div>
+            {serverConfig.map((c, i) => (<NewJobServerConfigItem key={i} serverConfigItem={c} index={i} />))}
+        </div>
+    )
+}
+
+export function NewJobServerConfigItem({
+    serverConfigItem,
+    index,
+}: {
+    serverConfigItem: ServerConfig;
+    index: string;
+}): ReactElement {
+    return (
+        <div className="input-group input-group-outline mb-3 input-group-margin">
+            <input className="form-control" type="text" id={"jobServerConfigName" + index} />
+            <input className="form-control" type="text" id={"jobServerConfigValue" + index} />
+        </div>
+    )
 }
