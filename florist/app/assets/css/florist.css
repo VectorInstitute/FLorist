@@ -16,3 +16,23 @@
     margin-top: 2px;
     cursor: pointer;
 }
+
+.input-group.input-group-outline.gray-input-box.is-focused .form-label+.form-control,
+.input-group.input-group-outline.gray-input-box.is-filled .form-label+.form-control {
+    border-color: #d2d6da !important;
+    border-top-color: transparent !important;
+    box-shadow: inset 0px 0 #d2d6da, inset 0px 0 #d2d6da, inset 0 0px #d2d6da;
+}
+
+.input-group.input-group-outline.gray-input-box.is-focused .form-label,
+.input-group.input-group-outline.gray-input-box.is-filled .form-label {
+    color: #7E839C;
+}
+
+.input-group.input-group-outline.gray-input-box.is-focused .form-label:before,
+.input-group.input-group-outline.gray-input-box.is-focused .form-label:after,
+.input-group.input-group-outline.gray-input-box.is-filled .form-label:before,
+.input-group.input-group-outline.gray-input-box.is-filled .form-label:after {
+    border-top-color: #d2d6da;
+    box-shadow: inset 0 0px #d2d6da;
+}

@@ -29,7 +29,7 @@ export function EditJobForm(): ReactElement {
     return (
         <div className="card-body pt-sm-3 pt-0">
             <form className="text-start">
-                <div className="input-group input-group-outline mb-3">
+                <div className="input-group input-group-outline gray-input-box mb-3">
                     <label className="form-label form-row" htmlFor="jobModel">
                         Model
                     </label>
@@ -39,7 +39,7 @@ export function EditJobForm(): ReactElement {
                     </select>
                 </div>
 
-                <div className="input-group input-group-outline mb-3">
+                <div className="input-group input-group-outline gray-input-box mb-3">
                     <label className="form-label" htmlFor="jobServerAddress">
                         Server Address
                     </label>
@@ -50,7 +50,7 @@ export function EditJobForm(): ReactElement {
                     />
                 </div>
 
-                <div className="input-group input-group-outline mb-3">
+                <div className="input-group input-group-outline gray-input-box mb-3">
                     <label className="form-label" htmlFor="jobRedisHost">
                         Redis Host
                     </label>
@@ -61,7 +61,7 @@ export function EditJobForm(): ReactElement {
                     />
                 </div>
 
-                <div className="input-group input-group-outline mb-3">
+                <div className="input-group input-group-outline gray-input-box mb-3">
                     <label className="form-label" htmlFor="jobRedisPort">
                         Redis Port
                     </label>
@@ -134,7 +134,7 @@ export function EditJobServerConfigItem({
     return (
         <div className="input-group-flex">
             <div className="input-group-two-column">
-                <div className="input-group input-group-outline mb-3">
+                <div className="input-group input-group-outline gray-input-box mb-3">
                     <label
                         className="form-label"
                         htmlFor={"jobServerConfigName" + index}
@@ -149,7 +149,7 @@ export function EditJobServerConfigItem({
                 </div>
             </div>
             <div className="input-group-two-column">
-                <div className="input-group input-group-outline mb-3">
+                <div className="input-group input-group-outline gray-input-box mb-3">
                     <label
                         className="form-label"
                         htmlFor={"jobServerConfigValue" + index}
