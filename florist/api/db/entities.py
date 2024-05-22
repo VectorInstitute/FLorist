@@ -9,6 +9,7 @@ from fastapi.encoders import jsonable_encoder
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import BaseModel, Field
 from pymongo.database import Database
+from pymongo.results import UpdateResult
 
 from florist.api.clients.common import Client
 from florist.api.servers.common import Model
@@ -104,7 +105,7 @@ class Job(BaseModel):
         :param status: (JobStatus) The status of the jobs to be returned.
         :param limit: (int) the limit amount of records that should be returned.
         :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
-        :return: (List[Job]) The list of jobs with the given status int the database.
+        :return: (List[Job]) The list of jobs with the given status in the database.
         """
         status = jsonable_encoder(status)
 
@@ -135,16 +136,21 @@ class Job(BaseModel):
         """
         assert self.clients_info is not None and len(self.clients_info) == len(client_uuids), (
             "self.clients_info and client_uuids must have the same length "
-            f"({'None' if self.clients_info is None else len(self.clients_info)}<>{len(client_uuids)})."
+            f"({'None' if self.clients_info is None else len(self.clients_info)}!={len(client_uuids)})."
         )
 
         job_collection = database[JOB_COLLECTION_NAME]
 
         self.server_uuid = server_uuid
-        await job_collection.update_one({"_id": self.id}, {"$set": {"server_uuid": server_uuid}})
+        update_result = await job_collection.update_one({"_id": self.id}, {"$set": {"server_uuid": server_uuid}})
+        assert_updated_successfully(update_result)
+
         for i in range(len(client_uuids)):
             self.clients_info[i].uuid = client_uuids[i]
-            await job_collection.update_one({"_id": self.id}, {"$set": {f"clients_info.{i}.uuid": client_uuids[i]}})
+            update_result = await job_collection.update_one(
+                {"_id": self.id}, {"$set": {f"clients_info.{i}.uuid": client_uuids[i]}}
+            )
+            assert_updated_successfully(update_result)
 
     async def set_status(self, status: JobStatus, database: AsyncIOMotorDatabase) -> None:
         """
@@ -155,7 +161,8 @@ class Job(BaseModel):
         """
         job_collection = database[JOB_COLLECTION_NAME]
         self.status = status
-        await job_collection.update_one({"_id": self.id}, {"$set": {"status": status.value}})
+        update_result = await job_collection.update_one({"_id": self.id}, {"$set": {"status": status.value}})
+        assert_updated_successfully(update_result)
 
     def set_status_sync(self, status: JobStatus, database: Database[Dict[str, Any]]) -> None:
         """
@@ -166,7 +173,8 @@ class Job(BaseModel):
         """
         job_collection = database[JOB_COLLECTION_NAME]
         self.status = status
-        job_collection.update_one({"_id": self.id}, {"$set": {"status": status.value}})
+        update_result = job_collection.update_one({"_id": self.id}, {"$set": {"status": status.value}})
+        assert_updated_successfully(update_result)
 
     def set_metrics(
         self,
@@ -183,18 +191,21 @@ class Job(BaseModel):
         """
         assert self.clients_info is not None and len(self.clients_info) == len(client_metrics), (
             "self.clients_info and client_metrics must have the same length "
-            f"({'None' if self.clients_info is None else len(self.clients_info)}<>{len(client_metrics)})."
+            f"({'None' if self.clients_info is None else len(self.clients_info)}!={len(client_metrics)})."
         )
 
         job_collection = database[JOB_COLLECTION_NAME]
 
         self.server_metrics = json.dumps(server_metrics)
-        job_collection.update_one({"_id": self.id}, {"$set": {"server_metrics": self.server_metrics}})
+        update_result = job_collection.update_one({"_id": self.id}, {"$set": {"server_metrics": self.server_metrics}})
+        assert_updated_successfully(update_result)
+
         for i in range(len(client_metrics)):
             self.clients_info[i].metrics = json.dumps(client_metrics[i])
-            job_collection.update_one(
+            update_result = job_collection.update_one(
                 {"_id": self.id}, {"$set": {f"clients_info.{i}.metrics": self.clients_info[i].metrics}}
             )
+            assert_updated_successfully(update_result)
 
     class Config:
         """MongoDB config for the Job DB entity."""
@@ -223,3 +234,16 @@ class Job(BaseModel):
                 ],
             },
         }
+
+
+def assert_updated_successfully(update_result: UpdateResult) -> None:
+    """
+    Assert an update result has updated exactly one record.
+
+    :param update_result: (pymongo.results.UpdateResult) the result object from an update.
+    """
+    raw_result = update_result.raw_result
+    assert isinstance(raw_result, dict)
+    assert raw_result["n"] == 1, f"UpdateResult's 'n' is not 1 ({update_result})"
+    assert raw_result["nModified"] == 1, f"UpdateResult's 'nModified' is not 1 ({update_result})"
+    assert raw_result["ok"] == 1, f"UpdateResult's 'ok' is not 1 ({update_result})"
