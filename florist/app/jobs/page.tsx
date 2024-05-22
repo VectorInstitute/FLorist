@@ -1,7 +1,9 @@
 "use client";
 import { ReactElement } from "react/React";
-import useGetJobsByStatus from "./hooks";
 import useGetJobsByJobStatus from "./hooks";
+
+import Image from "next/image";
+import loading_gif from "../assets/img/loading.gif";
 
 export const validStatuses = {
     NOT_STARTED: "Not Started",
@@ -32,9 +34,29 @@ interface StatusProp {
     status: string;
 }
 
+export function useGetJobsFromEachJobStatus() {
+    const statusDataFetches = [
+        useGetJobsByJobStatus("NOT_STARTED"),
+        useGetJobsByJobStatus("IN_PROGRESS"),
+        useGetJobsByJobStatus("FINISHED_SUCCESSFULLY"),
+        useGetJobsByJobStatus("FINISHED_WITH_ERROR"),
+    ];
+    return statusDataFetches;
+}
+
 export default function Page(): ReactElement {
-    const statusComponents = Object.keys(validStatuses).map((key, i) => (
-        <Status key={key} status={key} />
+    const statusKeys = Object.keys(validStatuses);
+    const statusDataFetches = useGetJobsFromEachJobStatus();
+    if (!statusDataFetches.every(({ isLoading }) => isLoading == false)) {
+        return (
+            <div className="d-flex justify-content-center align-items-center vh-100">
+                <Image src={loading_gif} alt="Loading" height={64} width={64} />
+            </div>
+        );
+    }
+
+    const statusComponents = statusDataFetches.map(({ data }, i) => (
+        <Status key={i} status={statusKeys[i]} data={data} />
     ));
     return (
         <div className="container-fluid py-4">
@@ -44,11 +66,13 @@ export default function Page(): ReactElement {
     );
 }
 
-export function Status({ status }: StatusProp): ReactElement {
-    const { data, error, isLoading } = useGetJobsByJobStatus(status);
-    if (error) return <span> Help1</span>;
-    if (isLoading) return <span> Help2 </span>;
-
+export function Status({
+    status,
+    data,
+}: {
+    status: StatusProp;
+    data: Object;
+}): ReactElement {
     return (
         <div className="row">
             <div className="col-12">
