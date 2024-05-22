@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import { ReactElement } from "react/React";
 
 import { useGetModels } from "../hooks";
@@ -29,7 +29,6 @@ export function EditJobForm(): ReactElement {
     return (
         <div className="card-body pt-sm-3 pt-0">
             <form className="text-start">
-
                 <div className="input-group input-group-outline mb-3">
                     <label className="form-label form-row" htmlFor="jobModel">
                         Model
@@ -44,25 +43,36 @@ export function EditJobForm(): ReactElement {
                     <label className="form-label" htmlFor="jobServerAddress">
                         Server Address
                     </label>
-                    <input className="form-control" type="text" id="jobServerAddress" />
+                    <input
+                        className="form-control"
+                        type="text"
+                        id="jobServerAddress"
+                    />
                 </div>
 
                 <div className="input-group input-group-outline mb-3">
                     <label className="form-label" htmlFor="jobRedisHost">
                         Redis Host
                     </label>
-                    <input className="form-control" type="text" id="jobRedisHost" />
+                    <input
+                        className="form-control"
+                        type="text"
+                        id="jobRedisHost"
+                    />
                 </div>
 
                 <div className="input-group input-group-outline mb-3">
                     <label className="form-label" htmlFor="jobRedisPort">
                         Redis Port
                     </label>
-                    <input className="form-control" type="text" id="jobRedisPort" />
+                    <input
+                        className="form-control"
+                        type="text"
+                        id="jobRedisPort"
+                    />
                 </div>
 
                 <EditJobServerConfig />
-
             </form>
         </div>
     );
@@ -86,7 +96,7 @@ interface ServerConfig {
 }
 
 export function EditJobServerConfig(): ReactElement {
-    const [serverConfig, setServerConfig] = useState([{ key: '', value: '' }]);
+    const [serverConfig, setServerConfig] = useState([{ key: "", value: "" }]);
 
     const handleAddServerConfig = () => {
         setServerConfig([...serverConfig, { name: "", value: "" }]);
@@ -95,9 +105,7 @@ export function EditJobServerConfig(): ReactElement {
     return (
         <div>
             <div className="input-group-header">
-                <h6 className="mb-0">
-                    Server Configuration
-                </h6>
+                <h6 className="mb-0">Server Configuration</h6>
                 <i
                     className="material-icons opacity-10 input-group-action"
                     onClick={() => handleAddServerConfig()}
@@ -106,10 +114,14 @@ export function EditJobServerConfig(): ReactElement {
                 </i>
             </div>
             {serverConfig.map((c, i) => (
-                <EditJobServerConfigItem key={i} serverConfigItem={c} index={i} />
+                <EditJobServerConfigItem
+                    key={i}
+                    serverConfigItem={c}
+                    index={i}
+                />
             ))}
         </div>
-    )
+    );
 }
 
 export function EditJobServerConfigItem({
@@ -123,16 +135,34 @@ export function EditJobServerConfigItem({
         <div className="input-group-flex">
             <div className="input-group-two-column">
                 <div className="input-group input-group-outline mb-3">
-                    <label className="form-label" htmlFor={"jobServerConfigName" + index}>Name</label>
-                    <input className="form-control" type="text" id={"jobServerConfigName" + index} />
+                    <label
+                        className="form-label"
+                        htmlFor={"jobServerConfigName" + index}
+                    >
+                        Name
+                    </label>
+                    <input
+                        className="form-control"
+                        type="text"
+                        id={"jobServerConfigName" + index}
+                    />
                 </div>
             </div>
             <div className="input-group-two-column">
                 <div className="input-group input-group-outline mb-3">
-                    <label className="form-label" htmlFor={"jobServerConfigValue" + index}>Value</label>
-                    <input className="form-control" type="text" id={"jobServerConfigValue" + index} />
+                    <label
+                        className="form-label"
+                        htmlFor={"jobServerConfigValue" + index}
+                    >
+                        Value
+                    </label>
+                    <input
+                        className="form-control"
+                        type="text"
+                        id={"jobServerConfigValue" + index}
+                    />
                 </div>
             </div>
         </div>
-    )
+    );
 }

@@ -667,6 +667,32 @@ function onWindowLoadFunction() {
 
 onWindowLoadFunction();
 
+const observer = new MutationObserver((mutationList) => {
+    var hasTargetElementTypes = false;
+
+    // Check if any select, input or .btn has been added to the DOM
+    for (var i = 0; i < mutationList.length; i++) {
+        if (mutationList[i].type === "childList") {
+            for (var j = 0; j < mutationList[i].addedNodes.length; j++) {
+                const addedNode = mutationList[i].addedNodes[j];
+                const inputs = addedNode.querySelectorAll("select");
+                const selects = addedNode.querySelectorAll("input");
+                const btns = addedNode.querySelectorAll(".btn");
+
+                hasTargetElementTypes =
+                    inputs.length > 0 || selects.length > 0 || btns.length > 0;
+            }
+        }
+    }
+
+    // If so, execute the onWindowLoadFunction to attach listeners
+    // to those new elements
+    if (hasTargetElementTypes) {
+        onWindowLoadFunction();
+    }
+});
+observer.observe(document, { childList: true, subtree: true });
+
 // Toggle Sidenav
 const iconNavbarSidenav = document.getElementById("iconNavbarSidenav");
 const iconSidenav = document.getElementById("iconSidenav");

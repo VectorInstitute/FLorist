@@ -2,6 +2,8 @@
 import { ReactElement } from "react/React";
 import { useGetJobsByJobStatus } from "./hooks";
 
+import Link from "next/link";
+
 export const validStatuses = {
     NOT_STARTED: "Not Started",
     IN_PROGRESS: "In Progress",
@@ -53,10 +55,13 @@ export default function Page(): ReactElement {
 export function NewJobButton(): ReactElement {
     return (
         <div className="col-6 text-end">
-            <a className="fixed-plugin-button btn bg-gradient-primary mb-0" href="/jobs/edit">
+            <Link
+                className="fixed-plugin-button btn bg-gradient-primary mb-0"
+                href="/jobs/edit"
+            >
                 <i className="material-icons text-sm">add</i>
                 &nbsp;&nbsp;New Job
-            </a>
+            </Link>
         </div>
     );
 }
