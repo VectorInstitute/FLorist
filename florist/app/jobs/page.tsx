@@ -33,11 +33,12 @@ interface StatusProp {
 }
 
 export default function Page(): ReactElement {
-   const statusComponents = Object.keys(validStatuses).map((key, i) => (
+    const statusComponents = Object.keys(validStatuses).map((key, i) => (
         <Status key={key} status={key} />
     ));
     return (
         <div className="container-fluid py-4">
+            <h1 className="ps-3">Jobs</h1>
             {statusComponents}
         </div>
     );
@@ -50,18 +51,21 @@ export function Status({ status }: StatusProp): ReactElement {
 
     return (
         <div className="row">
-        <div className="col-12">
-        <div className="card my-4">
-            <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-            <div className="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-            <h6 data-testid={`status-header-${status}`} className="text-white text-capitalize ps-3"> 
-                {validStatuses[status]}
-            </h6>
+            <div className="col-12">
+                <div className="card my-4">
+                    <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                        <div className="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                            <h6
+                                data-testid={`status-header-${status}`}
+                                className="text-white text-capitalize ps-3"
+                            >
+                                {validStatuses[status]}
+                            </h6>
+                        </div>
+                    </div>
+                    <StatusTable data={data} status={status} />
+                </div>
             </div>
-            </div>
-            <StatusTable data={data} status={status} />
-        </div>
-        </div>
         </div>
     );
 }
@@ -76,31 +80,38 @@ export function StatusTable({
     if (data.length > 0) {
         return (
             <div className="card-body px-0 pb-2">
-            <div className="table-responsive p-0">
-            <table data-testid={`status-table-${status}`} className="table align-items-center mb-0">
-                <thead>
-                    <tr>
-                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Model</th>
-                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Server Address</th>
-                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                            Client Service Addresses{" "}
-                        </th>
-                    </tr>
-                </thead>
-                <TableRows data={data} />
-            </table>
-            </div>
+                <div className="table-responsive p-0">
+                    <table
+                        data-testid={`status-table-${status}`}
+                        className="table align-items-center mb-0"
+                    >
+                        <thead>
+                            <tr>
+                                <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Model
+                                </th>
+                                <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Server Address
+                                </th>
+                                <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Client Service Addresses{" "}
+                                </th>
+                            </tr>
+                        </thead>
+                        <TableRows data={data} />
+                    </table>
+                </div>
             </div>
         );
     } else {
         return (
             <div className="card-body px-0 pb-2">
-            <div className="ps-3">
-                <span data-testid={`status-no-jobs-${status}`}>
-                    {" "}
-                    No jobs to display.{" "}
-                </span>
-            </div>
+                <div className="ps-3">
+                    <span data-testid={`status-no-jobs-${status}`}>
+                        {" "}
+                        No jobs to display.{" "}
+                    </span>
+                </div>
             </div>
         );
     }
@@ -132,17 +143,21 @@ export function TableRow({
         <tr>
             <td>
                 <div className="d-flex flex-column justify-content-center">
-                    <span className="ps-3 text-secondary text-xs font-weight-bold">{model}</span>
+                    <span className="ps-3 text-secondary text-xs font-weight-bold">
+                        {model}
+                    </span>
                 </div>
             </td>
             <td>
                 <div className="d-flex flex-column justify-content-center">
-                    <span className="ps-3 text-secondary text-xs font-weight-bold">{serverAddress}</span>
+                    <span className="ps-3 text-secondary text-xs font-weight-bold">
+                        {serverAddress}
+                    </span>
                 </div>
             </td>
             <td>
                 <div className="d-flex flex-column justify-content-center">
-                    <span className="ps-3 text-secondary text-xs font-weight-bold">               
+                    <span className="ps-3 text-secondary text-xs font-weight-bold">
                         <ClientListTableData clientsInfo={clientsInfo} />
                     </span>
                 </div>
