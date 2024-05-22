@@ -56,7 +56,7 @@ describe("List Jobs Page", () => {
         const { container } = render(<Page />);
         const h1 = container.querySelector("h1");
         expect(h1).toBeInTheDocument();
-        expect(h1).toHaveTextContent("Job By Status");
+        expect(h1).toHaveTextContent("Jobs By Status");
     });
 
     it("Renders Status Components Headers", () => {

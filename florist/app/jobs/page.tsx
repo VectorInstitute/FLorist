@@ -39,7 +39,7 @@ export default function Page(): ReactElement {
     ));
     return (
         <div className="mx-4">
-            <h1> Job By Status </h1>
+            <h1> Jobs By Status </h1>
             {statusComponents}
         </div>
     );
