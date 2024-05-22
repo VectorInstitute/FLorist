@@ -1,12 +1,9 @@
-.label-group {
+.input-group-flex {
     display: flex;
 }
 
-.label-group span {
+.input-group-two-column {
     flex-basis: 50%;
-}
-
-.input-group-margin input {
     margin-right: 5px;
 }
 

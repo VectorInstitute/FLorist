@@ -3,51 +3,29 @@
 import { useState } from 'react';
 import { ReactElement } from "react/React";
 
-import { useGetModels } from "./hooks";
+import { useGetModels } from "../hooks";
 
-export default function NewJob(): ReactElement {
+export default function EditJob(): ReactElement {
     return (
-        <div className="col-6 text-end">
-            <NewJobButton />
-            <div className="fixed-plugin text-start">
-                <div className="card shadow-lg">
-                    <NewJobHeader />
-
-                    <hr className="horizontal dark my-1" />
-
-                    <NewJobForm />
-                </div>
-            </div>
+        <div className="col-6 align-items-center">
+            <EditJobHeader />
+            <EditJobForm />
         </div>
     );
 }
 
-export function NewJobButton(): ReactElement {
-    return (
-        <a className="fixed-plugin-button btn bg-gradient-primary mb-0">
-            <i className="material-icons text-sm">add</i>
-            &nbsp;&nbsp;New Job
-        </a>
-    );
-}
-
-export function NewJobHeader(): ReactElement {
+export function EditJobHeader(): ReactElement {
     return (
         <div className="card-header pb-0 pt-3">
             <div className="float-start">
-                <h5 className="mt-3 mb-0">New Job</h5>
-                <p>Create a new FL training job.</p>
-            </div>
-            <div className="float-end mt-4">
-                <button className="btn btn-link text-dark p-0 fixed-plugin-close-button">
-                    <i className="material-icons">clear</i>
-                </button>
+                <h1 className="mt-3 mb-0">New Job</h1>
+                <p>Create a new FL training job</p>
             </div>
         </div>
     );
 }
 
-export function NewJobForm(): ReactElement {
+export function EditJobForm(): ReactElement {
     return (
         <div className="card-body pt-sm-3 pt-0">
             <form className="text-start">
@@ -58,7 +36,7 @@ export function NewJobForm(): ReactElement {
                     </label>
                     <select className="form-control" id="jobModel">
                         <option value="empty"></option>
-                        <NewJobModelOptions />
+                        <EditJobModelOptions />
                     </select>
                 </div>
 
@@ -83,14 +61,14 @@ export function NewJobForm(): ReactElement {
                     <input className="form-control" type="text" id="jobRedisPort" />
                 </div>
 
-                <NewJobServerConfig />
+                <EditJobServerConfig />
 
             </form>
         </div>
     );
 }
 
-export function NewJobModelOptions(): ReactElement {
+export function EditJobModelOptions(): ReactElement {
     const { data, error, isLoading } = useGetModels();
     if (data) {
         return data.map((d, i) => (
@@ -107,7 +85,7 @@ interface ServerConfig {
     value: string;
 }
 
-export function NewJobServerConfig(): ReactElement {
+export function EditJobServerConfig(): ReactElement {
     const [serverConfig, setServerConfig] = useState([{ key: '', value: '' }]);
 
     const handleAddServerConfig = () => {
@@ -127,18 +105,14 @@ export function NewJobServerConfig(): ReactElement {
                     add
                 </i>
             </div>
-            <div className="label-group">
-                <span>Name</span>
-                <span>Value</span>
-            </div>
             {serverConfig.map((c, i) => (
-                <NewJobServerConfigItem key={i} serverConfigItem={c} index={i} />
+                <EditJobServerConfigItem key={i} serverConfigItem={c} index={i} />
             ))}
         </div>
     )
 }
 
-export function NewJobServerConfigItem({
+export function EditJobServerConfigItem({
     serverConfigItem,
     index,
 }: {
@@ -146,9 +120,19 @@ export function NewJobServerConfigItem({
     index: string;
 }): ReactElement {
     return (
-        <div className="input-group input-group-outline mb-3 input-group-margin">
-            <input className="form-control" type="text" id={"jobServerConfigName" + index} />
-            <input className="form-control" type="text" id={"jobServerConfigValue" + index} />
+        <div className="input-group-flex">
+            <div className="input-group-two-column">
+                <div className="input-group input-group-outline mb-3">
+                    <label className="form-label" htmlFor={"jobServerConfigName" + index}>Name</label>
+                    <input className="form-control" type="text" id={"jobServerConfigName" + index} />
+                </div>
+            </div>
+            <div className="input-group-two-column">
+                <div className="input-group input-group-outline mb-3">
+                    <label className="form-label" htmlFor={"jobServerConfigValue" + index}>Value</label>
+                    <input className="form-control" type="text" id={"jobServerConfigValue" + index} />
+                </div>
+            </div>
         </div>
     )
 }

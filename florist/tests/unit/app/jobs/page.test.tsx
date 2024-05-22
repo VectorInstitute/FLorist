@@ -3,10 +3,7 @@ import { getByText, render, cleanup } from "@testing-library/react";
 import { describe, afterEach, it, expect } from "@jest/globals";
 
 import Page, { validStatuses } from "../../../../app/jobs/page";
-import {
-    useGetJobsByJobStatus,
-    useGetModels,
-} from "../../../../app/jobs/hooks";
+import { useGetJobsByJobStatus } from "../../../../app/jobs/hooks";
 
 jest.mock("../../../../app/jobs/hooks");
 
@@ -50,9 +47,6 @@ function setupMock(
                 isLoading: false,
             };
         }
-    });
-    useGetModels.mockImplementation(() => {
-        return { data: ["MNIST"], error: false, isLoading: false };
     });
 }
 
