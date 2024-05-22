@@ -94,11 +94,13 @@ export function StatusTable({
         );
     } else {
         return (
-            <div>
+            <div className="card-body px-0 pb-2">
+            <div className="ps-3">
                 <span data-testid={`status-no-jobs-${status}`}>
                     {" "}
                     No jobs to display.{" "}
                 </span>
+            </div>
             </div>
         );
     }
