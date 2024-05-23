@@ -130,7 +130,7 @@ def server_training_listener(job: Job, database: Database[Dict[str, Any]]) -> No
     :param job: (Job) The job with the server_uuid to listen to.
     :param database: (pymongo.database.Database) An instance of the database to save the information
         into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async
-        because of limitations with FastAPI's BrackgroundTasks.
+        because of limitations with FastAPI's BackgroundTasks.
     """
     LOGGER.info(f"Starting listener for server messages from job {job.id} at channel {job.server_uuid}")
 
@@ -169,7 +169,7 @@ def close_job(job: Job, server_metrics: Dict[str, Any], database: Database[Dict[
     :param server_metrics: (Dict[str, Any]) The server's metrics to be saved into the job.
     :param database: (pymongo.database.Database) An instance of the database to save the information
         into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async
-        because of limitations with FastAPI's BrackgroundTasks.
+        because of limitations with FastAPI's BackgroundTasks.
     """
     LOGGER.info(f"Listener: Training finished for job {job.id}")
 

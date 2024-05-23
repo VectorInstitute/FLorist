@@ -87,7 +87,7 @@ async def test_set_uuids_fail_clients_info_is_none(mock_request) -> None:
     test_server_uuid = "a-different-server-uuid"
     test_client_uuids = ["a-different-client-uuid-1", "a-different-client-uuid-2"]
 
-    error_msg = "self.clients_info and client_uuids must have the same length (None<>2)."
+    error_msg = "self.clients_info and client_uuids must have the same length (None!=2)."
     with raises(AssertionError, match=re.escape(error_msg)):
         await test_job.set_uuids(test_server_uuid, test_client_uuids, mock_request.app.database)
 
@@ -102,7 +102,19 @@ async def test_set_uuids_fail_clients_info_is_not_same_length(mock_request) -> N
     test_server_uuid = "a-different-server-uuid"
     test_client_uuids = ["a-different-client-uuid-1"]
 
-    error_msg = "self.clients_info and client_uuids must have the same length (2<>1)."
+    error_msg = "self.clients_info and client_uuids must have the same length (2!=1)."
+    with raises(AssertionError, match=re.escape(error_msg)):
+        await test_job.set_uuids(test_server_uuid, test_client_uuids, mock_request.app.database)
+
+
+async def test_set_uuids_fail_update_result(mock_request) -> None:
+    test_job = get_test_job()
+    test_job.id = str(test_job.id)
+
+    test_server_uuid = "a-different-server-uuid"
+    test_client_uuids = ["a-different-client-uuid-1", "a-different-client-uuid-2"]
+
+    error_msg = "UpdateResult's 'n' is not 1"
     with raises(AssertionError, match=re.escape(error_msg)):
         await test_job.set_uuids(test_server_uuid, test_client_uuids, mock_request.app.database)
 
@@ -123,6 +135,15 @@ async def test_set_status_success(mock_request) -> None:
     assert result_job == test_job
 
 
+async def test_set_status_fail_update_result(mock_request) -> None:
+    test_job = get_test_job()
+    test_job.id = str(test_job.id)
+
+    error_msg = "UpdateResult's 'n' is not 1"
+    with raises(AssertionError, match=re.escape(error_msg)):
+        await test_job.set_status(JobStatus.IN_PROGRESS, mock_request.app.database)
+
+
 async def test_set_status_sync_success(mock_request) -> None:
     test_job = get_test_job()
     result_id = await test_job.create(mock_request.app.database)
@@ -137,6 +158,15 @@ async def test_set_status_sync_success(mock_request) -> None:
     result_job = await Job.find_by_id(result_id, mock_request.app.database)
     test_job.status = test_status
     assert result_job == test_job
+
+
+async def test_set_status_sync_fail_update_result(mock_request) -> None:
+    test_job = get_test_job()
+    test_job.id = str(test_job.id)
+
+    error_msg = "UpdateResult's 'n' is not 1"
+    with raises(AssertionError, match=re.escape(error_msg)):
+        test_job.set_status_sync(JobStatus.IN_PROGRESS, mock_request.app.synchronous_database)
 
 
 async def test_set_metrics_success(mock_request) -> None:
@@ -167,7 +197,7 @@ async def test_set_metrics_fail_clients_info_is_none(mock_request) -> None:
     test_server_metrics = {"test-server": 123}
     test_client_metrics = [{"test-client-1": 456}, {"test-client-2": 789}]
 
-    error_msg = "self.clients_info and client_metrics must have the same length (None<>2)."
+    error_msg = "self.clients_info and client_metrics must have the same length (None!=2)."
     with raises(AssertionError, match=re.escape(error_msg)):
         test_job.set_metrics(test_server_metrics, test_client_metrics, mock_request.app.synchronous_database)
 
@@ -182,7 +212,19 @@ async def test_set_metrics_fail_clients_info_is_not_same_length(mock_request) ->
     test_server_metrics = {"test-server": 123}
     test_client_metrics = [{"test-client-1": 456}]
 
-    error_msg = "self.clients_info and client_metrics must have the same length (2<>1)."
+    error_msg = "self.clients_info and client_metrics must have the same length (2!=1)."
+    with raises(AssertionError, match=re.escape(error_msg)):
+        test_job.set_metrics(test_server_metrics, test_client_metrics, mock_request.app.synchronous_database)
+
+
+async def test_set_metrics_fail_update_result(mock_request) -> None:
+    test_job = get_test_job()
+    test_job.id = str(test_job.id)
+
+    test_server_metrics = {"test-server": 123}
+    test_client_metrics = [{"test-client-1": 456}, {"test-client-2": 789}]
+
+    error_msg = "UpdateResult's 'n' is not 1"
     with raises(AssertionError, match=re.escape(error_msg)):
         test_job.set_metrics(test_server_metrics, test_client_metrics, mock_request.app.synchronous_database)
 
