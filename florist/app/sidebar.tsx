@@ -7,7 +7,7 @@ import { ReactElement } from "react/React";
 export default function Sidebar(): ReactElement {
     return (
         <aside
-            className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
+            className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3  bg-gradient-dark"
             id="sidenav-main"
         >
             <div className="sidenav-header">
@@ -37,7 +37,7 @@ export default function Sidebar(): ReactElement {
                 <ul className="navbar-nav">
                     <li className="nav-item">
                         <a
-                            className="nav-link text-white active bg-gradient-primary"
+                            className="nav-link text-white"
                             href="/"
                         >
                             <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -48,11 +48,9 @@ export default function Sidebar(): ReactElement {
                             <span className="nav-link-text ms-1">Home</span>
                         </a>
                     </li>
-                </ul>
-                <ul className="navbar-nav">
                     <li className="nav-item">
-                        <Link
-                            className="nav-link text-white active bg-gradient-primary"
+                        <a
+                            className="nav-link text-white"
                             href="/jobs"
                         >
                             <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -61,7 +59,7 @@ export default function Sidebar(): ReactElement {
                                 </i>
                             </div>
                             <span className="nav-link-text ms-1">Jobs</span>
-                        </Link>
+                        </a>
                     </li>
                 </ul>
             </div>
