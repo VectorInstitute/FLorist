@@ -5,6 +5,7 @@ import threading
 import uvicorn
 
 from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import MongoClient
 from starlette.requests import Request
 
 from florist.api.server import MONGODB_URI
@@ -31,6 +32,8 @@ class MockApp:
     def __init__(self, database_name: str):
         self.db_client = AsyncIOMotorClient(MONGODB_URI)
         self.database = self.db_client[database_name]
+        self.synchronous_db_client = MongoClient(MONGODB_URI)
+        self.synchronous_database = self.synchronous_db_client[database_name]
 
 
 class MockRequest(Request):

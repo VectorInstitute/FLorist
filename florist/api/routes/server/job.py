@@ -1,11 +1,10 @@
 """FastAPI routes for the job."""
 
-from typing import Any, Dict, List
+from typing import List
 
 from fastapi import APIRouter, Body, Request, status
-from fastapi.encoders import jsonable_encoder
 
-from florist.api.db.entities import JOB_COLLECTION_NAME, MAX_RECORDS_TO_FETCH, Job, JobStatus
+from florist.api.db.entities import MAX_RECORDS_TO_FETCH, Job, JobStatus
 
 
 router = APIRouter()
@@ -17,7 +16,7 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
     response_model=Job,
 )
-async def new_job(request: Request, job: Job = Body(...)) -> Dict[str, Any]:  # noqa: B008
+async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
     """
     Create a new training job.
 
@@ -26,20 +25,18 @@ async def new_job(request: Request, job: Job = Body(...)) -> Dict[str, Any]:  # 
 
     :param request: (fastapi.Request) the FastAPI request object.
     :param job: (Job) The Job instance to be saved in the database.
-    :return: (Dict[str, Any]) A dictionary with the attributes of the new Job instance as saved in the database.
+    :return: (Job) The job that has been saved in the database.
     :raises: (HTTPException) status 400 if job.server_info is not None and cannot be parsed into JSON.
     """
-    json_job = jsonable_encoder(job)
-    result = await request.app.database[JOB_COLLECTION_NAME].insert_one(json_job)
+    job_id = await job.create(request.app.database)
+    job_in_db = await Job.find_by_id(job_id, request.app.database)
 
-    created_job = await request.app.database[JOB_COLLECTION_NAME].find_one({"_id": result.inserted_id})
-    assert isinstance(created_job, dict)
-
-    return created_job
+    assert job_in_db is not None
+    return job_in_db
 
 
 @router.get(path="/{status}", response_description="List jobs with the specified status", response_model=List[Job])
-async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Dict[str, Any]]:
+async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Job]:
     """
     List jobs with specified status.
 
@@ -50,9 +47,4 @@ async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Dic
     :return: (List[Dict[str, Any]]) A list where each entry is a dictionary with the attributes
         of a Job instance with the specified status.
     """
-    status = jsonable_encoder(status)
-
-    job_collection = request.app.database[JOB_COLLECTION_NAME]
-    result = await job_collection.find({"status": status}).to_list(MAX_RECORDS_TO_FETCH)
-    assert isinstance(result, list)
-    return result
+    return await Job.find_by_status(status, MAX_RECORDS_TO_FETCH, request.app.database)

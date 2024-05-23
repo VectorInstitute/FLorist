@@ -75,7 +75,7 @@ def test_start_fail_exception(mock_launch_client: Mock) -> None:
     assert json_body == {"error": "test exception"}
 
 
-@patch("florist.api.client.redis")
+@patch("florist.api.monitoring.metrics.redis")
 def test_check_status(mock_redis: Mock) -> None:
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = b"{\"info\": \"test\"}"
@@ -91,7 +91,7 @@ def test_check_status(mock_redis: Mock) -> None:
     mock_redis.Redis.assert_called_with(host=test_redis_host, port=test_redis_port)
     assert json.loads(response.body.decode()) == {"info": "test"}
 
-@patch("florist.api.client.redis")
+@patch("florist.api.monitoring.metrics.redis")
 def test_check_status_not_found(mock_redis: Mock) -> None:
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = None
@@ -108,7 +108,7 @@ def test_check_status_not_found(mock_redis: Mock) -> None:
     assert response.status_code == 404
     assert json.loads(response.body.decode()) == {"error": f"Client {test_uuid} Not Found"}
 
-@patch("florist.api.client.redis.Redis", side_effect=Exception("test exception"))
+@patch("florist.api.monitoring.metrics.redis.Redis", side_effect=Exception("test exception"))
 def test_check_status_fail_exception(mock_redis: Mock) -> None:
 
     test_uuid = "test_uuid"

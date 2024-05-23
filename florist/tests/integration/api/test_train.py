@@ -10,7 +10,7 @@ from florist.api.clients.common import Client
 from florist.api.db.entities import Job, JobStatus, ClientInfo
 from florist.api.monitoring.metrics import wait_for_metric
 from florist.api.routes.server.training import LOGGER
-from florist.api.routes.server.job import new_job
+from florist.api.routes.server.job import new_job, list_jobs_with_status
 from florist.api.server import DATABASE_NAME
 from florist.tests.integration.api.utils import TestUvicornServer, MockRequest, MockApp
 
@@ -33,7 +33,7 @@ async def test_train():
                 test_redis_port = "6379"
                 test_n_server_rounds = 2
 
-                job_dict = await new_job(test_request, Job(
+                job = await new_job(test_request, Job(
                     status=JobStatus.NOT_STARTED,
                     model="MNIST",
                     server_address="localhost:8080",
@@ -57,7 +57,7 @@ async def test_train():
 
                 request = requests.Request(
                     method="POST",
-                    url=f"http://localhost:8000/api/server/training/start?job_id={job_dict['_id']}",
+                    url=f"http://localhost:8000/api/server/training/start?job_id={job.id}",
                 ).prepare()
                 session = requests.Session()
                 response = session.send(request)
@@ -65,6 +65,9 @@ async def test_train():
                 # Check response
                 assert response.status_code == 200
                 assert response.json() == {"server_uuid": ANY, "client_uuids": [ANY]}
+
+                in_progress_jobs = await list_jobs_with_status(JobStatus.IN_PROGRESS, test_request)
+                assert job.id in [j.id for j in in_progress_jobs]
 
                 redis_conn = redis.Redis(host=test_redis_host, port=test_redis_port)
                 server_uuid = response.json()["server_uuid"]
@@ -90,3 +93,6 @@ async def test_train():
                 assert "initialized" in client_metrics
                 assert "shutdown" in client_metrics
                 assert len(client_metrics["rounds"]) == test_n_server_rounds
+
+                finished_jobs = await list_jobs_with_status(JobStatus.FINISHED_SUCCESSFULLY, test_request)
+                assert job.id in [j.id for j in finished_jobs]
