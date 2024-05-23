@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { ReactElement } from "react/React";
 
+import Link from "next/link";
+
 import { useGetModels } from "../hooks";
 
 export default function EditJob(): ReactElement {
@@ -29,51 +31,63 @@ export function EditJobForm(): ReactElement {
     return (
         <div className="card-body pt-sm-3 pt-0">
             <form className="text-start">
-                <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label className="form-label form-row" htmlFor="jobModel">
-                        Model
-                    </label>
-                    <select className="form-control" id="jobModel">
-                        <option value="empty"></option>
-                        <EditJobModelOptions />
-                    </select>
-                </div>
-
-                <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label className="form-label" htmlFor="jobServerAddress">
-                        Server Address
-                    </label>
-                    <input
-                        className="form-control"
-                        type="text"
-                        id="jobServerAddress"
-                    />
-                </div>
-
-                <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label className="form-label" htmlFor="jobRedisHost">
-                        Redis Host
-                    </label>
-                    <input
-                        className="form-control"
-                        type="text"
-                        id="jobRedisHost"
-                    />
-                </div>
-
-                <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label className="form-label" htmlFor="jobRedisPort">
-                        Redis Port
-                    </label>
-                    <input
-                        className="form-control"
-                        type="text"
-                        id="jobRedisPort"
-                    />
-                </div>
+                <EditJobServerAttributes />
 
                 <EditJobServerConfig />
+
+                <EditJobClientsConfig />
+
+                <button class="btn bg-gradient-primary my-4">Create New Job</button>
             </form>
+        </div>
+    );
+}
+
+export function EditJobServerAttributes(): ReactElement {
+    return (
+        <div>
+            <div className="input-group input-group-outline gray-input-box mb-3">
+                <label className="form-label form-row" htmlFor="jobModel">
+                    Model
+                </label>
+                <select className="form-control" id="jobModel">
+                    <option value="empty"></option>
+                    <EditJobModelOptions />
+                </select>
+            </div>
+
+            <div className="input-group input-group-outline gray-input-box mb-3">
+                <label className="form-label" htmlFor="jobServerAddress">
+                    Server Address
+                </label>
+                <input
+                    className="form-control"
+                    type="text"
+                    id="jobServerAddress"
+                />
+            </div>
+
+            <div className="input-group input-group-outline gray-input-box mb-3">
+                <label className="form-label" htmlFor="jobRedisHost">
+                    Redis Host
+                </label>
+                <input
+                    className="form-control"
+                    type="text"
+                    id="jobRedisHost"
+                />
+            </div>
+
+            <div className="input-group input-group-outline gray-input-box mb-3">
+                <label className="form-label" htmlFor="jobRedisPort">
+                    Redis Port
+                </label>
+                <input
+                    className="form-control"
+                    type="text"
+                    id="jobRedisPort"
+                />
+            </div>
         </div>
     );
 }
@@ -96,7 +110,7 @@ interface ServerConfig {
 }
 
 export function EditJobServerConfig(): ReactElement {
-    const [serverConfig, setServerConfig] = useState([{ key: "", value: "" }]);
+    const [serverConfig, setServerConfig] = useState([{ name: "", value: "" }]);
 
     const handleAddServerConfig = () => {
         setServerConfig([...serverConfig, { name: "", value: "" }]);
@@ -105,7 +119,7 @@ export function EditJobServerConfig(): ReactElement {
     return (
         <div>
             <div className="input-group-header">
-                <h6 className="mb-0">Server Configuration</h6>
+                <h6>Server Configuration</h6>
                 <i
                     className="material-icons opacity-10 input-group-action"
                     onClick={() => handleAddServerConfig()}
@@ -131,6 +145,7 @@ export function EditJobServerConfigItem({
     serverConfigItem: ServerConfig;
     index: string;
 }): ReactElement {
+    console.log(serverConfigItem)
     return (
         <div className="input-group-flex">
             <div className="input-group-two-column">
@@ -144,6 +159,7 @@ export function EditJobServerConfigItem({
                     <input
                         className="form-control"
                         type="text"
+                        defaultValue={serverConfigItem.name}
                         id={"jobServerConfigName" + index}
                     />
                 </div>
@@ -159,7 +175,148 @@ export function EditJobServerConfigItem({
                     <input
                         className="form-control"
                         type="text"
+                        defaultValue={serverConfigItem.value}
                         id={"jobServerConfigValue" + index}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+interface ClientConfig {
+    client: string;
+    service_address: string;
+    data_path: string;
+    redis_host: string;
+    redis_port: string;
+}
+
+function make_empty_client_config() {
+    return {
+        client: "",
+        service_address: "",
+        data_path: "",
+        redis_host: "",
+        redis_port: "",
+    }
+}
+
+export function EditJobClientsConfig(): ReactElement {
+    const [clientsConfig, setClientsConfig] = useState([make_empty_client_config()]);
+
+    const handleAddClientConfig = () => {
+        setClientsConfig([...clientsConfig, make_empty_client_config()]);
+    };
+
+    return (
+        <div>
+            <div className="input-group-header">
+                <h6>Clients Configuration</h6>
+                <i
+                    className="material-icons opacity-10 input-group-action"
+                    onClick={() => handleAddClientConfig()}
+                >
+                    add
+                </i>
+            </div>
+            {clientsConfig.map((c, i) => (
+                <EditJobClientsConfigItem
+                    key={i}
+                    clientConfig={c}
+                    index={i}
+                />
+            ))}
+        </div>
+    );
+}
+
+export function EditJobClientsConfigItem({
+    clientConfig,
+    index,
+}: {
+    clientConfig: ClientConfig;
+    index: string;
+}): ReactElement {
+    return (
+        <div className="input-group-flex">
+            <div className="input-group-two-column">
+                <div className="input-group input-group-outline gray-input-box mb-3">
+                    <label
+                        className="form-label"
+                        htmlFor={"jobClientConfigClient" + index}
+                    >
+                        Client
+                    </label>
+                    <input
+                        className="form-control"
+                        type="text"
+                        defaultValue={clientConfig.client}
+                        id={"jobClientConfigClient" + index}
+                    />
+                </div>
+            </div>
+            <div className="input-group-two-column">
+                <div className="input-group input-group-outline gray-input-box mb-3">
+                    <label
+                        className="form-label"
+                        htmlFor={"jobClientConfigServiceAddress" + index}
+                    >
+                        Address
+                    </label>
+                    <input
+                        className="form-control"
+                        type="text"
+                        defaultValue={clientConfig.service_address}
+                        id={"jobClientConfigServiceAddress" + index}
+                    />
+                </div>
+            </div>
+            <div className="input-group-two-column">
+                <div className="input-group input-group-outline gray-input-box mb-3">
+                    <label
+                        className="form-label"
+                        htmlFor={"jobClientConfigDataPath" + index}
+                    >
+                        Data Path
+                    </label>
+                    <input
+                        className="form-control"
+                        type="text"
+                        defaultValue={clientConfig.data_path}
+                        id={"jobClientConfigDataPath" + index}
+                    />
+                </div>
+            </div>
+            <div className="input-group-two-column">
+                <div className="input-group input-group-outline gray-input-box mb-3">
+                    <label
+                        className="form-label"
+                        htmlFor={"jobClientConfigRedisHost" + index}
+                    >
+                        Redis Host
+                    </label>
+                    <input
+                        className="form-control"
+                        type="text"
+                        defaultValue={clientConfig.redis_host}
+                        id={"jobClientConfigRedisHost" + index}
+                    />
+                </div>
+            </div>
+            <div className="input-group-two-column">
+                <div className="input-group input-group-outline gray-input-box mb-3">
+                    <label
+                        className="form-label"
+                        htmlFor={"jobClientConfigRedisPort" + index}
+                    >
+                        Redis Port
+                    </label>
+                    <input
+                        className="form-control"
+                        type="text"
+                        defaultValue={clientConfig.redis_port}
+                        id={"jobClientConfigRedisPort" + index}
                     />
                 </div>
             </div>
