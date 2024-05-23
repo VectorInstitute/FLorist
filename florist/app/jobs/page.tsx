@@ -1,7 +1,8 @@
 "use client";
+
 import { ReactElement } from "react/React";
-import useGetJobsByStatus from "./hooks";
-import useGetJobsByJobStatus from "./hooks";
+
+import { useGetJobsByJobStatus } from "./hooks";
 
 export const validStatuses = {
     NOT_STARTED: "Not Started",
@@ -38,7 +39,7 @@ export default function Page(): ReactElement {
     ));
     return (
         <div className="mx-4">
-            <h1> Job Status </h1>
+            <h1> Jobs By Status </h1>
             {statusComponents}
         </div>
     );

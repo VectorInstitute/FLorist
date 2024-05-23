@@ -3,7 +3,7 @@ import { getByText, render, cleanup } from "@testing-library/react";
 import { describe, afterEach, it, expect } from "@jest/globals";
 
 import Page, { validStatuses } from "../../../../app/jobs/page";
-import useGetJobsByStatus from "../../../../app/jobs/hooks";
+import { useGetJobsByJobStatus } from "../../../../app/jobs/hooks";
 
 jest.mock("../../../../app/jobs/hooks");
 
@@ -33,7 +33,7 @@ function setupMock(
     error: boolean,
     isLoading: boolean,
 ) {
-    useGetJobsByStatus.mockImplementation((status: string) => {
+    useGetJobsByJobStatus.mockImplementation((status: string) => {
         if (validStatuses.includes(status)) {
             return {
                 data,
@@ -56,7 +56,7 @@ describe("List Jobs Page", () => {
         const { container } = render(<Page />);
         const h1 = container.querySelector("h1");
         expect(h1).toBeInTheDocument();
-        expect(h1).toHaveTextContent("Job Status");
+        expect(h1).toHaveTextContent("Jobs By Status");
     });
 
     it("Renders Status Components Headers", () => {

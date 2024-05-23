@@ -39,7 +39,7 @@ brew install yarn
 
 Then install the project dependencies in development mode:
 ```shell
-yarn
+yarn -D
 ```
 
 Install Redis by following [these instructions](README.md#pulling-redis-docker).
