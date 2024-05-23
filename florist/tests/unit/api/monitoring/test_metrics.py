@@ -7,7 +7,7 @@ from unittest.mock import Mock, call, patch
 from fl4health.reporting.metrics import DateTimeEncoder
 from freezegun import freeze_time
 
-from florist.api.monitoring.metrics import RedisMetricsReporter, wait_for_metric
+from florist.api.monitoring.metrics import RedisMetricsReporter, wait_for_metric, get_subscriber, get_from_redis
 
 
 @freeze_time("2012-12-11 10:09:08")
@@ -155,3 +155,57 @@ def test_wait_for_metric_fail_max_retries(_: Mock, mock_redis: Mock) -> None:
 
     with raises(Exception):
         wait_for_metric(test_uuid, test_metric, test_redis_host, test_redis_port, logging.getLogger(__name__))
+
+
+@patch("florist.api.monitoring.metrics.redis")
+def test_get_subscriber(mock_redis: Mock) -> None:
+    test_channel = "test-channel"
+    test_redis_host = "test-redis-host"
+    test_redis_port = "test-redis-port"
+
+    mock_redis_connection = Mock()
+    mock_redis_pubsub = Mock()
+    mock_redis_connection.pubsub.return_value = mock_redis_pubsub
+    mock_redis.Redis.return_value = mock_redis_connection
+
+    result = get_subscriber(test_channel, test_redis_host, test_redis_port)
+
+    assert result == mock_redis_pubsub
+    mock_redis.Redis.assert_called_once_with(host=test_redis_host, port=test_redis_port)
+    mock_redis_connection.pubsub.assert_called_once()
+    mock_redis_pubsub.subscribe.assert_called_once_with(test_channel)
+
+
+@patch("florist.api.monitoring.metrics.redis")
+def test_get_from_redis(mock_redis: Mock) -> None:
+    test_name = "test-name"
+    test_redis_host = "test-redis-host"
+    test_redis_port = "test-redis-port"
+    test_redis_result = b"{\"foo\": \"bar\"}"
+
+    mock_redis_connection = Mock()
+    mock_redis_connection.get.return_value = test_redis_result
+    mock_redis.Redis.return_value = mock_redis_connection
+
+    result = get_from_redis(test_name, test_redis_host, test_redis_port)
+
+    assert result == json.loads(test_redis_result)
+    mock_redis.Redis.assert_called_once_with(host=test_redis_host, port=test_redis_port)
+    mock_redis_connection.get.assert_called_once_with(test_name)
+
+
+@patch("florist.api.monitoring.metrics.redis")
+def test_get_from_redis_empty(mock_redis: Mock) -> None:
+    test_name = "test-name"
+    test_redis_host = "test-redis-host"
+    test_redis_port = "test-redis-port"
+
+    mock_redis_connection = Mock()
+    mock_redis_connection.get.return_value = None
+    mock_redis.Redis.return_value = mock_redis_connection
+
+    result = get_from_redis(test_name, test_redis_host, test_redis_port)
+
+    assert result is None
+    mock_redis.Redis.assert_called_once_with(host=test_redis_host, port=test_redis_port)
+    mock_redis_connection.get.assert_called_once_with(test_name)

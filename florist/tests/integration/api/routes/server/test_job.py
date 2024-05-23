@@ -1,5 +1,7 @@
 from unittest.mock import ANY
 
+from fastapi.encoders import jsonable_encoder
+
 from florist.api.clients.common import Client
 from florist.api.db.entities import ClientInfo, Job, JobStatus
 from florist.api.routes.server.job import list_jobs_with_status, new_job
@@ -12,7 +14,7 @@ async def test_new_job(mock_request) -> None:
     test_empty_job = Job()
     result = await new_job(mock_request, test_empty_job)
 
-    assert result == {
+    assert jsonable_encoder(result) == {
         "_id": ANY,
         "status": JobStatus.NOT_STARTED.value,
         "model": None,
@@ -22,8 +24,9 @@ async def test_new_job(mock_request) -> None:
         "redis_host": None,
         "redis_port": None,
         "clients_info": None,
+        "server_metrics": None,
+        "server_uuid": None,
     }
-    assert isinstance(result["_id"], str)
 
     test_job = Job(
         id="test-id",
@@ -34,6 +37,8 @@ async def test_new_job(mock_request) -> None:
         config_parser=ConfigParser.BASIC,
         redis_host="test-redis-host",
         redis_port="test-redis-port",
+        server_metrics="test-server-metrics",
+        server_uuid="test-server-uuid",
         clients_info=[
             ClientInfo(
                 client=Client.MNIST,
@@ -41,6 +46,8 @@ async def test_new_job(mock_request) -> None:
                 data_path="test/data/path-1",
                 redis_host="test-redis-host-1",
                 redis_port="test-redis-port-1",
+                metrics="test-client-metrics-1",
+                uuid="test-client-uuid-1",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -48,20 +55,24 @@ async def test_new_job(mock_request) -> None:
                 data_path="test/data/path-2",
                 redis_host="test-redis-host-2",
                 redis_port="test-redis-port-2",
+                metrics="test-client-metrics-1",
+                uuid="test-client-uuid-1",
             ),
         ]
     )
     result = await new_job(mock_request, test_job)
 
-    assert result == {
+    assert jsonable_encoder(result) == {
         "_id": test_job.id,
         "status": test_job.status.value,
         "model": test_job.model.value,
         "server_address": "test-server-address",
         "server_config": "{\"test-server-info\": 123}",
+        "config_parser": test_job.config_parser.value,
         "redis_host": test_job.redis_host,
         "redis_port": test_job.redis_port,
-        "config_parser": test_job.config_parser.value,
+        "server_uuid": test_job.server_uuid,
+        "server_metrics": test_job.server_metrics,
         "clients_info": [
             {
                 "_id": ANY,
@@ -70,6 +81,8 @@ async def test_new_job(mock_request) -> None:
                 "data_path": test_job.clients_info[0].data_path,
                 "redis_host": test_job.clients_info[0].redis_host,
                 "redis_port": test_job.clients_info[0].redis_port,
+                "uuid": test_job.clients_info[0].uuid,
+                "metrics": test_job.clients_info[0].metrics,
             }, {
                 "_id": ANY,
                 "client": test_job.clients_info[1].client.value,
@@ -77,11 +90,11 @@ async def test_new_job(mock_request) -> None:
                 "data_path": test_job.clients_info[1].data_path,
                 "redis_host": test_job.clients_info[1].redis_host,
                 "redis_port": test_job.clients_info[1].redis_port,
+                "uuid": test_job.clients_info[1].uuid,
+                "metrics": test_job.clients_info[1].metrics,
             },
         ],
     }
-    assert isinstance(result["clients_info"][0]["_id"], str)
-    assert isinstance(result["clients_info"][1]["_id"], str)
 
 
 async def test_list_jobs_with_status(mock_request) -> None:
@@ -94,6 +107,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
         config_parser=ConfigParser.BASIC,
         redis_host="test-redis-host1",
         redis_port="test-redis-port1",
+        server_metrics="test-server-metrics1",
+        server_uuid="test-server-uuid1",
         clients_info=[
             ClientInfo(
                 client=Client.MNIST,
@@ -101,6 +116,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 data_path="test/data/path-1-1",
                 redis_host="test-redis-host-1-1",
                 redis_port="test-redis-port-1-1",
+                metrics="test-client-metrics-1-1",
+                uuid="test-client-uuid-1-1",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -108,6 +125,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 data_path="test/data/path-2-1",
                 redis_host="test-redis-host-2-1",
                 redis_port="test-redis-port-2-1",
+                metrics="test-client-metrics-2-1",
+                uuid="test-client-uuid-2-1",
             ),
         ]
     )
@@ -121,6 +140,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
         config_parser=ConfigParser.BASIC,
         redis_host="test-redis-host2",
         redis_port="test-redis-port2",
+        server_metrics="test-server-metrics2",
+        server_uuid="test-server-uuid2",
         clients_info=[
             ClientInfo(
                 client=Client.MNIST,
@@ -128,6 +149,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 data_path="test/data/path-1-2",
                 redis_host="test-redis-host-1-2",
                 redis_port="test-redis-port-1-2",
+                metrics="test-client-metrics-1-2",
+                uuid="test-client-uuid-1-2",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -135,6 +158,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 data_path="test/data/path-2-2",
                 redis_host="test-redis-host-2-2",
                 redis_port="test-redis-port-2-2",
+                metrics="test-client-metrics-2-2",
+                uuid="test-client-uuid-2-2",
             ),
         ]
     )
@@ -148,6 +173,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
         config_parser=ConfigParser.BASIC,
         redis_host="test-redis-host3",
         redis_port="test-redis-port3",
+        server_metrics="test-server-metrics3",
+        server_uuid="test-server-uuid3",
         clients_info=[
             ClientInfo(
                 client=Client.MNIST,
@@ -155,6 +182,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 data_path="test/data/path-1-3",
                 redis_host="test-redis-host-1-3",
                 redis_port="test-redis-port-1-3",
+                metrics="test-client-metrics-1-3",
+                uuid="test-client-uuid-1-3",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -162,6 +191,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 data_path="test/data/path-2-3",
                 redis_host="test-redis-host-2-3",
                 redis_port="test-redis-port-2-3",
+                metrics="test-client-metrics-2-3",
+                uuid="test-client-uuid-2-3",
             ),
         ]
     )
@@ -175,6 +206,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
         config_parser=ConfigParser.BASIC,
         redis_host="test-redis-host4",
         redis_port="test-redis-port4",
+        server_metrics="test-server-metrics4",
+        server_uuid="test-server-uuid4",
         clients_info=[
             ClientInfo(
                 client=Client.MNIST,
@@ -182,6 +215,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 data_path="test/data/path-1-4",
                 redis_host="test-redis-host-1-4",
                 redis_port="test-redis-port-1-4",
+                metrics="test-client-metrics-1-4",
+                uuid="test-client-uuid-1-4",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -189,6 +224,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 data_path="test/data/path-2-4",
                 redis_host="test-redis-host-2-4",
                 redis_port="test-redis-port-2-4",
+                metrics="test-client-metrics-2-4",
+                uuid="test-client-uuid-2-4",
             ),
         ]
     )
@@ -207,7 +244,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
     assert isinstance(result_finished_with_error, list)
     assert isinstance(result_finished_successfully, list)
 
-    assert result_not_started[0] == {
+    assert jsonable_encoder(result_not_started[0]) == {
         "_id": test_job1.id,
         "status": test_job1.status.value,
         "model": test_job1.model.value,
@@ -216,6 +253,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "config_parser": test_job1.config_parser.value,
         "redis_host": test_job1.redis_host,
         "redis_port": test_job1.redis_port,
+        "server_metrics": test_job1.server_metrics,
+        "server_uuid": test_job1.server_uuid,
         "clients_info": [
             {
                 "_id": ANY,
@@ -224,6 +263,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "data_path": test_job1.clients_info[0].data_path,
                 "redis_host": test_job1.clients_info[0].redis_host,
                 "redis_port": test_job1.clients_info[0].redis_port,
+                "metrics": test_job1.clients_info[0].metrics,
+                "uuid": test_job1.clients_info[0].uuid,
             }, {
                 "_id": ANY,
                 "client": test_job1.clients_info[1].client.value,
@@ -231,13 +272,13 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "data_path": test_job1.clients_info[1].data_path,
                 "redis_host": test_job1.clients_info[1].redis_host,
                 "redis_port": test_job1.clients_info[1].redis_port,
+                "metrics": test_job1.clients_info[1].metrics,
+                "uuid": test_job1.clients_info[1].uuid,
             },
         ],
     }
-    assert isinstance(result_not_started[0]["clients_info"][0]["_id"], str)
-    assert isinstance(result_not_started[0]["clients_info"][1]["_id"], str)
 
-    assert result_in_progress[0] == {
+    assert jsonable_encoder(result_in_progress[0]) == {
         "_id": test_job2.id,
         "status": test_job2.status.value,
         "model": test_job2.model.value,
@@ -246,6 +287,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "config_parser": test_job2.config_parser.value,
         "redis_host": test_job2.redis_host,
         "redis_port": test_job2.redis_port,
+        "server_metrics": test_job2.server_metrics,
+        "server_uuid": test_job2.server_uuid,
         "clients_info": [
             {
                 "_id": ANY,
@@ -254,6 +297,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "data_path": test_job2.clients_info[0].data_path,
                 "redis_host": test_job2.clients_info[0].redis_host,
                 "redis_port": test_job2.clients_info[0].redis_port,
+                "metrics": test_job2.clients_info[0].metrics,
+                "uuid": test_job2.clients_info[0].uuid,
             }, {
                 "_id": ANY,
                 "client": test_job2.clients_info[1].client.value,
@@ -261,13 +306,13 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "data_path": test_job2.clients_info[1].data_path,
                 "redis_host": test_job2.clients_info[1].redis_host,
                 "redis_port": test_job2.clients_info[1].redis_port,
+                "metrics": test_job2.clients_info[1].metrics,
+                "uuid": test_job2.clients_info[1].uuid,
             },
         ],
     }
-    assert isinstance(result_in_progress[0]["clients_info"][0]["_id"], str)
-    assert isinstance(result_in_progress[0]["clients_info"][1]["_id"], str)
 
-    assert result_finished_with_error[0] == {
+    assert jsonable_encoder(result_finished_with_error[0]) == {
         "_id": test_job3.id,
         "status": test_job3.status.value,
         "model": test_job3.model.value,
@@ -276,6 +321,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "config_parser": test_job3.config_parser.value,
         "redis_host": test_job3.redis_host,
         "redis_port": test_job3.redis_port,
+        "server_metrics": test_job3.server_metrics,
+        "server_uuid": test_job3.server_uuid,
         "clients_info": [
             {
                 "_id": ANY,
@@ -284,6 +331,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "data_path": test_job3.clients_info[0].data_path,
                 "redis_host": test_job3.clients_info[0].redis_host,
                 "redis_port": test_job3.clients_info[0].redis_port,
+                "metrics": test_job3.clients_info[0].metrics,
+                "uuid": test_job3.clients_info[0].uuid,
             }, {
                 "_id": ANY,
                 "client": test_job3.clients_info[1].client.value,
@@ -291,13 +340,13 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "data_path": test_job3.clients_info[1].data_path,
                 "redis_host": test_job3.clients_info[1].redis_host,
                 "redis_port": test_job3.clients_info[1].redis_port,
+                "metrics": test_job3.clients_info[1].metrics,
+                "uuid": test_job3.clients_info[1].uuid,
             },
         ],
     }
-    assert isinstance(result_finished_with_error[0]["clients_info"][0]["_id"], str)
-    assert isinstance(result_finished_with_error[0]["clients_info"][1]["_id"], str)
 
-    assert result_finished_successfully[0] == {
+    assert jsonable_encoder(result_finished_successfully[0]) == {
         "_id": test_job4.id,
         "status": test_job4.status.value,
         "model": test_job4.model.value,
@@ -306,6 +355,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "config_parser": test_job4.config_parser.value,
         "redis_host": test_job4.redis_host,
         "redis_port": test_job4.redis_port,
+        "server_metrics": test_job4.server_metrics,
+        "server_uuid": test_job4.server_uuid,
         "clients_info": [
             {
                 "_id": ANY,
@@ -314,6 +365,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "data_path": test_job4.clients_info[0].data_path,
                 "redis_host": test_job4.clients_info[0].redis_host,
                 "redis_port": test_job4.clients_info[0].redis_port,
+                "metrics": test_job4.clients_info[0].metrics,
+                "uuid": test_job4.clients_info[0].uuid,
             }, {
                 "_id": ANY,
                 "client": test_job4.clients_info[1].client.value,
@@ -321,8 +374,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "data_path": test_job4.clients_info[1].data_path,
                 "redis_host": test_job4.clients_info[1].redis_host,
                 "redis_port": test_job4.clients_info[1].redis_port,
+                "metrics": test_job4.clients_info[1].metrics,
+                "uuid": test_job4.clients_info[1].uuid,
             },
         ],
     }
-    assert isinstance(result_finished_successfully[0]["clients_info"][0]["_id"], str)
-    assert isinstance(result_finished_successfully[0]["clients_info"][1]["_id"], str)
