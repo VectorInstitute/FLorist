@@ -41,12 +41,10 @@ export function EditJobForm(): ReactElement {
         }
 
         const jsonJob = JSON.stringify(job)
-//         usePostJob(job)
         try {
             const response = await fetch("/api/server/job", {
                 method: "POST",
                 headers: {
-    //                 "Accept": "*/*",
                     "Content-Type": "application/json",
                 },
                 body: jsonJob,

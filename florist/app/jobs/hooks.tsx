@@ -16,7 +16,3 @@ export function useGetModels() {
 export function useGetClients() {
     return useSWR("/api/server/clients", fetcher);
 }
-
-export function usePostJob(data) {
-    return useSWR("/api/server/job/", poster(data));
-}
