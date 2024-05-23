@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { ReactElement } from "react/React";
 
 import Link from "next/link";
 
-import { useGetModels, useGetClients } from "../hooks";
+import { useGetModels, useGetClients, usePostjob } from "../hooks";
 
 export default function EditJob(): ReactElement {
     return (
@@ -28,6 +28,39 @@ export function EditJobHeader(): ReactElement {
 }
 
 export function EditJobForm(): ReactElement {
+    async function onSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+
+        const formData = new FormData(event.currentTarget)
+
+        const job = {};
+        for (const entry of formData.entries()) {
+            if (entry[0] === "jobModel") {
+                job["model"] = entry[1];
+            }
+        }
+
+        const jsonJob = JSON.stringify(job)
+//         usePostJob(job)
+        try {
+            const response = await fetch("/api/server/job", {
+                method: "POST",
+                headers: {
+    //                 "Accept": "*/*",
+                    "Content-Type": "application/json",
+                },
+                body: jsonJob,
+            });
+
+            // Handle response if necessary
+            const data = await response.json()
+            // ...
+        } catch (error) {
+            console.error(error)
+        }
+
+
+    }
     return (
         <form onSubmit={onSubmit}>
             <EditJobServerAttributes />
@@ -48,7 +81,7 @@ export function EditJobServerAttributes(): ReactElement {
                 <label className="form-label form-row" htmlFor="jobModel">
                     Model
                 </label>
-                <select className="form-control" id="jobModel">
+                <select className="form-control" id="jobModel" name="jobModel">
                     <option value="empty"></option>
                     <EditJobModelOptions />
                 </select>
@@ -62,6 +95,7 @@ export function EditJobServerAttributes(): ReactElement {
                     className="form-control"
                     type="text"
                     id="jobServerAddress"
+                    name="jobServerAddress"
                 />
             </div>
 
@@ -73,6 +107,7 @@ export function EditJobServerAttributes(): ReactElement {
                     className="form-control"
                     type="text"
                     id="jobRedisHost"
+                    name="jobRedisHost"
                 />
             </div>
 
@@ -84,6 +119,7 @@ export function EditJobServerAttributes(): ReactElement {
                     className="form-control"
                     type="text"
                     id="jobRedisPort"
+                    name="jobRedisPort"
                 />
             </div>
         </div>
@@ -158,6 +194,7 @@ export function EditJobServerConfigItem({
                         type="text"
                         defaultValue={serverConfigItem.name}
                         id={"jobServerConfigName" + index}
+                        name={"jobServerConfigName" + index}
                     />
                 </div>
             </div>
@@ -174,6 +211,7 @@ export function EditJobServerConfigItem({
                         type="text"
                         defaultValue={serverConfigItem.value}
                         id={"jobServerConfigValue" + index}
+                        name={"jobServerConfigValue" + index}
                     />
                 </div>
             </div>
@@ -245,7 +283,7 @@ export function EditJobClientsConfigItem({
                     >
                         Client
                     </label>
-                    <select className="form-control" id={"jobClientConfigClient" + index}>
+                    <select className="form-control" id={"jobClientConfigClient" + index} name={"jobClientConfigClient" + index}>
                         <option value="empty"></option>
                         <EditJobClientOptions />
                     </select>
@@ -264,6 +302,7 @@ export function EditJobClientsConfigItem({
                         type="text"
                         defaultValue={clientConfig.service_address}
                         id={"jobClientConfigServiceAddress" + index}
+                        name={"jobClientConfigServiceAddress" + index}
                     />
                 </div>
             </div>
@@ -280,6 +319,7 @@ export function EditJobClientsConfigItem({
                         type="text"
                         defaultValue={clientConfig.data_path}
                         id={"jobClientConfigDataPath" + index}
+                        name={"jobClientConfigDataPath" + index}
                     />
                 </div>
             </div>
@@ -296,6 +336,7 @@ export function EditJobClientsConfigItem({
                         type="text"
                         defaultValue={clientConfig.redis_host}
                         id={"jobClientConfigRedisHost" + index}
+                        name={"jobClientConfigRedisHost" + index}
                     />
                 </div>
             </div>
@@ -312,6 +353,7 @@ export function EditJobClientsConfigItem({
                         type="text"
                         defaultValue={clientConfig.redis_port}
                         id={"jobClientConfigRedisPort" + index}
+                        name={"jobClientConfigRedisPort" + index}
                     />
                 </div>
             </div>

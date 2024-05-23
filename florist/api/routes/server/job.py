@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.post(
-    path="/",
+    path="",
     response_description="Create a new job",
     status_code=status.HTTP_201_CREATED,
     response_model=Job,
@@ -28,6 +28,7 @@ async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
     :return: (Job) The job that has been saved in the database.
     :raises: (HTTPException) status 400 if job.server_info is not None and cannot be parsed into JSON.
     """
+    print("here")
     job_id = await job.create(request.app.database)
     job_in_db = await Job.find_by_id(job_id, request.app.database)
 

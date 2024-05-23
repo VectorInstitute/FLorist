@@ -170,3 +170,4 @@ next-env.d.ts
 /metrics/
 /logs/
 /.ruff_cache/
+/.swc/

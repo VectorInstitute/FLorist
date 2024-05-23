@@ -13,5 +13,6 @@ function ClientImports(): null {
 }
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
-export { fetcher };
+const poster = params => url => post(url, params);
+export { fetcher, poster };
 export default ClientImports;
