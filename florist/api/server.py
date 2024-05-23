@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import MongoClient
 
+from florist.api.clients.common import Client
 from florist.api.routes.server.job import router as job_router
 from florist.api.routes.server.status import router as status_router
 from florist.api.routes.server.training import router as training_router
@@ -44,8 +45,18 @@ app.include_router(status_router, tags=["status"], prefix="/api/server/check_sta
 @app.get(path="/api/server/models", response_description="Returns a list of all available models")
 def list_models() -> JSONResponse:
     """
-    Return a list all models.
+    Return a list all available models.
 
     :return: (JSONResponse) A JSON response with a list of all elements in the `api.servers.common.Model` enum.
     """
     return JSONResponse(Model.list())
+
+
+@app.get(path="/api/server/clients", response_description="Returns a list of all available clients")
+def list_clients() -> JSONResponse:
+    """
+    Return a list all available clients.
+
+    :return: (JSONResponse) A JSON response with a list of all elements in the `api.clients.common.Client` enum.
+    """
+    return JSONResponse(Client.list())

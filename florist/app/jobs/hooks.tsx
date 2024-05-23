@@ -12,3 +12,7 @@ export function useGetJobsByJobStatus(status: string) {
 export function useGetModels() {
     return useSWR("/api/server/models", fetcher);
 }
+
+export function useGetClients() {
+    return useSWR("/api/server/clients", fetcher);
+}

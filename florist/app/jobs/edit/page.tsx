@@ -5,7 +5,7 @@ import { ReactElement } from "react/React";
 
 import Link from "next/link";
 
-import { useGetModels } from "../hooks";
+import { useGetModels, useGetClients } from "../hooks";
 
 export default function EditJob(): ReactElement {
     return (
@@ -29,17 +29,15 @@ export function EditJobHeader(): ReactElement {
 
 export function EditJobForm(): ReactElement {
     return (
-        <div className="card-body pt-sm-3 pt-0">
-            <form className="text-start">
-                <EditJobServerAttributes />
+        <form onSubmit={onSubmit}>
+            <EditJobServerAttributes />
 
-                <EditJobServerConfig />
+            <EditJobServerConfig />
 
-                <EditJobClientsConfig />
+            <EditJobClientsConfig />
 
-                <button class="btn bg-gradient-primary my-4">Create New Job</button>
-            </form>
-        </div>
+            <button className="btn bg-gradient-primary my-4">Create New Job</button>
+        </form>
     );
 }
 
@@ -94,14 +92,14 @@ export function EditJobServerAttributes(): ReactElement {
 
 export function EditJobModelOptions(): ReactElement {
     const { data, error, isLoading } = useGetModels();
-    if (data) {
-        return data.map((d, i) => (
-            <option key={i} value={d}>
-                {d}
-            </option>
-        ));
+    if (!data) {
+        return null;
     }
-    return null;
+    return data.map((d, i) => (
+        <option key={i} value={d}>
+            {d}
+        </option>
+    ));
 }
 
 interface ServerConfig {
@@ -145,7 +143,6 @@ export function EditJobServerConfigItem({
     serverConfigItem: ServerConfig;
     index: string;
 }): ReactElement {
-    console.log(serverConfigItem)
     return (
         <div className="input-group-flex">
             <div className="input-group-two-column">
@@ -248,12 +245,10 @@ export function EditJobClientsConfigItem({
                     >
                         Client
                     </label>
-                    <input
-                        className="form-control"
-                        type="text"
-                        defaultValue={clientConfig.client}
-                        id={"jobClientConfigClient" + index}
-                    />
+                    <select className="form-control" id={"jobClientConfigClient" + index}>
+                        <option value="empty"></option>
+                        <EditJobClientOptions />
+                    </select>
                 </div>
             </div>
             <div className="input-group-two-column">
@@ -322,4 +317,16 @@ export function EditJobClientsConfigItem({
             </div>
         </div>
     );
+}
+
+export function EditJobClientOptions(): ReactElement {
+    const { data, error, isLoading } = useGetClients();
+    if (!data) {
+        return null
+    }
+    return data.map((d, i) => (
+        <option key={i} value={d}>
+            {d}
+        </option>
+    ));
 }
