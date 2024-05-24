@@ -98,7 +98,7 @@ describe("List Jobs Page", () => {
         }
     });
 
-    it("Renders Status Table With Table without Data", () => {
+    it("Renders Status Table without Data", () => {
         setupMock([], [], false, false);
         const { getByTestId } = render(<Page />);
 
@@ -108,5 +108,38 @@ describe("List Jobs Page", () => {
                 getByText(element, "No jobs to display."),
             ).toBeInTheDocument();
         }
+    });
+    it("Renders Loading GIF only when all isLoading", () => {
+        setupMock(
+            [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "FINISHED_SUCCESSFULLY",
+                "FINISHED_WITH_ERROR",
+            ],
+            [],
+            false,
+            true,
+        );
+        const { getByTestId } = render(<Page />);
+        const element = getByTestId("jobs-page-loading-gif");
+        expect(element).toBeInTheDocument();
+    });
+
+    it("Doesnt Render Loading GIF when no Loading", () => {
+        setupMock(
+            [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "FINISHED_SUCCESSFULLY",
+                "FINISHED_WITH_ERROR",
+            ],
+            [],
+            false,
+            false,
+        );
+        const { queryByTestId } = render(<Page />);
+        const element = queryByTestId("jobs-page-loading-gif");
+        expect(element).not.toBeInTheDocument();
     });
 });

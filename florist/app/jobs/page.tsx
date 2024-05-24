@@ -54,7 +54,13 @@ export default function Page(): ReactElement {
     if (!statusDataFetches.every(({ isLoading }) => isLoading == false)) {
         return (
             <div className="d-flex justify-content-center align-items-center vh-100">
-                <Image src={loading_gif} alt="Loading" height={64} width={64} />
+                <Image
+                    data-testid="jobs-page-loading-gif"
+                    src={loading_gif}
+                    alt="Loading"
+                    height={64}
+                    width={64}
+                />
             </div>
         );
     }
@@ -122,7 +128,7 @@ export function StatusTable({
                                     Server Address
                                 </th>
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                    Client Service Addresses{" "}
+                                    Client Service Addresses
                                 </th>
                             </tr>
                         </thead>
@@ -136,8 +142,7 @@ export function StatusTable({
             <div className="card-body px-0 pb-2">
                 <div className="ps-3">
                     <span data-testid={`status-no-jobs-${status}`}>
-                        {" "}
-                        No jobs to display.{" "}
+                        No jobs to display.
                     </span>
                 </div>
             </div>
