@@ -154,7 +154,7 @@ export function ClientListTableData({
     clientsInfo: Array<ClientInfo>;
 }): ReactElement {
     if (clientsInfo === null) {
-        return <td/>;
+        return <td />;
     }
     const clientServiceAddressesString = clientsInfo
         .map((c) => c.service_address)

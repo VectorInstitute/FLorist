@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { fetcher, poster } from "../client_imports";
+import { fetcher } from "../client_imports";
 
 export function useGetJobsByJobStatus(status: string) {
     const endpoint = "/api/server/job/".concat(status);
