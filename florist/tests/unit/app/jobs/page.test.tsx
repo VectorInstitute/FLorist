@@ -3,7 +3,7 @@ import { getByText, render, cleanup } from "@testing-library/react";
 import { describe, afterEach, it, expect } from "@jest/globals";
 
 import Page, { validStatuses } from "../../../../app/jobs/page";
-import useGetJobsByStatus from "../../../../app/jobs/hooks";
+import { useGetJobsByJobStatus } from "../../../../app/jobs/hooks";
 
 jest.mock("../../../../app/jobs/hooks");
 
@@ -33,7 +33,7 @@ function setupMock(
     error: boolean,
     isLoading: boolean,
 ) {
-    useGetJobsByStatus.mockImplementation((status: string) => {
+    useGetJobsByJobStatus.mockImplementation((status: string) => {
         if (validStatuses.includes(status)) {
             return {
                 data,

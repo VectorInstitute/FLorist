@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { fetcher } from "../client_imports";
 
-export default function useGetJobsByJobStatus(status: string) {
+export function useGetJobsByJobStatus(status: string) {
     const endpoint = "/api/server/job/".concat(status);
     const { data, error, isLoading } = useSWR(endpoint, fetcher, {
         refresh_interval: 1000,

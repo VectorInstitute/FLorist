@@ -1,6 +1,8 @@
 "use client";
+
 import { ReactElement } from "react/React";
-import useGetJobsByJobStatus from "./hooks";
+
+import { useGetJobsByJobStatus } from "./hooks";
 
 import Image from "next/image";
 import loading_gif from "../assets/img/loading.gif";
