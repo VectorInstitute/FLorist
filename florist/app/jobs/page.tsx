@@ -167,8 +167,8 @@ export function TableRow({
     serverAddress: string;
     clientsInfo: Array<ClientInfo>;
 }): ReactElement {
- if (clientsInfo === null) {
-        return <td/>;
+    if (clientsInfo === null) {
+        return <td />;
     }
     return (
         <tr>
