@@ -8,8 +8,8 @@ import loading_gif from "../assets/img/loading.gif";
 export const validStatuses = {
     NOT_STARTED: "Not Started",
     IN_PROGRESS: "In Progress",
-    FINISHED_WITH_ERROR: "Finished with Error",
     FINISHED_SUCCESSFULLY: "Finished Successfully",
+    FINISHED_WITH_ERROR: "Finished with Error",
 };
 
 interface JobData {
