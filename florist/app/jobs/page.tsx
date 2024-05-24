@@ -7,6 +7,7 @@ import { useGetJobsByJobStatus } from "./hooks";
 import Image from "next/image";
 import loading_gif from "../assets/img/loading.gif";
 
+// Must be in same order as array returned from useGetJobsByJobStatus
 export const validStatuses = {
     NOT_STARTED: "Not Started",
     IN_PROGRESS: "In Progress",
@@ -37,6 +38,7 @@ interface StatusProp {
 }
 
 export function useGetJobsFromEachJobStatus() {
+    // Must be in the same order as the validStatuses object.
     const statusDataFetches = [
         useGetJobsByJobStatus("NOT_STARTED"),
         useGetJobsByJobStatus("IN_PROGRESS"),
