@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.post(
-    path="/",
+    path="",
     response_description="Create a new job",
     status_code=status.HTTP_201_CREATED,
     response_model=Job,
