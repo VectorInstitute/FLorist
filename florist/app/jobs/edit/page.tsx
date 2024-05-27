@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { useGetModels, useGetClients } from "../hooks";
+import { postJob } from "./utils"
 
 interface Job {
     model: string;
@@ -32,7 +33,7 @@ interface ClientInfo {
     redis_port: string;
 }
 
-function makeEmptyJob() {
+export function makeEmptyJob() {
     return {
         model: "",
         server_address: "",
@@ -43,14 +44,14 @@ function makeEmptyJob() {
     };
 }
 
-function makeEmptyServerConfig() {
+export function makeEmptyServerConfig() {
     return {
         name: "",
         value: "",
     };
 }
 
-function makeEmptyClientInfo() {
+export function makeEmptyClientInfo() {
     return {
         client: "",
         service_address: "",
@@ -104,12 +105,12 @@ export function EditJobForm(): ReactElement {
 
             <EditJobClientsInfo state={state} setState={setState} />
 
-            <button className={buttonClasses}>
+            <button id="job-post" className={buttonClasses}>
                 {state.isLoading && !state.savedSuccessfully? "Saving..." : "Save"}
             </button>
 
             {state.savedSuccessfully ?
-                <div className="alert alert-secondary text-white" role="alert">
+                <div id="job-saved-successfully" className="alert alert-secondary text-white" role="alert">
                     <span className="text-sm">
                         Job saved successfully.
                     </span>
@@ -117,7 +118,7 @@ export function EditJobForm(): ReactElement {
             : null}
 
             {state.saveError ?
-                <div className="alert alert-danger alert-dismissible text-white show" role="alert">
+                <div id="job-save-error" className="alert alert-danger alert-dismissible text-white show" role="alert">
                     <span className="text-sm">
                         Error saving job. Please review the information and try again.
                     </span>
@@ -151,11 +152,7 @@ async function onSubmitJob(state, setState, router) {
         const job = { ...state.job };
         job.server_config = JSON.stringify(job.server_config);
 
-        const response = await fetch("/api/server/job", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(job),
-        });
+        const response = await postJob(JSON.stringify(job))
 
         if (response.status != 201) {
             setState(
@@ -287,10 +284,11 @@ export function EditJobServerConfig({ state, setState }): ReactElement {
         newState.job.server_config.push(makeEmptyServerConfig());
     });
     return (
-        <div>
+        <div id="job-server-config">
             <div className="input-group-header">
                 <h6>Server Configuration</h6>
                 <i
+                    id="job-server-config-add"
                     className="material-icons opacity-10 input-group-action"
                     onClick={() => setState(addServerConfigItem(state))}
                 >
@@ -378,10 +376,11 @@ export function EditJobClientsInfo({ state, setState }): ReactElement {
         newState.job.clients_info.push(makeEmptyClientInfo());
     });
     return (
-        <div>
+        <div id="job-clients-info">
             <div className="input-group-header">
                 <h6>Clients Configuration</h6>
                 <i
+                    id="job-clients-info-add"
                     className="material-icons opacity-10 input-group-action"
                     onClick={() => setState(addServerConfigItem(state))}
                 >
