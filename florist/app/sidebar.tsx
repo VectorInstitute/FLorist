@@ -1,13 +1,17 @@
+"use client";
+
 import logo_ct from "./assets/img/logo-ct.png";
 
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { ReactElement } from "react/React";
 
 export default function Sidebar(): ReactElement {
+    const pathname = usePathname();
     return (
         <aside
-            className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
+            className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3  bg-gradient-dark"
             id="sidenav-main"
         >
             <div className="sidenav-header">
@@ -36,9 +40,10 @@ export default function Sidebar(): ReactElement {
             >
                 <ul className="navbar-nav">
                     <li className="nav-item">
-                        <a
-                            className="nav-link text-white active bg-gradient-primary"
+                        <Link
+                            className={`nav-link text-white ${pathname === "/" ? "active bg-gradient-primary" : ""}`}
                             href="/"
+                            passHref
                         >
                             <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
                                 <i className="material-icons opacity-10">
@@ -46,14 +51,13 @@ export default function Sidebar(): ReactElement {
                                 </i>
                             </div>
                             <span className="nav-link-text ms-1">Home</span>
-                        </a>
+                        </Link>
                     </li>
-                </ul>
-                <ul className="navbar-nav">
                     <li className="nav-item">
                         <Link
-                            className="nav-link text-white active bg-gradient-primary"
+                            className={`nav-link text-white ${pathname === "/jobs" ? "active bg-gradient-primary" : ""}`}
                             href="/jobs"
+                            passHref
                         >
                             <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
                                 <i className="material-icons opacity-10">
