@@ -6,6 +6,7 @@ import { useImmer } from "use-immer";
 import { produce } from "immer";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { useGetModels, useGetClients } from "../hooks";
 
@@ -83,13 +84,23 @@ export function EditJobForm(): ReactElement {
     const [state, setState] = useImmer({
         job: makeEmptyJob(),
         isLoading: false,
+        savedSuccessfully: false,
+        saveError: false,
     });
+    const router = useRouter();
 
     async function onSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+
+        if (state.isLoading) {
+            return;
+        }
+
         setState(
             produce((newState) => {
                 newState.isLoading = true;
+                newState.saveError = false;
+                newState.savedSuccessfully = false;
             }),
         );
 
@@ -103,17 +114,35 @@ export function EditJobForm(): ReactElement {
                 body: JSON.stringify(job),
             });
 
-            const data = await response.json();
+            if (response.status != 201) {
+                setState(
+                    produce((newState) => {
+                        newState.isLoading = false;
+                        newState.saveError = true;
+                    })
+                );
+                return;
+            }
+
+            setState(
+                produce((newState) => {
+                    newState.savedSuccessfully = true;
+                })
+            );
+            setTimeout(() => router.push("/jobs"), 1000);
+
         } catch (error) {
             console.error(error);
         }
-
-        setState(
-            produce((newState) => {
-                newState.isLoading = false;
-            }),
-        );
     }
+
+    let buttonClasses = "btn my-4 save-btn ";
+    if (state.isLoading) {
+        buttonClasses += "bg-gradient-secondary disabled";
+    } else {
+        buttonClasses += "bg-gradient-primary";
+    }
+
     return (
         <form onSubmit={onSubmit}>
             <EditJobServerAttributes state={state} setState={setState} />
@@ -122,9 +151,30 @@ export function EditJobForm(): ReactElement {
 
             <EditJobClientsInfo state={state} setState={setState} />
 
-            <button className="btn bg-gradient-primary my-4">
-                {state.isLoading ? "Saving..." : "Save"}
+            <button className={buttonClasses}>
+                {state.isLoading && !state.savedSuccessfully? "Saving..." : "Save"}
             </button>
+
+            {state.savedSuccessfully ?
+                <div className="alert alert-secondary text-white" role="alert">
+                    <span className="text-sm">
+                        Job saved successfully.
+                    </span>
+                </div>
+            : null}
+
+            {state.saveError ?
+                <div className="alert alert-danger alert-dismissible text-white show" role="alert">
+                    <span className="text-sm">
+                        Error saving job. Please review the information and try again.
+                    </span>
+                    <button type="button" className="btn-close text-lg py-3 opacity-10" aria-label="Close" onClick={
+                        (e) => e.target.parentElement.parentElement.style.display = "none"
+                    }>
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+            : null}
         </form>
     );
 }
@@ -133,12 +183,12 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
     return (
         <div>
             <div className="input-group input-group-outline gray-input-box mb-3">
-                <label className="form-label form-row" htmlFor="jobModel">
+                <label className="form-label form-row" htmlFor="job-model">
                     Model
                 </label>
                 <select
                     className="form-control"
-                    id="jobModel"
+                    id="job-model"
                     value={state.job.model}
                     onChange={(e) =>
                         setState(
@@ -154,13 +204,13 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
-                <label className="form-label" htmlFor="jobServerAddress">
+                <label className="form-label" htmlFor="job-server-address">
                     Server Address
                 </label>
                 <input
                     className="form-control"
                     type="text"
-                    id="jobServerAddress"
+                    id="job-server-address"
                     value={state.job.server_address}
                     onChange={(e) =>
                         setState(
@@ -173,13 +223,13 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
-                <label className="form-label" htmlFor="jobRedisHost">
+                <label className="form-label" htmlFor="job-redis-host">
                     Redis Host
                 </label>
                 <input
                     className="form-control"
                     type="text"
-                    id="jobRedisHost"
+                    id="job-redis-host"
                     value={state.job.redis_host}
                     onChange={(e) =>
                         setState(
@@ -192,13 +242,13 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
-                <label className="form-label" htmlFor="jobRedisPort">
+                <label className="form-label" htmlFor="job-redis-port">
                     Redis Port
                 </label>
                 <input
                     className="form-control"
                     type="text"
-                    id="jobRedisPort"
+                    id="job-redis-port"
                     value={state.job.redis_port}
                     onChange={(e) =>
                         setState(
@@ -266,14 +316,14 @@ export function EditJobServerConfigItem({
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label
                         className="form-label"
-                        htmlFor={"jobServerConfigName" + index}
+                        htmlFor={"job-server-config-name-" + index}
                     >
                         Name
                     </label>
                     <input
                         className="form-control"
                         type="text"
-                        id={"jobServerConfigName" + index}
+                        id={"job-server-config-name-" + index}
                         value={state.job.server_config[index].name}
                         onChange={(e) =>
                             setState(
@@ -291,14 +341,14 @@ export function EditJobServerConfigItem({
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label
                         className="form-label"
-                        htmlFor={"jobServerConfigValue" + index}
+                        htmlFor={"job-server-config-value-" + index}
                     >
                         Value
                     </label>
                     <input
                         className="form-control"
                         type="text"
-                        id={"jobServerConfigValue" + index}
+                        id={"job-server-config-value-" + index}
                         value={state.job.server_config[index].value}
                         onChange={(e) =>
                             setState(
@@ -357,13 +407,13 @@ export function EditJobClientsInfoItem({
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label
                         className="form-label"
-                        htmlFor={"jobClientInfoClient" + index}
+                        htmlFor={"job-client-info-client-" + index}
                     >
                         Client
                     </label>
                     <select
                         className="form-control"
-                        id={"jobClientInfoClient" + index}
+                        id={"job-client-info-client-" + index}
                         value={state.job.clients_info[index].client}
                         onChange={(e) =>
                             setState(
@@ -384,14 +434,14 @@ export function EditJobClientsInfoItem({
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label
                         className="form-label"
-                        htmlFor={"jobClientInfoServiceAddress" + index}
+                        htmlFor={"job-client-info-service-address-" + index}
                     >
                         Address
                     </label>
                     <input
                         className="form-control"
                         type="text"
-                        id={"jobClientInfoServiceAddress" + index}
+                        id={"job-client-info-service-address-" + index}
                         value={state.job.clients_info[index].service_address}
                         onChange={(e) =>
                             setState(
@@ -409,14 +459,14 @@ export function EditJobClientsInfoItem({
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label
                         className="form-label"
-                        htmlFor={"jobClientInfoDataPath" + index}
+                        htmlFor={"job-client-info-data-path-" + index}
                     >
                         Data Path
                     </label>
                     <input
                         className="form-control"
                         type="text"
-                        id={"jobClientInfoDataPath" + index}
+                        id={"job-client-info-data-path-" + index}
                         value={state.job.clients_info[index].data_path}
                         onChange={(e) =>
                             setState(
@@ -434,14 +484,14 @@ export function EditJobClientsInfoItem({
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label
                         className="form-label"
-                        htmlFor={"jobClientInfoRedisHost" + index}
+                        htmlFor={"job-client-info-redis-host-" + index}
                     >
                         Redis Host
                     </label>
                     <input
                         className="form-control"
                         type="text"
-                        id={"jobClientInfoRedisHost" + index}
+                        id={"job-client-info-redis-host-" + index}
                         value={state.job.clients_info[index].redis_host}
                         onChange={(e) =>
                             setState(
@@ -459,14 +509,14 @@ export function EditJobClientsInfoItem({
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label
                         className="form-label"
-                        htmlFor={"jobClientInfoRedisPort" + index}
+                        htmlFor={"job-client-info-redis-port-" + index}
                     >
                         Redis Port
                     </label>
                     <input
                         className="form-control"
                         type="text"
-                        id={"jobClientInfoRedisPort" + index}
+                        id={"job-client-info-redis-port-" + index}
                         value={state.job.clients_info[index].redis_port}
                         onChange={(e) =>
                             setState(
