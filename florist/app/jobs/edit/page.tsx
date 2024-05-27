@@ -89,53 +89,6 @@ export function EditJobForm(): ReactElement {
     });
     const router = useRouter();
 
-    async function onSubmit(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-
-        if (state.isLoading) {
-            return;
-        }
-
-        setState(
-            produce((newState) => {
-                newState.isLoading = true;
-                newState.saveError = false;
-                newState.savedSuccessfully = false;
-            }),
-        );
-
-        try {
-            const job = { ...state.job };
-            job.server_config = JSON.stringify(job.server_config);
-
-            const response = await fetch("/api/server/job", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(job),
-            });
-
-            if (response.status != 201) {
-                setState(
-                    produce((newState) => {
-                        newState.isLoading = false;
-                        newState.saveError = true;
-                    })
-                );
-                return;
-            }
-
-            setState(
-                produce((newState) => {
-                    newState.savedSuccessfully = true;
-                })
-            );
-            setTimeout(() => router.push("/jobs"), 1000);
-
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
     let buttonClasses = "btn my-4 save-btn ";
     if (state.isLoading) {
         buttonClasses += "bg-gradient-secondary disabled";
@@ -144,7 +97,7 @@ export function EditJobForm(): ReactElement {
     }
 
     return (
-        <form onSubmit={onSubmit}>
+        <form onSubmit={(e) => onSubmitJob(state, setState, router)}>
             <EditJobServerAttributes state={state} setState={setState} />
 
             <EditJobServerConfig state={state} setState={setState} />
@@ -177,6 +130,60 @@ export function EditJobForm(): ReactElement {
             : null}
         </form>
     );
+}
+
+async function onSubmitJob(state, setState, router) {
+    event.preventDefault();
+
+    if (state.isLoading) {
+        return;
+    }
+
+    setState(
+        produce((newState) => {
+            newState.isLoading = true;
+            newState.saveError = false;
+            newState.savedSuccessfully = false;
+        }),
+    );
+
+    try {
+        const job = { ...state.job };
+        job.server_config = JSON.stringify(job.server_config);
+
+        const response = await fetch("/api/server/job", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(job),
+        });
+
+        if (response.status != 201) {
+            setState(
+                produce((newState) => {
+                    newState.isLoading = false;
+                    newState.saveError = true;
+                })
+            );
+            console.log(response);
+            return;
+        }
+
+        setState(
+            produce((newState) => {
+                newState.savedSuccessfully = true;
+            })
+        );
+        setTimeout(() => router.push("/jobs"), 1000);
+
+    } catch (error) {
+        console.error(error);
+        setState(
+            produce((newState) => {
+                newState.isLoading = false;
+                newState.saveError = true;
+            })
+        );
+    }
 }
 
 export function EditJobServerAttributes({ state, setState }): ReactElement {
