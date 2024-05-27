@@ -126,7 +126,7 @@ describe("List Jobs Page", () => {
         expect(element).toBeInTheDocument();
     });
 
-    it("Doesnt Render Loading GIF when no Loading", () => {
+    it("Doesn't Render Loading GIF when not Loading", () => {
         setupMock(
             [
                 "NOT_STARTED",
