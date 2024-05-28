@@ -15,11 +15,7 @@ export const metadata: Metadata = {
     title: "Florist",
 };
 
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}): ReactElement {
+export default function RootLayout({ children }: { children: React.ReactNode }): ReactElement {
     return (
         <html lang="en">
             <head>
@@ -32,10 +28,7 @@ export default function RootLayout({
                 {/*     Font Awesome Icons  */}
                 <Script src="https://kit.fontawesome.com/42d5adcbca.js" />
                 {/*     Material Icons      */}
-                <link
-                    href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
-                    rel="stylesheet"
-                />
+                <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
                 {/*     Copyright Notice    */}
                 <script
                     dangerouslySetInnerHTML={{
@@ -73,14 +66,9 @@ export default function RootLayout({
                                     {/* Breadcrumbs */}
                                 </ol>
                             </nav>
-                            <div
-                                className="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4"
-                                id="navbar"
-                            >
+                            <div className="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
                                 <div className="ms-md-auto pe-md-3 d-flex align-items-center">
-                                    <div className="input-group input-group-outline">
-                                        {/* Left aligned elements */}
-                                    </div>
+                                    <div className="input-group input-group-outline">{/* Left aligned elements */}</div>
                                 </div>
                             </div>
                         </div>
