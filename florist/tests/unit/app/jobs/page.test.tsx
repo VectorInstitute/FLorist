@@ -51,12 +51,15 @@ function setupMock(
 }
 
 describe("List Jobs Page", () => {
-    it("Renders Page Title correct", () => {
+    it("Renders Page Header Correctly", () => {
         setupMock([], [], false, false);
         const { container } = render(<Page />);
         const h1 = container.querySelector("h1");
         expect(h1).toBeInTheDocument();
         expect(h1).toHaveTextContent("Jobs");
+        const newJobButton = container.querySelector("#new-job-button");
+        expect(newJobButton).toBeInTheDocument();
+        expect(newJobButton.href.endsWith("/jobs/edit")).toBeTruthy();
     });
 
     it("Renders Status Components Headers", () => {

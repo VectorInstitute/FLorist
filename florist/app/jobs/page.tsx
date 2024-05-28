@@ -74,7 +74,7 @@ export default function Page(): ReactElement {
         <div>
             <div className="row">
                 <div className="col-6 d-flex align-items-center">
-                    <h1>Jobs</h1>
+                    <h1 className="ps-3">Jobs</h1>
                 </div>
 
                 <NewJobButton />
@@ -89,6 +89,7 @@ export function NewJobButton(): ReactElement {
     return (
         <div className="col-6 text-end">
             <Link
+                id="new-job-button"
                 className="fixed-plugin-button btn bg-gradient-primary mb-0"
                 href="/jobs/edit"
             >

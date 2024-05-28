@@ -88,20 +88,26 @@ export function EditJobForm(): ReactElement {
     async function onSubmitJob() {
         event.preventDefault();
         if (isLoading) {
+            // Preventing double submit if already in progress
             return;
         }
 
         const job = { ...state.job };
+        // Server config is a json string, so changing it here before sending the data over
         job.server_config = JSON.stringify(job.server_config);
         await post("/api/server/job", JSON.stringify(job))
     }
 
     if (response) {
+        // If the response object is populated, it means it has completed the
+        //post request successfully. Then, wait 1s and redirect to the list jobs page
         setTimeout(() => router.push("/jobs"), 1000);
     }
 
     let buttonClasses = "btn my-4 save-btn ";
     if (isLoading || response) {
+        // If is loading or if a successful response has been received,
+        // disable the button to avoid double submit.
         buttonClasses += "bg-gradient-secondary disabled";
     } else {
         buttonClasses += "bg-gradient-primary";
@@ -116,10 +122,10 @@ export function EditJobForm(): ReactElement {
             <EditJobClientsInfo state={state} setState={setState} />
 
             <button id="job-post" className={buttonClasses}>
-                {isLoading && !response ? "Saving..." : "Save"}
+                {isLoading ? "Saving..." : "Save"}
             </button>
 
-            {response ?
+            {response ? // Show the success alert if it has a successful response
                 <div id="job-saved-successfully" className="alert alert-secondary text-white" role="alert">
                     <span className="text-sm">
                         Job saved successfully.
@@ -127,7 +133,7 @@ export function EditJobForm(): ReactElement {
                 </div>
             : null}
 
-            {error ?
+            {error ? // Show the error alert if it has error
                 <div id="job-save-error" className="alert alert-danger alert-dismissible text-white show" role="alert">
                     <span className="text-sm">
                         Error saving job. Please review the information and try again.
