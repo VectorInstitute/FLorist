@@ -161,9 +161,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     value={state.job.model}
                     onChange={(e) =>
                         setState(
-                            produce((newState) => {
-                                newState.job.model = e.target.value;
-                            }),
+                            produce(
+                                (newState) => { newState.job.model = e.target.value; }
+                            ),
                         )
                     }
                 >
@@ -183,9 +183,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     value={state.job.server_address}
                     onChange={(e) =>
                         setState(
-                            produce((newState) => {
-                                newState.job.server_address = e.target.value;
-                            }),
+                            produce(
+                                (newState) => { newState.job.server_address = e.target.value; }
+                            ),
                         )
                     }
                 />
@@ -202,9 +202,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     value={state.job.redis_host}
                     onChange={(e) =>
                         setState(
-                            produce((newState) => {
-                                newState.job.redis_host = e.target.value;
-                            }),
+                            produce(
+                                (newState) => { newState.job.redis_host = e.target.value; }
+                            ),
                         )
                     }
                 />
@@ -221,9 +221,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     value={state.job.redis_port}
                     onChange={(e) =>
                         setState(
-                            produce((newState) => {
-                                newState.job.redis_port = e.target.value;
-                            }),
+                            produce(
+                                (newState) => { newState.job.redis_port = e.target.value; }
+                            ),
                         )
                     }
                 />
@@ -273,7 +273,7 @@ export function EditJobServerConfigItem({ index, state, setState }): ReactElemen
     });
     return (
         <div className="input-group-flex">
-            <div className="input-group-two-column">
+            <div className="input-group-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label className="form-label" htmlFor={"job-server-config-name-" + index}>
                         Name
@@ -287,7 +287,7 @@ export function EditJobServerConfigItem({ index, state, setState }): ReactElemen
                     />
                 </div>
             </div>
-            <div className="input-group-two-column">
+            <div className="input-group-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label className="form-label" htmlFor={"job-server-config-value-" + index}>
                         Value
@@ -300,6 +300,21 @@ export function EditJobServerConfigItem({ index, state, setState }): ReactElemen
                         onChange={(e) => setState(changeServerConfigAttribute(state, "value", e.target.value))}
                     />
                 </div>
+            </div>
+            <div className="input-group-column-action">
+                <i
+                    id={"job-server-config-remove-" + index}
+                    className="material-icons opacity-10 input-group-action"
+                    onClick={(e) =>
+                        setState(
+                            produce(
+                                (newState) => { newState.job.server_config.splice(index, 1); }
+                            )
+                        )
+                    }
+                >
+                    remove
+                </i>
             </div>
         </div>
     );
@@ -334,7 +349,7 @@ export function EditJobClientsInfoItem({ index, state, setState }): ReactElement
     });
     return (
         <div className="input-group-flex">
-            <div className="input-group-two-column">
+            <div className="input-group-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label className="form-label" htmlFor={"job-client-info-client-" + index}>
                         Client
@@ -350,7 +365,7 @@ export function EditJobClientsInfoItem({ index, state, setState }): ReactElement
                     </select>
                 </div>
             </div>
-            <div className="input-group-two-column">
+            <div className="input-group-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label className="form-label" htmlFor={"job-client-info-service-address-" + index}>
                         Address
@@ -364,7 +379,7 @@ export function EditJobClientsInfoItem({ index, state, setState }): ReactElement
                     />
                 </div>
             </div>
-            <div className="input-group-two-column">
+            <div className="input-group-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label className="form-label" htmlFor={"job-client-info-data-path-" + index}>
                         Data Path
@@ -378,7 +393,7 @@ export function EditJobClientsInfoItem({ index, state, setState }): ReactElement
                     />
                 </div>
             </div>
-            <div className="input-group-two-column">
+            <div className="input-group-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label className="form-label" htmlFor={"job-client-info-redis-host-" + index}>
                         Redis Host
@@ -392,7 +407,7 @@ export function EditJobClientsInfoItem({ index, state, setState }): ReactElement
                     />
                 </div>
             </div>
-            <div className="input-group-two-column">
+            <div className="input-group-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label className="form-label" htmlFor={"job-client-info-redis-port-" + index}>
                         Redis Port
@@ -405,6 +420,21 @@ export function EditJobClientsInfoItem({ index, state, setState }): ReactElement
                         onChange={(e) => setState(changeClientInfoAttribute(state, "redis_port", e.target.value))}
                     />
                 </div>
+            </div>
+            <div className="input-group-column-action">
+                <i
+                    id={"job-client-info-remove-" + index}
+                    className="material-icons opacity-10 input-group-action"
+                    onClick={(e) =>
+                        setState(
+                            produce(
+                                (newState) => { newState.job.clients_info.splice(index, 1); }
+                            )
+                        )
+                    }
+                >
+                    remove
+                </i>
             </div>
         </div>
     );

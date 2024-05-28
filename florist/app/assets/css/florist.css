@@ -2,9 +2,19 @@
     display: flex;
 }
 
-.input-group-two-column {
+.input-group-column {
     flex-basis: 50%;
     margin-right: 5px;
+}
+
+.input-group-column-action {
+    flex-basis: 20px;
+    align-content: center;
+    margin-bottom: 10px;
+}
+
+.input-group-column-action i {
+    cursor: pointer;
 }
 
 .input-group-header {

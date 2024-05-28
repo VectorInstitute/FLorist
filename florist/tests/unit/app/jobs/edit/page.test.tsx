@@ -121,9 +121,23 @@ describe("New Job Page", () => {
             expect(jobServerConfigValue).toBeInTheDocument();
             expect(jobServerConfigValue.value).toBe("");
         });
+        it("Remove button click removed the clicked element", () => {
+            setupPostMocks();
+            const { container } = render(<EditJob />);
+
+            const jobServerConfig = container.querySelector("div#job-server-config");
+            const removeButton = jobServerConfig.querySelector("i#job-server-config-remove-0");
+
+            act(() => removeButton.click());
+
+            const jobServerConfigName = container.querySelector("input#job-server-config-name-0");
+            expect(jobServerConfigName).not.toBeInTheDocument();
+            const jobServerConfigValue = container.querySelector("input#job-server-config-value-0");
+            expect(jobServerConfigValue).not.toBeInTheDocument();
+        });
     });
 
-    describe("Server Config", () => {
+    describe("Client Info", () => {
         it("Render Correctly", () => {
             const testClientsData = ["TEST-CLIENT-1", "TEST-CLIENT-2"];
             setupGetMocks(null, testClientsData);
@@ -200,6 +214,26 @@ describe("New Job Page", () => {
             const jobClientInfoRedisPort = container.querySelector("input#job-client-info-redis-port-1");
             expect(jobClientInfoRedisPort).toBeInTheDocument();
             expect(jobClientInfoRedisPort.value).toBe("");
+        });
+        it("Remove button click removed the clicked element", () => {
+            setupPostMocks();
+            const { container } = render(<EditJob />);
+
+            const jobClientInfo = container.querySelector("div#job-clients-info");
+            const removeButton = jobClientInfo.querySelector("i#job-client-info-remove-0");
+
+            act(() => removeButton.click());
+
+            const jobClientInfoClient = container.querySelector("input#job-client-info-client-0");
+            expect(jobClientInfoClient).not.toBeInTheDocument();
+            const jobClientInfoServiceAddress = container.querySelector("input#job-client-info-service-address-0");
+            expect(jobClientInfoServiceAddress).not.toBeInTheDocument();
+            const jobClientInfoDataPath = container.querySelector("input#job-client-info-data-path-0");
+            expect(jobClientInfoDataPath).not.toBeInTheDocument();
+            const jobClientInfoRedisHost = container.querySelector("input#job-client-info-redis-host-0");
+            expect(jobClientInfoRedisHost).not.toBeInTheDocument();
+            const jobClientInfoRedisPort = container.querySelector("input#job-client-info-redis-port-0");
+            expect(jobClientInfoRedisPort).not.toBeInTheDocument();
         });
     });
 
