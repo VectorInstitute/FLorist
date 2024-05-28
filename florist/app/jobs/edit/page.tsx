@@ -126,33 +126,19 @@ export function EditJobForm(): ReactElement {
             </button>
 
             {response ? ( // Show the success alert if it has a successful response
-                <div
-                    id="job-saved-successfully"
-                    className="alert alert-secondary text-white"
-                    role="alert"
-                >
+                <div id="job-saved-successfully" className="alert alert-secondary text-white" role="alert">
                     <span className="text-sm">Job saved successfully.</span>
                 </div>
             ) : null}
 
             {error ? ( // Show the error alert if it has error
-                <div
-                    id="job-save-error"
-                    className="alert alert-danger alert-dismissible text-white show"
-                    role="alert"
-                >
-                    <span className="text-sm">
-                        Error saving job. Please review the information and try
-                        again.
-                    </span>
+                <div id="job-save-error" className="alert alert-danger alert-dismissible text-white show" role="alert">
+                    <span className="text-sm">Error saving job. Please review the information and try again.</span>
                     <button
                         type="button"
                         className="btn-close text-lg py-3 opacity-10"
                         aria-label="Close"
-                        onClick={(e) =>
-                            (e.target.parentElement.parentElement.style.display =
-                                "none")
-                        }
+                        onClick={(e) => (e.target.parentElement.parentElement.style.display = "none")}
                     >
                         <span aria-hidden="true">×</span>
                     </button>
@@ -275,35 +261,21 @@ export function EditJobServerConfig({ state, setState }): ReactElement {
                 </i>
             </div>
             {state.job.server_config.map((c, i) => (
-                <EditJobServerConfigItem
-                    key={i}
-                    index={i}
-                    state={state}
-                    setState={setState}
-                />
+                <EditJobServerConfigItem key={i} index={i} state={state} setState={setState} />
             ))}
         </div>
     );
 }
 
-export function EditJobServerConfigItem({
-    index,
-    state,
-    setState,
-}): ReactElement {
-    const changeServerConfigAttribute = produce(
-        (newState, attribute, value) => {
-            newState.job.server_config[index][attribute] = value;
-        },
-    );
+export function EditJobServerConfigItem({ index, state, setState }): ReactElement {
+    const changeServerConfigAttribute = produce((newState, attribute, value) => {
+        newState.job.server_config[index][attribute] = value;
+    });
     return (
         <div className="input-group-flex">
             <div className="input-group-two-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label
-                        className="form-label"
-                        htmlFor={"job-server-config-name-" + index}
-                    >
+                    <label className="form-label" htmlFor={"job-server-config-name-" + index}>
                         Name
                     </label>
                     <input
@@ -311,24 +283,13 @@ export function EditJobServerConfigItem({
                         type="text"
                         id={"job-server-config-name-" + index}
                         value={state.job.server_config[index].name}
-                        onChange={(e) =>
-                            setState(
-                                changeServerConfigAttribute(
-                                    state,
-                                    "name",
-                                    e.target.value,
-                                ),
-                            )
-                        }
+                        onChange={(e) => setState(changeServerConfigAttribute(state, "name", e.target.value))}
                     />
                 </div>
             </div>
             <div className="input-group-two-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label
-                        className="form-label"
-                        htmlFor={"job-server-config-value-" + index}
-                    >
+                    <label className="form-label" htmlFor={"job-server-config-value-" + index}>
                         Value
                     </label>
                     <input
@@ -336,15 +297,7 @@ export function EditJobServerConfigItem({
                         type="text"
                         id={"job-server-config-value-" + index}
                         value={state.job.server_config[index].value}
-                        onChange={(e) =>
-                            setState(
-                                changeServerConfigAttribute(
-                                    state,
-                                    "value",
-                                    e.target.value,
-                                ),
-                            )
-                        }
+                        onChange={(e) => setState(changeServerConfigAttribute(state, "value", e.target.value))}
                     />
                 </div>
             </div>
@@ -369,22 +322,13 @@ export function EditJobClientsInfo({ state, setState }): ReactElement {
                 </i>
             </div>
             {state.job.clients_info.map((c, i) => (
-                <EditJobClientsInfoItem
-                    key={i}
-                    index={i}
-                    state={state}
-                    setState={setState}
-                />
+                <EditJobClientsInfoItem key={i} index={i} state={state} setState={setState} />
             ))}
         </div>
     );
 }
 
-export function EditJobClientsInfoItem({
-    index,
-    state,
-    setState,
-}): ReactElement {
+export function EditJobClientsInfoItem({ index, state, setState }): ReactElement {
     const changeClientInfoAttribute = produce((newState, attribute, value) => {
         newState.job.clients_info[index][attribute] = value;
     });
@@ -392,25 +336,14 @@ export function EditJobClientsInfoItem({
         <div className="input-group-flex">
             <div className="input-group-two-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label
-                        className="form-label"
-                        htmlFor={"job-client-info-client-" + index}
-                    >
+                    <label className="form-label" htmlFor={"job-client-info-client-" + index}>
                         Client
                     </label>
                     <select
                         className="form-control"
                         id={"job-client-info-client-" + index}
                         value={state.job.clients_info[index].client}
-                        onChange={(e) =>
-                            setState(
-                                changeClientInfoAttribute(
-                                    state,
-                                    "client",
-                                    e.target.value,
-                                ),
-                            )
-                        }
+                        onChange={(e) => setState(changeClientInfoAttribute(state, "client", e.target.value))}
                     >
                         <option value="empty"></option>
                         <EditJobClientOptions />
@@ -419,10 +352,7 @@ export function EditJobClientsInfoItem({
             </div>
             <div className="input-group-two-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label
-                        className="form-label"
-                        htmlFor={"job-client-info-service-address-" + index}
-                    >
+                    <label className="form-label" htmlFor={"job-client-info-service-address-" + index}>
                         Address
                     </label>
                     <input
@@ -430,24 +360,13 @@ export function EditJobClientsInfoItem({
                         type="text"
                         id={"job-client-info-service-address-" + index}
                         value={state.job.clients_info[index].service_address}
-                        onChange={(e) =>
-                            setState(
-                                changeClientInfoAttribute(
-                                    state,
-                                    "service_address",
-                                    e.target.value,
-                                ),
-                            )
-                        }
+                        onChange={(e) => setState(changeClientInfoAttribute(state, "service_address", e.target.value))}
                     />
                 </div>
             </div>
             <div className="input-group-two-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label
-                        className="form-label"
-                        htmlFor={"job-client-info-data-path-" + index}
-                    >
+                    <label className="form-label" htmlFor={"job-client-info-data-path-" + index}>
                         Data Path
                     </label>
                     <input
@@ -455,24 +374,13 @@ export function EditJobClientsInfoItem({
                         type="text"
                         id={"job-client-info-data-path-" + index}
                         value={state.job.clients_info[index].data_path}
-                        onChange={(e) =>
-                            setState(
-                                changeClientInfoAttribute(
-                                    state,
-                                    "data_path",
-                                    e.target.value,
-                                ),
-                            )
-                        }
+                        onChange={(e) => setState(changeClientInfoAttribute(state, "data_path", e.target.value))}
                     />
                 </div>
             </div>
             <div className="input-group-two-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label
-                        className="form-label"
-                        htmlFor={"job-client-info-redis-host-" + index}
-                    >
+                    <label className="form-label" htmlFor={"job-client-info-redis-host-" + index}>
                         Redis Host
                     </label>
                     <input
@@ -480,24 +388,13 @@ export function EditJobClientsInfoItem({
                         type="text"
                         id={"job-client-info-redis-host-" + index}
                         value={state.job.clients_info[index].redis_host}
-                        onChange={(e) =>
-                            setState(
-                                changeClientInfoAttribute(
-                                    state,
-                                    "redis_host",
-                                    e.target.value,
-                                ),
-                            )
-                        }
+                        onChange={(e) => setState(changeClientInfoAttribute(state, "redis_host", e.target.value))}
                     />
                 </div>
             </div>
             <div className="input-group-two-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label
-                        className="form-label"
-                        htmlFor={"job-client-info-redis-port-" + index}
-                    >
+                    <label className="form-label" htmlFor={"job-client-info-redis-port-" + index}>
                         Redis Port
                     </label>
                     <input
@@ -505,15 +402,7 @@ export function EditJobClientsInfoItem({
                         type="text"
                         id={"job-client-info-redis-port-" + index}
                         value={state.job.clients_info[index].redis_port}
-                        onChange={(e) =>
-                            setState(
-                                changeClientInfoAttribute(
-                                    state,
-                                    "redis_port",
-                                    e.target.value,
-                                ),
-                            )
-                        }
+                        onChange={(e) => setState(changeClientInfoAttribute(state, "redis_port", e.target.value))}
                     />
                 </div>
             </div>

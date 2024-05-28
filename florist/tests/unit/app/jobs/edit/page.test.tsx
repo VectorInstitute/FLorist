@@ -4,11 +4,7 @@ import { describe, afterEach, it, expect } from "@jest/globals";
 import { act } from "react-dom/test-utils";
 
 import EditJob, { makeEmptyJob } from "../../../../../app/jobs/edit/page";
-import {
-    useGetModels,
-    useGetClients,
-    usePost,
-} from "../../../../../app/jobs/hooks";
+import { useGetModels, useGetClients, usePost } from "../../../../../app/jobs/hooks";
 
 jest.mock("../../../../../app/jobs/hooks");
 jest.mock("next/navigation", () => ({
@@ -50,9 +46,7 @@ describe("New Job Page", () => {
         expect(h1).toBeInTheDocument();
         expect(h1).toHaveTextContent("New Job");
 
-        const successAlert = container.querySelector(
-            "div#job-saved-successfully",
-        );
+        const successAlert = container.querySelector("div#job-saved-successfully");
         expect(successAlert).not.toBeInTheDocument();
 
         const errorAlert = container.querySelector("div#job-save-error");
@@ -75,21 +69,15 @@ describe("New Job Page", () => {
                 expect(options[i + 1].value).toBe(testModelsData[i]);
             }
 
-            const jobServerAddress = container.querySelector(
-                "input#job-server-address",
-            );
+            const jobServerAddress = container.querySelector("input#job-server-address");
             expect(jobServerAddress).toBeInTheDocument();
             expect(jobServerAddress.value).toBe("");
 
-            const jobRedisHost = container.querySelector(
-                "input#job-redis-host",
-            );
+            const jobRedisHost = container.querySelector("input#job-redis-host");
             expect(jobRedisHost).toBeInTheDocument();
             expect(jobRedisHost.value).toBe("");
 
-            const jobRedisPort = container.querySelector(
-                "input#job-redis-port",
-            );
+            const jobRedisPort = container.querySelector("input#job-redis-port");
             expect(jobRedisPort).toBeInTheDocument();
             expect(jobRedisPort.value).toBe("");
         });
@@ -100,27 +88,19 @@ describe("New Job Page", () => {
             setupPostMocks();
             const { container } = render(<EditJob />);
 
-            const jobServerConfig = container.querySelector(
-                "div#job-server-config",
-            );
+            const jobServerConfig = container.querySelector("div#job-server-config");
             const header = jobServerConfig.querySelector("h6");
             expect(header).toBeInTheDocument();
             expect(header).toHaveTextContent("Server Configuration");
-            const addButton = jobServerConfig.querySelector(
-                "i#job-server-config-add",
-            );
+            const addButton = jobServerConfig.querySelector("i#job-server-config-add");
             expect(addButton).toBeInTheDocument();
             expect(addButton).toHaveTextContent("add");
 
-            const jobServerConfigName = container.querySelector(
-                "input#job-server-config-name-0",
-            );
+            const jobServerConfigName = container.querySelector("input#job-server-config-name-0");
             expect(jobServerConfigName).toBeInTheDocument();
             expect(jobServerConfigName.value).toBe("");
 
-            const jobServerConfigValue = container.querySelector(
-                "input#job-server-config-value-0",
-            );
+            const jobServerConfigValue = container.querySelector("input#job-server-config-value-0");
             expect(jobServerConfigValue).toBeInTheDocument();
             expect(jobServerConfigValue.value).toBe("");
         });
@@ -128,24 +108,16 @@ describe("New Job Page", () => {
             setupPostMocks();
             const { container } = render(<EditJob />);
 
-            const jobServerConfig = container.querySelector(
-                "div#job-server-config",
-            );
-            const addButton = jobServerConfig.querySelector(
-                "i#job-server-config-add",
-            );
+            const jobServerConfig = container.querySelector("div#job-server-config");
+            const addButton = jobServerConfig.querySelector("i#job-server-config-add");
 
             act(() => addButton.click());
 
-            const jobServerConfigName = container.querySelector(
-                "input#job-server-config-name-1",
-            );
+            const jobServerConfigName = container.querySelector("input#job-server-config-name-1");
             expect(jobServerConfigName).toBeInTheDocument();
             expect(jobServerConfigName.value).toBe("");
 
-            const jobServerConfigValue = container.querySelector(
-                "input#job-server-config-value-1",
-            );
+            const jobServerConfigValue = container.querySelector("input#job-server-config-value-1");
             expect(jobServerConfigValue).toBeInTheDocument();
             expect(jobServerConfigValue.value).toBe("");
         });
@@ -159,21 +131,15 @@ describe("New Job Page", () => {
 
             const { container } = render(<EditJob />);
 
-            const jobClientsInfo = container.querySelector(
-                "div#job-clients-info",
-            );
+            const jobClientsInfo = container.querySelector("div#job-clients-info");
             const header = jobClientsInfo.querySelector("h6");
             expect(header).toBeInTheDocument();
             expect(header).toHaveTextContent("Clients Configuration");
-            const addButton = jobClientsInfo.querySelector(
-                "i#job-clients-info-add",
-            );
+            const addButton = jobClientsInfo.querySelector("i#job-clients-info-add");
             expect(addButton).toBeInTheDocument();
             expect(addButton).toHaveTextContent("add");
 
-            const jobClientInfoClient = container.querySelector(
-                "select#job-client-info-client-0",
-            );
+            const jobClientInfoClient = container.querySelector("select#job-client-info-client-0");
             expect(jobClientInfoClient).toBeInTheDocument();
             const options = jobClientInfoClient.querySelectorAll("option");
             expect(options.length).toBe(3);
@@ -182,27 +148,19 @@ describe("New Job Page", () => {
                 expect(options[i + 1].value).toBe(testClientsData[i]);
             }
 
-            const jobClientInfoServiceAddress = container.querySelector(
-                "input#job-client-info-service-address-0",
-            );
+            const jobClientInfoServiceAddress = container.querySelector("input#job-client-info-service-address-0");
             expect(jobClientInfoServiceAddress).toBeInTheDocument();
             expect(jobClientInfoServiceAddress.value).toBe("");
 
-            const jobClientInfoDataPath = container.querySelector(
-                "input#job-client-info-data-path-0",
-            );
+            const jobClientInfoDataPath = container.querySelector("input#job-client-info-data-path-0");
             expect(jobClientInfoDataPath).toBeInTheDocument();
             expect(jobClientInfoDataPath.value).toBe("");
 
-            const jobClientInfoRedisHost = container.querySelector(
-                "input#job-client-info-redis-host-0",
-            );
+            const jobClientInfoRedisHost = container.querySelector("input#job-client-info-redis-host-0");
             expect(jobClientInfoRedisHost).toBeInTheDocument();
             expect(jobClientInfoRedisHost.value).toBe("");
 
-            const jobClientInfoRedisPort = container.querySelector(
-                "input#job-client-info-redis-port-0",
-            );
+            const jobClientInfoRedisPort = container.querySelector("input#job-client-info-redis-port-0");
             expect(jobClientInfoRedisPort).toBeInTheDocument();
             expect(jobClientInfoRedisPort.value).toBe("");
         });
@@ -213,18 +171,12 @@ describe("New Job Page", () => {
 
             const { container } = render(<EditJob />);
 
-            const jobClientsInfo = container.querySelector(
-                "div#job-clients-info",
-            );
-            const addButton = jobClientsInfo.querySelector(
-                "i#job-clients-info-add",
-            );
+            const jobClientsInfo = container.querySelector("div#job-clients-info");
+            const addButton = jobClientsInfo.querySelector("i#job-clients-info-add");
 
             act(() => addButton.click());
 
-            const jobClientInfoClient = container.querySelector(
-                "select#job-client-info-client-1",
-            );
+            const jobClientInfoClient = container.querySelector("select#job-client-info-client-1");
             expect(jobClientInfoClient).toBeInTheDocument();
             const options = jobClientInfoClient.querySelectorAll("option");
             expect(options.length).toBe(3);
@@ -233,27 +185,19 @@ describe("New Job Page", () => {
                 expect(options[i + 1].value).toBe(testClientsData[i]);
             }
 
-            const jobClientInfoServiceAddress = container.querySelector(
-                "input#job-client-info-service-address-1",
-            );
+            const jobClientInfoServiceAddress = container.querySelector("input#job-client-info-service-address-1");
             expect(jobClientInfoServiceAddress).toBeInTheDocument();
             expect(jobClientInfoServiceAddress.value).toBe("");
 
-            const jobClientInfoDataPath = container.querySelector(
-                "input#job-client-info-data-path-1",
-            );
+            const jobClientInfoDataPath = container.querySelector("input#job-client-info-data-path-1");
             expect(jobClientInfoDataPath).toBeInTheDocument();
             expect(jobClientInfoDataPath.value).toBe("");
 
-            const jobClientInfoRedisHost = container.querySelector(
-                "input#job-client-info-redis-host-1",
-            );
+            const jobClientInfoRedisHost = container.querySelector("input#job-client-info-redis-host-1");
             expect(jobClientInfoRedisHost).toBeInTheDocument();
             expect(jobClientInfoRedisHost.value).toBe("");
 
-            const jobClientInfoRedisPort = container.querySelector(
-                "input#job-client-info-redis-port-1",
-            );
+            const jobClientInfoRedisPort = container.querySelector("input#job-client-info-redis-port-1");
             expect(jobClientInfoRedisPort).toBeInTheDocument();
             expect(jobClientInfoRedisPort.value).toBe("");
         });
@@ -268,12 +212,8 @@ describe("New Job Page", () => {
 
             const { container } = render(<EditJob />);
 
-            const addServerConfigButton = container.querySelector(
-                "i#job-server-config-add",
-            );
-            const addClientsInfoButton = container.querySelector(
-                "i#job-clients-info-add",
-            );
+            const addServerConfigButton = container.querySelector("i#job-server-config-add");
+            const addClientsInfoButton = container.querySelector("i#job-clients-info-add");
             act(() => addServerConfigButton.click());
             act(() => addClientsInfoButton.click());
 
@@ -314,22 +254,13 @@ describe("New Job Page", () => {
                 return { target: { value: value } };
             };
             act(() => {
-                fireEvent.change(
-                    container.querySelector("select#job-model"),
-                    makeTargetValue(testJob.model),
-                );
+                fireEvent.change(container.querySelector("select#job-model"), makeTargetValue(testJob.model));
                 fireEvent.change(
                     container.querySelector("input#job-server-address"),
                     makeTargetValue(testJob.server_address),
                 );
-                fireEvent.change(
-                    container.querySelector("input#job-redis-host"),
-                    makeTargetValue(testJob.redis_host),
-                );
-                fireEvent.change(
-                    container.querySelector("input#job-redis-port"),
-                    makeTargetValue(testJob.redis_port),
-                );
+                fireEvent.change(container.querySelector("input#job-redis-host"), makeTargetValue(testJob.redis_host));
+                fireEvent.change(container.querySelector("input#job-redis-port"), makeTargetValue(testJob.redis_port));
                 fireEvent.change(
                     container.querySelector("input#job-server-config-name-0"),
                     makeTargetValue(testJob.server_config[0].name),
@@ -351,27 +282,19 @@ describe("New Job Page", () => {
                     makeTargetValue(testJob.clients_info[0].client),
                 );
                 fireEvent.change(
-                    container.querySelector(
-                        "input#job-client-info-service-address-0",
-                    ),
+                    container.querySelector("input#job-client-info-service-address-0"),
                     makeTargetValue(testJob.clients_info[0].service_address),
                 );
                 fireEvent.change(
-                    container.querySelector(
-                        "input#job-client-info-data-path-0",
-                    ),
+                    container.querySelector("input#job-client-info-data-path-0"),
                     makeTargetValue(testJob.clients_info[0].data_path),
                 );
                 fireEvent.change(
-                    container.querySelector(
-                        "input#job-client-info-redis-host-0",
-                    ),
+                    container.querySelector("input#job-client-info-redis-host-0"),
                     makeTargetValue(testJob.clients_info[0].redis_host),
                 );
                 fireEvent.change(
-                    container.querySelector(
-                        "input#job-client-info-redis-port-0",
-                    ),
+                    container.querySelector("input#job-client-info-redis-port-0"),
                     makeTargetValue(testJob.clients_info[0].redis_port),
                 );
                 fireEvent.change(
@@ -379,27 +302,19 @@ describe("New Job Page", () => {
                     makeTargetValue(testJob.clients_info[1].client),
                 );
                 fireEvent.change(
-                    container.querySelector(
-                        "input#job-client-info-service-address-1",
-                    ),
+                    container.querySelector("input#job-client-info-service-address-1"),
                     makeTargetValue(testJob.clients_info[1].service_address),
                 );
                 fireEvent.change(
-                    container.querySelector(
-                        "input#job-client-info-data-path-1",
-                    ),
+                    container.querySelector("input#job-client-info-data-path-1"),
                     makeTargetValue(testJob.clients_info[1].data_path),
                 );
                 fireEvent.change(
-                    container.querySelector(
-                        "input#job-client-info-redis-host-1",
-                    ),
+                    container.querySelector("input#job-client-info-redis-host-1"),
                     makeTargetValue(testJob.clients_info[1].redis_host),
                 );
                 fireEvent.change(
-                    container.querySelector(
-                        "input#job-client-info-redis-port-1",
-                    ),
+                    container.querySelector("input#job-client-info-redis-port-1"),
                     makeTargetValue(testJob.clients_info[1].redis_port),
                 );
             });
@@ -408,10 +323,7 @@ describe("New Job Page", () => {
             await act(async () => await submitButton.click());
 
             testJob.server_config = JSON.stringify(testJob.server_config);
-            expect(postMock).toBeCalledWith(
-                "/api/server/job",
-                JSON.stringify(testJob),
-            );
+            expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
         });
 
         it("Displays submit error", async () => {
@@ -425,10 +337,7 @@ describe("New Job Page", () => {
 
             const testJob = makeEmptyJob();
             testJob.server_config = JSON.stringify(testJob.server_config);
-            expect(postMock).toBeCalledWith(
-                "/api/server/job",
-                JSON.stringify(testJob),
-            );
+            expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
 
             const errorAlert = container.querySelector("div#job-save-error");
             expect(errorAlert).toBeInTheDocument();

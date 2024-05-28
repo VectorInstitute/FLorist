@@ -17,12 +17,8 @@
     cursor: pointer;
 }
 
-.input-group.input-group-outline.gray-input-box.is-focused
-    .form-label
-    + .form-control,
-.input-group.input-group-outline.gray-input-box.is-filled
-    .form-label
-    + .form-control {
+.input-group.input-group-outline.gray-input-box.is-focused .form-label + .form-control,
+.input-group.input-group-outline.gray-input-box.is-filled .form-label + .form-control {
     border-color: #d2d6da !important;
     border-top-color: transparent !important;
     box-shadow:

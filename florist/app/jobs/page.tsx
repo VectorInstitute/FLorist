@@ -82,11 +82,7 @@ export default function Page(): ReactElement {
 export function NewJobButton(): ReactElement {
     return (
         <div className="col-6 text-end">
-            <Link
-                id="new-job-button"
-                className="fixed-plugin-button btn bg-gradient-primary mb-0"
-                href="/jobs/edit"
-            >
+            <Link id="new-job-button" className="fixed-plugin-button btn bg-gradient-primary mb-0" href="/jobs/edit">
                 <i className="material-icons text-sm">add</i>
                 &nbsp;&nbsp;New Job
             </Link>
