@@ -29,17 +29,12 @@ function setupGetMocks(modelsData, clientsData) {
     });
 }
 
-function setupPostMocks(withError) {
-    postMock = jest.fn();
+function setupPostMocks({error, isLoading, response} = {}) {
+    const post = jest.fn();
     usePost.mockImplementation(() => {
-        return {
-            post: postMock,
-            response: null,
-            isLoading: null,
-            error: withError,
-        };
+        return { post, response, isLoading, error};
     });
-    return postMock;
+    return post;
 }
 
 describe("New Job Page", () => {
@@ -280,7 +275,7 @@ describe("New Job Page", () => {
 
         it("Displays submit error", async () => {
             setupGetMocks();
-            postMock = setupPostMocks(true);
+            postMock = setupPostMocks({error: true});
 
             const { container } = render(<EditJob />);
 
@@ -293,6 +288,17 @@ describe("New Job Page", () => {
 
             const errorAlert = container.querySelector("div#job-save-error");
             expect(errorAlert).toBeInTheDocument();
+        });
+
+        it("Disables button when loading", async () => {
+            setupGetMocks();
+            postMock = setupPostMocks({isLoading: true});
+
+            const { container } = render(<EditJob />);
+
+            const submitButton = container.querySelector("button#job-post");
+            expect(submitButton).toBeInTheDocument();
+            expect(submitButton.classList).toContain("disabled");
         });
     });
 });
