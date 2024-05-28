@@ -95,7 +95,7 @@ export function EditJobForm(): ReactElement {
         const job = { ...state.job };
         // Server config is a json string, so changing it here before sending the data over
         job.server_config = JSON.stringify(job.server_config);
-        await post("/api/server/job", JSON.stringify(job))
+        await post("/api/server/job", JSON.stringify(job));
     }
 
     if (response) {
@@ -125,26 +125,39 @@ export function EditJobForm(): ReactElement {
                 {isLoading ? "Saving..." : "Save"}
             </button>
 
-            {response ? // Show the success alert if it has a successful response
-                <div id="job-saved-successfully" className="alert alert-secondary text-white" role="alert">
-                    <span className="text-sm">
-                        Job saved successfully.
-                    </span>
+            {response ? ( // Show the success alert if it has a successful response
+                <div
+                    id="job-saved-successfully"
+                    className="alert alert-secondary text-white"
+                    role="alert"
+                >
+                    <span className="text-sm">Job saved successfully.</span>
                 </div>
-            : null}
+            ) : null}
 
-            {error ? // Show the error alert if it has error
-                <div id="job-save-error" className="alert alert-danger alert-dismissible text-white show" role="alert">
+            {error ? ( // Show the error alert if it has error
+                <div
+                    id="job-save-error"
+                    className="alert alert-danger alert-dismissible text-white show"
+                    role="alert"
+                >
                     <span className="text-sm">
-                        Error saving job. Please review the information and try again.
+                        Error saving job. Please review the information and try
+                        again.
                     </span>
-                    <button type="button" className="btn-close text-lg py-3 opacity-10" aria-label="Close" onClick={
-                        (e) => e.target.parentElement.parentElement.style.display = "none"
-                    }>
+                    <button
+                        type="button"
+                        className="btn-close text-lg py-3 opacity-10"
+                        aria-label="Close"
+                        onClick={(e) =>
+                            (e.target.parentElement.parentElement.style.display =
+                                "none")
+                        }
+                    >
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-            : null}
+            ) : null}
         </form>
     );
 }
@@ -278,9 +291,11 @@ export function EditJobServerConfigItem({
     state,
     setState,
 }): ReactElement {
-    const changeServerConfigAttribute = produce((newState, attribute, value) => {
-        newState.job.server_config[index][attribute] = value;
-    });
+    const changeServerConfigAttribute = produce(
+        (newState, attribute, value) => {
+            newState.job.server_config[index][attribute] = value;
+        },
+    );
     return (
         <div className="input-group-flex">
             <div className="input-group-two-column">
