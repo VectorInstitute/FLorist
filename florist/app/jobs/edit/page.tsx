@@ -161,9 +161,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     value={state.job.model}
                     onChange={(e) =>
                         setState(
-                            produce(
-                                (newState) => { newState.job.model = e.target.value; }
-                            ),
+                            produce((newState) => {
+                                newState.job.model = e.target.value;
+                            }),
                         )
                     }
                 >
@@ -183,9 +183,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     value={state.job.server_address}
                     onChange={(e) =>
                         setState(
-                            produce(
-                                (newState) => { newState.job.server_address = e.target.value; }
-                            ),
+                            produce((newState) => {
+                                newState.job.server_address = e.target.value;
+                            }),
                         )
                     }
                 />
@@ -202,9 +202,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     value={state.job.redis_host}
                     onChange={(e) =>
                         setState(
-                            produce(
-                                (newState) => { newState.job.redis_host = e.target.value; }
-                            ),
+                            produce((newState) => {
+                                newState.job.redis_host = e.target.value;
+                            }),
                         )
                     }
                 />
@@ -221,9 +221,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     value={state.job.redis_port}
                     onChange={(e) =>
                         setState(
-                            produce(
-                                (newState) => { newState.job.redis_port = e.target.value; }
-                            ),
+                            produce((newState) => {
+                                newState.job.redis_port = e.target.value;
+                            }),
                         )
                     }
                 />
@@ -307,9 +307,9 @@ export function EditJobServerConfigItem({ index, state, setState }): ReactElemen
                     className="material-icons opacity-10 input-group-action"
                     onClick={(e) =>
                         setState(
-                            produce(
-                                (newState) => { newState.job.server_config.splice(index, 1); }
-                            )
+                            produce((newState) => {
+                                newState.job.server_config.splice(index, 1);
+                            }),
                         )
                     }
                 >
@@ -427,9 +427,9 @@ export function EditJobClientsInfoItem({ index, state, setState }): ReactElement
                     className="material-icons opacity-10 input-group-action"
                     onClick={(e) =>
                         setState(
-                            produce(
-                                (newState) => { newState.job.clients_info.splice(index, 1); }
-                            )
+                            produce((newState) => {
+                                newState.job.clients_info.splice(index, 1);
+                            }),
                         )
                     }
                 >
