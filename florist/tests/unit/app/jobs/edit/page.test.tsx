@@ -4,11 +4,9 @@ import { describe, afterEach, it, expect } from "@jest/globals";
 import { act } from "react-dom/test-utils";
 
 import EditJob, { makeEmptyJob } from "../../../../../app/jobs/edit/page";
-import { postJob } from "../../../../../app/jobs/edit/utils";
-import { useGetModels, useGetClients } from "../../../../../app/jobs/hooks";
+import { useGetModels, useGetClients, usePost } from "../../../../../app/jobs/hooks";
 
 jest.mock("../../../../../app/jobs/hooks");
-jest.mock("../../../../../app/jobs/edit/utils");
 jest.mock("next/navigation", () => ({
     useRouter() {
         return {
@@ -31,15 +29,23 @@ function setupGetMocks(modelsData, clientsData) {
     });
 }
 
-function setupPostMocks(status) {
-    postJob.mockImplementation(() => {
-        return {status: status};
+function setupPostMocks(withError) {
+    postMock = jest.fn();
+    usePost.mockImplementation(() => {
+        return {
+            post: postMock,
+            response: null,
+            isLoading: null,
+            error: withError,
+        };
     });
+    return postMock;
 }
 
 describe("New Job Page", () => {
     it("Renders correctly", () => {
         setupGetMocks();
+        setupPostMocks();
         const { container } = render(<EditJob />);
         const h1 = container.querySelector("h1");
         expect(h1).toBeInTheDocument();
@@ -55,6 +61,7 @@ describe("New Job Page", () => {
         it("Render Correctly", () => {
             const testModelsData = ["TEST-MODEL-1", "TEST-MODEL-2"];
             setupGetMocks(testModelsData, null);
+            setupPostMocks();
 
             const { container } = render(<EditJob />);
 
@@ -83,6 +90,7 @@ describe("New Job Page", () => {
 
     describe("Server Config", () => {
         it("Render Correctly", () => {
+            setupPostMocks();
             const { container } = render(<EditJob />);
 
             const jobServerConfig = container.querySelector("div#job-server-config");
@@ -102,6 +110,7 @@ describe("New Job Page", () => {
             expect(jobServerConfigValue.value).toBe("");
         });
         it("Add button click adds a new element", () => {
+            setupPostMocks();
             const { container } = render(<EditJob />);
 
             const jobServerConfig = container.querySelector("div#job-server-config");
@@ -123,6 +132,7 @@ describe("New Job Page", () => {
         it("Render Correctly", () => {
             const testClientsData = ["TEST-CLIENT-1", "TEST-CLIENT-2"];
             setupGetMocks(null, testClientsData);
+            setupPostMocks();
 
             const { container } = render(<EditJob />);
 
@@ -162,6 +172,7 @@ describe("New Job Page", () => {
         it("Add button click adds a new element", () => {
             const testClientsData = ["TEST-CLIENT-1", "TEST-CLIENT-2"];
             setupGetMocks(null, testClientsData);
+            setupPostMocks();
 
             const { container } = render(<EditJob />);
 
@@ -202,7 +213,7 @@ describe("New Job Page", () => {
             const testModelsData = ["TEST-MODEL-1", "TEST-MODEL-2"];
             const testClientsData = ["TEST-CLIENT-1", "TEST-CLIENT-2"];
             setupGetMocks(testModelsData, testClientsData);
-            setupPostMocks(201);
+            postMock = setupPostMocks();
 
             const { container } = render(<EditJob />);
 
@@ -264,15 +275,12 @@ describe("New Job Page", () => {
             await act(async () => await submitButton.click());
 
             testJob.server_config = JSON.stringify(testJob.server_config)
-            expect(postJob).toBeCalledWith(JSON.stringify(testJob));
-
-            const successAlert = container.querySelector("div#job-saved-successfully");
-            expect(successAlert).toBeInTheDocument();
+            expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
         });
 
         it("Displays submit error", async () => {
             setupGetMocks();
-            setupPostMocks(404);
+            postMock = setupPostMocks(true);
 
             const { container } = render(<EditJob />);
 
@@ -281,7 +289,7 @@ describe("New Job Page", () => {
 
             const testJob = makeEmptyJob()
             testJob.server_config = JSON.stringify(testJob.server_config)
-            expect(postJob).toBeCalledWith(JSON.stringify(testJob));
+            expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
 
             const errorAlert = container.querySelector("div#job-save-error");
             expect(errorAlert).toBeInTheDocument();

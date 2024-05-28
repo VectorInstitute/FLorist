@@ -8,8 +8,7 @@ import { produce } from "immer";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { useGetModels, useGetClients } from "../hooks";
-import { postJob } from "./utils"
+import { useGetModels, useGetClients, usePost } from "../hooks";
 
 interface Job {
     model: string;
@@ -82,23 +81,34 @@ export function EditJobHeader(): ReactElement {
 }
 
 export function EditJobForm(): ReactElement {
-    const [state, setState] = useImmer({
-        job: makeEmptyJob(),
-        isLoading: false,
-        savedSuccessfully: false,
-        saveError: false,
-    });
+    const [state, setState] = useImmer({ job: makeEmptyJob() });
     const router = useRouter();
+    const { post, response, isLoading, error } = usePost();
+
+    async function onSubmitJob() {
+        event.preventDefault();
+        if (isLoading) {
+            return;
+        }
+
+        const job = { ...state.job };
+        job.server_config = JSON.stringify(job.server_config);
+        await post("/api/server/job", JSON.stringify(job))
+    }
+
+    if (response) {
+        setTimeout(() => router.push("/jobs"), 1000);
+    }
 
     let buttonClasses = "btn my-4 save-btn ";
-    if (state.isLoading) {
+    if (isLoading || response) {
         buttonClasses += "bg-gradient-secondary disabled";
     } else {
         buttonClasses += "bg-gradient-primary";
     }
 
     return (
-        <form onSubmit={(e) => onSubmitJob(state, setState, router)}>
+        <form onSubmit={(e) => onSubmitJob()}>
             <EditJobServerAttributes state={state} setState={setState} />
 
             <EditJobServerConfig state={state} setState={setState} />
@@ -106,10 +116,10 @@ export function EditJobForm(): ReactElement {
             <EditJobClientsInfo state={state} setState={setState} />
 
             <button id="job-post" className={buttonClasses}>
-                {state.isLoading && !state.savedSuccessfully? "Saving..." : "Save"}
+                {isLoading && !response ? "Saving..." : "Save"}
             </button>
 
-            {state.savedSuccessfully ?
+            {response ?
                 <div id="job-saved-successfully" className="alert alert-secondary text-white" role="alert">
                     <span className="text-sm">
                         Job saved successfully.
@@ -117,7 +127,7 @@ export function EditJobForm(): ReactElement {
                 </div>
             : null}
 
-            {state.saveError ?
+            {error ?
                 <div id="job-save-error" className="alert alert-danger alert-dismissible text-white show" role="alert">
                     <span className="text-sm">
                         Error saving job. Please review the information and try again.
@@ -131,56 +141,6 @@ export function EditJobForm(): ReactElement {
             : null}
         </form>
     );
-}
-
-async function onSubmitJob(state, setState, router) {
-    event.preventDefault();
-
-    if (state.isLoading) {
-        return;
-    }
-
-    setState(
-        produce((newState) => {
-            newState.isLoading = true;
-            newState.saveError = false;
-            newState.savedSuccessfully = false;
-        }),
-    );
-
-    try {
-        const job = { ...state.job };
-        job.server_config = JSON.stringify(job.server_config);
-
-        const response = await postJob(JSON.stringify(job))
-
-        if (response.status != 201) {
-            setState(
-                produce((newState) => {
-                    newState.isLoading = false;
-                    newState.saveError = true;
-                })
-            );
-            console.log(response);
-            return;
-        }
-
-        setState(
-            produce((newState) => {
-                newState.savedSuccessfully = true;
-            })
-        );
-        setTimeout(() => router.push("/jobs"), 1000);
-
-    } catch (error) {
-        console.error(error);
-        setState(
-            produce((newState) => {
-                newState.isLoading = false;
-                newState.saveError = true;
-            })
-        );
-    }
 }
 
 export function EditJobServerAttributes({ state, setState }): ReactElement {
