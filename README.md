@@ -1,4 +1,4 @@
-# FLorist
+# <img src="https://github.com/VectorInstitute/FLorist/assets/11467898/5c7bcdef-311f-4a88-ae72-ed16f76b7c03" alt="FLorist logo" width="40"/> FLorist
 
 A platform to launch federated learning (FL) training jobs.
 
