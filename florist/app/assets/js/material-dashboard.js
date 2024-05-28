@@ -29,9 +29,7 @@
         }
 
         if (document.getElementsByClassName("navbar-collapse")[0]) {
-            var fixedplugin = document.querySelector(
-                ".navbar:not(.navbar-expand-lg) .navbar-collapse",
-            );
+            var fixedplugin = document.querySelector(".navbar:not(.navbar-expand-lg) .navbar-collapse");
             var ps2 = new PerfectScrollbar(fixedplugin);
         }
 
@@ -48,9 +46,7 @@ if (document.getElementById("navbarBlur")) {
 }
 
 // initialization of Tooltips
-var tooltipTriggerList = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="tooltip"]'),
-);
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
 var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl);
 });
@@ -61,13 +57,9 @@ if (document.querySelector(".fixed-plugin")) {
     var fixedPlugin = document.querySelector(".fixed-plugin");
     var fixedPlugin = document.querySelector(".fixed-plugin");
     var fixedPluginButton = document.querySelector(".fixed-plugin-button");
-    var fixedPluginButtonNav = document.querySelector(
-        ".fixed-plugin-button-nav",
-    );
+    var fixedPluginButtonNav = document.querySelector(".fixed-plugin-button-nav");
     var fixedPluginCard = document.querySelector(".fixed-plugin .card");
-    var fixedPluginCloseButton = document.querySelectorAll(
-        ".fixed-plugin-close-button",
-    );
+    var fixedPluginCloseButton = document.querySelectorAll(".fixed-plugin-close-button");
     var navbar = document.getElementById("navbarBlur");
     var buttonNavbarFixed = document.getElementById("navbarFixed");
 
@@ -199,20 +191,14 @@ function sidebarType(a) {
         var navbarBrandImg = navbarBrand.src;
 
         if (navbarBrandImg.includes("logo-ct.png")) {
-            var navbarBrandImgNew = navbarBrandImg.replace(
-                "logo-ct",
-                "logo-ct-dark",
-            );
+            var navbarBrandImgNew = navbarBrandImg.replace("logo-ct", "logo-ct-dark");
             navbarBrand.src = navbarBrandImgNew;
         }
     } else {
         var navbarBrand = document.querySelector(".navbar-brand-img");
         var navbarBrandImg = navbarBrand.src;
         if (navbarBrandImg.includes("logo-ct-dark.png")) {
-            var navbarBrandImgNew = navbarBrandImg.replace(
-                "logo-ct-dark",
-                "logo-ct",
-            );
+            var navbarBrandImgNew = navbarBrandImg.replace("logo-ct-dark", "logo-ct");
             navbarBrand.src = navbarBrandImgNew;
         }
     }
@@ -222,10 +208,7 @@ function sidebarType(a) {
         var navbarBrandImg = navbarBrand.src;
 
         if (navbarBrandImg.includes("logo-ct.png")) {
-            var navbarBrandImgNew = navbarBrandImg.replace(
-                "logo-ct",
-                "logo-ct-dark",
-            );
+            var navbarBrandImgNew = navbarBrandImg.replace("logo-ct", "logo-ct-dark");
             navbarBrand.src = navbarBrandImgNew;
         }
     }
@@ -233,15 +216,7 @@ function sidebarType(a) {
 
 // Set Navbar Fixed
 function navbarFixed(el) {
-    let classes = [
-        "position-sticky",
-        "blur",
-        "shadow-blur",
-        "mt-4",
-        "left-auto",
-        "top-1",
-        "z-index-sticky",
-    ];
+    let classes = ["position-sticky", "blur", "shadow-blur", "mt-4", "left-auto", "top-1", "z-index-sticky"];
     const navbar = document.getElementById("navbarBlur");
 
     if (!el.getAttribute("checked")) {
@@ -275,9 +250,7 @@ function navbarMinimize(el) {
 // Navbar blur on scroll
 function navbarBlurOnScroll(id) {
     const navbar = document.getElementById(id);
-    let navbarScrollActive = navbar
-        ? navbar.getAttribute("data-scroll")
-        : false;
+    let navbarScrollActive = navbar ? navbar.getAttribute("data-scroll") : false;
     let scrollDistance = 5;
     let classes = ["blur", "shadow-blur", "left-auto"];
     let toggleClasses = ["shadow-none"];
@@ -337,9 +310,7 @@ function navbarBlurOnScroll(id) {
 
     function toggleNavLinksColor(type) {
         let navLinks = document.querySelectorAll(".navbar-main .nav-link");
-        let navLinksToggler = document.querySelectorAll(
-            ".navbar-main .sidenav-toggler-line",
-        );
+        let navLinksToggler = document.querySelectorAll(".navbar-main .sidenav-toggler-line");
 
         if (type === "blur") {
             navLinks.forEach((element) => {
@@ -390,15 +361,11 @@ document.addEventListener("DOMContentLoaded", function () {
         return new bootstrap.Toast(toastEl);
     });
 
-    var toastButtonList = [].slice.call(
-        document.querySelectorAll(".toast-btn"),
-    );
+    var toastButtonList = [].slice.call(document.querySelectorAll(".toast-btn"));
 
     toastButtonList.map(function (toastButtonEl) {
         toastButtonEl.addEventListener("click", function () {
-            var toastToTrigger = document.getElementById(
-                toastButtonEl.dataset.target,
-            );
+            var toastToTrigger = document.getElementById(toastButtonEl.dataset.target);
 
             if (toastToTrigger) {
                 var toast = bootstrap.Toast.getInstance(toastToTrigger);
@@ -426,8 +393,7 @@ function initNavs() {
         var list_length = item.getElementsByTagName("li").length;
 
         moving_div.style.padding = "0px";
-        moving_div.style.width =
-            item.querySelector("li:nth-child(1)").offsetWidth + "px";
+        moving_div.style.width = item.querySelector("li:nth-child(1)").offsetWidth + "px";
         moving_div.style.transform = "translate3d(0px, 0px, 0px)";
         moving_div.style.transition = ".5s ease";
 
@@ -437,33 +403,21 @@ function initNavs() {
             if (li) {
                 let nodes = Array.from(li.closest("ul").children); // get array
                 let index = nodes.indexOf(li) + 1;
-                item.querySelector(
-                    "li:nth-child(" + index + ") .nav-link",
-                ).onclick = function () {
+                item.querySelector("li:nth-child(" + index + ") .nav-link").onclick = function () {
                     moving_div = item.querySelector(".moving-tab");
                     let sum = 0;
                     if (item.classList.contains("flex-column")) {
                         for (var j = 1; j <= nodes.indexOf(li); j++) {
-                            sum += item.querySelector(
-                                "li:nth-child(" + j + ")",
-                            ).offsetHeight;
+                            sum += item.querySelector("li:nth-child(" + j + ")").offsetHeight;
                         }
-                        moving_div.style.transform =
-                            "translate3d(0px," + sum + "px, 0px)";
-                        moving_div.style.height = item.querySelector(
-                            "li:nth-child(" + j + ")",
-                        ).offsetHeight;
+                        moving_div.style.transform = "translate3d(0px," + sum + "px, 0px)";
+                        moving_div.style.height = item.querySelector("li:nth-child(" + j + ")").offsetHeight;
                     } else {
                         for (var j = 1; j <= nodes.indexOf(li); j++) {
-                            sum += item.querySelector(
-                                "li:nth-child(" + j + ")",
-                            ).offsetWidth;
+                            sum += item.querySelector("li:nth-child(" + j + ")").offsetWidth;
                         }
-                        moving_div.style.transform =
-                            "translate3d(" + sum + "px, 0px, 0px)";
-                        moving_div.style.width =
-                            item.querySelector("li:nth-child(" + index + ")")
-                                .offsetWidth + "px";
+                        moving_div.style.transform = "translate3d(" + sum + "px, 0px, 0px)";
+                        moving_div.style.width = item.querySelector("li:nth-child(" + index + ")").offsetWidth + "px";
                     }
                 };
             }
@@ -501,29 +455,17 @@ window.addEventListener("resize", function (event) {
             let sum = 0;
             if (item.classList.contains("flex-column")) {
                 for (var j = 1; j <= nodes.indexOf(li); j++) {
-                    sum += item.querySelector(
-                        "li:nth-child(" + j + ")",
-                    ).offsetHeight;
+                    sum += item.querySelector("li:nth-child(" + j + ")").offsetHeight;
                 }
-                moving_div.style.transform =
-                    "translate3d(0px," + sum + "px, 0px)";
-                moving_div.style.width =
-                    item.querySelector("li:nth-child(" + index + ")")
-                        .offsetWidth + "px";
-                moving_div.style.height = item.querySelector(
-                    "li:nth-child(" + j + ")",
-                ).offsetHeight;
+                moving_div.style.transform = "translate3d(0px," + sum + "px, 0px)";
+                moving_div.style.width = item.querySelector("li:nth-child(" + index + ")").offsetWidth + "px";
+                moving_div.style.height = item.querySelector("li:nth-child(" + j + ")").offsetHeight;
             } else {
                 for (var j = 1; j <= nodes.indexOf(li); j++) {
-                    sum += item.querySelector(
-                        "li:nth-child(" + j + ")",
-                    ).offsetWidth;
+                    sum += item.querySelector("li:nth-child(" + j + ")").offsetWidth;
                 }
-                moving_div.style.transform =
-                    "translate3d(" + sum + "px, 0px, 0px)";
-                moving_div.style.width =
-                    item.querySelector("li:nth-child(" + index + ")")
-                        .offsetWidth + "px";
+                moving_div.style.transform = "translate3d(" + sum + "px, 0px, 0px)";
+                moving_div.style.width = item.querySelector("li:nth-child(" + index + ")").offsetWidth + "px";
             }
         }
     });
@@ -538,15 +480,11 @@ window.addEventListener("resize", function (event) {
                 let index = nodes.indexOf(li) + 1;
                 let sum = 0;
                 for (var j = 1; j <= nodes.indexOf(li); j++) {
-                    sum += item.querySelector(
-                        "li:nth-child(" + j + ")",
-                    ).offsetHeight;
+                    sum += item.querySelector("li:nth-child(" + j + ")").offsetHeight;
                 }
                 var moving_div = document.querySelector(".moving-tab");
-                moving_div.style.width =
-                    item.querySelector("li:nth-child(1)").offsetWidth + "px";
-                moving_div.style.transform =
-                    "translate3d(0px," + sum + "px, 0px)";
+                moving_div.style.width = item.querySelector("li:nth-child(1)").offsetWidth + "px";
+                moving_div.style.transform = "translate3d(0px," + sum + "px, 0px)";
             }
         });
     } else {
@@ -559,16 +497,11 @@ window.addEventListener("resize", function (event) {
                 let index = nodes.indexOf(li) + 1;
                 let sum = 0;
                 for (var j = 1; j <= nodes.indexOf(li); j++) {
-                    sum += item.querySelector(
-                        "li:nth-child(" + j + ")",
-                    ).offsetWidth;
+                    sum += item.querySelector("li:nth-child(" + j + ")").offsetWidth;
                 }
                 var moving_div = document.querySelector(".moving-tab");
-                moving_div.style.transform =
-                    "translate3d(" + sum + "px, 0px, 0px)";
-                moving_div.style.width =
-                    item.querySelector("li:nth-child(" + index + ")")
-                        .offsetWidth + "px";
+                moving_div.style.transform = "translate3d(" + sum + "px, 0px, 0px)";
+                moving_div.style.width = item.querySelector("li:nth-child(" + index + ")").offsetWidth + "px";
             }
         });
     }
@@ -657,14 +590,11 @@ function onWindowLoadFunction() {
                     rippleDiv = document.createElement("span");
                     rippleDiv.classList.add("ripple");
                     rippleDiv.style.width = rippleDiv.style.height =
-                        Math.max(targetEl.offsetWidth, targetEl.offsetHeight) +
-                        "px";
+                        Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + "px";
                     targetEl.appendChild(rippleDiv);
 
-                    rippleDiv.style.left =
-                        e.offsetX - rippleDiv.offsetWidth / 2 + "px";
-                    rippleDiv.style.top =
-                        e.offsetY - rippleDiv.offsetHeight / 2 + "px";
+                    rippleDiv.style.left = e.offsetX - rippleDiv.offsetWidth / 2 + "px";
+                    rippleDiv.style.top = e.offsetY - rippleDiv.offsetHeight / 2 + "px";
                     rippleDiv.classList.add("ripple");
                     setTimeout(function () {
                         rippleDiv.parentElement.removeChild(rippleDiv);
@@ -691,8 +621,7 @@ const observer = new MutationObserver((mutationList) => {
                 const selects = addedNode.querySelectorAll("input");
                 const btns = addedNode.querySelectorAll(".btn");
 
-                hasTargetElementTypes =
-                    inputs.length > 0 || selects.length > 0 || btns.length > 0;
+                hasTargetElementTypes = inputs.length > 0 || selects.length > 0 || btns.length > 0;
             }
         }
     }
@@ -746,8 +675,7 @@ if (sidenav) {
         if (window.innerWidth > 1200) {
             if (
                 referenceButtons?.classList.contains("active") &&
-                referenceButtons?.getAttribute("data-class") ===
-                    "bg-transparent"
+                referenceButtons?.getAttribute("data-class") === "bg-transparent"
             ) {
                 sidenav.classList.remove("bg-white");
             } else {
@@ -783,31 +711,19 @@ function darkMode(el) {
     const hr = document.querySelectorAll("div:not(.sidenav) > hr");
     const hr_card = document.querySelectorAll("div:not(.bg-gradient-dark) hr");
     const text_btn = document.querySelectorAll("button:not(.btn) > .text-dark");
-    const text_span = document.querySelectorAll(
-        "span.text-dark, .breadcrumb .text-dark",
-    );
-    const text_span_white = document.querySelectorAll(
-        "span.text-white, .breadcrumb .text-white",
-    );
+    const text_span = document.querySelectorAll("span.text-dark, .breadcrumb .text-dark");
+    const text_span_white = document.querySelectorAll("span.text-white, .breadcrumb .text-white");
     const text_strong = document.querySelectorAll("strong.text-dark");
     const text_strong_white = document.querySelectorAll("strong.text-white");
     const text_nav_link = document.querySelectorAll("a.nav-link.text-dark");
-    const text_nav_link_white = document.querySelectorAll(
-        "a.nav-link.text-white",
-    );
+    const text_nav_link_white = document.querySelectorAll("a.nav-link.text-white");
     const secondary = document.querySelectorAll(".text-secondary");
     const bg_gray_100 = document.querySelectorAll(".bg-gray-100");
     const bg_gray_600 = document.querySelectorAll(".bg-gray-600");
-    const btn_text_dark = document.querySelectorAll(
-        ".btn.btn-link.text-dark, .material-icons.text-dark",
-    );
-    const btn_text_white = document.querySelectorAll(
-        ".btn.btn-link.text-white, .material-icons.text-white",
-    );
+    const btn_text_dark = document.querySelectorAll(".btn.btn-link.text-dark, .material-icons.text-dark");
+    const btn_text_white = document.querySelectorAll(".btn.btn-link.text-white, .material-icons.text-white");
     const card_border = document.querySelectorAll(".card.border");
-    const card_border_dark = document.querySelectorAll(
-        ".card.border.border-dark",
-    );
+    const card_border_dark = document.querySelectorAll(".card.border.border-dark");
 
     const svg = document.querySelectorAll("g");
 
@@ -972,9 +888,7 @@ if (indicators) {
                     if (entry.isIntersecting) {
                         resetCurrentActiveIndicator();
                         const element = entry.target;
-                        const indicator = document.querySelector(
-                            `a[href='#${element.id}']`,
-                        );
+                        const indicator = document.querySelector(`a[href='#${element.id}']`);
                         indicator.classList.add("active");
                         return;
                     }

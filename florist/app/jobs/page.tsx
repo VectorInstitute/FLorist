@@ -54,13 +54,7 @@ export default function Page(): ReactElement {
     if (!statusDataFetches.every(({ isLoading }) => isLoading == false)) {
         return (
             <div className="d-flex justify-content-center align-items-center vh-100">
-                <Image
-                    data-testid="jobs-page-loading-gif"
-                    src={loading_gif}
-                    alt="Loading"
-                    height={64}
-                    width={64}
-                />
+                <Image data-testid="jobs-page-loading-gif" src={loading_gif} alt="Loading" height={64} width={64} />
             </div>
         );
     }
@@ -76,23 +70,14 @@ export default function Page(): ReactElement {
     );
 }
 
-export function Status({
-    status,
-    data,
-}: {
-    status: StatusProp;
-    data: Object;
-}): ReactElement {
+export function Status({ status, data }: { status: StatusProp; data: Object }): ReactElement {
     return (
         <div className="row">
             <div className="col-12">
                 <div className="card my-4">
                     <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                         <div className="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                            <h6
-                                data-testid={`status-header-${status}`}
-                                className="text-white text-capitalize ps-3"
-                            >
+                            <h6 data-testid={`status-header-${status}`} className="text-white text-capitalize ps-3">
                                 {validStatuses[status]}
                             </h6>
                         </div>
@@ -104,21 +89,12 @@ export function Status({
     );
 }
 
-export function StatusTable({
-    data,
-    status,
-}: {
-    data: Array<JobData>;
-    status: StatusProp;
-}): ReactElement {
+export function StatusTable({ data, status }: { data: Array<JobData>; status: StatusProp }): ReactElement {
     if (data.length > 0) {
         return (
             <div className="card-body px-0 pb-2">
                 <div className="table-responsive p-0">
-                    <table
-                        data-testid={`status-table-${status}`}
-                        className="table align-items-center mb-0"
-                    >
+                    <table data-testid={`status-table-${status}`} className="table align-items-center mb-0">
                         <thead>
                             <tr>
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
@@ -141,9 +117,7 @@ export function StatusTable({
         return (
             <div className="card-body px-0 pb-2">
                 <div className="ps-3">
-                    <span data-testid={`status-no-jobs-${status}`}>
-                        No jobs to display.
-                    </span>
+                    <span data-testid={`status-no-jobs-${status}`}>No jobs to display.</span>
                 </div>
             </div>
         );
@@ -152,12 +126,7 @@ export function StatusTable({
 
 export function TableRows({ data }: { data: Array<JobData> }): ReactElement {
     const tableRows = data.map((d, i) => (
-        <TableRow
-            key={i}
-            model={d.model}
-            serverAddress={d.server_address}
-            clientsInfo={d.clients_info}
-        />
+        <TableRow key={i} model={d.model} serverAddress={d.server_address} clientsInfo={d.clients_info} />
     ));
 
     return <tbody>{tableRows}</tbody>;
@@ -179,16 +148,12 @@ export function TableRow({
         <tr>
             <td>
                 <div className="d-flex flex-column justify-content-center">
-                    <span className="ps-3 text-secondary text-xs font-weight-bold">
-                        {model}
-                    </span>
+                    <span className="ps-3 text-secondary text-xs font-weight-bold">{model}</span>
                 </div>
             </td>
             <td>
                 <div className="d-flex flex-column justify-content-center">
-                    <span className="ps-3 text-secondary text-xs font-weight-bold">
-                        {serverAddress}
-                    </span>
+                    <span className="ps-3 text-secondary text-xs font-weight-bold">{serverAddress}</span>
                 </div>
             </td>
             <td>
@@ -202,13 +167,7 @@ export function TableRow({
     );
 }
 
-export function ClientListTableData({
-    clientsInfo,
-}: {
-    clientsInfo: Array<ClientInfo>;
-}): ReactElement {
-    const clientServiceAddressesString = clientsInfo
-        .map((c) => c.service_address)
-        .join(", ");
+export function ClientListTableData({ clientsInfo }: { clientsInfo: Array<ClientInfo> }): ReactElement {
+    const clientServiceAddressesString = clientsInfo.map((c) => c.service_address).join(", ");
     return <div> {clientServiceAddressesString} </div>;
 }
