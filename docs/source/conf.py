@@ -90,7 +90,7 @@ myst_heading_anchors = 2
 # a list of builtin themes.
 #
 html_theme = "furo"
-html_title = "Vector AI Engineering template repository"
+html_title = "FLorist"
 html_theme_options = {
     "dark_css_variables": {
         "color-brand-primary": "#faad1a",
