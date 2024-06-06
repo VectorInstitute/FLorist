@@ -45,7 +45,7 @@ app.include_router(status_router, tags=["status"], prefix="/api/server/check_sta
 @app.get(path="/api/server/models", response_description="Returns a list of all available models")
 def list_models() -> JSONResponse:
     """
-    Return a list all available models.
+    Return a list of all available models.
 
     :return: (JSONResponse) A JSON response with a list of all elements in the `api.servers.common.Model` enum.
     """
@@ -55,7 +55,7 @@ def list_models() -> JSONResponse:
 @app.get(path="/api/server/clients", response_description="Returns a list of all available clients")
 def list_clients() -> JSONResponse:
     """
-    Return a list all available clients.
+    Return a list of all available clients.
 
     :return: (JSONResponse) A JSON response with a list of all elements in the `api.clients.common.Client` enum.
     """
