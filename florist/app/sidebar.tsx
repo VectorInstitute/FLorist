@@ -42,7 +42,7 @@ export default function Sidebar(): ReactElement {
                     </li>
                     <li className="nav-item">
                         <Link
-                            className={`nav-link text-white ${pathname === "/jobs" ? "active bg-gradient-primary" : ""}`}
+                            className={`nav-link text-white ${pathname.startsWith("/jobs") ? "active bg-gradient-primary" : ""}`}
                             href="/jobs"
                             passHref
                         >

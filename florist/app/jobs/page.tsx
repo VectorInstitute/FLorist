@@ -4,7 +4,9 @@ import { ReactElement } from "react/React";
 
 import { useGetJobsByJobStatus } from "./hooks";
 
+import Link from "next/link";
 import Image from "next/image";
+
 import loading_gif from "../assets/img/loading.gif";
 
 // Must be in same order as array returned from useGetJobsByJobStatus
@@ -63,9 +65,27 @@ export default function Page(): ReactElement {
         <Status key={i} status={statusKeys[i]} data={data} />
     ));
     return (
-        <div className="container-fluid py-4">
-            <h1 className="ps-3">Jobs</h1>
-            {statusComponents}
+        <div>
+            <div className="row">
+                <div className="col-6 d-flex align-items-center">
+                    <h1 className="ps-3">Jobs</h1>
+                </div>
+
+                <NewJobButton />
+
+                {statusComponents}
+            </div>
+        </div>
+    );
+}
+
+export function NewJobButton(): ReactElement {
+    return (
+        <div className="col-6 text-end">
+            <Link id="new-job-button" className="fixed-plugin-button btn bg-gradient-primary mb-0" href="/jobs/edit">
+                <i className="material-icons text-sm">add</i>
+                &nbsp;&nbsp;New Job
+            </Link>
         </div>
     );
 }
