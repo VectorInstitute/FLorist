@@ -1,0 +1,7 @@
+florist.tests.integration.api.test\_server module
+=================================================
+
+.. automodule:: florist.tests.integration.api.test_server
+   :members:
+   :undoc-members:
+   :show-inheritance:

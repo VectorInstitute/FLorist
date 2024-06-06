@@ -228,6 +228,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l6"><a class="reference internal" href="florist.tests.integration.api.test_server.html">florist.tests.integration.api.test_server module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="florist.tests.integration.api.test_train.html">florist.tests.integration.api.test_train module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="florist.tests.integration.api.utils.html">florist.tests.integration.api.utils module</a></li>
 </ul>
@@ -312,6 +313,34 @@
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.server.list_clients">
+<span class="sig-name descname"><span class="pre">list_clients</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/server.html#list_clients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.server.list_clients" title="Link to this definition">#</a></dt>
+<dd><p>Return a list all available clients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONResponse</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(JSONResponse) A JSON response with a list of all elements in the <cite>api.clients.common.Client</cite> enum.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.server.list_models">
+<span class="sig-name descname"><span class="pre">list_models</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/server.html#list_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.server.list_models" title="Link to this definition">#</a></dt>
+<dd><p>Return a list all available models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONResponse</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(JSONResponse) A JSON response with a list of all elements in the <cite>api.servers.common.Model</cite> enum.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
         </article>
@@ -380,6 +409,8 @@
             <ul>
 <li><a class="reference internal" href="#">florist.api.server module</a><ul>
 <li><a class="reference internal" href="#florist.api.server.lifespan"><code class="docutils literal notranslate"><span class="pre">lifespan()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.server.list_clients"><code class="docutils literal notranslate"><span class="pre">list_clients()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.server.list_models"><code class="docutils literal notranslate"><span class="pre">list_models()</span></code></a></li>
 </ul>
 </li>
 </ul>

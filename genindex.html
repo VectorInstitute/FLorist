@@ -226,6 +226,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l6"><a class="reference internal" href="reference/api/florist.tests.integration.api.test_server.html">florist.tests.integration.api.test_server module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="reference/api/florist.tests.integration.api.test_train.html">florist.tests.integration.api.test_train module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="reference/api/florist.tests.integration.api.utils.html">florist.tests.integration.api.utils module</a></li>
 </ul>
@@ -594,8 +595,6 @@
           <li><a href="reference/api/florist.api.servers.config_parsers.html#module-florist.api.servers.config_parsers">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     florist.api.servers.launch
 
@@ -603,6 +602,8 @@
           <li><a href="reference/api/florist.api.servers.launch.html#module-florist.api.servers.launch">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     florist.api.servers.utils
 
@@ -678,6 +679,13 @@
 
         <ul>
           <li><a href="reference/api/florist.tests.integration.api.routes.server.test_job.html#module-florist.tests.integration.api.routes.server.test_job">module</a>
+</li>
+        </ul></li>
+        <li>
+    florist.tests.integration.api.test_server
+
+        <ul>
+          <li><a href="reference/api/florist.tests.integration.api.test_server.html#module-florist.tests.integration.api.test_server">module</a>
 </li>
         </ul></li>
         <li>
@@ -866,8 +874,6 @@
 </li>
         <li><a href="reference/api/florist.api.server.html#florist.api.server.lifespan">lifespan() (in module florist.api.server)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/api/florist.api.clients.common.html#florist.api.clients.common.Client.list">list() (Client class method)</a>
 
         <ul>
@@ -878,7 +884,13 @@
           <li><a href="reference/api/florist.api.servers.common.html#florist.api.servers.common.Model.list">(Model class method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="reference/api/florist.api.server.html#florist.api.server.list_clients">list_clients() (in module florist.api.server)</a>
+</li>
         <li><a href="reference/api/florist.api.routes.server.job.html#florist.api.routes.server.job.list_jobs_with_status">list_jobs_with_status() (in module florist.api.routes.server.job)</a>
+</li>
+        <li><a href="reference/api/florist.api.server.html#florist.api.server.list_models">list_models() (in module florist.api.server)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -987,6 +999,8 @@
           <li><a href="reference/api/florist.tests.integration.api.routes.server.html#module-florist.tests.integration.api.routes.server">florist.tests.integration.api.routes.server</a>
 </li>
           <li><a href="reference/api/florist.tests.integration.api.routes.server.test_job.html#module-florist.tests.integration.api.routes.server.test_job">florist.tests.integration.api.routes.server.test_job</a>
+</li>
+          <li><a href="reference/api/florist.tests.integration.api.test_server.html#module-florist.tests.integration.api.test_server">florist.tests.integration.api.test_server</a>
 </li>
           <li><a href="reference/api/florist.tests.integration.api.test_train.html#module-florist.tests.integration.api.test_train">florist.tests.integration.api.test_train</a>
 </li>
@@ -1173,7 +1187,11 @@
 </li>
         <li><a href="reference/api/florist.tests.unit.api.servers.test_launch.html#florist.tests.unit.api.servers.test_launch.test_launch_local_server">test_launch_local_server() (in module florist.tests.unit.api.servers.test_launch)</a>
 </li>
+        <li><a href="reference/api/florist.tests.integration.api.test_server.html#florist.tests.integration.api.test_server.test_list_clients">test_list_clients() (in module florist.tests.integration.api.test_server)</a>
+</li>
         <li><a href="reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_list_jobs_with_status">test_list_jobs_with_status() (in module florist.tests.integration.api.routes.server.test_job)</a>
+</li>
+        <li><a href="reference/api/florist.tests.integration.api.test_server.html#florist.tests.integration.api.test_server.test_list_models">test_list_models() (in module florist.tests.integration.api.test_server)</a>
 </li>
         <li><a href="reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_new_job">test_new_job() (in module florist.tests.integration.api.routes.server.test_job)</a>
 </li>
@@ -1191,10 +1209,10 @@
 </li>
         <li><a href="reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_server_training_listener_fail_no_redis_port">test_server_training_listener_fail_no_redis_port() (in module florist.tests.unit.api.routes.server.test_training)</a>
 </li>
-        <li><a href="reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_server_training_listener_fail_no_server_uuid">test_server_training_listener_fail_no_server_uuid() (in module florist.tests.unit.api.routes.server.test_training)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_server_training_listener_fail_no_server_uuid">test_server_training_listener_fail_no_server_uuid() (in module florist.tests.unit.api.routes.server.test_training)</a>
+</li>
         <li><a href="reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_metrics_fail_clients_info_is_none">test_set_metrics_fail_clients_info_is_none() (in module florist.tests.integration.api.db.test_entities)</a>
 </li>
         <li><a href="reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_metrics_fail_clients_info_is_not_same_length">test_set_metrics_fail_clients_info_is_not_same_length() (in module florist.tests.integration.api.db.test_entities)</a>
