@@ -142,7 +142,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -293,7 +293,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -301,90 +301,8 @@
         <article role="main">
           <section id="user-guide">
 <span id="id1"></span><h1>User Guide<a class="headerlink" href="#user-guide" title="Link to this heading">#</a></h1>
-<section id="setting-up">
-<h2>Setting up<a class="headerlink" href="#setting-up" title="Link to this heading">#</a></h2>
-<section id="install-dependencies">
-<h3>Install dependencies<a class="headerlink" href="#install-dependencies" title="Link to this heading">#</a></h3>
-<p>To install the project dependencies, first you need to create a virtual environment.
-The easiest way is by using the <a class="reference external" href="https://pypi.org/project/virtualenv/">virtualenv</a> package:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>virtualenv<span class="w"> </span>venv
-<span class="nb">source</span><span class="w"> </span>venv/bin/activate
-</pre></div>
-</div>
-<p>We use <a class="reference external" href="https://python-poetry.org/">Poetry</a> to manage back-end dependencies:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip<span class="w"> </span>poetry
-poetry<span class="w"> </span>install
-</pre></div>
-</div>
-</section>
-<section id="install-yarn">
-<h3>Install Yarn<a class="headerlink" href="#install-yarn" title="Link to this heading">#</a></h3>
-<p>We use <a class="reference external" href="https://yarnpkg.com/">Yarn</a> to manage front-end dependencies. Install it on MacOS
-using <a class="reference external" href="https://brew.sh/">Homebrew</a>:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>yarn
-</pre></div>
-</div>
-<p>Then install the project dependencies:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>yarn
-</pre></div>
-</div>
-</section>
-<section id="pulling-redis-docker">
-<h3>Pulling Redis’ Docker<a class="headerlink" href="#pulling-redis-docker" title="Link to this heading">#</a></h3>
-<p>Redis is used to fetch the metrics reported by servers and clients during their runs.</p>
-<p>If you don’t have Docker installed, follow <a class="reference external" href="https://docs.docker.com/desktop/">these instructions</a>
-to install it. Then, pull <a class="reference external" href="https://hub.docker.com/_/redis">Redis’ official docker image</a>
-(we currently use version 7.2.4):</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>redis:7.2.4
-</pre></div>
-</div>
-</section>
-</section>
-<section id="running-the-server">
-<h2>Running the server<a class="headerlink" href="#running-the-server" title="Link to this heading">#</a></h2>
-<section id="start-server-s-redis-instance">
-<h3>Start server’s Redis instance<a class="headerlink" href="#start-server-s-redis-instance" title="Link to this heading">#</a></h3>
-<p>If it’s your first time running it, create a container and run it with the command below:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>redis-florist-server<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">6379</span>:6379<span class="w"> </span>redis:7.2.4<span class="w"> </span>redis-server<span class="w"> </span>--save<span class="w"> </span><span class="m">60</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>--loglevel<span class="w"> </span>warning
-</pre></div>
-</div>
-<p>From the second time on, you can just start it:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>start<span class="w"> </span>redis-florist-server
-</pre></div>
-</div>
-</section>
-<section id="start-back-end-and-front-end-servers">
-<h3>Start back-end and front-end servers<a class="headerlink" href="#start-back-end-and-front-end-servers" title="Link to this heading">#</a></h3>
-<p>Use Yarn to run both the back-end and front-end on server mode:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>yarn<span class="w"> </span>dev
-</pre></div>
-</div>
-<p>The front-end will be available at <code class="docutils literal notranslate"><span class="pre">http://localhost:3000</span></code>. If you want to access
-back-end APIs individually, they will be available at <code class="docutils literal notranslate"><span class="pre">https://localhost:8000</span></code>.</p>
-</section>
-</section>
-<section id="running-the-client">
-<h2>Running the client<a class="headerlink" href="#running-the-client" title="Link to this heading">#</a></h2>
-<section id="start-client-s-redis-instance">
-<h3>Start client’s Redis instance<a class="headerlink" href="#start-client-s-redis-instance" title="Link to this heading">#</a></h3>
-<p>If it’s your first time running it, create a container and run it with the command below:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>redis-florist-client<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">6380</span>:6379<span class="w"> </span>redis:7.2.4<span class="w"> </span>redis-server<span class="w"> </span>--save<span class="w"> </span><span class="m">60</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>--loglevel<span class="w"> </span>warning
-</pre></div>
-</div>
-<p>From the second time on, you can just start it:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>start<span class="w"> </span>redis-florist-client
-</pre></div>
-</div>
-</section>
-<section id="id2">
-<h3>Start back-end and front-end servers<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
-<p>To start the client back-end service:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>uvicorn<span class="w"> </span>florist.api.client:app<span class="w"> </span>--reload<span class="w"> </span>--port<span class="w"> </span><span class="m">8001</span>
-</pre></div>
-</div>
-<p>The service will be available at <code class="docutils literal notranslate"><span class="pre">http://localhost:8001</span></code>.</p>
-</section>
-</section>
+<p>For an up-to-date guide on how to set up and run this project, follow the
+instructions on the <a class="reference external" href="https://github.com/VectorInstitute/FLorist/blob/main/README.md">README.md</a> file.</p>
 </section>
 <section id="contributing-to-the-project">
 <h1>Contributing to the project<a class="headerlink" href="#contributing-to-the-project" title="Link to this heading">#</a></h1>
@@ -446,43 +364,8 @@ when making contributions to the project.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">User Guide</a><ul>
-<li><a class="reference internal" href="#setting-up">Setting up</a><ul>
-<li><a class="reference internal" href="#install-dependencies">Install dependencies</a></li>
-<li><a class="reference internal" href="#install-yarn">Install Yarn</a></li>
-<li><a class="reference internal" href="#pulling-redis-docker">Pulling Redis’ Docker</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#running-the-server">Running the server</a><ul>
-<li><a class="reference internal" href="#start-server-s-redis-instance">Start server’s Redis instance</a></li>
-<li><a class="reference internal" href="#start-back-end-and-front-end-servers">Start back-end and front-end servers</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#running-the-client">Running the client</a><ul>
-<li><a class="reference internal" href="#start-client-s-redis-instance">Start client’s Redis instance</a></li>
-<li><a class="reference internal" href="#id2">Start back-end and front-end servers</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#contributing-to-the-project">Contributing to the project</a></li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
