@@ -36,7 +36,7 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - name: Install poetry
         run: python3 -m pip install --upgrade pip && python3 -m pip install poetry
       - uses: actions/setup-python@v5.1.0
@@ -68,7 +68,7 @@ jobs:
           attempt_limit: 5
           attempt_delay: 30000
 
-      # TODO enable this once we have integration tests for the UI
+#      TODO enable this once we have integration tests for the UI
 #      - name: Setup yarn
 #        uses: mskelton/setup-yarn@v1
 #      - name: Install nextjs dependencies and check code
