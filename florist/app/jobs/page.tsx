@@ -90,6 +90,16 @@ export function NewJobButton(): ReactElement {
     );
 }
 
+export function StartJobButton(): ReactElement {
+    return (
+        <div>
+            <button className="btn btn-primary btn-sm mb-0">
+                Start
+            </button> 
+        </div>
+    )
+}
+
 export function Status({ status, data }: { status: StatusProp; data: Object }): ReactElement {
     return (
         <div className="row">
@@ -126,9 +136,11 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                     Client Service Addresses
                                 </th>
+                                <th>
+                                </th>
                             </tr>
                         </thead>
-                        <TableRows data={data} />
+                        <TableRows data={data} status={status} />
                     </table>
                 </div>
             </div>
@@ -144,9 +156,9 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
     }
 }
 
-export function TableRows({ data }: { data: Array<JobData> }): ReactElement {
+export function TableRows({ data, status }: { data: Array<JobData>; status: StatusProp }): ReactElement {
     const tableRows = data.map((d, i) => (
-        <TableRow key={i} model={d.model} serverAddress={d.server_address} clientsInfo={d.clients_info} />
+        <TableRow key={i} model={d.model} serverAddress={d.server_address} clientsInfo={d.clients_info} status={status} />
     ));
 
     return <tbody>{tableRows}</tbody>;
@@ -156,10 +168,12 @@ export function TableRow({
     model,
     serverAddress,
     clientsInfo,
+    status,
 }: {
     model: string;
     serverAddress: string;
     clientsInfo: Array<ClientInfo>;
+    status: StatusProp 
 }): ReactElement {
     if (clientsInfo === null) {
         return <td />;
@@ -182,6 +196,9 @@ export function TableRow({
                         <ClientListTableData clientsInfo={clientsInfo} />
                     </span>
                 </div>
+            </td>
+            <td>
+                {validStatuses[status] == "Not Started" ? <StartJobButton/> : <span></span>} 
             </td>
         </tr>
     );
