@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactElement } from "react/React";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import { useGetJobsByJobStatus, usePost } from "./hooks";
 
@@ -161,7 +161,7 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
 
 export function TableRows({ data, status }: { data: Array<JobData>; status: StatusProp }): ReactElement {
     const tableRows = data.map((d, i) => (
-        <TableRow key={i} model={d.model} serverAddress={d.server_address} clientsInfo={d.clients_info} status={status} jobid={d._id} />
+        <TableRow key={i} model={d.model} serverAddress={d.server_address} clientsInfo={d.clients_info} status={status} job_id={d._id} />
     ));
 
     return <tbody>{tableRows}</tbody>;
@@ -193,15 +193,14 @@ export function TableRow({
             return;
         }
 
-        const body = {"job_id": job_id, "status": 'IN_PROGRESS'}; 
-        await post("/api/server/job/change_status", JSON.stringify(body));
-
-        if (response || isError) {
-            setTimeout(() => router.push("/jobs"), 1000);
-        }
-
-        return;
+        const queryParams = new URLSearchParams({"job_id": job_id, "status": 'IN_PROGRESS'});
+        const url = `/api/server/job/change_status?${queryParams.toString()}`;
+        await post(url, JSON.stringify({}));
     };
+    if (response || isError) {
+        const pathname = usePathname()
+        router.push(pathname)
+    }
     return (
         <tr>
             <td>
