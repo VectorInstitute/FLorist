@@ -92,28 +92,11 @@ export function NewJobButton(): ReactElement {
     );
 }
 
-async function handleClickStartJobButton({jobid} : {jobid: string} ) {
-    const router = useRouter();
-    const { post, response ,isLoading, isError } = usePost();
-    
-    event.preventDefault()
-    if (isLoading) {
-        return
-    }
 
-    await post("/api/server/start", JSON.stringify({"job_id": jobid}));
-
-    if (response || isError) {
-        setTimeout(() => router.push("/jobs"), 1000);
-    }
-
-    return
-}
-
-export function StartJobButton(): ReactElement {
+export function StartJobButton({ onClick }: { onClick: (event: React.MouseEvent<HTMLButtonElement>) => void }): ReactElement {
     return (
         <div>
-            <button className="btn btn-primary btn-sm mb-0">
+            <button onClick={onClick} className="btn btn-primary btn-sm mb-0">
                 Start
             </button> 
         </div>
@@ -189,17 +172,36 @@ export function TableRow({
     serverAddress,
     clientsInfo,
     status,
-    jobid
+    job_id
 }: {
     model: string;
     serverAddress: string;
     clientsInfo: Array<ClientInfo>;
     status: StatusProp;
-    jobid: string; 
+    job_id: string; 
 }): ReactElement {
     if (clientsInfo === null) {
         return <td />;
     }
+    const router = useRouter();
+    const { post, response ,isLoading, isError } = usePost();
+
+    const handleClickStartJobButton = async (event: React.MouseEvent<HTMLButtonElement>, job_id: string) => { 
+        event.preventDefault()
+        
+        if (isLoading) {
+            return;
+        }
+
+        const body = {"job_id": job_id, "status": 'IN_PROGRESS'}; 
+        await post("/api/server/job/change_status", JSON.stringify(body));
+
+        if (response || isError) {
+            setTimeout(() => router.push("/jobs"), 1000);
+        }
+
+        return;
+    };
     return (
         <tr>
             <td>
@@ -220,7 +222,7 @@ export function TableRow({
                 </div>
             </td>
             <td>
-                {validStatuses[status] == "Not Started" ? <StartJobButton onClick={handleClickStartJobButton(jobid)}/> : <span></span>} 
+                {validStatuses[status] == "Not Started" ? <StartJobButton onClick={(e) => handleClickStartJobButton(e, job_id)}/> : <span></span>} 
             </td>
         </tr>
     );
