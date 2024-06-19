@@ -1,8 +1,9 @@
 "use client";
 
 import { ReactElement } from "react/React";
+import { useRouter } from "next/navigation";
 
-import { useGetJobsByJobStatus } from "./hooks";
+import { useGetJobsByJobStatus, usePost } from "./hooks";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -10,7 +11,7 @@ import Image from "next/image";
 import loading_gif from "../assets/img/loading.gif";
 
 // Must be in same order as array returned from useGetJobsByJobStatus
-export const validStatuses = {
+const validStatuses = {
     NOT_STARTED: "Not Started",
     IN_PROGRESS: "In Progress",
     FINISHED_SUCCESSFULLY: "Finished Successfully",
@@ -18,6 +19,7 @@ export const validStatuses = {
 };
 
 interface JobData {
+    _id: string;
     status: string;
     model: string;
     server_address: string;
@@ -90,6 +92,24 @@ export function NewJobButton(): ReactElement {
     );
 }
 
+async function handleClickStartJobButton({jobid} : {jobid: string} ) {
+    const router = useRouter();
+    const { post, response ,isLoading, isError } = usePost();
+    
+    event.preventDefault()
+    if (isLoading) {
+        return
+    }
+
+    await post("/api/server/start", JSON.stringify({"job_id": jobid}));
+
+    if (response || isError) {
+        setTimeout(() => router.push("/jobs"), 1000);
+    }
+
+    return
+}
+
 export function StartJobButton(): ReactElement {
     return (
         <div>
@@ -158,7 +178,7 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
 
 export function TableRows({ data, status }: { data: Array<JobData>; status: StatusProp }): ReactElement {
     const tableRows = data.map((d, i) => (
-        <TableRow key={i} model={d.model} serverAddress={d.server_address} clientsInfo={d.clients_info} status={status} />
+        <TableRow key={i} model={d.model} serverAddress={d.server_address} clientsInfo={d.clients_info} status={status} jobid={d._id} />
     ));
 
     return <tbody>{tableRows}</tbody>;
@@ -169,11 +189,13 @@ export function TableRow({
     serverAddress,
     clientsInfo,
     status,
+    jobid
 }: {
     model: string;
     serverAddress: string;
     clientsInfo: Array<ClientInfo>;
-    status: StatusProp 
+    status: StatusProp;
+    jobid: string; 
 }): ReactElement {
     if (clientsInfo === null) {
         return <td />;
@@ -198,7 +220,7 @@ export function TableRow({
                 </div>
             </td>
             <td>
-                {validStatuses[status] == "Not Started" ? <StartJobButton/> : <span></span>} 
+                {validStatuses[status] == "Not Started" ? <StartJobButton onClick={handleClickStartJobButton(jobid)}/> : <span></span>} 
             </td>
         </tr>
     );
