@@ -3,6 +3,7 @@
 from typing import List
 
 from fastapi import APIRouter, Body, Request, status
+from fastapi.responses import JSONResponse
 
 from florist.api.db.entities import MAX_RECORDS_TO_FETCH, Job, JobStatus
 
@@ -48,3 +49,24 @@ async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Job
         of a Job instance with the specified status.
     """
     return await Job.find_by_status(status, MAX_RECORDS_TO_FETCH, request.app.database)
+
+
+@router.post(path="/change_status", response_description="Change job to the specified status")
+async def change_job_status(job_id: str, status: JobStatus, request: Request) -> JSONResponse:
+    """
+    Change job job_id to specified status.
+
+    :param job_id: (str) The id of the job to change the status of.
+    :param status: (JobStatus) The status to change job_id to.
+    :param request: (fastapi.Request) the FastAPI request object.
+
+    :return: (JSONResponse) If successful, returns 200. If not successful, returns response with status code 400
+        and body: {"error": <error message>}
+    """
+    job_in_db = await Job.find_by_id(job_id, request.app.database)
+    try:
+        assert job_in_db is not None, f"Job {job_id} not found"
+        await job_in_db.set_status(status, request.app.database)
+        return JSONResponse(content={"status": "success"})
+    except AssertionError as e:
+        return JSONResponse(content={"error": str(e)}, status_code=400)
