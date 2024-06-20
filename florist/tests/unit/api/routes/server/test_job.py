@@ -51,7 +51,7 @@ async def test_change_job_status_failure_in_find_by_id(mock_find_by_id: Mock) ->
 async def test_change_job_status_failure_in_set_status(mock_find_by_id: Mock) -> None:
     mock_job = Mock()
     mock_job.set_status = AsyncMock()
-    mock_job.set_status.side_effect = AssertionError("Test Error")
+    mock_job.set_status.side_effect = ValueError("Test Error")
 
     mock_find_by_id.return_value = mock_job
 
@@ -67,5 +67,5 @@ async def test_change_job_status_failure_in_set_status(mock_find_by_id: Mock) ->
     mock_job.set_status.assert_called_once_with(test_status, mock_request.app.database)
 
     assert isinstance(response, JSONResponse)
-    assert response.status_code == 400
+    assert response.status_code == 500
     assert json.loads(response.body.decode("utf-8")) == {"error": "Test Error"}
