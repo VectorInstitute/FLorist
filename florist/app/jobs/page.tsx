@@ -1,12 +1,10 @@
 "use client";
 
-import { mutate } from "swr";
-
 import { useState, useEffect } from "react";
 import { ReactElement } from "react/React";
 import { useRouter, usePathname } from "next/navigation";
 
-import { useGetJobsByJobStatus, usePost } from "./hooks";
+import { refreshJobsByJobStatus, useGetJobsByJobStatus, usePost } from "./hooks";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -14,7 +12,7 @@ import Image from "next/image";
 import loading_gif from "../assets/img/loading.gif";
 
 // Must be in same order as array returned from useGetJobsByJobStatus
-const validStatuses = {
+export const validStatuses = {
     NOT_STARTED: "Not Started",
     IN_PROGRESS: "In Progress",
     FINISHED_SUCCESSFULLY: "Finished Successfully",
@@ -102,7 +100,7 @@ export function StartJobButton({
 }): ReactElement {
     return (
         <div>
-            <button onClick={onClick} className="btn btn-primary btn-sm mb-0">
+            <button data-test-id="start-training-button" onClick={onClick} className="btn btn-primary btn-sm mb-0">
                 Start
             </button>
         </div>
@@ -208,23 +206,8 @@ export function TableRow({
         const url = `/api/server/training/start?${queryParams.toString()}`;
         await post(url, JSON.stringify({}));
     };
-    useEffect(() => {
-        if (error) {
-            setTimeout(() => {
-                mutate("/api/server/job/NOT_STARTED");
-                mutate("/api/server/job/IN_PROGRESS");
-            }, 3000);
-        }
 
-        if (response) {
-            // If the response object is populated, it means it has completed the
-            // post request successfully. Then, revalidate the data
-            setTimeout(() => {
-                mutate("/api/server/job/NOT_STARTED");
-                mutate("/api/server/job/FINISHED_WITH_ERROR");
-            }, 3000);
-        }
-    }, [error, response]);
+    useEffect(() => refreshJobsByJobStatus(), [error, response]);
 
     return (
         <tr>
@@ -248,9 +231,7 @@ export function TableRow({
             <td>
                 {validStatuses[status] == "Not Started" ? (
                     <StartJobButton onClick={(e) => handleClickStartJobButton(e, job_id)} />
-                ) : (
-                    <span></span>
-                )}
+                ) : null}
             </td>
         </tr>
     );

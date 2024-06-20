@@ -3,7 +3,7 @@ import { getByText, render, cleanup } from "@testing-library/react";
 import { describe, afterEach, it, expect } from "@jest/globals";
 
 import Page, { validStatuses } from "../../../../app/jobs/page";
-import { useGetJobsByJobStatus } from "../../../../app/jobs/hooks";
+import { useGetJobsByJobStatus, usePost } from "../../../../app/jobs/hooks";
 
 jest.mock("../../../../app/jobs/hooks");
 
@@ -39,6 +39,12 @@ function setupMock(validStatuses: Array<string>, data: Array<object>, error: boo
             };
         }
     });
+    usePost.mockImplementation(() => ({
+        post: jest.fn(),
+        response: null,
+        isLoading: false,
+        error: null,
+    }));
 }
 
 describe("List Jobs Page", () => {
@@ -107,5 +113,12 @@ describe("List Jobs Page", () => {
         const { queryByTestId } = render(<Page />);
         const element = queryByTestId("jobs-page-loading-gif");
         expect(element).not.toBeInTheDocument();
+    });
+
+    it("Start training button present in NOT_STARTED jobs", () => {
+        setupMock(["NOT_STARTED", "IN_PROGRESS", "FINISHED_SUCCESSFULLY", "FINISHED_WITH_ERROR"], [], false, false);
+        const { queryByTestId } = render(<Page />);
+        const element = queryByTestId("start-training-button");
+        expect(element).toBeInTheDocument();
     });
 });
