@@ -1,0 +1,7 @@
+florist.tests.unit.api.routes.server.test\_job module
+=====================================================
+
+.. automodule:: florist.tests.unit.api.routes.server.test_job
+   :members:
+   :undoc-members:
+   :show-inheritance:

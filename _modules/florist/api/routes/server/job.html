@@ -242,6 +242,7 @@
 </li>
 <li class="toctree-l6 has-children"><a class="reference internal" href="../../../../../reference/api/florist.tests.unit.api.routes.html">florist.tests.unit.api.routes package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.routes package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7 has-children"><a class="reference internal" href="../../../../../reference/api/florist.tests.unit.api.routes.server.html">florist.tests.unit.api.routes.server package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.routes.server package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l8"><a class="reference internal" href="../../../../../reference/api/florist.tests.unit.api.routes.server.test_job.html">florist.tests.unit.api.routes.server.test_job module</a></li>
 <li class="toctree-l8"><a class="reference internal" href="../../../../../reference/api/florist.tests.unit.api.routes.server.test_status.html">florist.tests.unit.api.routes.server.test_status module</a></li>
 <li class="toctree-l8"><a class="reference internal" href="../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html">florist.tests.unit.api.routes.server.test_training module</a></li>
 </ul>
@@ -303,6 +304,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Body</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">status</span>
+<span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
 
 <span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">MAX_RECORDS_TO_FETCH</span><span class="p">,</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span>
 
@@ -353,6 +355,32 @@
 <span class="sd">        of a Job instance with the specified status.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">Job</span><span class="o">.</span><span class="n">find_by_status</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">MAX_RECORDS_TO_FETCH</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="change_job_status">
+<a class="viewcode-back" href="../../../../../reference/api/florist.api.routes.server.job.html#florist.api.routes.server.job.change_job_status">[docs]</a>
+<span class="nd">@router</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/change_status&quot;</span><span class="p">,</span> <span class="n">response_description</span><span class="o">=</span><span class="s2">&quot;Change job to the specified status&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">change_job_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Change job job_id to specified status.</span>
+
+<span class="sd">    :param job_id: (str) The id of the job to change the status of.</span>
+<span class="sd">    :param status: (JobStatus) The status to change job_id to.</span>
+<span class="sd">    :param request: (fastapi.Request) the FastAPI request object.</span>
+
+<span class="sd">    :return: (JSONResponse) If successful, returns 200. If not successful, returns response with status code 400</span>
+<span class="sd">        and body: {&quot;error&quot;: &lt;error message&gt;}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">job_in_db</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Job</span><span class="o">.</span><span class="n">find_by_id</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">job_in_db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2"> not found&quot;</span>
+        <span class="k">await</span> <span class="n">job_in_db</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">})</span>
+    <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">assertion_e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">assertion_e</span><span class="p">)},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">general_e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">general_e</span><span class="p">)},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

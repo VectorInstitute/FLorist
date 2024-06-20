@@ -12,5 +12,6 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   florist.tests.unit.api.routes.server.test_job
    florist.tests.unit.api.routes.server.test_status
    florist.tests.unit.api.routes.server.test_training
