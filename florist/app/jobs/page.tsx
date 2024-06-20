@@ -190,9 +190,6 @@ export function TableRow({
     status: StatusProp;
     job_id: string;
 }): ReactElement {
-    if (clientsInfo === null) {
-        return <td />;
-    }
     const { post, response, isLoading, error } = usePost();
 
     const handleClickStartJobButton = async (event: React.MouseEvent<HTMLButtonElement>, job_id: string) => {
@@ -208,6 +205,10 @@ export function TableRow({
     };
 
     useEffect(() => refreshJobsByJobStatus(), [error, response]);
+
+    if (clientsInfo === null) {
+        return <td />;
+    }
 
     return (
         <tr>
