@@ -1,5 +1,8 @@
 "use client";
 
+import { mutate } from "swr";
+
+import { useState, useEffect } from "react";
 import { ReactElement } from "react/React";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -92,15 +95,18 @@ export function NewJobButton(): ReactElement {
     );
 }
 
-
-export function StartJobButton({ onClick }: { onClick: (event: React.MouseEvent<HTMLButtonElement>) => void }): ReactElement {
+export function StartJobButton({
+    onClick,
+}: {
+    onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}): ReactElement {
     return (
         <div>
             <button onClick={onClick} className="btn btn-primary btn-sm mb-0">
                 Start
-            </button> 
+            </button>
         </div>
-    )
+    );
 }
 
 export function Status({ status, data }: { status: StatusProp; data: Object }): ReactElement {
@@ -139,8 +145,7 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                     Client Service Addresses
                                 </th>
-                                <th>
-                                </th>
+                                <th></th>
                             </tr>
                         </thead>
                         <TableRows data={data} status={status} />
@@ -161,7 +166,14 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
 
 export function TableRows({ data, status }: { data: Array<JobData>; status: StatusProp }): ReactElement {
     const tableRows = data.map((d, i) => (
-        <TableRow key={i} model={d.model} serverAddress={d.server_address} clientsInfo={d.clients_info} status={status} job_id={d._id} />
+        <TableRow
+            key={i}
+            model={d.model}
+            serverAddress={d.server_address}
+            clientsInfo={d.clients_info}
+            status={status}
+            job_id={d._id}
+        />
     ));
 
     return <tbody>{tableRows}</tbody>;
@@ -172,37 +184,48 @@ export function TableRow({
     serverAddress,
     clientsInfo,
     status,
-    job_id
+    job_id,
 }: {
     model: string;
     serverAddress: string;
     clientsInfo: Array<ClientInfo>;
     status: StatusProp;
-    job_id: string; 
+    job_id: string;
 }): ReactElement {
     if (clientsInfo === null) {
         return <td />;
     }
-    const router = useRouter();
-    const { post, response ,isLoading, isError } = usePost();
+    const { post, response, isLoading, error } = usePost();
 
-    const handleClickStartJobButton = async (event: React.MouseEvent<HTMLButtonElement>, job_id: string) => { 
-        event.preventDefault()
-        
+    const handleClickStartJobButton = async (event: React.MouseEvent<HTMLButtonElement>, job_id: string) => {
+        event.preventDefault();
+
         if (isLoading) {
             return;
         }
 
-        const queryParams = new URLSearchParams({"job_id": job_id});
+        const queryParams = new URLSearchParams({ job_id: job_id });
         const url = `/api/server/training/start?${queryParams.toString()}`;
         await post(url, JSON.stringify({}));
-
     };
-    if (response || isError) {
-        // If the response object is populated, it means it has completed the
-        //post request successfully. Then, wait 1s and redirect to the list jobs page
-        setTimeout(() => router.push("/jobs"), 1000);
-    }
+    useEffect(() => {
+        if (error) {
+            setTimeout(() => {
+                mutate("/api/server/job/NOT_STARTED");
+                mutate("/api/server/job/IN_PROGRESS");
+            }, 3000);
+        }
+
+        if (response) {
+            // If the response object is populated, it means it has completed the
+            // post request successfully. Then, revalidate the data
+            setTimeout(() => {
+                mutate("/api/server/job/NOT_STARTED");
+                mutate("/api/server/job/FINISHED_WITH_ERROR");
+            }, 3000);
+        }
+    }, [error, response]);
+
     return (
         <tr>
             <td>
@@ -223,7 +246,11 @@ export function TableRow({
                 </div>
             </td>
             <td>
-                {validStatuses[status] == "Not Started" ? <StartJobButton onClick={(e) => handleClickStartJobButton(e, job_id)}/> : <span></span>} 
+                {validStatuses[status] == "Not Started" ? (
+                    <StartJobButton onClick={(e) => handleClickStartJobButton(e, job_id)} />
+                ) : (
+                    <span></span>
+                )}
             </td>
         </tr>
     );
