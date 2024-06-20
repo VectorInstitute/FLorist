@@ -49,6 +49,7 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
         assert job is not None, f"Job with id {job_id} not found."
 
         assert job.status == JobStatus.NOT_STARTED, f"Job status ({job.status.value}) is not NOT_STARTED"
+        await job.set_status(JobStatus.IN_PROGRESS, request.app.database)
 
         if job.config_parser is None:
             job.config_parser = ConfigParser.BASIC
@@ -101,7 +102,6 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
 
             client_uuids.append(json_response["uuid"])
 
-        await job.set_status(JobStatus.IN_PROGRESS, request.app.database)
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
 
         # Start the server training listener as a background task to update

@@ -193,13 +193,15 @@ export function TableRow({
             return;
         }
 
-        const queryParams = new URLSearchParams({"job_id": job_id, "status": 'IN_PROGRESS'});
-        const url = `/api/server/job/change_status?${queryParams.toString()}`;
+        const queryParams = new URLSearchParams({"job_id": job_id});
+        const url = `/api/server/training/start?${queryParams.toString()}`;
         await post(url, JSON.stringify({}));
+
     };
     if (response || isError) {
-        const pathname = usePathname()
-        router.push(pathname)
+        // If the response object is populated, it means it has completed the
+        //post request successfully. Then, wait 1s and redirect to the list jobs page
+        setTimeout(() => router.push("/jobs"), 1000);
     }
     return (
         <tr>
