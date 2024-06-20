@@ -68,5 +68,7 @@ async def change_job_status(job_id: str, status: JobStatus, request: Request) ->
         assert job_in_db is not None, f"Job {job_id} not found"
         await job_in_db.set_status(status, request.app.database)
         return JSONResponse(content={"status": "success"})
-    except AssertionError as e:
-        return JSONResponse(content={"error": str(e)}, status_code=400)
+    except AssertionError as assertion_e:
+        return JSONResponse(content={"error": str(assertion_e)}, status_code=400)
+    except Exception as general_e:
+        return JSONResponse(content={"error": str(general_e)}, status_code=500)
