@@ -100,7 +100,7 @@ export function StartJobButton({
 }): ReactElement {
     return (
         <div>
-            <button data-test-id="start-training-button" onClick={onClick} className="btn btn-primary btn-sm mb-0">
+            <button data-testid="start-training-button" onClick={onClick} className="btn btn-primary btn-sm mb-0">
                 Start
             </button>
         </div>

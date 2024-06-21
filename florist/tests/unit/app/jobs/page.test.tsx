@@ -116,7 +116,10 @@ describe("List Jobs Page", () => {
     });
 
     it("Start training button present in NOT_STARTED jobs", () => {
-        setupMock(["NOT_STARTED", "IN_PROGRESS", "FINISHED_SUCCESSFULLY", "FINISHED_WITH_ERROR"], [], false, false);
+        const data = [mockJobData("MNIST", "localhost:8080", ["localhost:7080"])];
+        const validStatusesKeys = Object.keys(validStatuses);
+
+        setupMock(validStatusesKeys, data, false, false);
         const { queryByTestId } = render(<Page />);
         const element = queryByTestId("start-training-button");
         expect(element).toBeInTheDocument();
