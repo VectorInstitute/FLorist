@@ -1,16 +1,11 @@
 import "@testing-library/jest-dom";
-import { getByText, render, cleanup } from "@testing-library/react";
-import { describe, afterEach, it, expect } from "@jest/globals";
+import { getByText, render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect } from "@jest/globals";
 
 import Page, { validStatuses } from "../../../../app/jobs/page";
 import { useGetJobsByJobStatus, usePost } from "../../../../app/jobs/hooks";
 
 jest.mock("../../../../app/jobs/hooks");
-
-afterEach(() => {
-    jest.clearAllMocks();
-    cleanup();
-});
 
 function mockJobData(model: string, serverAddress: string, clientServicesAddresses: Array<string>) {
     const data = {
@@ -23,28 +18,72 @@ function mockJobData(model: string, serverAddress: string, clientServicesAddress
     return data;
 }
 
-function setupMock(validStatuses: Array<string>, data: Array<object>, error: boolean, isLoading: boolean) {
-    useGetJobsByJobStatus.mockImplementation((status: string) => {
-        if (validStatuses.includes(status)) {
-            return {
-                data,
-                error,
-                isLoading,
-            };
-        } else {
-            return {
-                data: [],
-                error: false,
-                isLoading: false,
-            };
-        }
-    });
-    usePost.mockImplementation(() => ({
+function mockUseGetJobsByJobStatus(
+    status: string,
+    validStatuses: Array<string>,
+    data: Array<object>,
+    error: boolean,
+    isLoading: boolean,
+) {
+    if (validStatuses.includes(status)) {
+        return {
+            data,
+            error,
+            isLoading,
+        };
+    } else {
+        return {
+            data: [],
+            error: false,
+            isLoading: false,
+        };
+    }
+}
+
+function mockUsePost() {
+    return {
         post: jest.fn(),
         response: null,
         isLoading: false,
         error: null,
-    }));
+    };
+}
+
+function setupMock(validStatuses: Array<string>, data: Array<object>, error: boolean, isLoading: boolean) {
+    useGetJobsByJobStatus.mockImplementation((status: string) =>
+        mockUseGetJobsByJobStatus(status, validStatuses, data, error, isLoading),
+    );
+    usePost.mockImplementation(() => mockUsePost());
+}
+
+function setupChangingMock(validStatuses: Array<string>, data: Array<object>, error: boolean, isLoading: boolean) {
+    useGetJobsByJobStatus
+        .mockImplementationOnce((status: string) =>
+            mockUseGetJobsByJobStatus(status, validStatuses, data, error, isLoading),
+        )
+        .mockImplementationOnce((status: string) =>
+            mockUseGetJobsByJobStatus(status, validStatuses, data, error, isLoading),
+        )
+        .mockImplementationOnce((status: string) =>
+            mockUseGetJobsByJobStatus(status, validStatuses, data, error, isLoading),
+        )
+        .mockImplementationOnce((status: string) =>
+            mockUseGetJobsByJobStatus(status, validStatuses, data, error, isLoading),
+        )
+        .mockImplementationOnce((status: string) =>
+            mockUseGetJobsByJobStatus(status, validStatuses, [], error, isLoading),
+        )
+        .mockImplementationOnce((status: string) =>
+            mockUseGetJobsByJobStatus(status, validStatuses, [], error, isLoading),
+        )
+        .mockImplementationOnce((status: string) =>
+            mockUseGetJobsByJobStatus(status, validStatuses, [], error, isLoading),
+        )
+        .mockImplementationOnce((status: string) =>
+            mockUseGetJobsByJobStatus(status, validStatuses, [], error, isLoading),
+        );
+
+    usePost.mockImplementation(() => mockUsePost());
 }
 
 describe("List Jobs Page", () => {
@@ -123,5 +162,33 @@ describe("List Jobs Page", () => {
         const { queryByTestId } = render(<Page />);
         const element = queryByTestId("start-training-button-0");
         expect(element).toBeInTheDocument();
+    });
+
+    it("Start training button not present without NOT_STARTED jobs", () => {
+        const data = [mockJobData("MNIST", "localhost:8080", ["localhost:7080"])];
+        const statuses = ["IN_PROGRESS"];
+
+        setupMock(statuses, data, false, false);
+        const { queryByTestId } = render(<Page />);
+        const element = queryByTestId("start-training-button-0");
+        expect(element).not.toBeInTheDocument();
+    });
+
+    it("Start training button not present after started", () => {
+        const data = [mockJobData("MNIST", "localhost:8080", ["localhost:7080"])];
+        const statuses = ["NOT_STARTED"];
+
+        setupChangingMock(statuses, data, false, false);
+        render(<Page />);
+        const element = screen.queryByTestId("start-training-button-0");
+        expect(element).toBeInTheDocument();
+
+        const button = screen.getByRole("button", { name: /start/i });
+        fireEvent.click(button);
+
+        waitFor(() => {
+            const new_element = screen.queryByTestId("start-training-button-0");
+            expect(new_element).not.toBeInTheDocument();
+        });
     });
 });

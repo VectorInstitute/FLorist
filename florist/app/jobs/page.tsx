@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { ReactElement } from "react/React";
-import { useRouter, usePathname } from "next/navigation";
 
 import { refreshJobsByJobStatus, useGetJobsByJobStatus, usePost } from "./hooks";
 
@@ -100,7 +99,6 @@ export function StartJobButton({
     onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
     row_id: number;
 }): ReactElement {
-    console.log(row_id);
     return (
         <div>
             <button
