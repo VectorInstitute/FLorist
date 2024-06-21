@@ -121,7 +121,7 @@ describe("List Jobs Page", () => {
 
         setupMock(validStatusesKeys, data, false, false);
         const { queryByTestId } = render(<Page />);
-        const element = queryByTestId("start-training-button");
+        const element = queryByTestId("start-training-button-0");
         expect(element).toBeInTheDocument();
     });
 });

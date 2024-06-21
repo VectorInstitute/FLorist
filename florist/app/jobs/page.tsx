@@ -95,12 +95,19 @@ export function NewJobButton(): ReactElement {
 
 export function StartJobButton({
     onClick,
+    row_id,
 }: {
     onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+    row_id: number;
 }): ReactElement {
+    console.log(row_id);
     return (
         <div>
-            <button data-testid="start-training-button" onClick={onClick} className="btn btn-primary btn-sm mb-0">
+            <button
+                data-testid={`start-training-button-${row_id}`}
+                onClick={onClick}
+                className="btn btn-primary btn-sm mb-0"
+            >
                 Start
             </button>
         </div>
@@ -166,6 +173,7 @@ export function TableRows({ data, status }: { data: Array<JobData>; status: Stat
     const tableRows = data.map((d, i) => (
         <TableRow
             key={i}
+            row_id={i}
             model={d.model}
             serverAddress={d.server_address}
             clientsInfo={d.clients_info}
@@ -178,12 +186,14 @@ export function TableRows({ data, status }: { data: Array<JobData>; status: Stat
 }
 
 export function TableRow({
+    row_id,
     model,
     serverAddress,
     clientsInfo,
     status,
     job_id,
 }: {
+    row_id: number;
     model: string;
     serverAddress: string;
     clientsInfo: Array<ClientInfo>;
@@ -231,7 +241,7 @@ export function TableRow({
             </td>
             <td>
                 {validStatuses[status] == "Not Started" ? (
-                    <StartJobButton onClick={(e) => handleClickStartJobButton(e, job_id)} />
+                    <StartJobButton row_id={row_id} onClick={(e) => handleClickStartJobButton(e, job_id)} />
                 ) : null}
             </td>
         </tr>
