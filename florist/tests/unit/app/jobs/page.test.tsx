@@ -56,6 +56,9 @@ function setupMock(validStatuses: Array<string>, data: Array<object>, error: boo
     usePost.mockImplementation(() => mockUsePost());
 }
 
+// Function that mocks useGetJobsByJobStatus with different values on successive calls
+// In particular, return data in the initial call and than no data in the subsequent call
+// Grouped in fours because function is called once per status and 4 statuses exist
 function setupChangingMock(validStatuses: Array<string>, data: Array<object>, error: boolean, isLoading: boolean) {
     useGetJobsByJobStatus
         .mockImplementationOnce((status: string) =>

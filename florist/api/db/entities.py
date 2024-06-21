@@ -225,7 +225,7 @@ class Job(BaseModel):
                 "clients_info": [
                     {
                         "client": "MNIST",
-                        "service_address": "locahost:8081",
+                        "service_address": "localhost:8001",
                         "data_path": "path/to/data",
                         "redis_host": "localhost",
                         "redis_port": "6380",

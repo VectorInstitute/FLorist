@@ -204,6 +204,7 @@ export function TableRow({
         event.preventDefault();
 
         if (isLoading) {
+            // Preventing double submit if already in progress
             return;
         }
 
@@ -212,6 +213,7 @@ export function TableRow({
         await post(url, JSON.stringify({}));
     };
 
+    // Only refresh the job data if there is an error or response
     useEffect(() => refreshJobsByJobStatus(), [error, response]);
 
     if (clientsInfo === null) {
