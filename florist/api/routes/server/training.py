@@ -43,12 +43,14 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
         If not successful, returns the appropriate error code with a JSON with the format below:
             {"error": <error message>}
     """
+    job = None
+
     try:
         job = await Job.find_by_id(job_id, request.app.database)
 
         assert job is not None, f"Job with id {job_id} not found."
-
         assert job.status == JobStatus.NOT_STARTED, f"Job status ({job.status.value}) is not NOT_STARTED"
+        await job.set_status(JobStatus.IN_PROGRESS, request.app.database)
 
         if job.config_parser is None:
             job.config_parser = ConfigParser.BASIC
@@ -101,7 +103,6 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
 
             client_uuids.append(json_response["uuid"])
 
-        await job.set_status(JobStatus.IN_PROGRESS, request.app.database)
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
 
         # Start the server training listener as a background task to update
@@ -112,10 +113,14 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
         return JSONResponse({"server_uuid": server_uuid, "client_uuids": client_uuids})
 
     except AssertionError as err:
+        if job is not None:
+            await job.set_status(JobStatus.FINISHED_WITH_ERROR, request.app.database)
         return JSONResponse(content={"error": str(err)}, status_code=400)
 
     except Exception as ex:
         LOGGER.exception(ex)
+        if job is not None:
+            await job.set_status(JobStatus.FINISHED_WITH_ERROR, request.app.database)
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 

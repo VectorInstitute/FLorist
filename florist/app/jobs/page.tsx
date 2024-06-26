@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import { ReactElement } from "react/React";
 
-import { useGetJobsByJobStatus } from "./hooks";
+import { refreshJobsByJobStatus, useGetJobsByJobStatus, usePost } from "./hooks";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -18,6 +19,7 @@ export const validStatuses = {
 };
 
 interface JobData {
+    _id: string;
     status: string;
     model: string;
     server_address: string;
@@ -90,6 +92,39 @@ export function NewJobButton(): ReactElement {
     );
 }
 
+export function StartJobButton({ rowId, jobId }: { rowId: number; jobId: string }): ReactElement {
+    const { post, response, isLoading, error } = usePost();
+
+    const handleClickStartJobButton = async () => {
+        event.preventDefault();
+
+        if (isLoading) {
+            // Preventing double submit if already in progress
+            return;
+        }
+
+        const queryParams = new URLSearchParams({ job_id: jobId });
+        const url = `/api/server/training/start?${queryParams.toString()}`;
+        await post(url, JSON.stringify({}));
+    };
+
+    // Only refresh the job data if there is an error or response
+    useEffect(() => refreshJobsByJobStatus(Object.keys(validStatuses)), [error, response]);
+
+    return (
+        <div>
+            <button
+                data-testid={`start-training-button-${rowId}`}
+                onClick={handleClickStartJobButton}
+                className="btn btn-primary btn-sm mb-0"
+                title="Start"
+            >
+                <i className="material-icons text-sm">play_circle_outline</i>
+            </button>
+        </div>
+    );
+}
+
 export function Status({ status, data }: { status: StatusProp; data: Object }): ReactElement {
     return (
         <div className="row">
@@ -126,9 +161,10 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                     Client Service Addresses
                                 </th>
+                                <th></th>
                             </tr>
                         </thead>
-                        <TableRows data={data} />
+                        <TableRows data={data} status={status} />
                     </table>
                 </div>
             </div>
@@ -144,26 +180,41 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
     }
 }
 
-export function TableRows({ data }: { data: Array<JobData> }): ReactElement {
+export function TableRows({ data, status }: { data: Array<JobData>; status: StatusProp }): ReactElement {
     const tableRows = data.map((d, i) => (
-        <TableRow key={i} model={d.model} serverAddress={d.server_address} clientsInfo={d.clients_info} />
+        <TableRow
+            key={i}
+            rowId={i}
+            model={d.model}
+            serverAddress={d.server_address}
+            clientsInfo={d.clients_info}
+            status={status}
+            jobId={d._id}
+        />
     ));
 
     return <tbody>{tableRows}</tbody>;
 }
 
 export function TableRow({
+    rowId,
     model,
     serverAddress,
     clientsInfo,
+    status,
+    jobId,
 }: {
+    rowId: number;
     model: string;
     serverAddress: string;
     clientsInfo: Array<ClientInfo>;
+    status: StatusProp;
+    jobId: string;
 }): ReactElement {
     if (clientsInfo === null) {
         return <td />;
     }
+
     return (
         <tr>
             <td>
@@ -183,6 +234,7 @@ export function TableRow({
                     </span>
                 </div>
             </td>
+            <td>{validStatuses[status] == "Not Started" ? <StartJobButton rowId={rowId} jobId={jobId} /> : null}</td>
         </tr>
     );
 }
