@@ -1,5 +1,5 @@
 import { useState } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
 import { fetcher } from "../client_imports";
 
@@ -47,3 +47,7 @@ export const usePost = () => {
 
     return { post, response, isLoading, error };
 };
+
+export function refreshJobsByJobStatus(statuses: Array<string>) {
+    statuses.forEach((status: string) => mutate(`/api/server/job/${status}`));
+}
