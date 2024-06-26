@@ -90,6 +90,28 @@ export function NewJobButton(): ReactElement {
     );
 }
 
+export function JobDetailsButton({
+    rowId,
+    jobId,
+}: {
+    rowId: number;
+    jobId: string;
+}): ReactElement {
+    return (
+        <div>
+            <button
+                data-testid={`job-details-button-${rowId}`}
+                className="btn btn-primary btn-sm mb-0"
+                title="Details"
+            >
+                <i className="material-icons text-sm">settings</i>
+            </button>
+        </div>
+    );
+}
+
+
+
 export function Status({ status, data }: { status: StatusProp; data: Object }): ReactElement {
     return (
         <div className="row">
@@ -126,6 +148,7 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                     Client Service Addresses
                                 </th>
+                                <th></th>
                             </tr>
                         </thead>
                         <TableRows data={data} />
@@ -146,20 +169,31 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
 
 export function TableRows({ data }: { data: Array<JobData> }): ReactElement {
     const tableRows = data.map((d, i) => (
-        <TableRow key={i} model={d.model} serverAddress={d.server_address} clientsInfo={d.clients_info} />
+        <TableRow
+            key={i}
+            rowId={i}
+            model={d.model}
+            serverAddress={d.server_address}
+            clientsInfo={d.clients_info}
+            jobId={d._id}
+        />
     ));
 
     return <tbody>{tableRows}</tbody>;
 }
 
 export function TableRow({
+    rowId,
     model,
     serverAddress,
     clientsInfo,
+    jobId,
 }: {
+    rowId: number;
     model: string;
     serverAddress: string;
     clientsInfo: Array<ClientInfo>;
+    jobId: string;
 }): ReactElement {
     if (clientsInfo === null) {
         return <td />;
@@ -182,6 +216,9 @@ export function TableRow({
                         <ClientListTableData clientsInfo={clientsInfo} />
                     </span>
                 </div>
+            </td>
+            <td>
+                <JobDetailsButton rowId={rowId} jobId={jobId} />
             </td>
         </tr>
     );
