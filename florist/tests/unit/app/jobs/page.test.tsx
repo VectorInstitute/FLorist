@@ -1,11 +1,17 @@
 import "@testing-library/jest-dom";
-import { getByText, render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect } from "@jest/globals";
+import { getByText, render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+import { describe, it, expect, afterEach } from "@jest/globals";
 
 import Page, { validStatuses } from "../../../../app/jobs/page";
 import { useGetJobsByJobStatus, usePost } from "../../../../app/jobs/hooks";
+import { after } from "node:test";
 
 jest.mock("../../../../app/jobs/hooks");
+
+afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+});
 
 function mockJobData(model: string, serverAddress: string, clientServicesAddresses: Array<string>) {
     const data = {

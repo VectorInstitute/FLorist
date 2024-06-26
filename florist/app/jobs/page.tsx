@@ -94,15 +94,15 @@ export function NewJobButton(): ReactElement {
 
 export function StartJobButton({
     onClick,
-    row_id,
+    rowId,
 }: {
     onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
-    row_id: number;
+    rowId: number;
 }): ReactElement {
     return (
         <div>
             <button
-                data-testid={`start-training-button-${row_id}`}
+                data-testid={`start-training-button-${rowId}`}
                 onClick={onClick}
                 className="btn btn-primary btn-sm mb-0"
             >
@@ -171,12 +171,12 @@ export function TableRows({ data, status }: { data: Array<JobData>; status: Stat
     const tableRows = data.map((d, i) => (
         <TableRow
             key={i}
-            row_id={i}
+            rowId={i}
             model={d.model}
             serverAddress={d.server_address}
             clientsInfo={d.clients_info}
             status={status}
-            job_id={d._id}
+            jobId={d._id}
         />
     ));
 
@@ -184,23 +184,23 @@ export function TableRows({ data, status }: { data: Array<JobData>; status: Stat
 }
 
 export function TableRow({
-    row_id,
+    rowId,
     model,
     serverAddress,
     clientsInfo,
     status,
-    job_id,
+    jobId,
 }: {
-    row_id: number;
+    rowId: number;
     model: string;
     serverAddress: string;
     clientsInfo: Array<ClientInfo>;
     status: StatusProp;
-    job_id: string;
+    jobId: string;
 }): ReactElement {
     const { post, response, isLoading, error } = usePost();
 
-    const handleClickStartJobButton = async (event: React.MouseEvent<HTMLButtonElement>, job_id: string) => {
+    const handleClickStartJobButton = async (event: React.MouseEvent<HTMLButtonElement>, jobId: string) => {
         event.preventDefault();
 
         if (isLoading) {
@@ -208,13 +208,13 @@ export function TableRow({
             return;
         }
 
-        const queryParams = new URLSearchParams({ job_id: job_id });
+        const queryParams = new URLSearchParams({ job_id: jobId });
         const url = `/api/server/training/start?${queryParams.toString()}`;
         await post(url, JSON.stringify({}));
     };
 
     // Only refresh the job data if there is an error or response
-    useEffect(() => refreshJobsByJobStatus(), [error, response]);
+    useEffect(() => refreshJobsByJobStatus(Object.keys(validStatuses)), [error, response]);
 
     if (clientsInfo === null) {
         return <td />;
@@ -241,7 +241,7 @@ export function TableRow({
             </td>
             <td>
                 {validStatuses[status] == "Not Started" ? (
-                    <StartJobButton row_id={row_id} onClick={(e) => handleClickStartJobButton(e, job_id)} />
+                    <StartJobButton rowId={rowId} onClick={(e) => handleClickStartJobButton(e, jobId)} />
                 ) : null}
             </td>
         </tr>

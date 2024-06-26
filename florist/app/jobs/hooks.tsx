@@ -48,9 +48,6 @@ export const usePost = () => {
     return { post, response, isLoading, error };
 };
 
-export function refreshJobsByJobStatus() {
-    mutate("/api/server/job/NOT_STARTED");
-    mutate("/api/server/job/IN_PROGRESS");
-    mutate("/api/server/job/FINISHED_SUCCESSFULLY");
-    mutate("/api/server/job/FINISHED_WITH_ERROR");
+export function refreshJobsByJobStatus(statuses: Array<string>) {
+    statuses.forEach((status: string) => mutate(`/api/server/job/${status}`));
 }
