@@ -119,7 +119,7 @@ export function StartJobButton({ rowId, jobId }: { rowId: number; jobId: string 
                 className="btn btn-primary btn-sm mb-0"
                 title="Start"
             >
-                <i className="material icons text-sm">play_circle_outline</i>
+                <i className="material-icons text-sm">play_circle_outline</i>
             </button>
         </div>
     );
