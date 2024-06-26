@@ -192,7 +192,9 @@ describe("List Jobs Page", () => {
         const element = screen.queryByTestId("start-training-button-0");
         expect(element).toBeInTheDocument();
 
-        const button = screen.getByRole("button", { name: /start/i });
+        const button = screen.getByRole("button", {
+            name: (_, element) => element.title === "Start",
+        });
         fireEvent.click(button);
 
         waitFor(() => {

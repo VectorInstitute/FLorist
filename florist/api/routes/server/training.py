@@ -43,16 +43,11 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
         If not successful, returns the appropriate error code with a JSON with the format below:
             {"error": <error message>}
     """
+    job = None
+
     try:
         job = await Job.find_by_id(job_id, request.app.database)
-    except Exception as ex:
-        LOGGER.exception(ex)
-        return JSONResponse({"error": str(ex)}, status_code=500)
 
-    if job is None:
-        return JSONResponse(content={"error": f"Job with id {job_id} not found."}, status_code=400)
-
-    try:
         assert job is not None, f"Job with id {job_id} not found."
         assert job.status == JobStatus.NOT_STARTED, f"Job status ({job.status.value}) is not NOT_STARTED"
         await job.set_status(JobStatus.IN_PROGRESS, request.app.database)
@@ -118,12 +113,14 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
         return JSONResponse({"server_uuid": server_uuid, "client_uuids": client_uuids})
 
     except AssertionError as err:
-        await job.set_status(JobStatus.FINISHED_WITH_ERROR, request.app.database)
+        if job is not None:
+            await job.set_status(JobStatus.FINISHED_WITH_ERROR, request.app.database)
         return JSONResponse(content={"error": str(err)}, status_code=400)
 
     except Exception as ex:
         LOGGER.exception(ex)
-        await job.set_status(JobStatus.FINISHED_WITH_ERROR, request.app.database)
+        if job is not None:
+            await job.set_status(JobStatus.FINISHED_WITH_ERROR, request.app.database)
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
