@@ -302,6 +302,8 @@
 <span></span><span class="sd">&quot;&quot;&quot;Parsers for FL server configurations.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
 
@@ -334,7 +336,13 @@
 <span class="sd">        :return: (Dict[str, Any]) The configuration JSON string parsed as a dictionary.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">config_json_str</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span> <span class="s2">&quot;config is not a dictionary&quot;</span>
+
+        <span class="k">for</span> <span class="n">config_name</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+            <span class="c1"># converting the value to number if it is a number</span>
+            <span class="c1"># if it throws an exception it means it&#39;s not a number, so suppress and leave as is</span>
+            <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+                <span class="n">config</span><span class="p">[</span><span class="n">config_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">config_name</span><span class="p">])</span>
 
         <span class="n">mandatory_fields</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mandatory_fields</span><span class="p">()</span>
 
