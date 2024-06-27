@@ -373,7 +373,7 @@ describe("New Job Page", () => {
             await act(async () => await submitButton.click());
 
             const testJob = makeEmptyJob();
-            testJob.server_config = JSON.stringify({"": ""});
+            testJob.server_config = JSON.stringify({ "": "" });
             expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
 
             const errorAlert = container.querySelector("div#job-save-error");
