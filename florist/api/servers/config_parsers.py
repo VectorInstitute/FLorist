@@ -1,6 +1,8 @@
 """Parsers for FL server configurations."""
 
 import json
+from ast import literal_eval
+from contextlib import suppress
 from enum import Enum
 from typing import Any, Dict, List
 
@@ -26,7 +28,13 @@ class BasicConfigParser:
         :return: (Dict[str, Any]) The configuration JSON string parsed as a dictionary.
         """
         config = json.loads(config_json_str)
-        assert isinstance(config, dict)
+        assert isinstance(config, dict), "config is not a dictionary"
+
+        for config_name in config:
+            # converting the value to number if it is a number
+            # if it throws an exception it means it's not a number, so suppress and leave as is
+            with suppress(Exception):
+                config[config_name] = literal_eval(config[config_name])
 
         mandatory_fields = cls.mandatory_fields()
 

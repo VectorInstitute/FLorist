@@ -111,15 +111,28 @@ export function StartJobButton({ rowId, jobId }: { rowId: number; jobId: string 
     // Only refresh the job data if there is an error or response
     useEffect(() => refreshJobsByJobStatus(Object.keys(validStatuses)), [error, response]);
 
+    let buttonClasses = "btn btn-sm mb-0 ";
+    if (isLoading || response) {
+        // If is loading or if a successful response has been received,
+        // disable the button to avoid double submit.
+        buttonClasses += "btn-secondary disabled";
+    } else {
+        buttonClasses += "btn-primary";
+    }
+
     return (
         <div>
             <button
                 data-testid={`start-training-button-${rowId}`}
                 onClick={handleClickStartJobButton}
-                className="btn btn-primary btn-sm mb-0"
+                className={buttonClasses}
                 title="Start"
             >
-                <i className="material-icons text-sm">play_circle_outline</i>
+                {isLoading || response ? (
+                    <span class="spinner-border spinner-border-sm align-middle"></span>
+                ) : (
+                    <i className="material-icons text-sm">play_circle_outline</i>
+                )}
             </button>
         </div>
     );

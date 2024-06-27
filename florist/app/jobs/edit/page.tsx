@@ -60,6 +60,14 @@ export function makeEmptyClientInfo() {
     };
 }
 
+function formatServerConfig(serverConfig: Array<ServerConfig>): string {
+    const serverConfigDict = {};
+    for (let sc of serverConfig) {
+        serverConfigDict[sc.name] = sc.value;
+    }
+    return JSON.stringify(serverConfigDict);
+}
+
 export default function EditJob(): ReactElement {
     return (
         <div className="col-7 align-items-center">
@@ -94,7 +102,7 @@ export function EditJobForm(): ReactElement {
 
         const job = { ...state.job };
         // Server config is a json string, so changing it here before sending the data over
-        job.server_config = JSON.stringify(job.server_config);
+        job.server_config = formatServerConfig(job.server_config);
         await post("/api/server/job", JSON.stringify(job));
     }
 
