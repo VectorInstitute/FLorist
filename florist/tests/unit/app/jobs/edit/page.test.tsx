@@ -356,7 +356,10 @@ describe("New Job Page", () => {
             const submitButton = container.querySelector("button#job-post");
             await act(async () => await submitButton.click());
 
-            testJob.server_config = JSON.stringify(testJob.server_config);
+            testJob.server_config = JSON.stringify({
+                [testJob.server_config[0].name]: testJob.server_config[0].value,
+                [testJob.server_config[1].name]: testJob.server_config[1].value,
+            });
             expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
         });
 
@@ -370,7 +373,7 @@ describe("New Job Page", () => {
             await act(async () => await submitButton.click());
 
             const testJob = makeEmptyJob();
-            testJob.server_config = JSON.stringify(testJob.server_config);
+            testJob.server_config = JSON.stringify({ "": "" });
             expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
 
             const errorAlert = container.querySelector("div#job-save-error");
