@@ -115,14 +115,16 @@ export function StartJobButton({ rowId, jobId }: { rowId: number; jobId: string 
 export function JobDetailsButton({
     rowId,
     jobId,
+    status,
 }: {
     rowId: number;
     jobId: string;
+    status: string;
 }): ReactElement {
     return (
         <div>
             <Link
-                data-testid={`job-details-button-${rowId}`}
+                data-testid={`job-details-button-${status}-${rowId}`}
                 className="btn btn-primary btn-sm mb-0"
                 alt="Details"
                 href={{
@@ -249,7 +251,7 @@ export function TableRow({
                 </div>
             </td>
             <td>
-                <JobDetailsButton rowId={rowId} jobId={jobId} />
+                <JobDetailsButton rowId={rowId} jobId={jobId} status={status} />
             </td>
             <td>{validStatuses[status] === "Not Started" ? <StartJobButton rowId={rowId} jobId={jobId} /> : null}</td>
         </tr>

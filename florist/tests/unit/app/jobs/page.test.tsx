@@ -16,6 +16,7 @@ afterEach(() => {
 
 function mockJobData(model: string, serverAddress: string, clientServicesAddresses: Array<string>) {
     const data = {
+        _id: "test-id",
         model: model,
         server_address: serverAddress,
         clients_info: clientServicesAddresses.map((clientServicesAddress) => ({
@@ -150,6 +151,7 @@ describe("List Jobs Page", () => {
             expect(getByText(element, "No jobs to display.")).toBeInTheDocument();
         }
     });
+
     it("Renders Loading GIF only when all isLoading", () => {
         setupMock(["NOT_STARTED", "IN_PROGRESS", "FINISHED_SUCCESSFULLY", "FINISHED_WITH_ERROR"], [], false, true);
         const { getByTestId } = render(<Page />);
@@ -162,6 +164,20 @@ describe("List Jobs Page", () => {
         const { queryByTestId } = render(<Page />);
         const element = queryByTestId("jobs-page-loading-gif");
         expect(element).not.toBeInTheDocument();
+    });
+
+    it("Details button is present on all statuses", () => {
+        const data = mockJobData("MNIST", "localhost:8080", ["localhost:7080"]);
+        const validStatusesKeys = Object.keys(validStatuses);
+
+        setupMock(validStatusesKeys, [data], false, false);
+        const { queryByTestId } = render(<Page />);
+
+        for (let status of validStatusesKeys) {
+            const element = queryByTestId(`job-details-button-${status}-0`);
+            expect(element.getAttribute("alt")).toBe("Details");
+            expect(element.getAttribute("href")).toBe(`jobs/details?id=${data._id}`);
+        }
     });
 
     it("Start training button present in NOT_STARTED jobs", () => {
