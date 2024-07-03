@@ -4,38 +4,12 @@ import { useEffect } from "react";
 import { ReactElement } from "react/React";
 
 import { refreshJobsByJobStatus, useGetJobsByJobStatus, usePost } from "./hooks";
+import { validStatuses, JobData, ClientInfo } from "./definitions";
 
 import Link from "next/link";
 import Image from "next/image";
 
 import loading_gif from "../assets/img/loading.gif";
-
-// Must be in same order as array returned from useGetJobsByJobStatus
-export const validStatuses = {
-    NOT_STARTED: "Not Started",
-    IN_PROGRESS: "In Progress",
-    FINISHED_SUCCESSFULLY: "Finished Successfully",
-    FINISHED_WITH_ERROR: "Finished with Error",
-};
-
-interface JobData {
-    _id: string;
-    status: string;
-    model: string;
-    server_address: string;
-    server_info: string;
-    redis_host: string;
-    redis_port: string;
-    clients_info: Array<ClientInfo>;
-}
-
-interface ClientInfo {
-    client: string;
-    service_address: string;
-    data_path: string;
-    redis_host: string;
-    redis_port: string;
-}
 
 interface StatusProp {
     status: string;
@@ -147,13 +121,17 @@ export function JobDetailsButton({
 }): ReactElement {
     return (
         <div>
-            <button
+            <Link
                 data-testid={`job-details-button-${rowId}`}
                 className="btn btn-primary btn-sm mb-0"
-                title="Details"
+                alt="Details"
+                href={{
+                    pathname: "jobs/details",
+                    query: { "id": jobId },
+                }}
             >
                 <i className="material-icons text-sm">settings</i>
-            </button>
+            </Link>
         </div>
     );
 }

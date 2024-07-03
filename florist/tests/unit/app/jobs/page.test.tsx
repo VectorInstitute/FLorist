@@ -2,7 +2,8 @@ import "@testing-library/jest-dom";
 import { getByText, render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
 import { describe, it, expect, afterEach } from "@jest/globals";
 
-import Page, { validStatuses } from "../../../../app/jobs/page";
+import Page from "../../../../app/jobs/page";
+import { validStatuses } from "../../../../app/jobs/definitions";
 import { useGetJobsByJobStatus, usePost } from "../../../../app/jobs/hooks";
 import { after } from "node:test";
 
