@@ -129,7 +129,7 @@ export function JobDetailsStatus({ status }: { status: string }): ReactElement {
     }
     return (
         <div className={pillClasses} id="job-details-status">
-            <i className="material-icons text-sm">{iconName}</i>&nbsp;
+            <i className="material-icons text-sm" id="job-details-status-icon">{iconName}</i>&nbsp;
             {validStatuses[status]}
         </div>
     );

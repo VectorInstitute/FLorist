@@ -9,7 +9,7 @@ import JobDetails from "../../../../../app/jobs/details/page";
 const testJobId = "test-job-id";
 
 jest.mock("../../../../../app/jobs/hooks");
-jest.mock('next/navigation', () => ({
+jest.mock("next/navigation", () => ({
     ...require("next-router-mock"),
     useSearchParams: () => new Map([["id", testJobId]]),
 }));
@@ -60,9 +60,13 @@ describe("Job Details Page", () => {
         const testJob = makeTestJob();
         setupMocks(testJob);
         const { container } = render(<JobDetails />);
+
+        expect(useGetJob).toBeCalledWith(testJobId);
+
         expect(container.querySelector("h1")).toHaveTextContent("Job Details");
         expect(container.querySelector("#job-details-id")).toHaveTextContent(testJob._id);
         expect(container.querySelector("#job-details-status")).toHaveTextContent(validStatuses[testJob.status]);
+        expect(container.querySelector("#job-details-status")).toHaveClass("status-pill");
         expect(container.querySelector("#job-details-server-address")).toHaveTextContent(testJob.server_address);
         expect(container.querySelector("#job-details-redis-host")).toHaveTextContent(testJob.redis_host);
         const testServerConfig = JSON.parse(testJob.server_config);
@@ -92,5 +96,51 @@ describe("Job Details Page", () => {
                 testJob.clients_info[i].redis_port
             );
         }
+    });
+    describe("Status", () => {
+        it("Renders NOT_STARTED correctly", () => {
+            const testJob = makeTestJob();
+            testJob.status = "NOT_STARTED";
+            setupMocks(testJob);
+            const { container } = render(<JobDetails />);
+            const statusComponent = container.querySelector("#job-details-status")
+            expect(statusComponent).toHaveTextContent(validStatuses[testJob.status]);
+            expect(statusComponent).toHaveClass("alert-info");
+            const iconComponent = statusComponent.querySelector("#job-details-status-icon");
+            expect(iconComponent).toHaveTextContent("radio_button_checked");
+        });
+        it("Renders IN_PROGRESS correctly", () => {
+            const testJob = makeTestJob();
+            testJob.status = "IN_PROGRESS";
+            setupMocks(testJob);
+            const { container } = render(<JobDetails />);
+            const statusComponent = container.querySelector("#job-details-status")
+            expect(statusComponent).toHaveTextContent(validStatuses[testJob.status]);
+            expect(statusComponent).toHaveClass("alert-warning");
+            const iconComponent = statusComponent.querySelector("#job-details-status-icon");
+            expect(iconComponent).toHaveTextContent("sync");
+        });
+        it("Renders FINISHED_SUCCESSFULLY correctly", () => {
+            const testJob = makeTestJob();
+            testJob.status = "FINISHED_SUCCESSFULLY";
+            setupMocks(testJob);
+            const { container } = render(<JobDetails />);
+            const statusComponent = container.querySelector("#job-details-status")
+            expect(statusComponent).toHaveTextContent(validStatuses[testJob.status]);
+            expect(statusComponent).toHaveClass("alert-success");
+            const iconComponent = statusComponent.querySelector("#job-details-status-icon");
+            expect(iconComponent).toHaveTextContent("check_circle");
+        });
+        it("Renders FINISHED_WITH_ERROR correctly", () => {
+            const testJob = makeTestJob();
+            testJob.status = "FINISHED_WITH_ERROR";
+            setupMocks(testJob);
+            const { container } = render(<JobDetails />);
+            const statusComponent = container.querySelector("#job-details-status")
+            expect(statusComponent).toHaveTextContent(validStatuses[testJob.status]);
+            expect(statusComponent).toHaveClass("alert-danger");
+            const iconComponent = statusComponent.querySelector("#job-details-status-icon");
+            expect(iconComponent).toHaveTextContent("error");
+        });
     });
 });
