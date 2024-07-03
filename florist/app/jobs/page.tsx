@@ -174,8 +174,8 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                     Client Service Addresses
                                 </th>
-                                <th></th>
-                                <th></th>
+                                <th width="50"></th>
+                                <th width="100"></th>
                             </tr>
                         </thead>
                         <TableRows data={data} status={status} />

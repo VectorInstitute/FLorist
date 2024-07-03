@@ -53,3 +53,11 @@
 .save-btn {
     width: 100px;
 }
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+}

@@ -51,11 +51,11 @@ export function JobDetailsBody(): ReactElement {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-sm-2">
+                    <div className="col-sm-2 align-content-center">
                         <strong className="text-dark">Status:</strong>
                     </div>
                     <div className="col-sm">
-                        {validStatuses[job.status]}
+                        <JobDetailsStatus status={job.status} />
                     </div>
                 </div>
                 <div className="row">
@@ -102,9 +102,53 @@ export function JobDetailsBody(): ReactElement {
     return null;
 }
 
+export function JobDetailsStatus({ status }: { status: string }): ReactElement {
+    let pillClasses = "status-pill ";
+    let iconName;
+
+    console.log(status);
+    console.log(validStatuses[status]);
+
+    switch (String(validStatuses[status])) {
+        case validStatuses.NOT_STARTED:
+            pillClasses += "alert-info";
+            iconName = "radio_button_checked";
+            break;
+        case validStatuses.IN_PROGRESS:
+            pillClasses += "alert-warning";
+            iconName = "sync";
+            break;
+        case validStatuses.FINISHED_SUCCESSFULLY:
+            pillClasses += "alert-success";
+            iconName = "check_circle";
+            break;
+        case validStatuses.FINISHED_WITH_ERROR:
+            pillClasses += "alert-danger";
+            iconName = "error";
+            break;
+        default:
+            pillClasses += "alert-secondary";
+            iconName = "";
+            break;
+    }
+    return (
+        <div className={pillClasses}>
+            <i className="material-icons text-sm">{iconName}</i>&nbsp;
+            {validStatuses[status]}
+        </div>
+    );
+}
+
 export function JobDetailsServerConfig({ serverConfig }: { serverConfig: string }): ReactElement {
+    if (!serverConfig) {
+        return null;
+    }
+
     const serverConfigJson = JSON.parse(serverConfig);
-    console.log(serverConfigJson)
+
+    if (!Array.isArray(serverConfigJson)) {
+        return null;
+    }
     return (
         <div className="container pt-3 p-0">
             {serverConfigJson.map((serverConfigItem, i) => (
