@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { getByText, render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+import { render, cleanup } from "@testing-library/react";
 import { describe, it, expect, afterEach } from "@jest/globals";
 
 import { useGetJob } from "../../../../../app/jobs/hooks";
@@ -19,9 +19,9 @@ afterEach(() => {
     cleanup();
 });
 
-function setupMocks(jobData: JobData) {
+function setupGetJobMock(data: JobData, isLoading: boolean = false, error = null) {
     useGetJob.mockImplementation((jobId: string) => {
-        return { data: jobData, error: null, isLoading: false };
+        return { data, error, isLoading };
     });
 }
 
@@ -58,7 +58,7 @@ function makeTestJob(): JobData {
 describe("Job Details Page", () => {
     it("Renders correctly", () => {
         const testJob = makeTestJob();
-        setupMocks(testJob);
+        setupGetJobMock(testJob);
         const { container } = render(<JobDetails />);
 
         expect(useGetJob).toBeCalledWith(testJobId);
@@ -101,7 +101,7 @@ describe("Job Details Page", () => {
         it("Renders NOT_STARTED correctly", () => {
             const testJob = makeTestJob();
             testJob.status = "NOT_STARTED";
-            setupMocks(testJob);
+            setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
             const statusComponent = container.querySelector("#job-details-status")
             expect(statusComponent).toHaveTextContent(validStatuses[testJob.status]);
@@ -112,7 +112,7 @@ describe("Job Details Page", () => {
         it("Renders IN_PROGRESS correctly", () => {
             const testJob = makeTestJob();
             testJob.status = "IN_PROGRESS";
-            setupMocks(testJob);
+            setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
             const statusComponent = container.querySelector("#job-details-status")
             expect(statusComponent).toHaveTextContent(validStatuses[testJob.status]);
@@ -123,7 +123,7 @@ describe("Job Details Page", () => {
         it("Renders FINISHED_SUCCESSFULLY correctly", () => {
             const testJob = makeTestJob();
             testJob.status = "FINISHED_SUCCESSFULLY";
-            setupMocks(testJob);
+            setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
             const statusComponent = container.querySelector("#job-details-status")
             expect(statusComponent).toHaveTextContent(validStatuses[testJob.status]);
@@ -134,7 +134,7 @@ describe("Job Details Page", () => {
         it("Renders FINISHED_WITH_ERROR correctly", () => {
             const testJob = makeTestJob();
             testJob.status = "FINISHED_WITH_ERROR";
-            setupMocks(testJob);
+            setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
             const statusComponent = container.querySelector("#job-details-status")
             expect(statusComponent).toHaveTextContent(validStatuses[testJob.status]);
@@ -142,5 +142,58 @@ describe("Job Details Page", () => {
             const iconComponent = statusComponent.querySelector("#job-details-status-icon");
             expect(iconComponent).toHaveTextContent("error");
         });
+        it("Renders unknown status correctly", () => {
+            const testJob = makeTestJob();
+            testJob.status = "some inexistent status";
+            setupGetJobMock(testJob);
+            const { container } = render(<JobDetails />);
+            const statusComponent = container.querySelector("#job-details-status")
+            expect(statusComponent).toHaveTextContent(testJob.status);
+            expect(statusComponent).toHaveClass("alert-secondary");
+            const iconComponent = statusComponent.querySelector("#job-details-status-icon");
+            expect(iconComponent).toHaveTextContent("");
+        });
+    });
+    describe("Server config", () => {
+        it("Does not break when it's null", () => {
+            const testJob = makeTestJob();
+            testJob.server_config = null;
+            setupGetJobMock(testJob);
+            const { container } = render(<JobDetails />);
+            const serverConfigComponent = container.querySelector("#job-details-server-config-empty");
+            expect(serverConfigComponent).toHaveTextContent("Empty.");
+        });
+        it("Does not break when it's an empty dictionary", () => {
+            const testJob = makeTestJob();
+            testJob.server_config = JSON.stringify({});
+            setupGetJobMock(testJob);
+            const { container } = render(<JobDetails />);
+            const serverConfigComponent = container.querySelector("#job-details-server-config-empty");
+            expect(serverConfigComponent).toHaveTextContent("Empty.");
+        });
+        it("Does not break when it's not a dictionary", () => {
+            const testJob = makeTestJob();
+            testJob.server_config = JSON.stringify(["bad server config"]);
+            setupGetJobMock(testJob);
+            const { container } = render(<JobDetails />);
+            const serverConfigComponent = container.querySelector("#job-details-server-config-error");
+            expect(serverConfigComponent).toHaveTextContent("Error parsing server configuration.");
+        });
+    });
+    it("Renders loading gif correctly", () => {
+        setupGetJobMock(null, true);
+        const { container } = render(<JobDetails />);
+        const loadingComponent = container.querySelector("img#job-details-loading");
+        expect(loadingComponent.getAttribute("alt")).toBe("Loading");
+    });
+    it("Renders error message when job is null", () => {
+        setupGetJobMock(null);
+        const { container } = render(<JobDetails />);
+        expect(container.querySelector("#job-details-error")).toHaveTextContent("Error retrieving job.");
+    });
+    it("Renders error message when there is an error", () => {
+        setupGetJobMock({}, false, "error");
+        const { container } = render(<JobDetails />);
+        expect(container.querySelector("#job-details-error")).toHaveTextContent("Error retrieving job.");
     });
 });
