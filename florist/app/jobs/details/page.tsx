@@ -46,7 +46,7 @@ export function JobDetailsBody(): ReactElement {
                     <div className="col-sm-2">
                         <strong className="text-dark">Job ID:</strong>
                     </div>
-                    <div className="col-sm">
+                    <div className="col-sm" id="job-details-id">
                         {job._id}
                     </div>
                 </div>
@@ -62,7 +62,7 @@ export function JobDetailsBody(): ReactElement {
                     <div className="col-sm-2">
                         <strong className="text-dark">Model:</strong>
                     </div>
-                    <div className="col-sm">
+                    <div className="col-sm" id="job-details-model">
                         {job.model}
                     </div>
                 </div>
@@ -70,7 +70,7 @@ export function JobDetailsBody(): ReactElement {
                     <div className="col-sm-2">
                         <strong className="text-dark">Server Address:</strong>
                     </div>
-                    <div className="col-sm">
+                    <div className="col-sm" id="job-details-server-address">
                         {job.server_address}
                     </div>
                 </div>
@@ -78,7 +78,7 @@ export function JobDetailsBody(): ReactElement {
                     <div className="col-sm-2">
                         <strong className="text-dark">Redis Host:</strong>
                     </div>
-                    <div className="col-sm">
+                    <div className="col-sm" id="job-details-redis-host">
                         {job.redis_host}
                     </div>
                 </div>
@@ -86,7 +86,7 @@ export function JobDetailsBody(): ReactElement {
                     <div className="col-sm-2">
                         <strong className="text-dark">Redis Port:</strong>
                     </div>
-                    <div className="col-sm">
+                    <div className="col-sm" id="job-details-redis-port">
                         {job.redis_port}
                     </div>
                 </div>
@@ -105,10 +105,6 @@ export function JobDetailsBody(): ReactElement {
 export function JobDetailsStatus({ status }: { status: string }): ReactElement {
     let pillClasses = "status-pill ";
     let iconName;
-
-    console.log(status);
-    console.log(validStatuses[status]);
-
     switch (String(validStatuses[status])) {
         case validStatuses.NOT_STARTED:
             pillClasses += "alert-info";
@@ -132,7 +128,7 @@ export function JobDetailsStatus({ status }: { status: string }): ReactElement {
             break;
     }
     return (
-        <div className={pillClasses}>
+        <div className={pillClasses} id="job-details-status">
             <i className="material-icons text-sm">{iconName}</i>&nbsp;
             {validStatuses[status]}
         </div>
@@ -140,24 +136,41 @@ export function JobDetailsStatus({ status }: { status: string }): ReactElement {
 }
 
 export function JobDetailsServerConfig({ serverConfig }: { serverConfig: string }): ReactElement {
+    const emptyResponse = (
+        <div className="container pt-3 p-0">
+            Empty.
+        </div>
+    );
+
     if (!serverConfig) {
-        return null;
+        return emptyResponse;
     }
 
     const serverConfigJson = JSON.parse(serverConfig);
 
-    if (!Array.isArray(serverConfigJson)) {
-        return null;
+    if (typeof serverConfigJson != "object" || Array.isArray(serverConfigJson)) {
+        return (
+            <div className="container pt-3 p-0">
+                Error parsing server configuration.
+            </div>
+        );
     }
+
+    const serverConfigNames = Object.keys(serverConfigJson);
+
+    if (serverConfigNames.length === 0) {
+        return emptyResponse;
+    }
+
     return (
         <div className="container pt-3 p-0">
-            {serverConfigJson.map((serverConfigItem, i) => (
+            {serverConfigNames.map((serverConfigName, i) => (
                 <div className="row" key={i}>
-                    <div className="col-sm-2">
-                        <strong class="text-dark">{serverConfigItem.name}:</strong>
+                    <div className="col-sm-2" id={`job-details-server-config-name-${i}`}>
+                        <strong className="text-dark">{serverConfigName}:</strong>
                     </div>
-                    <div className="col-sm">
-                        {serverConfigItem.value}
+                    <div className="col-sm" id={`job-details-server-config-value-${i}`}>
+                        {serverConfigJson[serverConfigName]}
                     </div>
                 </div>
             ))}
@@ -177,11 +190,21 @@ export function JobDetailsClientsInfo({ clientsInfo }: { clientsInfo: Array<Clie
             </div>
             {clientsInfo.map((clientInfo, i) => (
                 <div className="row" key={i}>
-                    <div className="col-sm">{clientInfo.client}</div>
-                    <div className="col-sm">{clientInfo.service_address}</div>
-                    <div className="col-sm">{clientInfo.data_path}</div>
-                    <div className="col-sm">{clientInfo.redis_host}</div>
-                    <div className="col-sm">{clientInfo.redis_port}</div>
+                    <div className="col-sm" id={`job-details-client-config-client-${i}`}>
+                        {clientInfo.client}
+                    </div>
+                    <div className="col-sm" id={`job-details-client-config-service-address-${i}`}>
+                        {clientInfo.service_address}
+                    </div>
+                    <div className="col-sm" id={`job-details-client-config-data-path-${i}`}>
+                        {clientInfo.data_path}
+                    </div>
+                    <div className="col-sm" id={`job-details-client-config-redis-host-${i}`}>
+                        {clientInfo.redis_host}
+                    </div>
+                    <div className="col-sm" id={`job-details-client-config-redis-port-${i}`}>
+                        {clientInfo.redis_port}
+                    </div>
                 </div>
             ))}
         </div>

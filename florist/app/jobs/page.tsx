@@ -251,7 +251,7 @@ export function TableRow({
             <td>
                 <JobDetailsButton rowId={rowId} jobId={jobId} />
             </td>
-            <td>{validStatuses[status] == "Not Started" ? <StartJobButton rowId={rowId} jobId={jobId} /> : null}</td>
+            <td>{validStatuses[status] === "Not Started" ? <StartJobButton rowId={rowId} jobId={jobId} /> : null}</td>
         </tr>
     );
 }
