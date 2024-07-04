@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 
 import { ReactElement } from "react/React";
@@ -146,7 +146,10 @@ export function JobDetailsStatus({ status }: { status: string }): ReactElement {
     }
     return (
         <div className={pillClasses} id="job-details-status">
-            <i className="material-icons text-sm" id="job-details-status-icon">{iconName}</i>&nbsp;
+            <i className="material-icons text-sm" id="job-details-status-icon">
+                {iconName}
+            </i>
+            &nbsp;
             {statusDescription}
         </div>
     );
@@ -199,11 +202,21 @@ export function JobDetailsClientsInfo({ clientsInfo }: { clientsInfo: Array<Clie
     return (
         <div className="container pt-3 p-0">
             <div className="row">
-                <div className="col-sm"><strong className="text-dark">Client</strong></div>
-                <div className="col-sm"><strong className="text-dark">Address</strong></div>
-                <div className="col-sm"><strong className="text-dark">Data Path</strong></div>
-                <div className="col-sm"><strong className="text-dark">Redis Host</strong></div>
-                <div className="col-sm"><strong className="text-dark">Redis Port</strong></div>
+                <div className="col-sm">
+                    <strong className="text-dark">Client</strong>
+                </div>
+                <div className="col-sm">
+                    <strong className="text-dark">Address</strong>
+                </div>
+                <div className="col-sm">
+                    <strong className="text-dark">Data Path</strong>
+                </div>
+                <div className="col-sm">
+                    <strong className="text-dark">Redis Host</strong>
+                </div>
+                <div className="col-sm">
+                    <strong className="text-dark">Redis Port</strong>
+                </div>
             </div>
             {clientsInfo.map((clientInfo, i) => (
                 <div className="row" key={i}>

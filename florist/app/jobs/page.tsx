@@ -129,7 +129,7 @@ export function JobDetailsButton({
                 alt="Details"
                 href={{
                     pathname: "jobs/details",
-                    query: { "id": jobId },
+                    query: { id: jobId },
                 }}
             >
                 <i className="material-icons text-sm">settings</i>
@@ -137,8 +137,6 @@ export function JobDetailsButton({
         </div>
     );
 }
-
-
 
 export function Status({ status, data }: { status: StatusProp; data: Object }): ReactElement {
     return (

@@ -44,7 +44,8 @@ function makeTestJob(): JobData {
                 data_path: "test-data-path-1",
                 redis_host: "test-redis-host-1",
                 redis_port: "test-redis-port-1",
-            }, {
+            },
+            {
                 client: "test-client-2",
                 service_address: "test-service-address-2",
                 data_path: "test-data-path-2",
@@ -73,27 +74,27 @@ describe("Job Details Page", () => {
         const serverConfigNames = Object.keys(testServerConfig);
         for (let i = 0; i < serverConfigNames.length; i++) {
             expect(container.querySelector(`#job-details-server-config-name-${i}`)).toHaveTextContent(
-                serverConfigNames[i]
+                serverConfigNames[i],
             );
             expect(container.querySelector(`#job-details-server-config-value-${i}`)).toHaveTextContent(
-                testServerConfig[serverConfigNames[i]]
+                testServerConfig[serverConfigNames[i]],
             );
         }
         for (let i = 0; i < testJob.clients_info.length; i++) {
             expect(container.querySelector(`#job-details-client-config-client-${i}`)).toHaveTextContent(
-                testJob.clients_info[i].client
+                testJob.clients_info[i].client,
             );
             expect(container.querySelector(`#job-details-client-config-service-address-${i}`)).toHaveTextContent(
-                testJob.clients_info[i].service_address
+                testJob.clients_info[i].service_address,
             );
             expect(container.querySelector(`#job-details-client-config-data-path-${i}`)).toHaveTextContent(
-                testJob.clients_info[i].data_path
+                testJob.clients_info[i].data_path,
             );
             expect(container.querySelector(`#job-details-client-config-redis-host-${i}`)).toHaveTextContent(
-                testJob.clients_info[i].redis_host
+                testJob.clients_info[i].redis_host,
             );
             expect(container.querySelector(`#job-details-client-config-redis-port-${i}`)).toHaveTextContent(
-                testJob.clients_info[i].redis_port
+                testJob.clients_info[i].redis_port,
             );
         }
     });
@@ -103,7 +104,7 @@ describe("Job Details Page", () => {
             testJob.status = "NOT_STARTED";
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
-            const statusComponent = container.querySelector("#job-details-status")
+            const statusComponent = container.querySelector("#job-details-status");
             expect(statusComponent).toHaveTextContent(validStatuses[testJob.status]);
             expect(statusComponent).toHaveClass("alert-info");
             const iconComponent = statusComponent.querySelector("#job-details-status-icon");
@@ -114,7 +115,7 @@ describe("Job Details Page", () => {
             testJob.status = "IN_PROGRESS";
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
-            const statusComponent = container.querySelector("#job-details-status")
+            const statusComponent = container.querySelector("#job-details-status");
             expect(statusComponent).toHaveTextContent(validStatuses[testJob.status]);
             expect(statusComponent).toHaveClass("alert-warning");
             const iconComponent = statusComponent.querySelector("#job-details-status-icon");
@@ -125,7 +126,7 @@ describe("Job Details Page", () => {
             testJob.status = "FINISHED_SUCCESSFULLY";
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
-            const statusComponent = container.querySelector("#job-details-status")
+            const statusComponent = container.querySelector("#job-details-status");
             expect(statusComponent).toHaveTextContent(validStatuses[testJob.status]);
             expect(statusComponent).toHaveClass("alert-success");
             const iconComponent = statusComponent.querySelector("#job-details-status-icon");
@@ -136,7 +137,7 @@ describe("Job Details Page", () => {
             testJob.status = "FINISHED_WITH_ERROR";
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
-            const statusComponent = container.querySelector("#job-details-status")
+            const statusComponent = container.querySelector("#job-details-status");
             expect(statusComponent).toHaveTextContent(validStatuses[testJob.status]);
             expect(statusComponent).toHaveClass("alert-danger");
             const iconComponent = statusComponent.querySelector("#job-details-status-icon");
@@ -147,7 +148,7 @@ describe("Job Details Page", () => {
             testJob.status = "some inexistent status";
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
-            const statusComponent = container.querySelector("#job-details-status")
+            const statusComponent = container.querySelector("#job-details-status");
             expect(statusComponent).toHaveTextContent(testJob.status);
             expect(statusComponent).toHaveClass("alert-secondary");
             const iconComponent = statusComponent.querySelector("#job-details-status-icon");
