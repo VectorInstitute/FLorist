@@ -12,7 +12,10 @@ router = APIRouter()
 
 
 @router.get(
-    path="/{job_id}", response_description="Retrieves a job by ID", status_code=status.HTTP_200_OK, response_model=Job
+    path="/{job_id}",
+    response_description="Retrieves a job by ID",
+    status_code=status.HTTP_200_OK,
+    response_model=Job,
 )
 async def get_job(job_id: str, request: Request) -> Union[Job, JSONResponse]:
     """
@@ -57,7 +60,9 @@ async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
 
 
 @router.get(
-    path="/status/{status}", response_description="List jobs with the specified status", response_model=List[Job]
+    path="/status/{status}",
+    response_description="List jobs with the specified status",
+    response_model=List[Job],
 )
 async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Job]:
     """
