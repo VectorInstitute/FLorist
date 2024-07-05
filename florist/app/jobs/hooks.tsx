@@ -53,5 +53,5 @@ export const usePost = () => {
 };
 
 export function refreshJobsByJobStatus(statuses: Array<string>) {
-    statuses.forEach((status: string) => mutate(`/api/server/job/${status}`));
+    statuses.forEach((status: string) => mutate(`/api/server/job/status/${status}`));
 }
