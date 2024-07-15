@@ -115,7 +115,6 @@ export function JobDetailsBody(): ReactElement {
                 title="Clients Configuration"
                 data={job.clients_info}
             />
-
         </div>
     );
 }
@@ -178,11 +177,10 @@ export function JobDetailsTableHeader({ Component, title, data }): ReactElement 
                             <Component data={data} />
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export function JobDetailsServerConfigTable({ data }: { data: string }): ReactElement {
@@ -216,12 +214,8 @@ export function JobDetailsServerConfigTable({ data }: { data: string }): ReactEl
         <table className="table align-items-center mb-0">
             <thead>
                 <tr>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                        Name
-                    </th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                        Value
-                    </th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Value</th>
                 </tr>
             </thead>
             <tbody>
@@ -229,12 +223,10 @@ export function JobDetailsServerConfigTable({ data }: { data: string }): ReactEl
                     <tr key={i}>
                         <td className="col-sm-2" id={`job-details-server-config-name-${i}`}>
                             <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm font-weight-bold">
-                                    {serverConfigName}
-                                </span>
+                                <span className="ps-3 text-secondary text-sm font-weight-bold">{serverConfigName}</span>
                             </div>
                         </td>
-                        <td  className="col-sm" id={`job-details-server-config-value-${i}`}>
+                        <td className="col-sm" id={`job-details-server-config-value-${i}`}>
                             <div className="d-flex flex-column justify-content-center">
                                 <span className="ps-3 text-secondary text-sm">
                                     {serverConfigJson[serverConfigName]}
@@ -253,59 +245,39 @@ export function JobDetailsClientsInfoTable({ data }: { data: Array<ClientInfo> }
         <table className="table align-items-center mb-0">
             <thead>
                 <tr>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                        Client
-                    </th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                        Address
-                    </th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                        Data Path
-                    </th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                        Redis Host
-                    </th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                        Redis Port
-                    </th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Client</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Address</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Data Path</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Redis Host</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Redis Port</th>
                 </tr>
             </thead>
             <tbody>
                 {data.map((clientInfo, i) => (
                     <tr key={i}>
-                        <td  className="col-sm" id={`job-details-client-config-client-${i}`}>
+                        <td className="col-sm" id={`job-details-client-config-client-${i}`}>
                             <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">
-                                    {clientInfo.client}
-                                </span>
+                                <span className="ps-3 text-secondary text-sm">{clientInfo.client}</span>
                             </div>
                         </td>
-                        <td  className="col-sm" id={`job-details-client-config-service-address-${i}`}>
+                        <td className="col-sm" id={`job-details-client-config-service-address-${i}`}>
                             <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">
-                                    {clientInfo.service_address}
-                                </span>
+                                <span className="ps-3 text-secondary text-sm">{clientInfo.service_address}</span>
                             </div>
                         </td>
-                        <td  className="col-sm" id={`job-details-client-config-data-path-${i}`}>
+                        <td className="col-sm" id={`job-details-client-config-data-path-${i}`}>
                             <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">
-                                    {clientInfo.data_path}
-                                </span>
+                                <span className="ps-3 text-secondary text-sm">{clientInfo.data_path}</span>
                             </div>
                         </td>
-                        <td  className="col-sm" id={`job-details-client-config-redis-host-${i}`}>
+                        <td className="col-sm" id={`job-details-client-config-redis-host-${i}`}>
                             <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">
-                                    {clientInfo.redis_host}
-                                </span>
+                                <span className="ps-3 text-secondary text-sm">{clientInfo.redis_host}</span>
                             </div>
                         </td>
-                        <td  className="col-sm" id={`job-details-client-config-redis-port-${i}`}>
+                        <td className="col-sm" id={`job-details-client-config-redis-port-${i}`}>
                             <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">
-                                    {clientInfo.redis_port}
-                                </span>
+                                <span className="ps-3 text-secondary text-sm">{clientInfo.redis_port}</span>
                             </div>
                         </td>
                     </tr>
