@@ -104,13 +104,13 @@ export function JobDetailsBody(): ReactElement {
                 </div>
             </div>
 
-            <JobDetailsTableHeader
+            <JobDetailsTable
                 Component={JobDetailsServerConfigTable}
                 title="Server Configuration"
                 data={job.server_config}
             />
 
-            <JobDetailsTableHeader
+            <JobDetailsTable
                 Component={JobDetailsClientsInfoTable}
                 title="Clients Configuration"
                 data={job.clients_info}
@@ -161,7 +161,7 @@ export function JobDetailsStatus({ status }: { status: string }): ReactElement {
     );
 }
 
-export function JobDetailsTableHeader({ Component, title, data }): ReactElement {
+export function JobDetailsTable({ Component, title, data }): ReactElement {
     return (
         <div className="row">
             <div className="col-12">
