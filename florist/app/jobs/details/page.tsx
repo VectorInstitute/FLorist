@@ -120,7 +120,7 @@ export function JobDetailsBody(): ReactElement {
 }
 
 export function JobDetailsStatus({ status }: { status: string }): ReactElement {
-    let pillClasses = "status-pill ";
+    let pillClasses = "status-pill text-sm ";
     let iconName;
     let statusDescription;
     switch (String(validStatuses[status])) {
