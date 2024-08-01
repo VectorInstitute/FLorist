@@ -50,9 +50,9 @@ jobs:
         with:
           virtual-environment: .venv/
           # Skipping 3 cryptography issues that can't be patched because of Flower
-          # Skipping 1 wandb issue that was rolled back, seems like a pip-audit bug
+          # Skipping 1 torch issue that can't be ugraded because of torchvision
           ignore-vulns: |
             GHSA-3ww4-gg4f-jr7f
             GHSA-9v9h-cgj8-h64p
             GHSA-6vqw-3v5j-54x4
-            GHSA-cqh9-jfqr-h9jj
+            GHSA-pg7h-5qx3-wjr3
