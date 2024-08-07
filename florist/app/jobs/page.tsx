@@ -4,38 +4,12 @@ import { useEffect } from "react";
 import { ReactElement } from "react/React";
 
 import { refreshJobsByJobStatus, useGetJobsByJobStatus, usePost } from "./hooks";
+import { validStatuses, JobData, ClientInfo } from "./definitions";
 
 import Link from "next/link";
 import Image from "next/image";
 
 import loading_gif from "../assets/img/loading.gif";
-
-// Must be in same order as array returned from useGetJobsByJobStatus
-export const validStatuses = {
-    NOT_STARTED: "Not Started",
-    IN_PROGRESS: "In Progress",
-    FINISHED_SUCCESSFULLY: "Finished Successfully",
-    FINISHED_WITH_ERROR: "Finished with Error",
-};
-
-interface JobData {
-    _id: string;
-    status: string;
-    model: string;
-    server_address: string;
-    server_info: string;
-    redis_host: string;
-    redis_port: string;
-    clients_info: Array<ClientInfo>;
-}
-
-interface ClientInfo {
-    client: string;
-    service_address: string;
-    data_path: string;
-    redis_host: string;
-    redis_port: string;
-}
 
 interface StatusProp {
     status: string;
@@ -138,6 +112,32 @@ export function StartJobButton({ rowId, jobId }: { rowId: number; jobId: string 
     );
 }
 
+export function JobDetailsButton({
+    rowId,
+    jobId,
+    status,
+}: {
+    rowId: number;
+    jobId: string;
+    status: string;
+}): ReactElement {
+    return (
+        <div>
+            <Link
+                data-testid={`job-details-button-${status}-${rowId}`}
+                className="btn btn-primary btn-sm mb-0"
+                alt="Details"
+                href={{
+                    pathname: "jobs/details",
+                    query: { id: jobId },
+                }}
+            >
+                <i className="material-icons text-sm">settings</i>
+            </Link>
+        </div>
+    );
+}
+
 export function Status({ status, data }: { status: StatusProp; data: Object }): ReactElement {
     return (
         <div className="row">
@@ -174,7 +174,8 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                     Client Service Addresses
                                 </th>
-                                <th></th>
+                                <th width="50"></th>
+                                <th width="100"></th>
                             </tr>
                         </thead>
                         <TableRows data={data} status={status} />
@@ -247,7 +248,10 @@ export function TableRow({
                     </span>
                 </div>
             </td>
-            <td>{validStatuses[status] == "Not Started" ? <StartJobButton rowId={rowId} jobId={jobId} /> : null}</td>
+            <td>
+                <JobDetailsButton rowId={rowId} jobId={jobId} status={status} />
+            </td>
+            <td>{validStatuses[status] === "Not Started" ? <StartJobButton rowId={rowId} jobId={jobId} /> : null}</td>
         </tr>
     );
 }

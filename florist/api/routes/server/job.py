@@ -1,6 +1,6 @@
 """FastAPI routes for the job."""
 
-from typing import List
+from typing import List, Union
 
 from fastapi import APIRouter, Body, Request, status
 from fastapi.responses import JSONResponse
@@ -9,6 +9,29 @@ from florist.api.db.entities import MAX_RECORDS_TO_FETCH, Job, JobStatus
 
 
 router = APIRouter()
+
+
+@router.get(
+    path="/{job_id}",
+    response_description="Retrieves a job by ID",
+    status_code=status.HTTP_200_OK,
+    response_model=Job,
+)
+async def get_job(job_id: str, request: Request) -> Union[Job, JSONResponse]:
+    """
+    Retrieve a training job by its ID.
+
+    :param request: (fastapi.Request) the FastAPI request object.
+    :param job_id: (str) The ID of the job to be retrieved.
+
+    :return: (Union[Job, JSONResponse]) The job with the given ID, or a 400 JSONResponse if it hasn't been found.
+    """
+    job = await Job.find_by_id(job_id, request.app.database)
+
+    if job is None:
+        return JSONResponse(content={"error": f"Job with ID {job_id} does not exist."}, status_code=400)
+
+    return job
 
 
 @router.post(
@@ -36,7 +59,11 @@ async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
     return job_in_db
 
 
-@router.get(path="/{status}", response_description="List jobs with the specified status", response_model=List[Job])
+@router.get(
+    path="/status/{status}",
+    response_description="List jobs with the specified status",
+    response_model=List[Job],
+)
 async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Job]:
     """
     List jobs with specified status.
