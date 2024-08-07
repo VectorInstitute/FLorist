@@ -304,8 +304,50 @@
 <span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">AsyncMock</span>
 <span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.routes.server.job</span> <span class="kn">import</span> <span class="n">change_job_status</span>
+<span class="kn">from</span> <span class="nn">florist.api.routes.server.job</span> <span class="kn">import</span> <span class="n">change_job_status</span><span class="p">,</span> <span class="n">get_job</span>
 <span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">JobStatus</span>
+
+
+<div class="viewcode-block" id="test_get_job_success">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_job.html#florist.tests.unit.api.routes.server.test_job.test_get_job_success">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.entities.Job.find_by_id&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_job_success</span><span class="p">(</span><span class="n">mock_find_by_id</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">mock_job</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_find_by_id</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_job</span>
+
+    <span class="n">mock_request</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+
+    <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;test_id&quot;</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_job</span><span class="p">(</span><span class="n">test_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="n">mock_find_by_id</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">response</span> <span class="o">==</span> <span class="n">mock_job</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_job_fail_none_job">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_job.html#florist.tests.unit.api.routes.server.test_job.test_get_job_fail_none_job">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.entities.Job.find_by_id&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_job_fail_none_job</span><span class="p">(</span><span class="n">mock_find_by_id</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">mock_find_by_id</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">mock_request</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+
+    <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;test_id&quot;</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_job</span><span class="p">(</span><span class="n">test_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="n">mock_find_by_id</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">JSONResponse</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Job with ID </span><span class="si">{</span><span class="n">test_id</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">}</span></div>
+
+
 
 <div class="viewcode-block" id="test_change_job_status_success">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_job.html#florist.tests.unit.api.routes.server.test_job.test_change_job_status_success">[docs]</a>
@@ -330,6 +372,7 @@
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">JSONResponse</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
     <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">}</span></div>
+
 
 
 <div class="viewcode-block" id="test_change_job_status_failure_in_find_by_id">
