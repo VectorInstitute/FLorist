@@ -37,6 +37,7 @@ jobs:
           poetry install --with docs,test
           cd docs && rm -rf source/reference/api/_autosummary && make html
           cd .. && coverage run -m pytest florist/tests/unit && coverage xml && coverage report -m
+#
 #      - name: Upload coverage to Codecov
 #        uses: Wandalen/wretry.action@v1.4.4
 #        with:
