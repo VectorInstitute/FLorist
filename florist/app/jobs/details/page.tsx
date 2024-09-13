@@ -4,6 +4,8 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 
 import { ReactElement } from "react/React";
+import { useImmer } from "use-immer";
+import { produce } from "immer";
 
 import { useGetJob } from "../hooks";
 import { validStatuses, ClientInfo } from "../definitions";
@@ -95,7 +97,7 @@ export function JobDetailsBody(): ReactElement {
                     {job.redis_host}
                 </div>
             </div>
-            <div className="row pb-2 mb-4">
+            <div className="row pb-2 mb-2">
                 <div className="col-sm-2">
                     <strong className="text-dark">Redis Port:</strong>
                 </div>
@@ -103,6 +105,12 @@ export function JobDetailsBody(): ReactElement {
                     {job.redis_port}
                 </div>
             </div>
+
+            <JobProgress
+                serverMetrics={job.server_metrics}
+                serverConfig={job.server_config}
+                status={job.status}
+            />
 
             <JobDetailsTable
                 Component={JobDetailsServerConfigTable}
@@ -159,6 +167,136 @@ export function JobDetailsStatus({ status }: { status: string }): ReactElement {
             {statusDescription}
         </div>
     );
+}
+
+export function JobProgress({
+    serverMetrics,
+    serverConfig,
+    status,
+}: {
+    serverMetrics: string,
+    serverConfig: string,
+    status: status,
+}): ReactElement {
+    if (!serverMetrics || !serverConfig) {
+        return null;
+    }
+
+    const [state, setState] = useImmer({ collapsed: true });
+
+    const serverMetricsJson = JSON.parse(serverMetrics);
+    const serverConfigJson = JSON.parse(serverConfig);
+
+    const totalServerRounds = serverConfigJson.n_server_rounds;
+    const lastRound = Math.max(...Object.keys(serverMetricsJson.rounds));
+    const progressPercent = (lastRound * 100) / totalServerRounds;
+
+    let progressBarClasses = "progress-bar progress-bar-striped ";
+    switch (String(validStatuses[status])) {
+        case validStatuses.IN_PROGRESS:
+            progressBarClasses += "bg-warning";
+            break;
+        case validStatuses.FINISHED_SUCCESSFULLY:
+            progressBarClasses += "bg-success";
+            break;
+        case validStatuses.FINISHED_WITH_ERROR:
+            progressBarClasses += "bg-danger";
+            break;
+        case validStatuses.NOT_STARTED:
+        default:
+            break;
+    }
+
+    const onClickExpandCollapse = () => produce((newState) => {newState.collapsed = !state.collapsed;})
+
+    return (
+        <div id="job-progress" className="mb-4">
+            <div className="card my-4">
+                <div className="card-header pb-0">
+                    <strong className="text-dark">Progress:</strong>
+                </div>
+                <div className="card-body">
+                    <div className="row pb-2">
+                        <div className="progress col-sm-5">
+                            <div
+                                className={progressBarClasses}
+                                role="progressbar"
+                                style={{width: `${progressPercent}%`}}
+                                aria-valuenow={progressPercent}
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                            >
+                                {progressPercent}%
+                            </div>
+                        </div>
+                        <div id="job-expand-progress" className="col-sm">
+                            <a className="btn btn-link" onClick={() => setState(onClickExpandCollapse(state))}>
+                                {state.collapsed ? (
+                                    <span>
+                                        Expand
+                                        <i className="material-icons text-sm">keyboard_arrow_down</i>
+                                    </span>
+                                ): (
+                                    <span>
+                                        Collapse
+                                        <i className="material-icons text-sm">keyboard_arrow_up</i>
+                                    </span>
+                                )}
+                            </a>
+                        </div>
+                    </div>
+                    <div className="row pb-2">
+                        {!state.collapsed ? <JobProgressDetails serverMetrics={serverMetrics}/> : null}
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export function JobProgressDetails({ serverMetrics }: { serverMetrics: string }): ReactElement {
+    if (!serverMetrics) {
+        return null;
+    }
+    const serverMetricsJson = JSON.parse(serverMetrics);
+    let elapsedTime = "";
+    if ("fit_start" in serverMetricsJson) {
+        const startDate = Date.parse(serverMetricsJson.fit_start);
+        let endDate;
+        if ("fit_end" in serverMetricsJson) {
+            endDate = Date.parse(serverMetricsJson.fit_end);
+        } else {
+            endDate = Date.now();
+        }
+        elapsedTime = endDate - startDate;
+    }
+
+    return (
+        <div id="job-progress-detail">
+            <div className="row">
+                <div className="col-sm-2">
+                    <strong className="text-dark">Elapsed time:</strong>
+                </div>
+                <div className="col-sm">{getTimeString(elapsedTime)}</div>
+            </div>
+            <div className="row">
+                <div className="col-sm-2">
+                    <strong className="text-dark">Start time:</strong>
+                </div>
+                <div className="col-sm">
+                    {"fit_start" in serverMetricsJson ? serverMetricsJson.fit_start : null}
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-sm-2">
+                    <strong className="text-dark">End time:</strong>
+                </div>
+                <div className="col-sm">
+                    {"fit_end" in serverMetricsJson ? serverMetricsJson.fit_end : null}
+                </div>
+            </div>
+        </div>
+    )
 }
 
 export function JobDetailsTable({ Component, title, data }): ReactElement {
@@ -285,4 +423,26 @@ export function JobDetailsClientsInfoTable({ data }: { data: Array<ClientInfo> }
             </tbody>
         </table>
     );
+}
+
+function getTimeString(timeInMiliseconds: number): string {
+    const hours = Math.floor(timeInMiliseconds/1000/60/60);
+    const minutes = Math.floor((timeInMiliseconds/1000/60/60 - hours)*60);
+    const seconds = Math.floor(((timeInMiliseconds/1000/60/60 - hours)*60 - minutes)*60);
+
+    let timeString = "";
+    if (seconds > 0) {
+        const secondsString = seconds < 10 ? `0${seconds}` : `${seconds}`;
+        timeString = secondsString + "s" + timeString;
+    }
+    if (minutes > 0) {
+        const minutesString = minutes < 10 ? `0${minutes}` : `${minutes}`;
+        timeString = minutesString + "m" + timeString;
+    }
+    if (hours > 0) {
+        const hoursString = hours < 10 ? `0${hours}` : `${hours}`;
+        timeString = hoursString + "h" + timeString;
+    }
+
+    return timeString;
 }
