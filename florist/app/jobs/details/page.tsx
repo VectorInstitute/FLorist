@@ -3,9 +3,8 @@
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 
+import { useState } from 'react';
 import { ReactElement } from "react/React";
-import { useImmer } from "use-immer";
-import { produce } from "immer";
 
 import { useGetJob } from "../hooks";
 import { validStatuses, ClientInfo } from "../definitions";
@@ -182,7 +181,7 @@ export function JobProgress({
         return null;
     }
 
-    const [state, setState] = useImmer({ collapsed: true });
+    const [collapsed, setCollapsed] = useState(true);
 
     const serverMetricsJson = JSON.parse(serverMetrics);
     const serverConfigJson = JSON.parse(serverConfig);
@@ -207,8 +206,6 @@ export function JobProgress({
             break;
     }
 
-    const onClickExpandCollapse = () => produce((newState) => {newState.collapsed = !state.collapsed;})
-
     return (
         <div id="job-progress" className="mb-4">
             <div className="card my-4">
@@ -229,9 +226,9 @@ export function JobProgress({
                                 {progressPercent}%
                             </div>
                         </div>
-                        <div id="job-expand-progress" className="col-sm">
-                            <a className="btn btn-link" onClick={() => setState(onClickExpandCollapse(state))}>
-                                {state.collapsed ? (
+                        <div className="col-sm job-expand-button">
+                            <a className="btn btn-link" onClick={() => setCollapsed(!collapsed)}>
+                                {collapsed ? (
                                     <span>
                                         Expand
                                         <i className="material-icons text-sm">keyboard_arrow_down</i>
@@ -246,7 +243,7 @@ export function JobProgress({
                         </div>
                     </div>
                     <div className="row pb-2">
-                        {!state.collapsed ? <JobProgressDetails serverMetrics={serverMetrics}/> : null}
+                        {!collapsed ? <JobProgressDetails serverMetrics={serverMetricsJson}/> : null}
                     </div>
                 </div>
             </div>
@@ -254,21 +251,20 @@ export function JobProgress({
     )
 }
 
-export function JobProgressDetails({ serverMetrics }: { serverMetrics: string }): ReactElement {
+export function JobProgressDetails({ serverMetrics }: { serverMetrics: Object }): ReactElement {
     if (!serverMetrics) {
         return null;
     }
-    const serverMetricsJson = JSON.parse(serverMetrics);
     let elapsedTime = "";
-    if ("fit_start" in serverMetricsJson) {
-        const startDate = Date.parse(serverMetricsJson.fit_start);
-        let endDate;
-        if ("fit_end" in serverMetricsJson) {
-            endDate = Date.parse(serverMetricsJson.fit_end);
-        } else {
-            endDate = Date.now();
-        }
-        elapsedTime = endDate - startDate;
+    if ("fit_start" in serverMetrics) {
+        const startDate = Date.parse(serverMetrics.fit_start);
+        const endDate = "fit_end" in serverMetrics ? Date.parse(serverMetrics.fit_end) : Date.now();
+        elapsedTime = getTimeString(endDate - startDate);
+    }
+
+    const roundMetricsArray = Array(serverMetrics.rounds.length);
+    for (const [round, roundMetrics] of Object.entries(serverMetrics.rounds)) {
+        roundMetricsArray[parseInt(round) - 1] = roundMetrics;
     }
 
     return (
@@ -277,14 +273,14 @@ export function JobProgressDetails({ serverMetrics }: { serverMetrics: string })
                 <div className="col-sm-2">
                     <strong className="text-dark">Elapsed time:</strong>
                 </div>
-                <div className="col-sm">{getTimeString(elapsedTime)}</div>
+                <div className="col-sm">{elapsedTime}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">Start time:</strong>
                 </div>
                 <div className="col-sm">
-                    {"fit_start" in serverMetricsJson ? serverMetricsJson.fit_start : null}
+                    {"fit_start" in serverMetrics ? serverMetrics.fit_start : null}
                 </div>
             </div>
             <div className="row">
@@ -292,11 +288,119 @@ export function JobProgressDetails({ serverMetrics }: { serverMetrics: string })
                     <strong className="text-dark">End time:</strong>
                 </div>
                 <div className="col-sm">
-                    {"fit_end" in serverMetricsJson ? serverMetricsJson.fit_end : null}
+                    {"fit_end" in serverMetrics ? serverMetrics.fit_end : null}
+                </div>
+            </div>
+            {roundMetricsArray.map((roundMetrics, i) => (
+                <JobProgressRound roundMetrics={roundMetrics} key={i} index={i} />
+            ))}
+        </div>
+    )
+}
+
+export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object, index: int }): ReactElement {
+    if (!roundMetrics) {
+        return null;
+    }
+
+    const [collapsed, setCollapsed] = useState(true);
+
+    return (
+        <div>
+            <div className="row">
+                <div className="col-sm-2">
+                    <strong className="text-dark">Round {index + 1}</strong>
+                </div>
+                <div className="col-sm job-expand-button">
+                    <a className="btn btn-link" onClick={() => setCollapsed(!collapsed)}>
+                        {collapsed ? (
+                            <span>
+                                Expand
+                                <i className="material-icons text-sm">keyboard_arrow_down</i>
+                            </span>
+                        ): (
+                            <span>
+                                Collapse
+                                <i className="material-icons text-sm">keyboard_arrow_up</i>
+                            </span>
+                        )}
+                    </a>
+                </div>
+                {!collapsed ?
+                    <JobProgressRoundDetails roundMetrics={roundMetrics} key={index} />
+                : null}
+            </div>
+        </div>
+    );
+}
+
+export function JobProgressRoundDetails({ roundMetrics }: { roundMetrics: Object }): ReactElement {
+    if (!roundMetrics) {
+        return null;
+    }
+
+    let fitElapsedTime = "";
+    if ("fit_start" in roundMetrics) {
+        const startDate = Date.parse(roundMetrics.fit_start);
+        const endDate = "fit_end" in roundMetrics ? Date.parse(roundMetrics.fit_end) : Date.now();
+        fitElapsedTime = getTimeString(endDate - startDate);
+    }
+
+    let evaluateElapsedTime = "";
+    if ("evaluate_start" in roundMetrics) {
+        const startDate = Date.parse(roundMetrics.evaluate_start);
+        const endDate = "evaluate_end" in roundMetrics ? Date.parse(roundMetrics.evaluate_end) : Date.now();
+        evaluateElapsedTime = getTimeString(endDate - startDate);
+    }
+
+    return (
+        <div className="job-round-details">
+            <div className="row">
+                <div className="col-sm-2">
+                    <strong className="text-dark">Fit Elapsed time:</strong>
+                </div>
+                <div className="col-sm">{fitElapsedTime}</div>
+            </div>
+            <div className="row">
+                <div className="col-sm-2">
+                    <strong className="text-dark">Fit Start time:</strong>
+                </div>
+                <div className="col-sm">
+                    {"fit_start" in roundMetrics ? roundMetrics.fit_start : null}
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-sm-2">
+                    <strong className="text-dark">Fit End time:</strong>
+                </div>
+                <div className="col-sm">
+                    {"fit_end" in roundMetrics ? roundMetrics.fit_end : null}
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-sm-2">
+                    <strong className="text-dark">Evaluate Elapsed time:</strong>
+                </div>
+                <div className="col-sm">{evaluateElapsedTime}</div>
+            </div>
+            <div className="row">
+                <div className="col-sm-2">
+                    <strong className="text-dark">Evaluate Start time:</strong>
+                </div>
+                <div className="col-sm">
+                    {"evaluate_start" in roundMetrics ? roundMetrics.evaluate_start : null}
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-sm-2">
+                    <strong className="text-dark">Evaluate End time:</strong>
+                </div>
+                <div className="col-sm">
+                    {"evaluate_end" in roundMetrics ? roundMetrics.evaluate_end : null}
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export function JobDetailsTable({ Component, title, data }): ReactElement {
