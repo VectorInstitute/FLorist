@@ -245,5 +245,5 @@ def assert_updated_successfully(update_result: UpdateResult) -> None:
     raw_result = update_result.raw_result
     assert isinstance(raw_result, dict)
     assert raw_result["n"] == 1, f"UpdateResult's 'n' is not 1 ({update_result})"
-    assert raw_result["nModified"] == 1, f"UpdateResult's 'nModified' is not 1 ({update_result})"
+    assert raw_result["nModified"] in [1, 0], f"UpdateResult's 'nModified' is not 1 or 0 ({update_result})"
     assert raw_result["ok"] == 1, f"UpdateResult's 'ok' is not 1 ({update_result})"

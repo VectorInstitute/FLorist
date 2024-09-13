@@ -72,6 +72,10 @@
     height: 25px;
 }
 
+#job-progress .progress-bar.bg-disabled {
+    background-color: lightgray !important;
+}
+
 .job-expand-button a.btn {
     padding: 0;
     margin: 0;

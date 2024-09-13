@@ -188,22 +188,27 @@ export function JobProgress({
 
     const totalServerRounds = serverConfigJson.n_server_rounds;
     const lastRound = Math.max(...Object.keys(serverMetricsJson.rounds));
-    const progressPercent = (lastRound * 100) / totalServerRounds;
+    const lastCompletedRound = "fit_end" in serverMetricsJson ? lastRound : lastRound - 1;
+    const progressPercent = (lastCompletedRound * 100) / totalServerRounds;
+    const progressWidth = progressPercent === 0 ? "100%" : `${progressPercent}%`;
 
-    let progressBarClasses = "progress-bar progress-bar-striped ";
+    let progressBarClasses = "progress-bar progress-bar-striped";
     switch (String(validStatuses[status])) {
         case validStatuses.IN_PROGRESS:
-            progressBarClasses += "bg-warning";
+            progressBarClasses += " bg-warning";
             break;
         case validStatuses.FINISHED_SUCCESSFULLY:
-            progressBarClasses += "bg-success";
+            progressBarClasses += " bg-success";
             break;
         case validStatuses.FINISHED_WITH_ERROR:
-            progressBarClasses += "bg-danger";
+            progressBarClasses += " bg-danger";
             break;
         case validStatuses.NOT_STARTED:
         default:
             break;
+    }
+    if (progressPercent === 0) {
+        progressBarClasses += " bg-disabled"
     }
 
     return (
@@ -218,12 +223,12 @@ export function JobProgress({
                             <div
                                 className={progressBarClasses}
                                 role="progressbar"
-                                style={{width: `${progressPercent}%`}}
+                                style={{width: progressWidth}}
                                 aria-valuenow={progressPercent}
                                 aria-valuemin="0"
                                 aria-valuemax="100"
                             >
-                                {progressPercent}%
+                                <strong>{Math.floor(progressPercent)}%</strong>
                             </div>
                         </div>
                         <div className="col-sm job-expand-button">
@@ -291,6 +296,11 @@ export function JobProgressDetails({ serverMetrics }: { serverMetrics: Object })
                     {"fit_end" in serverMetrics ? serverMetrics.fit_end : null}
                 </div>
             </div>
+
+            {Object.keys(serverMetrics).map((name, i) => (
+                <JobProgressProperty name={name} value={serverMetrics[name]} key={i} />
+            ))}
+
             {roundMetricsArray.map((roundMetrics, i) => (
                 <JobProgressRound roundMetrics={roundMetrics} key={i} index={i} />
             ))}
@@ -399,6 +409,34 @@ export function JobProgressRoundDetails({ roundMetrics }: { roundMetrics: Object
                     {"evaluate_end" in roundMetrics ? roundMetrics.evaluate_end : null}
                 </div>
             </div>
+            {Object.keys(roundMetrics).map((name, i) => (
+                <JobProgressProperty name={name} value={roundMetrics[name]} key={i} />
+            ))}
+        </div>
+    );
+}
+
+export function JobProgressProperty({ name, value }: { name: string, value: string }): ReactElement {
+    console.log(name)
+    console.log(typeof value === 'object')
+    if (["fit_start", "fit_end", "evaluate_start", "evaluate_end", "rounds", "type"].includes(name)) {
+        return null;
+    }
+    let renderedValue = value;
+    if (value.constructor === Array) {
+        renderedValue = JSON.stringify(value);
+    } else if (value.constructor === Object) {
+        renderedValue = Object.keys(value).map((valueName, i) => (
+            <JobProgressProperty name={valueName} value={value[valueName]} key={i} />
+        ));
+    }
+
+    return (
+        <div className="row">
+            <div className="col-sm-2">
+                <strong className="text-dark">{name}:</strong>
+            </div>
+            <div className="col-sm">{renderedValue}</div>
         </div>
     );
 }
@@ -535,17 +573,20 @@ function getTimeString(timeInMiliseconds: number): string {
     const seconds = Math.floor(((timeInMiliseconds/1000/60/60 - hours)*60 - minutes)*60);
 
     let timeString = "";
+    if (seconds <= 0) {
+        timeString = `${timeInMiliseconds}ms`
+    }
     if (seconds > 0) {
         const secondsString = seconds < 10 ? `0${seconds}` : `${seconds}`;
-        timeString = secondsString + "s" + timeString;
+        timeString = secondsString + "s " + timeString;
     }
     if (minutes > 0) {
         const minutesString = minutes < 10 ? `0${minutes}` : `${minutes}`;
-        timeString = minutesString + "m" + timeString;
+        timeString = minutesString + "m " + timeString;
     }
     if (hours > 0) {
         const hoursString = hours < 10 ? `0${hours}` : `${hours}`;
-        timeString = hoursString + "h" + timeString;
+        timeString = hoursString + "h " + timeString;
     }
 
     return timeString;
