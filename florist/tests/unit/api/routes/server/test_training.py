@@ -2,7 +2,7 @@ import asyncio
 import json
 from pytest import raises
 from typing import Dict, Any, Tuple
-from unittest.mock import AsyncMock, Mock, patch, ANY
+from unittest.mock import Mock, patch, ANY, call
 
 from florist.api.db.entities import Job, JobStatus, JOB_COLLECTION_NAME
 from florist.api.models.mnist import MnistNet
@@ -337,12 +337,12 @@ def test_server_training_listener(mock_requests: Mock(), mock_get_subscriber: Mo
         ]
     })
     test_client_metrics = {"test": 123}
-    test_server_final_metrics = {"fit_start": "2022-02-02 02:02:02", "rounds": [], "fit_end": "2022-02-02 03:03:03"}
-    mock_get_from_redis.side_effect = [
+    test_server_metrics = [
         {"fit_start": "2022-02-02 02:02:02"},
         {"fit_start": "2022-02-02 02:02:02", "rounds": []},
-        test_server_final_metrics,
+        {"fit_start": "2022-02-02 02:02:02", "rounds": [], "fit_end": "2022-02-02 03:03:03"}
     ]
+    mock_get_from_redis.side_effect = test_server_metrics
     mock_subscriber = Mock()
     mock_subscriber.listen.return_value = [
         {"type": "message"},
@@ -364,16 +364,25 @@ def test_server_training_listener(mock_requests: Mock(), mock_get_subscriber: Mo
 
             # Assert
             mock_set_status_sync.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_database)
-            mock_set_metrics.assert_called_once_with(test_server_final_metrics, [test_client_metrics], mock_database)
+
+            assert mock_set_metrics.call_count == 3
+            mock_set_metrics.assert_has_calls([
+                call(test_server_metrics[0], [test_client_metrics], mock_database),
+                call(test_server_metrics[1], [test_client_metrics], mock_database),
+                call(test_server_metrics[2], [test_client_metrics], mock_database),
+            ])
+
     assert mock_get_from_redis.call_count == 3
     mock_get_subscriber.assert_called_once_with(test_job.server_uuid, test_job.redis_host, test_job.redis_port)
-    mock_requests.get.assert_called_once_with(
+    assert mock_requests.get.call_count == 3
+    mock_requests_get_call = call(
         url=f"http://{test_job.clients_info[0].service_address}/{CHECK_CLIENT_STATUS_API}/{test_job.clients_info[0].uuid}",
         params={
             "redis_host": test_job.clients_info[0].redis_host,
             "redis_port": test_job.clients_info[0].redis_port,
         },
     )
+    assert mock_requests.get.call_args_list == [mock_requests_get_call, mock_requests_get_call, mock_requests_get_call]
 
 
 @patch("florist.api.routes.server.training.get_from_redis")

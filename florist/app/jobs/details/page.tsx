@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 
-import { useState } from 'react';
+import { useState } from "react";
 import { ReactElement } from "react/React";
 
 import { useGetJob } from "../hooks";
@@ -186,10 +186,13 @@ export function JobProgress({
     const serverMetricsJson = JSON.parse(serverMetrics);
     const serverConfigJson = JSON.parse(serverConfig);
 
-    const totalServerRounds = serverConfigJson.n_server_rounds;
-    const lastRound = Math.max(...Object.keys(serverMetricsJson.rounds));
-    const lastCompletedRound = "fit_end" in serverMetricsJson ? lastRound : lastRound - 1;
-    const progressPercent = (lastCompletedRound * 100) / totalServerRounds;
+    let progressPercent = 0;
+    if ("rounds" in serverMetricsJson && Object.keys(serverMetricsJson.rounds).length > 0) {
+        const totalServerRounds = serverConfigJson.n_server_rounds;
+        const lastRound = Math.max(...Object.keys(serverMetricsJson.rounds));
+        const lastCompletedRound = "fit_end" in serverMetricsJson ? lastRound : lastRound - 1;
+        progressPercent = (lastCompletedRound * 100) / totalServerRounds;
+    }
     const progressWidth = progressPercent === 0 ? "100%" : `${progressPercent}%`;
 
     let progressBarClasses = "progress-bar progress-bar-striped";
@@ -231,7 +234,7 @@ export function JobProgress({
                                 <strong>{Math.floor(progressPercent)}%</strong>
                             </div>
                         </div>
-                        <div className="col-sm job-expand-button">
+                        <div id="job-details-toggle" className="col-sm job-expand-button">
                             <a className="btn btn-link" onClick={() => setCollapsed(!collapsed)}>
                                 {collapsed ? (
                                     <span>
@@ -316,12 +319,12 @@ export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object
     const [collapsed, setCollapsed] = useState(true);
 
     return (
-        <div>
+        <div id={`job-round-detail-${index}`}>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">Round {index + 1}</strong>
                 </div>
-                <div className="col-sm job-expand-button">
+                <div id={`job-round-toggle-${index}`} className="col-sm job-expand-button">
                     <a className="btn btn-link" onClick={() => setCollapsed(!collapsed)}>
                         {collapsed ? (
                             <span>
@@ -417,8 +420,6 @@ export function JobProgressRoundDetails({ roundMetrics }: { roundMetrics: Object
 }
 
 export function JobProgressProperty({ name, value }: { name: string, value: string }): ReactElement {
-    console.log(name)
-    console.log(typeof value === 'object')
     if (["fit_start", "fit_end", "evaluate_start", "evaluate_end", "rounds", "type"].includes(name)) {
         return null;
     }

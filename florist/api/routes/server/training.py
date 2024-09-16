@@ -196,7 +196,7 @@ def update_job_metrics(job: Job, server_metrics: Dict[str, Any], database: Datab
 
     job.set_metrics(server_metrics, clients_metrics, database)
 
-    LOGGER.info(f"Listener: Job {job.id} have been updated.")
+    LOGGER.info(f"Listener: Job {job.id} has been updated.")
 
 
 def close_job(job: Job, database: Database[Dict[str, Any]]) -> None:
