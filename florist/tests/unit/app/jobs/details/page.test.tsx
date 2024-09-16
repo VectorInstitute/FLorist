@@ -209,7 +209,7 @@ describe("Job Details Page", () => {
         });
         it("Display progress bar at 0% when rounds list is empty", () => {
             const testJob = makeTestJob();
-            testJob.server_metrics = JSON.stringify({rounds: {}});
+            testJob.server_metrics = JSON.stringify({ rounds: {} });
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
             const jobProgressComponent = container.querySelector("#job-progress");
@@ -308,14 +308,16 @@ describe("Job Details Page", () => {
                 const customPropertyArray = jobProgressDetailsComponent.children[4];
                 expect(customPropertyArray.children[0]).toHaveTextContent("custom_property_array");
                 expect(customPropertyArray.children[1]).toHaveTextContent(
-                    JSON.stringify(serverMetrics.custom_property_array)
+                    JSON.stringify(serverMetrics.custom_property_array),
                 );
                 const customPropertyObject = jobProgressDetailsComponent.children[5];
                 expect(customPropertyObject.children[0]).toHaveTextContent("custom_property_object");
                 const customPropertyObjectValue = customPropertyObject.children[1];
-                expect(customPropertyObjectValue.children[0].children[0]).toHaveTextContent("custom_property_object_value");
+                expect(customPropertyObjectValue.children[0].children[0]).toHaveTextContent(
+                    "custom_property_object_value",
+                );
                 expect(customPropertyObjectValue.children[0].children[1]).toHaveTextContent(
-                    serverMetrics.custom_property_object.custom_property_object_value
+                    serverMetrics.custom_property_object.custom_property_object_value,
                 );
 
                 // rounds
@@ -388,7 +390,7 @@ describe("Job Details Page", () => {
                         const toggleButton = container.querySelector(`#job-round-toggle-${i} a`);
                         act(() => toggleButton.click());
 
-                        console.log(i)
+                        console.log(i);
 
                         const jobRoundDetailsComponent = container.querySelector(`#job-round-details-${i}`);
                         const fitElapsedTime = jobRoundDetailsComponent.children[0];
@@ -419,14 +421,16 @@ describe("Job Details Page", () => {
                     const customPropertyArray = jobRoundDetailsComponent.children[7];
                     expect(customPropertyArray.children[0]).toHaveTextContent("custom_property_array");
                     expect(customPropertyArray.children[1]).toHaveTextContent(
-                        JSON.stringify(serverMetrics.custom_property_array)
+                        JSON.stringify(serverMetrics.custom_property_array),
                     );
                     const customPropertyObject = jobRoundDetailsComponent.children[8];
                     expect(customPropertyObject.children[0]).toHaveTextContent("custom_property_object");
                     const customPropertyObjectValue = customPropertyObject.children[1];
-                    expect(customPropertyObjectValue.children[0].children[0]).toHaveTextContent("custom_property_object_value");
+                    expect(customPropertyObjectValue.children[0].children[0]).toHaveTextContent(
+                        "custom_property_object_value",
+                    );
                     expect(customPropertyObjectValue.children[0].children[1]).toHaveTextContent(
-                        serverMetrics.custom_property_object.custom_property_object_value
+                        serverMetrics.custom_property_object.custom_property_object_value,
                     );
                 });
             });

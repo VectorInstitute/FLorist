@@ -105,11 +105,7 @@ export function JobDetailsBody(): ReactElement {
                 </div>
             </div>
 
-            <JobProgress
-                serverMetrics={job.server_metrics}
-                serverConfig={job.server_config}
-                status={job.status}
-            />
+            <JobProgress serverMetrics={job.server_metrics} serverConfig={job.server_config} status={job.status} />
 
             <JobDetailsTable
                 Component={JobDetailsServerConfigTable}
@@ -173,9 +169,9 @@ export function JobProgress({
     serverConfig,
     status,
 }: {
-    serverMetrics: string,
-    serverConfig: string,
-    status: status,
+    serverMetrics: string;
+    serverConfig: string;
+    status: status;
 }): ReactElement {
     if (!serverMetrics || !serverConfig) {
         return null;
@@ -211,7 +207,7 @@ export function JobProgress({
             break;
     }
     if (progressPercent === 0) {
-        progressBarClasses += " bg-disabled"
+        progressBarClasses += " bg-disabled";
     }
 
     return (
@@ -226,7 +222,7 @@ export function JobProgress({
                             <div
                                 className={progressBarClasses}
                                 role="progressbar"
-                                style={{width: progressWidth}}
+                                style={{ width: progressWidth }}
                                 aria-valuenow={progressPercent}
                                 aria-valuemin="0"
                                 aria-valuemax="100"
@@ -241,7 +237,7 @@ export function JobProgress({
                                         Expand
                                         <i className="material-icons text-sm">keyboard_arrow_down</i>
                                     </span>
-                                ): (
+                                ) : (
                                     <span>
                                         Collapse
                                         <i className="material-icons text-sm">keyboard_arrow_up</i>
@@ -251,12 +247,12 @@ export function JobProgress({
                         </div>
                     </div>
                     <div className="row pb-2">
-                        {!collapsed ? <JobProgressDetails serverMetrics={serverMetricsJson}/> : null}
+                        {!collapsed ? <JobProgressDetails serverMetrics={serverMetricsJson} /> : null}
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export function JobProgressDetails({ serverMetrics }: { serverMetrics: Object }): ReactElement {
@@ -287,17 +283,13 @@ export function JobProgressDetails({ serverMetrics }: { serverMetrics: Object })
                 <div className="col-sm-2">
                     <strong className="text-dark">Start time:</strong>
                 </div>
-                <div className="col-sm">
-                    {"fit_start" in serverMetrics ? serverMetrics.fit_start : null}
-                </div>
+                <div className="col-sm">{"fit_start" in serverMetrics ? serverMetrics.fit_start : null}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">End time:</strong>
                 </div>
-                <div className="col-sm">
-                    {"fit_end" in serverMetrics ? serverMetrics.fit_end : null}
-                </div>
+                <div className="col-sm">{"fit_end" in serverMetrics ? serverMetrics.fit_end : null}</div>
             </div>
 
             {Object.keys(serverMetrics).map((name, i) => (
@@ -308,10 +300,10 @@ export function JobProgressDetails({ serverMetrics }: { serverMetrics: Object })
                 <JobProgressRound roundMetrics={roundMetrics} key={i} index={i} />
             ))}
         </div>
-    )
+    );
 }
 
-export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object, index: int }): ReactElement {
+export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object; index: int }): ReactElement {
     if (!roundMetrics) {
         return null;
     }
@@ -331,7 +323,7 @@ export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object
                                 Expand
                                 <i className="material-icons text-sm">keyboard_arrow_down</i>
                             </span>
-                        ): (
+                        ) : (
                             <span>
                                 Collapse
                                 <i className="material-icons text-sm">keyboard_arrow_up</i>
@@ -339,15 +331,13 @@ export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object
                         )}
                     </a>
                 </div>
-                {!collapsed ?
-                    <JobProgressRoundDetails roundMetrics={roundMetrics} key={index} index={index} />
-                : null}
+                {!collapsed ? <JobProgressRoundDetails roundMetrics={roundMetrics} key={index} index={index} /> : null}
             </div>
         </div>
     );
 }
 
-export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics: Object, index: str }): ReactElement {
+export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics: Object; index: str }): ReactElement {
     if (!roundMetrics) {
         return null;
     }
@@ -378,17 +368,13 @@ export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics:
                 <div className="col-sm-2">
                     <strong className="text-dark">Fit start time:</strong>
                 </div>
-                <div className="col-sm">
-                    {"fit_start" in roundMetrics ? roundMetrics.fit_start : null}
-                </div>
+                <div className="col-sm">{"fit_start" in roundMetrics ? roundMetrics.fit_start : null}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">Fit end time:</strong>
                 </div>
-                <div className="col-sm">
-                    {"fit_end" in roundMetrics ? roundMetrics.fit_end : null}
-                </div>
+                <div className="col-sm">{"fit_end" in roundMetrics ? roundMetrics.fit_end : null}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
@@ -400,17 +386,13 @@ export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics:
                 <div className="col-sm-2">
                     <strong className="text-dark">Evaluate start time:</strong>
                 </div>
-                <div className="col-sm">
-                    {"evaluate_start" in roundMetrics ? roundMetrics.evaluate_start : null}
-                </div>
+                <div className="col-sm">{"evaluate_start" in roundMetrics ? roundMetrics.evaluate_start : null}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">Evaluate end time:</strong>
                 </div>
-                <div className="col-sm">
-                    {"evaluate_end" in roundMetrics ? roundMetrics.evaluate_end : null}
-                </div>
+                <div className="col-sm">{"evaluate_end" in roundMetrics ? roundMetrics.evaluate_end : null}</div>
             </div>
             {Object.keys(roundMetrics).map((name, i) => (
                 <JobProgressProperty name={name} value={roundMetrics[name]} key={i} />
@@ -419,7 +401,7 @@ export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics:
     );
 }
 
-export function JobProgressProperty({ name, value }: { name: string, value: string }): ReactElement {
+export function JobProgressProperty({ name, value }: { name: string; value: string }): ReactElement {
     if (["fit_start", "fit_end", "evaluate_start", "evaluate_end", "rounds", "type"].includes(name)) {
         return null;
     }
@@ -569,14 +551,14 @@ export function JobDetailsClientsInfoTable({ data }: { data: Array<ClientInfo> }
 }
 
 export function getTimeString(timeInMiliseconds: number): string {
-    const hours = Math.floor(timeInMiliseconds/1000/60/60);
-    const minutes = Math.floor((timeInMiliseconds/1000/60/60 - hours) * 60);
-    const seconds = Math.floor(((timeInMiliseconds/1000/60/60 - hours) * 60 - minutes) * 60);
+    const hours = Math.floor(timeInMiliseconds / 1000 / 60 / 60);
+    const minutes = Math.floor((timeInMiliseconds / 1000 / 60 / 60 - hours) * 60);
+    const seconds = Math.floor(((timeInMiliseconds / 1000 / 60 / 60 - hours) * 60 - minutes) * 60);
 
     let timeString = "";
     if (hours <= 0 && minutes <= 0 && seconds < 10) {
         // Adding the miliseconds if the time is less than 10s
-        timeString = `${timeInMiliseconds - (1000 * seconds)}ms`;
+        timeString = `${timeInMiliseconds - 1000 * seconds}ms`;
     }
     if (seconds > 0) {
         const secondsString = seconds < 10 ? `0${seconds}` : `${seconds}`;
