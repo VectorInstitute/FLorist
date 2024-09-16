@@ -319,7 +319,7 @@ export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object
     const [collapsed, setCollapsed] = useState(true);
 
     return (
-        <div id={`job-round-detail-${index}`}>
+        <div>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">Round {index + 1}</strong>
@@ -340,14 +340,14 @@ export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object
                     </a>
                 </div>
                 {!collapsed ?
-                    <JobProgressRoundDetails roundMetrics={roundMetrics} key={index} />
+                    <JobProgressRoundDetails roundMetrics={roundMetrics} key={index} index={index} />
                 : null}
             </div>
         </div>
     );
 }
 
-export function JobProgressRoundDetails({ roundMetrics }: { roundMetrics: Object }): ReactElement {
+export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics: Object, index: str }): ReactElement {
     if (!roundMetrics) {
         return null;
     }
@@ -367,16 +367,16 @@ export function JobProgressRoundDetails({ roundMetrics }: { roundMetrics: Object
     }
 
     return (
-        <div className="job-round-details">
+        <div id={`job-round-details-${index}`} className="job-round-details">
             <div className="row">
                 <div className="col-sm-2">
-                    <strong className="text-dark">Fit Elapsed time:</strong>
+                    <strong className="text-dark">Fit elapsed time:</strong>
                 </div>
                 <div className="col-sm">{fitElapsedTime}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
-                    <strong className="text-dark">Fit Start time:</strong>
+                    <strong className="text-dark">Fit start time:</strong>
                 </div>
                 <div className="col-sm">
                     {"fit_start" in roundMetrics ? roundMetrics.fit_start : null}
@@ -384,7 +384,7 @@ export function JobProgressRoundDetails({ roundMetrics }: { roundMetrics: Object
             </div>
             <div className="row">
                 <div className="col-sm-2">
-                    <strong className="text-dark">Fit End time:</strong>
+                    <strong className="text-dark">Fit end time:</strong>
                 </div>
                 <div className="col-sm">
                     {"fit_end" in roundMetrics ? roundMetrics.fit_end : null}
@@ -392,13 +392,13 @@ export function JobProgressRoundDetails({ roundMetrics }: { roundMetrics: Object
             </div>
             <div className="row">
                 <div className="col-sm-2">
-                    <strong className="text-dark">Evaluate Elapsed time:</strong>
+                    <strong className="text-dark">Evaluate elapsed time:</strong>
                 </div>
                 <div className="col-sm">{evaluateElapsedTime}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
-                    <strong className="text-dark">Evaluate Start time:</strong>
+                    <strong className="text-dark">Evaluate start time:</strong>
                 </div>
                 <div className="col-sm">
                     {"evaluate_start" in roundMetrics ? roundMetrics.evaluate_start : null}
@@ -406,7 +406,7 @@ export function JobProgressRoundDetails({ roundMetrics }: { roundMetrics: Object
             </div>
             <div className="row">
                 <div className="col-sm-2">
-                    <strong className="text-dark">Evaluate End time:</strong>
+                    <strong className="text-dark">Evaluate end time:</strong>
                 </div>
                 <div className="col-sm">
                     {"evaluate_end" in roundMetrics ? roundMetrics.evaluate_end : null}
@@ -568,14 +568,15 @@ export function JobDetailsClientsInfoTable({ data }: { data: Array<ClientInfo> }
     );
 }
 
-function getTimeString(timeInMiliseconds: number): string {
+export function getTimeString(timeInMiliseconds: number): string {
     const hours = Math.floor(timeInMiliseconds/1000/60/60);
-    const minutes = Math.floor((timeInMiliseconds/1000/60/60 - hours)*60);
-    const seconds = Math.floor(((timeInMiliseconds/1000/60/60 - hours)*60 - minutes)*60);
+    const minutes = Math.floor((timeInMiliseconds/1000/60/60 - hours) * 60);
+    const seconds = Math.floor(((timeInMiliseconds/1000/60/60 - hours) * 60 - minutes) * 60);
 
     let timeString = "";
-    if (seconds <= 0) {
-        timeString = `${timeInMiliseconds}ms`
+    if (hours <= 0 && minutes <= 0 && seconds < 10) {
+        // Adding the miliseconds if the time is less than 10s
+        timeString = `${timeInMiliseconds - (1000 * seconds)}ms`;
     }
     if (seconds > 0) {
         const secondsString = seconds < 10 ? `0${seconds}` : `${seconds}`;
@@ -590,5 +591,5 @@ function getTimeString(timeInMiliseconds: number): string {
         timeString = hoursString + "h " + timeString;
     }
 
-    return timeString;
+    return timeString.trim();
 }

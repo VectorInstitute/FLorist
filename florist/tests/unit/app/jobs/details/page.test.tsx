@@ -5,7 +5,7 @@ import { act } from "react-dom/test-utils";
 
 import { useGetJob } from "../../../../../app/jobs/hooks";
 import { validStatuses, JobData } from "../../../../../app/jobs/definitions";
-import JobDetails from "../../../../../app/jobs/details/page";
+import JobDetails, { getTimeString } from "../../../../../app/jobs/details/page";
 
 const testJobId = "test-job-id";
 
@@ -43,9 +43,25 @@ function makeTestJob(): JobData {
         server_metrics: JSON.stringify({
             fit_start: "2020-01-01 12:07:07.0707",
             rounds: {
-                "1": {fit_start: "2020-01-01 12:08:08.0808", fit_end: "2020-01-01 12:09:09.0909"},
-                "2": {fit_start: "2020-01-01 12:10:10.1010", fit_end: "2020-01-01 12:11:11.1111"},
-                "3": {fit_start: "2020-01-01 12:12:00.1212"},
+                "1": {
+                    fit_start: "2020-01-01 12:08:08.0808",
+                    fit_end: "2020-01-01 12:09:09.0909",
+                    evaluate_start: "2020-01-01 12:08:09.0808",
+                    evaluate_end: "2020-01-01 12:08:10.0808",
+                    custom_property_value: "133.7",
+                    custom_property_array: [1337, 1338],
+                    custom_property_object: {
+                        custom_property_object_value: "test",
+                    },
+                },
+                "2": {
+                    fit_start: "2020-01-01 12:10:10.1010",
+                    fit_end: "2020-01-01 12:11:11.1111",
+                    evaluate_start: "2020-01-01 12:11:09.0808",
+                },
+                "3": {
+                    fit_start: "2020-01-01 12:12:00.1212",
+                },
             },
             custom_property_value: "133.7",
             custom_property_array: [1337, 1338],
@@ -261,9 +277,10 @@ describe("Job Details Page", () => {
 
                 act(() => toggleButton.click());
 
+                expect(toggleButton).toHaveTextContent("Collapse");
+
                 const jobProgressDetailsComponent = container.querySelector("#job-progress-detail");
                 expect(jobProgressDetailsComponent).not.toBeNull();
-                expect(toggleButton).toHaveTextContent("Collapse");
             });
             it("Should render the contents correctly", () => {
                 const testJob = makeTestJob();
@@ -312,6 +329,107 @@ describe("Job Details Page", () => {
                 expect(round3.children[0]).toHaveTextContent("Round 3");
                 expect(round3.children[1].getAttribute("id")).toBe("job-round-toggle-2");
             });
+            describe("Rounds", () => {
+                it("Should be collapsed by default", () => {
+                    const testJob = makeTestJob();
+                    const serverMetrics = JSON.parse(testJob.server_metrics);
+                    setupGetJobMock(testJob);
+                    const { container } = render(<JobDetails />);
+                    const progressToggleButton = container.querySelector("#job-details-toggle a");
+                    act(() => progressToggleButton.click());
+
+                    for (let i = 0; i < Object.keys(serverMetrics.rounds).length; i++) {
+                        const jobRoundDetailsComponent = container.querySelector(`#job-round-details-${i}`);
+                        expect(jobRoundDetailsComponent).toBeNull();
+                    }
+                });
+                it("Should open when the toggle button is clicked", () => {
+                    const testJob = makeTestJob();
+                    const serverMetrics = JSON.parse(testJob.server_metrics);
+                    setupGetJobMock(testJob);
+                    const { container } = render(<JobDetails />);
+                    const progressToggleButton = container.querySelector("#job-details-toggle a");
+                    act(() => progressToggleButton.click());
+
+                    for (let i = 0; i < Object.keys(serverMetrics.rounds).length; i++) {
+                        const toggleButton = container.querySelector(`#job-round-toggle-${i} a`);
+                        expect(toggleButton).toHaveTextContent("Expand");
+
+                        act(() => toggleButton.click());
+
+                        expect(toggleButton).toHaveTextContent("Collapse");
+
+                        const jobRoundDetailsComponent = container.querySelector(`#job-round-details-${i}`);
+                        expect(jobRoundDetailsComponent).not.toBeNull();
+                    }
+                });
+                it("Should render the contents correctly", () => {
+                    const testJob = makeTestJob();
+                    const serverMetrics = JSON.parse(testJob.server_metrics);
+                    setupGetJobMock(testJob);
+                    const { container } = render(<JobDetails />);
+                    const progressToggleButton = container.querySelector("#job-details-toggle a");
+                    act(() => progressToggleButton.click());
+
+                    const expectedTimes = {
+                        fit: [
+                            ["01m 01s", serverMetrics.rounds["1"].fit_start, serverMetrics.rounds["1"].fit_end],
+                            ["01m 01s", serverMetrics.rounds["2"].fit_start, serverMetrics.rounds["2"].fit_end],
+                            ["12s", serverMetrics.rounds["3"].fit_start, ""],
+                        ],
+                        evaluate: [
+                            ["01s", serverMetrics.rounds["1"].evaluate_start, serverMetrics.rounds["1"].evaluate_end],
+                            ["01m 03s", serverMetrics.rounds["2"].evaluate_start, ""],
+                            ["", "", ""],
+                        ],
+                    };
+
+                    for (let i = 0; i < Object.keys(expectedTimes.fit).length; i++) {
+                        const toggleButton = container.querySelector(`#job-round-toggle-${i} a`);
+                        act(() => toggleButton.click());
+
+                        console.log(i)
+
+                        const jobRoundDetailsComponent = container.querySelector(`#job-round-details-${i}`);
+                        const fitElapsedTime = jobRoundDetailsComponent.children[0];
+                        expect(fitElapsedTime.children[0]).toHaveTextContent("Fit elapsed time:");
+                        expect(fitElapsedTime.children[1]).toHaveTextContent(expectedTimes.fit[i][0]);
+                        const fitStart = jobRoundDetailsComponent.children[1];
+                        expect(fitStart.children[0]).toHaveTextContent("Fit start time:");
+                        expect(fitStart.children[1]).toHaveTextContent(expectedTimes.fit[i][1]);
+                        const fitEnd = jobRoundDetailsComponent.children[2];
+                        expect(fitEnd.children[0]).toHaveTextContent("Fit end time:");
+                        expect(fitEnd.children[1]).toHaveTextContent(expectedTimes.fit[i][2]);
+                        const evaluateElapsedTime = jobRoundDetailsComponent.children[3];
+                        expect(evaluateElapsedTime.children[0]).toHaveTextContent("Evaluate elapsed time:");
+                        expect(evaluateElapsedTime.children[1]).toHaveTextContent(expectedTimes.evaluate[i][0]);
+                        const evaluateStart = jobRoundDetailsComponent.children[4];
+                        expect(evaluateStart.children[0]).toHaveTextContent("Evaluate start time:");
+                        expect(evaluateStart.children[1]).toHaveTextContent(expectedTimes.evaluate[i][1]);
+                        const evaluateEnd = jobRoundDetailsComponent.children[5];
+                        expect(evaluateEnd.children[0]).toHaveTextContent("Evaluate end time:");
+                        expect(evaluateEnd.children[1]).toHaveTextContent(expectedTimes.evaluate[i][2]);
+                    }
+
+                    // custom properties
+                    const jobRoundDetailsComponent = container.querySelector(`#job-round-details-${0}`);
+                    const customPropertyValue = jobRoundDetailsComponent.children[6];
+                    expect(customPropertyValue.children[0]).toHaveTextContent("custom_property_value");
+                    expect(customPropertyValue.children[1]).toHaveTextContent(serverMetrics.custom_property_value);
+                    const customPropertyArray = jobRoundDetailsComponent.children[7];
+                    expect(customPropertyArray.children[0]).toHaveTextContent("custom_property_array");
+                    expect(customPropertyArray.children[1]).toHaveTextContent(
+                        JSON.stringify(serverMetrics.custom_property_array)
+                    );
+                    const customPropertyObject = jobRoundDetailsComponent.children[8];
+                    expect(customPropertyObject.children[0]).toHaveTextContent("custom_property_object");
+                    const customPropertyObjectValue = customPropertyObject.children[1];
+                    expect(customPropertyObjectValue.children[0].children[0]).toHaveTextContent("custom_property_object_value");
+                    expect(customPropertyObjectValue.children[0].children[1]).toHaveTextContent(
+                        serverMetrics.custom_property_object.custom_property_object_value
+                    );
+                });
+            });
         });
     });
     describe("Server config", () => {
@@ -355,5 +473,18 @@ describe("Job Details Page", () => {
         setupGetJobMock({}, false, "error");
         const { container } = render(<JobDetails />);
         expect(container.querySelector("#job-details-error")).toHaveTextContent("Error retrieving job.");
+    });
+    describe("getTimeString function", () => {
+        it("Renders time strings correctly", () => {
+            expect(getTimeString(123)).toBe("123ms");
+            expect(getTimeString(1234)).toBe("01s 234ms");
+            expect(getTimeString(9765)).toBe("09s 765ms");
+            expect(getTimeString(12349)).toBe("12s");
+            expect(getTimeString(123498)).toBe("02m 03s");
+            expect(getTimeString(1234987)).toBe("20m 34s");
+            expect(getTimeString(12349873)).toBe("03h 25m 49s");
+            expect(getTimeString(82349873)).toBe("22h 52m 29s");
+            expect(getTimeString(182349873)).toBe("50h 39m 09s");
+        });
     });
 });
