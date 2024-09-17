@@ -173,11 +173,11 @@ export function JobProgress({
     serverConfig: string;
     status: status;
 }): ReactElement {
+    const [collapsed, setCollapsed] = useState(true);
+
     if (!serverMetrics || !serverConfig) {
         return null;
     }
-
-    const [collapsed, setCollapsed] = useState(true);
 
     const serverMetricsJson = JSON.parse(serverMetrics);
     const serverConfigJson = JSON.parse(serverConfig);
@@ -304,11 +304,12 @@ export function JobProgressDetails({ serverMetrics }: { serverMetrics: Object })
 }
 
 export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object; index: int }): ReactElement {
+
+    const [collapsed, setCollapsed] = useState(true);
+
     if (!roundMetrics) {
         return null;
     }
-
-    const [collapsed, setCollapsed] = useState(true);
 
     return (
         <div>
