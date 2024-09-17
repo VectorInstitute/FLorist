@@ -304,7 +304,6 @@ export function JobProgressDetails({ serverMetrics }: { serverMetrics: Object })
 }
 
 export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object; index: int }): ReactElement {
-
     const [collapsed, setCollapsed] = useState(true);
 
     if (!roundMetrics) {
