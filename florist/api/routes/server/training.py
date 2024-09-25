@@ -146,9 +146,11 @@ def server_training_listener(job: Job, database: Database[Dict[str, Any]]) -> No
     # check if training has already finished before start listening
     server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
     LOGGER.debug(f"Listener: Current metrics for job {job.id}: {server_metrics}")
-    if server_metrics is not None and "fit_end" in server_metrics:
-        close_job(job, server_metrics, database)
-        return
+    if server_metrics is not None:
+        update_job_metrics(job, server_metrics, database)
+        if "fit_end" in server_metrics:
+            close_job(job, database)
+            return
 
     subscriber = get_subscriber(job.server_uuid, job.redis_host, job.redis_port)
     # TODO add a max retries mechanism, maybe?
@@ -158,25 +160,26 @@ def server_training_listener(job: Job, database: Database[Dict[str, Any]]) -> No
             server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
             LOGGER.debug(f"Listener: Message received for job {job.id}. Metrics: {server_metrics}")
 
-            if server_metrics is not None and "fit_end" in server_metrics:
-                close_job(job, server_metrics, database)
-                return
+            if server_metrics is not None:
+                update_job_metrics(job, server_metrics, database)
+                if "fit_end" in server_metrics:
+                    close_job(job, database)
+                    return
 
 
-def close_job(job: Job, server_metrics: Dict[str, Any], database: Database[Dict[str, Any]]) -> None:
+def update_job_metrics(job: Job, server_metrics: Dict[str, Any], database: Database[Dict[str, Any]]) -> None:
     """
-    Close the job.
+    Update the job with server and client metrics.
 
-    Collect the job's clients metrics, saving them and the server's metrics to the job and marking its
-    status as FINISHED_SUCCESSFULLY.
+    Collect the job's clients metrics, saving them and the server's metrics to the job.
 
-    :param job: (Job) The job to be closed.
+    :param job: (Job) The job to be updated.
     :param server_metrics: (Dict[str, Any]) The server's metrics to be saved into the job.
     :param database: (pymongo.database.Database) An instance of the database to save the information
         into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async
         because of limitations with FastAPI's BackgroundTasks.
     """
-    LOGGER.info(f"Listener: Training finished for job {job.id}")
+    LOGGER.info(f"Listener: Updating metrics for job {job.id}")
 
     clients_metrics: List[Dict[str, Any]] = []
     if job.clients_info is not None:
@@ -191,7 +194,20 @@ def close_job(job: Job, server_metrics: Dict[str, Any], database: Database[Dict[
             client_metrics = response.json()
             clients_metrics.append(client_metrics)
 
-    job.set_status_sync(JobStatus.FINISHED_SUCCESSFULLY, database)
     job.set_metrics(server_metrics, clients_metrics, database)
 
+    LOGGER.info(f"Listener: Job {job.id} has been updated.")
+
+
+def close_job(job: Job, database: Database[Dict[str, Any]]) -> None:
+    """
+    Close the job by marking its status as FINISHED_SUCCESSFULLY.
+
+    :param job: (Job) The job to be closed.
+    :param database: (pymongo.database.Database) An instance of the database to save the information
+        into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async
+        because of limitations with FastAPI's BackgroundTasks.
+    """
+    LOGGER.info(f"Listener: Training finished for job {job.id}")
+    job.set_status_sync(JobStatus.FINISHED_SUCCESSFULLY, database)
     LOGGER.info(f"Listener: Job {job.id} status has been set to {job.status.value}.")

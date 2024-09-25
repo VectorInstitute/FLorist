@@ -61,3 +61,30 @@
     border-radius: 5px;
     color: white;
 }
+
+#job-progress .progress {
+    padding: 0;
+    margin: 0 12px;
+    height: max-content;
+}
+
+#job-progress .progress-bar {
+    height: 25px;
+}
+
+#job-progress .progress-bar.bg-disabled {
+    background-color: lightgray !important;
+}
+
+.job-expand-button a.btn {
+    padding: 0;
+    margin: 0;
+}
+
+.job-round-details {
+    padding-left: 40px;
+}
+
+.job-round-details .col-sm-2 {
+    width: 20%;
+}
