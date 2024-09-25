@@ -452,9 +452,11 @@
     <span class="c1"># check if training has already finished before start listening</span>
     <span class="n">server_metrics</span> <span class="o">=</span> <span class="n">get_from_redis</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">server_uuid</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_port</span><span class="p">)</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Current metrics for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">server_metrics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">server_metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;fit_end&quot;</span> <span class="ow">in</span> <span class="n">server_metrics</span><span class="p">:</span>
-        <span class="n">close_job</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">server_metrics</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
-        <span class="k">return</span>
+    <span class="k">if</span> <span class="n">server_metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">update_job_metrics</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">server_metrics</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;fit_end&quot;</span> <span class="ow">in</span> <span class="n">server_metrics</span><span class="p">:</span>
+            <span class="n">close_job</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+            <span class="k">return</span>
 
     <span class="n">subscriber</span> <span class="o">=</span> <span class="n">get_subscriber</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">server_uuid</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_port</span><span class="p">)</span>
     <span class="c1"># TODO add a max retries mechanism, maybe?</span>
@@ -464,28 +466,29 @@
             <span class="n">server_metrics</span> <span class="o">=</span> <span class="n">get_from_redis</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">server_uuid</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_port</span><span class="p">)</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Message received for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">. Metrics: </span><span class="si">{</span><span class="n">server_metrics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">server_metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;fit_end&quot;</span> <span class="ow">in</span> <span class="n">server_metrics</span><span class="p">:</span>
-                <span class="n">close_job</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">server_metrics</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
-                <span class="k">return</span></div>
+            <span class="k">if</span> <span class="n">server_metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">update_job_metrics</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">server_metrics</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;fit_end&quot;</span> <span class="ow">in</span> <span class="n">server_metrics</span><span class="p">:</span>
+                    <span class="n">close_job</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+                    <span class="k">return</span></div>
 
 
 
-<div class="viewcode-block" id="close_job">
-<a class="viewcode-back" href="../../../../../reference/api/florist.api.routes.server.training.html#florist.api.routes.server.training.close_job">[docs]</a>
-<span class="k">def</span> <span class="nf">close_job</span><span class="p">(</span><span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">server_metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">database</span><span class="p">:</span> <span class="n">Database</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="update_job_metrics">
+<a class="viewcode-back" href="../../../../../reference/api/florist.api.routes.server.training.html#florist.api.routes.server.training.update_job_metrics">[docs]</a>
+<span class="k">def</span> <span class="nf">update_job_metrics</span><span class="p">(</span><span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">server_metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">database</span><span class="p">:</span> <span class="n">Database</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Close the job.</span>
+<span class="sd">    Update the job with server and client metrics.</span>
 
-<span class="sd">    Collect the job&#39;s clients metrics, saving them and the server&#39;s metrics to the job and marking its</span>
-<span class="sd">    status as FINISHED_SUCCESSFULLY.</span>
+<span class="sd">    Collect the job&#39;s clients metrics, saving them and the server&#39;s metrics to the job.</span>
 
-<span class="sd">    :param job: (Job) The job to be closed.</span>
+<span class="sd">    :param job: (Job) The job to be updated.</span>
 <span class="sd">    :param server_metrics: (Dict[str, Any]) The server&#39;s metrics to be saved into the job.</span>
 <span class="sd">    :param database: (pymongo.database.Database) An instance of the database to save the information</span>
 <span class="sd">        into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async</span>
 <span class="sd">        because of limitations with FastAPI&#39;s BackgroundTasks.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Training finished for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Updating metrics for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">clients_metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">clients_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -500,9 +503,25 @@
             <span class="n">client_metrics</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
             <span class="n">clients_metrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">client_metrics</span><span class="p">)</span>
 
-    <span class="n">job</span><span class="o">.</span><span class="n">set_status_sync</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_SUCCESSFULLY</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
     <span class="n">job</span><span class="o">.</span><span class="n">set_metrics</span><span class="p">(</span><span class="n">server_metrics</span><span class="p">,</span> <span class="n">clients_metrics</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
 
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has been updated.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="close_job">
+<a class="viewcode-back" href="../../../../../reference/api/florist.api.routes.server.training.html#florist.api.routes.server.training.close_job">[docs]</a>
+<span class="k">def</span> <span class="nf">close_job</span><span class="p">(</span><span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="n">Database</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Close the job by marking its status as FINISHED_SUCCESSFULLY.</span>
+
+<span class="sd">    :param job: (Job) The job to be closed.</span>
+<span class="sd">    :param database: (pymongo.database.Database) An instance of the database to save the information</span>
+<span class="sd">        into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async</span>
+<span class="sd">        because of limitations with FastAPI&#39;s BackgroundTasks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Training finished for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_status_sync</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_SUCCESSFULLY</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> status has been set to </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 
 </pre></div>
