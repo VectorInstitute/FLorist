@@ -54,6 +54,12 @@ export function JobDetailsBody(): ReactElement {
         );
     }
 
+    let totalEpochs = null;
+    if (job.server_config) {
+        const serverConfigJson = JSON.parse(job.server_config);
+        totalEpochs = serverConfigJson.n_server_rounds;
+    }
+
     return (
         <div className="container pt-3 p-0">
             <div className="row pb-2">
@@ -105,7 +111,7 @@ export function JobDetailsBody(): ReactElement {
                 </div>
             </div>
 
-            <JobProgress serverMetrics={job.server_metrics} serverConfig={job.server_config} status={job.status} />
+            <JobProgressBar metrics={job.server_metrics} totalEpochs={totalEpochs} status={job.status} />
 
             <JobDetailsTable
                 Component={JobDetailsServerConfigTable}
@@ -164,30 +170,28 @@ export function JobDetailsStatus({ status }: { status: string }): ReactElement {
     );
 }
 
-export function JobProgress({
-    serverMetrics,
-    serverConfig,
+export function JobProgressBar({
+    metrics,
+    totalEpochs,
     status,
 }: {
-    serverMetrics: string;
-    serverConfig: string;
+    metrics: string;
+    totalEpochs: number;
     status: status;
 }): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
-    if (!serverMetrics || !serverConfig) {
+    if (!metrics || !totalEpochs) {
         return null;
     }
 
-    const serverMetricsJson = JSON.parse(serverMetrics);
-    const serverConfigJson = JSON.parse(serverConfig);
+    const metricsJson = JSON.parse(metrics);
 
     let progressPercent = 0;
-    if ("rounds" in serverMetricsJson && Object.keys(serverMetricsJson.rounds).length > 0) {
-        const totalServerRounds = serverConfigJson.n_server_rounds;
-        const lastRound = Math.max(...Object.keys(serverMetricsJson.rounds));
-        const lastCompletedRound = "fit_end" in serverMetricsJson ? lastRound : lastRound - 1;
-        progressPercent = (lastCompletedRound * 100) / totalServerRounds;
+    if ("rounds" in metricsJson && Object.keys(metricsJson.rounds).length > 0) {
+        const lastRound = Math.max(...Object.keys(metricsJson.rounds));
+        const lastCompletedRound = "fit_end" in metricsJson ? lastRound : lastRound - 1;
+        progressPercent = (lastCompletedRound * 100) / totalEpochs;
     }
     const progressWidth = progressPercent === 0 ? "100%" : `${progressPercent}%`;
 
@@ -247,7 +251,7 @@ export function JobProgress({
                         </div>
                     </div>
                     <div className="row pb-2">
-                        {!collapsed ? <JobProgressDetails serverMetrics={serverMetricsJson} /> : null}
+                        {!collapsed ? <JobProgressDetails metrics={metricsJson} /> : null}
                     </div>
                 </div>
             </div>
@@ -255,19 +259,19 @@ export function JobProgress({
     );
 }
 
-export function JobProgressDetails({ serverMetrics }: { serverMetrics: Object }): ReactElement {
-    if (!serverMetrics) {
+export function JobProgressDetails({ metrics }: { metrics: Object }): ReactElement {
+    if (!metrics) {
         return null;
     }
     let elapsedTime = "";
-    if ("fit_start" in serverMetrics) {
-        const startDate = Date.parse(serverMetrics.fit_start);
-        const endDate = "fit_end" in serverMetrics ? Date.parse(serverMetrics.fit_end) : Date.now();
+    if ("fit_start" in metrics) {
+        const startDate = Date.parse(metrics.fit_start);
+        const endDate = "fit_end" in metrics ? Date.parse(metrics.fit_end) : Date.now();
         elapsedTime = getTimeString(endDate - startDate);
     }
 
-    const roundMetricsArray = Array(serverMetrics.rounds.length);
-    for (const [round, roundMetrics] of Object.entries(serverMetrics.rounds)) {
+    const roundMetricsArray = Array(metrics.rounds.length);
+    for (const [round, roundMetrics] of Object.entries(metrics.rounds)) {
         roundMetricsArray[parseInt(round) - 1] = roundMetrics;
     }
 
@@ -283,21 +287,21 @@ export function JobProgressDetails({ serverMetrics }: { serverMetrics: Object })
                 <div className="col-sm-2">
                     <strong className="text-dark">Start time:</strong>
                 </div>
-                <div className="col-sm">{"fit_start" in serverMetrics ? serverMetrics.fit_start : null}</div>
+                <div className="col-sm">{"fit_start" in metrics ? metrics.fit_start : null}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">End time:</strong>
                 </div>
-                <div className="col-sm">{"fit_end" in serverMetrics ? serverMetrics.fit_end : null}</div>
+                <div className="col-sm">{"fit_end" in metrics ? metrics.fit_end : null}</div>
             </div>
 
-            {Object.keys(serverMetrics).map((name, i) => (
-                <JobProgressProperty name={name} value={serverMetrics[name]} key={i} />
+            {Object.keys(metrics).map((name, i) => (
+                <JobProgressProperty name={name} value={metrics[name]} key={i} />
             ))}
 
             {roundMetricsArray.map((roundMetrics, i) => (
-                <JobProgressRound roundMetrics={roundMetrics} key={i} index={i} />
+                <JobProgressRound roundMetrics={metrics} key={i} index={i} />
             ))}
         </div>
     );
@@ -504,6 +508,8 @@ export function JobDetailsServerConfigTable({ data }: { data: string }): ReactEl
 }
 
 export function JobDetailsClientsInfoTable({ data }: { data: Array<ClientInfo> }): ReactElement {
+    const [collapsed, setCollapsed] = useState(true);
+
     return (
         <table className="table align-items-center mb-0">
             <thead>
@@ -513,6 +519,7 @@ export function JobDetailsClientsInfoTable({ data }: { data: Array<ClientInfo> }
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Data Path</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Redis Host</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Redis Port</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Progress</th>
                 </tr>
             </thead>
             <tbody>
@@ -541,6 +548,11 @@ export function JobDetailsClientsInfoTable({ data }: { data: Array<ClientInfo> }
                         <td className="col-sm" id={`job-details-client-config-redis-port-${i}`}>
                             <div className="d-flex flex-column justify-content-center">
                                 <span className="ps-3 text-secondary text-sm">{clientInfo.redis_port}</span>
+                            </div>
+                        </td>
+                        <td className="col-sm" id={`job-details-client-config-progress-${i}`}>
+                            <div className="d-flex flex-column justify-content-center">
+                                <span className="ps-3 text-secondary text-sm">{clientInfo.metrics}</span>
                             </div>
                         </td>
                     </tr>
