@@ -103,7 +103,10 @@
     margin: 0 15px !important;
 }
 
-.job-client-progress .card .text-dark {
+.job-client-progress .card .row,
+.job-client-progress .card .card-header .text-dark,
+.job-client-progress .card .row .text-dark
+{
     font-size: 0.875rem !important;
     color: #7b809a !important;
     font-weight: normal;

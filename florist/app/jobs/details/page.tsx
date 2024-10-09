@@ -190,13 +190,32 @@ export function JobProgressBar({
 
     const metricsJson = JSON.parse(metrics);
 
+    let endRoundKey;
+    if (metricsJson.type === "server") {
+        endRoundKey = "fit_end";
+    } if (metricsJson.type === "client") {
+        endRoundKey = "shutdown";
+    }
+
     let progressPercent = 0;
     if ("rounds" in metricsJson && Object.keys(metricsJson.rounds).length > 0) {
         const lastRound = Math.max(...Object.keys(metricsJson.rounds));
-        const lastCompletedRound = "fit_end" in metricsJson ? lastRound : lastRound - 1;
+        const lastCompletedRound = endRoundKey in metricsJson ? lastRound : lastRound - 1;
         progressPercent = (lastCompletedRound * 100) / totalEpochs;
     }
     const progressWidth = progressPercent === 0 ? "100%" : `${progressPercent}%`;
+
+    // Clients will not have a status, so we need to set one based on the progress percent
+    if (!status) {
+        if (progressPercent === 0) {
+            status = "NOT_STARTED";
+        } else if (progressPercent === 100) {
+            status = "FINISHED_SUCCESSFULLY";
+        } else {
+            status = "IN_PROGRESS";
+        }
+        // TODO: add error status
+    }
 
     let progressBarClasses = "progress-bar progress-bar-striped";
     switch (String(validStatuses[status])) {
@@ -266,10 +285,21 @@ export function JobProgressDetails({ metrics }: { metrics: Object }): ReactEleme
     if (!metrics) {
         return null;
     }
+
+    let fitStartKey;
+    let fitEndKey;
+    if (metrics.type === "server") {
+        fitStartKey = "fit_start";
+        fitEndKey = "fit_end";
+    } if (metrics.type === "client") {
+        fitStartKey = "initialized";
+        fitEndKey = "shutdown";
+    }
+
     let elapsedTime = "";
-    if ("fit_start" in metrics) {
-        const startDate = Date.parse(metrics.fit_start);
-        const endDate = "fit_end" in metrics ? Date.parse(metrics.fit_end) : Date.now();
+    if (fitStartKey in metrics) {
+        const startDate = Date.parse(metrics[fitStartKey]);
+        const endDate = fitEndKey in metrics ? Date.parse(metrics[fitEndKey]) : Date.now();
         elapsedTime = getTimeString(endDate - startDate);
     }
 
@@ -290,13 +320,13 @@ export function JobProgressDetails({ metrics }: { metrics: Object }): ReactEleme
                 <div className="col-sm-2">
                     <strong className="text-dark">Start time:</strong>
                 </div>
-                <div className="col-sm">{"fit_start" in metrics ? metrics.fit_start : null}</div>
+                <div className="col-sm">{fitStartKey in metrics ? metrics[fitStartKey] : null}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">End time:</strong>
                 </div>
-                <div className="col-sm">{"fit_end" in metrics ? metrics.fit_end : null}</div>
+                <div className="col-sm">{fitEndKey in metrics ? metrics[fitEndKey] : null}</div>
             </div>
 
             {Object.keys(metrics).map((name, i) => (
@@ -304,7 +334,7 @@ export function JobProgressDetails({ metrics }: { metrics: Object }): ReactEleme
             ))}
 
             {roundMetricsArray.map((roundMetrics, i) => (
-                <JobProgressRound roundMetrics={metrics} key={i} index={i} />
+                <JobProgressRound roundMetrics={roundMetrics} key={i} index={i} />
             ))}
         </div>
     );
@@ -409,7 +439,7 @@ export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics:
 }
 
 export function JobProgressProperty({ name, value }: { name: string; value: string }): ReactElement {
-    if (["fit_start", "fit_end", "evaluate_start", "evaluate_end", "rounds", "type"].includes(name)) {
+    if (["fit_start", "fit_end", "evaluate_start", "evaluate_end", "rounds", "type", "initialized", "shutdown"].includes(name)) {
         return null;
     }
     let renderedValue = value;
@@ -527,7 +557,7 @@ export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<C
             <tbody>
                 {data.map((clientInfo, i) => (
                     [
-                        <tr className="job-client-details">
+                        <tr className="job-client-details" key={`${i}-1`}>
                             <td className="col-sm" id={`job-details-client-config-client-${i}`}>
                                 <div className="d-flex flex-column justify-content-center">
                                     <span className="ps-3 text-secondary text-sm">{clientInfo.client}</span>
@@ -554,13 +584,9 @@ export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<C
                                 </div>
                             </td>
                         </tr>,
-                        <tr className="job-client-progress">
-                            <td className="col-sm" id={`job-details-client-config-progress-${i}`} colspan="5">
-                                <JobProgressBar
-                                    metrics={clientInfo.metrics}
-                                    totalEpochs={properties.localEpochs}
-                                    status={null}
-                                />
+                        <tr className="job-client-progress" key={`${i}-2`}>
+                            <td className="col-sm" id={`job-details-client-config-progress-${i}`} colSpan="5">
+                                <JobProgressBar metrics={clientInfo.metrics} totalEpochs={properties.localEpochs} />
                             </td>
                         </tr>
                     ]
