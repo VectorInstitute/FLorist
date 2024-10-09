@@ -55,9 +55,11 @@ export function JobDetailsBody(): ReactElement {
     }
 
     let totalEpochs = null;
+    let localEpochs = null;
     if (job.server_config) {
         const serverConfigJson = JSON.parse(job.server_config);
         totalEpochs = serverConfigJson.n_server_rounds;
+        localEpochs = serverConfigJson.local_epochs;
     }
 
     return (
@@ -123,6 +125,7 @@ export function JobDetailsBody(): ReactElement {
                 Component={JobDetailsClientsInfoTable}
                 title="Clients Configuration"
                 data={job.clients_info}
+                properties={{ localEpochs }}
             />
         </div>
     );
@@ -215,7 +218,7 @@ export function JobProgressBar({
     }
 
     return (
-        <div id="job-progress" className="mb-4">
+        <div className="job-progress-bar mb-4">
             <div className="card my-4">
                 <div className="card-header pb-0">
                     <strong className="text-dark">Progress:</strong>
@@ -234,7 +237,7 @@ export function JobProgressBar({
                                 <strong>{Math.floor(progressPercent)}%</strong>
                             </div>
                         </div>
-                        <div id="job-details-toggle" className="col-sm job-expand-button">
+                        <div className="job-details-toggle col-sm job-expand-button">
                             <a className="btn btn-link" onClick={() => setCollapsed(!collapsed)}>
                                 {collapsed ? (
                                     <span>
@@ -428,7 +431,7 @@ export function JobProgressProperty({ name, value }: { name: string; value: stri
     );
 }
 
-export function JobDetailsTable({ Component, title, data }): ReactElement {
+export function JobDetailsTable({ Component, title, data, properties }): ReactElement {
     return (
         <div className="row">
             <div className="col-12">
@@ -441,7 +444,7 @@ export function JobDetailsTable({ Component, title, data }): ReactElement {
 
                     <div className="card-body px-0 pb-2">
                         <div className="table-responsive p-0">
-                            <Component data={data} />
+                            <Component data={data} properties={properties} />
                         </div>
                     </div>
                 </div>
@@ -450,7 +453,7 @@ export function JobDetailsTable({ Component, title, data }): ReactElement {
     );
 }
 
-export function JobDetailsServerConfigTable({ data }: { data: string }): ReactElement {
+export function JobDetailsServerConfigTable({ data, properties }: { data: string, properties: Object }): ReactElement {
     const emptyResponse = (
         <div className="container" id="job-details-server-config-empty">
             Empty.
@@ -507,7 +510,7 @@ export function JobDetailsServerConfigTable({ data }: { data: string }): ReactEl
     );
 }
 
-export function JobDetailsClientsInfoTable({ data }: { data: Array<ClientInfo> }): ReactElement {
+export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<ClientInfo>, properties: Object }): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
     return (
@@ -519,43 +522,48 @@ export function JobDetailsClientsInfoTable({ data }: { data: Array<ClientInfo> }
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Data Path</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Redis Host</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Redis Port</th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Progress</th>
                 </tr>
             </thead>
             <tbody>
                 {data.map((clientInfo, i) => (
-                    <tr key={i}>
-                        <td className="col-sm" id={`job-details-client-config-client-${i}`}>
-                            <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">{clientInfo.client}</span>
-                            </div>
-                        </td>
-                        <td className="col-sm" id={`job-details-client-config-service-address-${i}`}>
-                            <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">{clientInfo.service_address}</span>
-                            </div>
-                        </td>
-                        <td className="col-sm" id={`job-details-client-config-data-path-${i}`}>
-                            <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">{clientInfo.data_path}</span>
-                            </div>
-                        </td>
-                        <td className="col-sm" id={`job-details-client-config-redis-host-${i}`}>
-                            <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">{clientInfo.redis_host}</span>
-                            </div>
-                        </td>
-                        <td className="col-sm" id={`job-details-client-config-redis-port-${i}`}>
-                            <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">{clientInfo.redis_port}</span>
-                            </div>
-                        </td>
-                        <td className="col-sm" id={`job-details-client-config-progress-${i}`}>
-                            <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">{clientInfo.metrics}</span>
-                            </div>
-                        </td>
-                    </tr>
+                    [
+                        <tr className="job-client-details">
+                            <td className="col-sm" id={`job-details-client-config-client-${i}`}>
+                                <div className="d-flex flex-column justify-content-center">
+                                    <span className="ps-3 text-secondary text-sm">{clientInfo.client}</span>
+                                </div>
+                            </td>
+                            <td className="col-sm" id={`job-details-client-config-service-address-${i}`}>
+                                <div className="d-flex flex-column justify-content-center">
+                                    <span className="ps-3 text-secondary text-sm">{clientInfo.service_address}</span>
+                                </div>
+                            </td>
+                            <td className="col-sm" id={`job-details-client-config-data-path-${i}`}>
+                                <div className="d-flex flex-column justify-content-center">
+                                    <span className="ps-3 text-secondary text-sm">{clientInfo.data_path}</span>
+                                </div>
+                            </td>
+                            <td className="col-sm" id={`job-details-client-config-redis-host-${i}`}>
+                                <div className="d-flex flex-column justify-content-center">
+                                    <span className="ps-3 text-secondary text-sm">{clientInfo.redis_host}</span>
+                                </div>
+                            </td>
+                            <td className="col-sm" id={`job-details-client-config-redis-port-${i}`}>
+                                <div className="d-flex flex-column justify-content-center">
+                                    <span className="ps-3 text-secondary text-sm">{clientInfo.redis_port}</span>
+                                </div>
+                            </td>
+                        </tr>,
+                        <tr className="job-client-progress">
+                            <td className="col-sm" id={`job-details-client-config-progress-${i}`} colspan="5">
+                                <JobProgressBar
+                                    metrics={clientInfo.metrics}
+                                    totalEpochs={properties.localEpochs}
+                                    status={null}
+                                />
+                            </td>
+                        </tr>
+                    ]
                 ))}
             </tbody>
         </table>
