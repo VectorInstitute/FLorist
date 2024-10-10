@@ -303,13 +303,16 @@ export function JobProgressDetails({ metrics }: { metrics: Object }): ReactEleme
         elapsedTime = getTimeString(endDate - startDate);
     }
 
-    const roundMetricsArray = Array(metrics.rounds.length);
-    for (const [round, roundMetrics] of Object.entries(metrics.rounds)) {
-        roundMetricsArray[parseInt(round) - 1] = roundMetrics;
+    let roundMetricsArray = [];
+    if (metrics.rounds) {
+        roundMetricsArray = Array(metrics.rounds.length);
+        for (const [round, roundMetrics] of Object.entries(metrics.rounds)) {
+            roundMetricsArray[parseInt(round) - 1] = roundMetrics;
+        }
     }
 
     return (
-        <div id="job-progress-detail">
+        <div className="job-progress-detail">
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">Elapsed time:</strong>
@@ -555,8 +558,12 @@ export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<C
                 </tr>
             </thead>
             <tbody>
-                {data.map((clientInfo, i) => (
-                    [
+                {data.map((clientInfo, i) => {
+                    let additionalClasses = "";
+                    if (!clientInfo.metrics) {
+                        additionalClasses += "empty-cell";
+                    }
+                    return [
                         <tr className="job-client-details" key={`${i}-1`}>
                             <td className="col-sm" id={`job-details-client-config-client-${i}`}>
                                 <div className="d-flex flex-column justify-content-center">
@@ -584,13 +591,33 @@ export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<C
                                 </div>
                             </td>
                         </tr>,
-                        <tr className="job-client-progress" key={`${i}-2`}>
-                            <td className="col-sm" id={`job-details-client-config-progress-${i}`} colSpan="5">
-                                <JobProgressBar metrics={clientInfo.metrics} totalEpochs={properties.localEpochs} />
+                        <tr key={`${i}-2`}>
+                            <td className={`job-client-progress-label col-sm ${additionalClasses}`}>
+                                {clientInfo.metrics ?
+                                    <div className="d-flex flex-column justify-content-center">
+                                        <span className="ps-3 text-secondary text-sm">
+                                            Progress:
+                                        </span>
+                                    </div>
+                                : null }
+                            </td>
+                            <td
+                                className={`job-client-progress col-sm ${additionalClasses}`}
+                                id={`job-details-client-config-progress-${i}`}
+                                colSpan="3"
+                            >
+                                <div className="d-flex flex-column justify-content-center">
+                                    <span className="ps-3 text-secondary text-sm">
+                                        <JobProgressBar
+                                            metrics={clientInfo.metrics}
+                                            totalEpochs={properties.localEpochs}
+                                        />
+                                    </span>
+                                </div>
                             </td>
                         </tr>
                     ]
-                ))}
+                })}
             </tbody>
         </table>
     );
