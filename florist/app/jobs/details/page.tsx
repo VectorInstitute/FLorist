@@ -356,7 +356,7 @@ export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object
                 <div className="col-sm-2">
                     <strong className="text-dark">Round {index + 1}</strong>
                 </div>
-                <div id={`job-round-toggle-${index}`} className="col-sm job-expand-button">
+                <div className={`job-round-toggle-${index} col-sm job-expand-button`}>
                     <a className="btn btn-link" onClick={() => setCollapsed(!collapsed)}>
                         {collapsed ? (
                             <span>
@@ -397,7 +397,7 @@ export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics:
     }
 
     return (
-        <div id={`job-round-details-${index}`} className="job-round-details">
+        <div className={`job-round-details-${index} job-round-details`}>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">Fit elapsed time:</strong>

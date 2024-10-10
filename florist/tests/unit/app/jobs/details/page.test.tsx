@@ -41,6 +41,7 @@ function makeTestJob(): JobData {
             n_server_rounds: 4,
         }),
         server_metrics: JSON.stringify({
+            type: "server",
             fit_start: "2020-01-01 12:07:07.0707",
             rounds: {
                 "1": {
@@ -201,7 +202,7 @@ describe("Job Details Page", () => {
             testJob.server_metrics = JSON.stringify({});
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
-            const jobProgressComponent = container.querySelector("#job-progress");
+            const jobProgressComponent = container.querySelector(".job-progress-bar");
             const progressBar = container.querySelector("div.progress-bar");
             expect(progressBar.getAttribute("style")).toBe("width: 100%;");
             expect(progressBar).toHaveTextContent("0%");
@@ -212,7 +213,7 @@ describe("Job Details Page", () => {
             testJob.server_metrics = JSON.stringify({ rounds: {} });
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
-            const jobProgressComponent = container.querySelector("#job-progress");
+            const jobProgressComponent = container.querySelector(".job-progress-bar");
             const progressBar = container.querySelector("div.progress-bar");
             expect(progressBar.getAttribute("style")).toBe("width: 100%;");
             expect(progressBar).toHaveTextContent("0%");
@@ -221,7 +222,7 @@ describe("Job Details Page", () => {
         it("Display progress bar at with correct progress percent", () => {
             setupGetJobMock(makeTestJob());
             const { container } = render(<JobDetails />);
-            const jobProgressComponent = container.querySelector("#job-progress");
+            const jobProgressComponent = container.querySelector(".job-progress-bar");
             const progressBar = container.querySelector("div.progress-bar");
             expect(progressBar.getAttribute("style")).toBe("width: 50%;");
             expect(progressBar).toHaveTextContent("50%");
@@ -231,7 +232,7 @@ describe("Job Details Page", () => {
             testJob.status = "NOT_STARTED";
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
-            const jobProgressComponent = container.querySelector("#job-progress");
+            const jobProgressComponent = container.querySelector(".job-progress-bar");
             const progressBar = container.querySelector("div.progress-bar");
             expect(progressBar).toHaveClass("progress-bar-striped");
         });
@@ -240,7 +241,7 @@ describe("Job Details Page", () => {
             testJob.status = "IN_PROGRESS";
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
-            const jobProgressComponent = container.querySelector("#job-progress");
+            const jobProgressComponent = container.querySelector(".job-progress-bar");
             const progressBar = container.querySelector("div.progress-bar");
             expect(progressBar).toHaveClass("bg-warning");
         });
@@ -249,7 +250,7 @@ describe("Job Details Page", () => {
             testJob.status = "FINISHED_SUCCESSFULLY";
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
-            const jobProgressComponent = container.querySelector("#job-progress");
+            const jobProgressComponent = container.querySelector(".job-progress-bar");
             const progressBar = container.querySelector("div.progress-bar");
             expect(progressBar).toHaveClass("bg-success");
         });
@@ -258,7 +259,7 @@ describe("Job Details Page", () => {
             testJob.status = "FINISHED_WITH_ERROR";
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
-            const jobProgressComponent = container.querySelector("#job-progress");
+            const jobProgressComponent = container.querySelector(".job-progress-bar");
             const progressBar = container.querySelector("div.progress-bar");
             expect(progressBar).toHaveClass("bg-danger");
         });
@@ -266,20 +267,20 @@ describe("Job Details Page", () => {
             it("Should be collapsed by default", () => {
                 setupGetJobMock(makeTestJob());
                 const { container } = render(<JobDetails />);
-                const jobProgressDetailsComponent = container.querySelector("#job-progress-detail");
+                const jobProgressDetailsComponent = container.querySelector(".job-progress-detail");
                 expect(jobProgressDetailsComponent).toBeNull();
             });
             it("Should open when the toggle button is clicked", () => {
                 setupGetJobMock(makeTestJob());
                 const { container } = render(<JobDetails />);
-                const toggleButton = container.querySelector("#job-details-toggle a");
+                const toggleButton = container.querySelector(".job-details-toggle a");
                 expect(toggleButton).toHaveTextContent("Expand");
 
                 act(() => toggleButton.click());
 
                 expect(toggleButton).toHaveTextContent("Collapse");
 
-                const jobProgressDetailsComponent = container.querySelector("#job-progress-detail");
+                const jobProgressDetailsComponent = container.querySelector(".job-progress-detail");
                 expect(jobProgressDetailsComponent).not.toBeNull();
             });
             it("Should render the contents correctly", () => {
@@ -287,10 +288,10 @@ describe("Job Details Page", () => {
                 const serverMetrics = JSON.parse(testJob.server_metrics);
                 setupGetJobMock(testJob);
                 const { container } = render(<JobDetails />);
-                const toggleButton = container.querySelector("#job-details-toggle a");
+                const toggleButton = container.querySelector(".job-details-toggle a");
                 act(() => toggleButton.click());
 
-                const jobProgressDetailsComponent = container.querySelector("#job-progress-detail");
+                const jobProgressDetailsComponent = container.querySelector(".job-progress-detail");
                 const elapsedTime = jobProgressDetailsComponent.children[0];
                 expect(elapsedTime.children[0]).toHaveTextContent("Elapsed time:");
                 expect(elapsedTime.children[1]).toHaveTextContent("05m 05s");
@@ -323,13 +324,13 @@ describe("Job Details Page", () => {
                 // rounds
                 const round1 = jobProgressDetailsComponent.children[6].children[0];
                 expect(round1.children[0]).toHaveTextContent("Round 1");
-                expect(round1.children[1].getAttribute("id")).toBe("job-round-toggle-0");
+                expect(round1.children[1]).toHaveClass("job-round-toggle-0");
                 const round2 = jobProgressDetailsComponent.children[7].children[0];
                 expect(round2.children[0]).toHaveTextContent("Round 2");
-                expect(round2.children[1].getAttribute("id")).toBe("job-round-toggle-1");
+                expect(round2.children[1]).toHaveClass("job-round-toggle-1");
                 const round3 = jobProgressDetailsComponent.children[8].children[0];
                 expect(round3.children[0]).toHaveTextContent("Round 3");
-                expect(round3.children[1].getAttribute("id")).toBe("job-round-toggle-2");
+                expect(round3.children[1]).toHaveClass("job-round-toggle-2");
             });
             describe("Rounds", () => {
                 it("Should be collapsed by default", () => {
@@ -337,7 +338,7 @@ describe("Job Details Page", () => {
                     const serverMetrics = JSON.parse(testJob.server_metrics);
                     setupGetJobMock(testJob);
                     const { container } = render(<JobDetails />);
-                    const progressToggleButton = container.querySelector("#job-details-toggle a");
+                    const progressToggleButton = container.querySelector(".job-details-toggle a");
                     act(() => progressToggleButton.click());
 
                     for (let i = 0; i < Object.keys(serverMetrics.rounds).length; i++) {
@@ -350,18 +351,18 @@ describe("Job Details Page", () => {
                     const serverMetrics = JSON.parse(testJob.server_metrics);
                     setupGetJobMock(testJob);
                     const { container } = render(<JobDetails />);
-                    const progressToggleButton = container.querySelector("#job-details-toggle a");
+                    const progressToggleButton = container.querySelector(".job-details-toggle a");
                     act(() => progressToggleButton.click());
 
                     for (let i = 0; i < Object.keys(serverMetrics.rounds).length; i++) {
-                        const toggleButton = container.querySelector(`#job-round-toggle-${i} a`);
+                        const toggleButton = container.querySelector(`.job-round-toggle-${i} a`);
                         expect(toggleButton).toHaveTextContent("Expand");
 
                         act(() => toggleButton.click());
 
                         expect(toggleButton).toHaveTextContent("Collapse");
 
-                        const jobRoundDetailsComponent = container.querySelector(`#job-round-details-${i}`);
+                        const jobRoundDetailsComponent = container.querySelector(`.job-round-details-${i}`);
                         expect(jobRoundDetailsComponent).not.toBeNull();
                     }
                 });
@@ -370,7 +371,7 @@ describe("Job Details Page", () => {
                     const serverMetrics = JSON.parse(testJob.server_metrics);
                     setupGetJobMock(testJob);
                     const { container } = render(<JobDetails />);
-                    const progressToggleButton = container.querySelector("#job-details-toggle a");
+                    const progressToggleButton = container.querySelector(".job-details-toggle a");
                     act(() => progressToggleButton.click());
 
                     const expectedTimes = {
@@ -387,12 +388,10 @@ describe("Job Details Page", () => {
                     };
 
                     for (let i = 0; i < Object.keys(expectedTimes.fit).length; i++) {
-                        const toggleButton = container.querySelector(`#job-round-toggle-${i} a`);
+                        const toggleButton = container.querySelector(`.job-round-toggle-${i} a`);
                         act(() => toggleButton.click());
 
-                        console.log(i);
-
-                        const jobRoundDetailsComponent = container.querySelector(`#job-round-details-${i}`);
+                        const jobRoundDetailsComponent = container.querySelector(`.job-round-details-${i}`);
                         const fitElapsedTime = jobRoundDetailsComponent.children[0];
                         expect(fitElapsedTime.children[0]).toHaveTextContent("Fit elapsed time:");
                         expect(fitElapsedTime.children[1]).toHaveTextContent(expectedTimes.fit[i][0]);
@@ -414,7 +413,7 @@ describe("Job Details Page", () => {
                     }
 
                     // custom properties
-                    const jobRoundDetailsComponent = container.querySelector(`#job-round-details-${0}`);
+                    const jobRoundDetailsComponent = container.querySelector(`.job-round-details-${0}`);
                     const customPropertyValue = jobRoundDetailsComponent.children[6];
                     expect(customPropertyValue.children[0]).toHaveTextContent("custom_property_value");
                     expect(customPropertyValue.children[1]).toHaveTextContent(serverMetrics.custom_property_value);
