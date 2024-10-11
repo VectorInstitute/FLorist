@@ -9,7 +9,7 @@ from fastapi import APIRouter, BackgroundTasks, Request
 from fastapi.responses import JSONResponse
 from pymongo.database import Database
 
-from florist.api.db.entities import Job, JobStatus
+from florist.api.db.entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
 from florist.api.servers.common import Model
 from florist.api.servers.config_parsers import ConfigParser
@@ -106,8 +106,10 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
 
         # Start the server training listener as a background task to update
-        # the job's status once the training is done
+        # the job's metrics and status once the training is done
         background_tasks.add_task(server_training_listener, job, request.app.synchronous_database)
+        for client_info in job.clients_info:
+            background_tasks.add_task(client_training_listener, job, client_info, request.app.synchronous_database)
 
         # Return the UUIDs
         return JSONResponse({"server_uuid": server_uuid, "client_uuids": client_uuids})
@@ -122,6 +124,49 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
         if job is not None:
             await job.set_status(JobStatus.FINISHED_WITH_ERROR, request.app.database)
         return JSONResponse({"error": str(ex)}, status_code=500)
+
+
+def client_training_listener(job: Job, client_info: ClientInfo, database: Database[Dict[str, Any]]) -> None:
+    """
+    Listen to the Redis' channel that reports updates on the training process of a FL client.
+
+    Keeps consuming updates to the channel until it finds `shutdown` in the client metrics.
+
+    :param job: (Job) The job that has this client's metrics.
+    :param client_info: (ClientInfo) The ClientInfo with the client_uuid to listen to.
+    :param database: (pymongo.database.Database) An instance of the database to save the information
+        into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async
+        because of limitations with FastAPI's BackgroundTasks.
+    """
+    LOGGER.info(f"Starting listener for client messages from job {job.id} at channel {client_info.uuid}")
+
+    assert client_info.uuid is not None, "clientInfo.uuid is None."
+    assert client_info.redis_host is not None, "clientInfo.redis_host is None."
+    assert client_info.redis_port is not None, "clientInfo.redis_port is None."
+
+    # check if training has already finished before start listening
+    client_metrics = get_from_redis(client_info.uuid, client_info.redis_host, client_info.redis_port)
+    LOGGER.debug(f"Listener: Current metrics for client {client_info.uuid}: {client_metrics}")
+    if client_metrics is not None:
+        LOGGER.info(f"Listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
+        job.set_client_metrics(client_info.uuid, client_metrics, database)
+        LOGGER.info(f"Listener: Client metrics for client {client_info.uuid} on {job.id} has been updated.")
+        if "shutdown" in client_metrics:
+            return
+
+    subscriber = get_subscriber(client_info.uuid, client_info.redis_host, client_info.redis_port)
+    # TODO add a max retries mechanism, maybe?
+    for message in subscriber.listen():  # type: ignore[no-untyped-call]
+        if message["type"] == "message":
+            # The contents of the message do not matter, we just use it to get notified
+            client_metrics = get_from_redis(client_info.uuid, client_info.redis_host, client_info.redis_port)
+            LOGGER.debug(f"Listener: Current metrics for client {client_info.uuid}: {client_metrics}")
+            if client_metrics is not None:
+                LOGGER.info(f"Listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
+                job.set_client_metrics(client_info.uuid, client_metrics, database)
+                LOGGER.info(f"Listener: Client metrics for client {client_info.uuid} on {job.id} has been updated.")
+                if "shutdown" in client_metrics:
+                    return
 
 
 def server_training_listener(job: Job, database: Database[Dict[str, Any]]) -> None:
@@ -147,9 +192,13 @@ def server_training_listener(job: Job, database: Database[Dict[str, Any]]) -> No
     server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
     LOGGER.debug(f"Listener: Current metrics for job {job.id}: {server_metrics}")
     if server_metrics is not None:
-        update_job_metrics(job, server_metrics, database)
+        LOGGER.info(f"Listener: Updating server metrics for job {job.id}")
+        job.set_server_metrics(server_metrics, database)
+        LOGGER.info(f"Listener: Server metrics for {job.id} has been updated.")
         if "fit_end" in server_metrics:
-            close_job(job, database)
+            LOGGER.info(f"Listener: Training finished for job {job.id}")
+            job.set_status_sync(JobStatus.FINISHED_SUCCESSFULLY, database)
+            LOGGER.info(f"Listener: Job {job.id} status has been set to {job.status.value}.")
             return
 
     subscriber = get_subscriber(job.server_uuid, job.redis_host, job.redis_port)
@@ -161,53 +210,11 @@ def server_training_listener(job: Job, database: Database[Dict[str, Any]]) -> No
             LOGGER.debug(f"Listener: Message received for job {job.id}. Metrics: {server_metrics}")
 
             if server_metrics is not None:
-                update_job_metrics(job, server_metrics, database)
+                LOGGER.info(f"Listener: Updating server metrics for job {job.id}")
+                job.set_server_metrics(server_metrics, database)
+                LOGGER.info(f"Listener: Server metrics for {job.id} has been updated.")
                 if "fit_end" in server_metrics:
-                    close_job(job, database)
+                    LOGGER.info(f"Listener: Training finished for job {job.id}")
+                    job.set_status_sync(JobStatus.FINISHED_SUCCESSFULLY, database)
+                    LOGGER.info(f"Listener: Job {job.id} status has been set to {job.status.value}.")
                     return
-
-
-def update_job_metrics(job: Job, server_metrics: Dict[str, Any], database: Database[Dict[str, Any]]) -> None:
-    """
-    Update the job with server and client metrics.
-
-    Collect the job's clients metrics, saving them and the server's metrics to the job.
-
-    :param job: (Job) The job to be updated.
-    :param server_metrics: (Dict[str, Any]) The server's metrics to be saved into the job.
-    :param database: (pymongo.database.Database) An instance of the database to save the information
-        into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async
-        because of limitations with FastAPI's BackgroundTasks.
-    """
-    LOGGER.info(f"Listener: Updating metrics for job {job.id}")
-
-    clients_metrics: List[Dict[str, Any]] = []
-    if job.clients_info is not None:
-        for client_info in job.clients_info:
-            response = requests.get(
-                url=f"http://{client_info.service_address}/{CHECK_CLIENT_STATUS_API}/{client_info.uuid}",
-                params={
-                    "redis_host": client_info.redis_host,
-                    "redis_port": client_info.redis_port,
-                },
-            )
-            client_metrics = response.json()
-            clients_metrics.append(client_metrics)
-
-    job.set_metrics(server_metrics, clients_metrics, database)
-
-    LOGGER.info(f"Listener: Job {job.id} has been updated.")
-
-
-def close_job(job: Job, database: Database[Dict[str, Any]]) -> None:
-    """
-    Close the job by marking its status as FINISHED_SUCCESSFULLY.
-
-    :param job: (Job) The job to be closed.
-    :param database: (pymongo.database.Database) An instance of the database to save the information
-        into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async
-        because of limitations with FastAPI's BackgroundTasks.
-    """
-    LOGGER.info(f"Listener: Training finished for job {job.id}")
-    job.set_status_sync(JobStatus.FINISHED_SUCCESSFULLY, database)
-    LOGGER.info(f"Listener: Job {job.id} status has been set to {job.status.value}.")
