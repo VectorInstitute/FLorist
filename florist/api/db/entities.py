@@ -207,13 +207,14 @@ class Job(BaseModel):
         :param database: (pymongo.database.Database) The database where the job collection is stored.
         """
         assert self.clients_info is not None and client_uuid in [c.uuid for c in self.clients_info], (
-            f"client uuid {client_uuid} is not in clients_info ({[c.uuid for c in self.clients_info]})"
+            f"client uuid {client_uuid} is not in clients_info",
+            f"({[c.uuid for c in self.clients_info] if self.clients_info is not None else None})",
         )
 
         job_collection = database[JOB_COLLECTION_NAME]
 
         for i in range(len(self.clients_info)):
-            if client_uuid in self.clients_info[i].uuid:
+            if client_uuid == self.clients_info[i].uuid:
                 self.clients_info[i].metrics = json.dumps(client_metrics)
                 update_result = job_collection.update_one(
                     {"_id": self.id}, {"$set": {f"clients_info.{i}.metrics": self.clients_info[i].metrics}}
