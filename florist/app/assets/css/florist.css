@@ -112,8 +112,7 @@
 }
 
 .job-client-progress .card .row,
-.job-client-progress .card .row .text-dark
-{
+.job-client-progress .card .row .text-dark {
     color: #7b809a !important;
     font-weight: normal;
     text-wrap: wrap;

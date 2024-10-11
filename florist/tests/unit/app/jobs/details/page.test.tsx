@@ -79,21 +79,21 @@ function makeTestJob(): JobData {
                 redis_host: "test-redis-host-1",
                 redis_port: "test-redis-port-1",
                 metrics: JSON.stringify({
-                    "type": "client",
-                    "initialized": "2024-10-10 15:05:59.025693",
-                    "shutdown": "2024-10-10 15:12:34.888213",
-                    "rounds": {
+                    type: "client",
+                    initialized: "2024-10-10 15:05:59.025693",
+                    shutdown: "2024-10-10 15:12:34.888213",
+                    rounds: {
                         "1": {
-                            "fit_start": "2024-10-10 15:05:34.888213",
-                            "fit_end": "2024-10-10 15:06:59.032618",
-                            "evaluate_start": "2024-10-10 15:07:59.032618",
-                            "evaluate_end": "2024-10-10 15:08:34.888213",
+                            fit_start: "2024-10-10 15:05:34.888213",
+                            fit_end: "2024-10-10 15:06:59.032618",
+                            evaluate_start: "2024-10-10 15:07:59.032618",
+                            evaluate_end: "2024-10-10 15:08:34.888213",
                         },
                         "2": {
-                            "fit_start": "2024-10-10 15:06:59.032618",
-                            "fit_end": "2024-10-10 15:07:34.888213",
-                            "evaluate_start": "2024-10-10 15:08:34.888213",
-                            "evaluate_end": "2024-10-10 15:09:59.032618",
+                            fit_start: "2024-10-10 15:06:59.032618",
+                            fit_end: "2024-10-10 15:07:34.888213",
+                            evaluate_start: "2024-10-10 15:08:34.888213",
+                            evaluate_end: "2024-10-10 15:09:59.032618",
                         },
                     },
                 }),
@@ -105,17 +105,17 @@ function makeTestJob(): JobData {
                 redis_host: "test-redis-host-2",
                 redis_port: "test-redis-port-2",
                 metrics: JSON.stringify({
-                    "type": "client",
-                    "initialized": "2024-10-10 15:05:59.025693",
-                    "rounds": {
+                    type: "client",
+                    initialized: "2024-10-10 15:05:59.025693",
+                    rounds: {
                         "1": {
-                            "fit_start": "2024-10-10 15:05:34.888213",
-                            "fit_end": "2024-10-10 15:05:34.888213",
-                            "evaluate_start": "2024-10-10 15:08:34.888213",
-                            "evaluate_end": "2024-10-10 15:08:34.888213",
+                            fit_start: "2024-10-10 15:05:34.888213",
+                            fit_end: "2024-10-10 15:05:34.888213",
+                            evaluate_start: "2024-10-10 15:08:34.888213",
+                            evaluate_end: "2024-10-10 15:08:34.888213",
                         },
                         "2": {
-                            "fit_start": "2024-10-10 15:06:59.032618",
+                            fit_start: "2024-10-10 15:06:59.032618",
                         },
                     },
                 }),
@@ -466,7 +466,7 @@ describe("Job Details Page", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
                     const { container } = render(<JobDetails />);
-                    const clientsProgress = container.querySelectorAll('.job-client-progress');
+                    const clientsProgress = container.querySelectorAll(".job-client-progress");
 
                     let progressBar = clientsProgress[0].querySelector("div.progress-bar");
                     expect(progressBar).toHaveClass("bg-success");
@@ -485,7 +485,9 @@ describe("Job Details Page", () => {
                     act(() => toggleButton.click());
 
                     let clientMetrics = JSON.parse(testJob.clients_info[0].metrics);
-                    let progressDetailsComponent = container.querySelectorAll(".job-client-progress .job-progress-detail")[0];
+                    let progressDetailsComponent = container.querySelectorAll(
+                        ".job-client-progress .job-progress-detail",
+                    )[0];
                     let elapsedTime = progressDetailsComponent.children[0];
                     expect(elapsedTime.children[0]).toHaveTextContent("Elapsed time:");
                     expect(elapsedTime.children[1]).toHaveTextContent("06m 35s");
@@ -499,7 +501,9 @@ describe("Job Details Page", () => {
                     toggleButton = container.querySelectorAll(".job-client-progress .job-details-toggle a")[1];
                     act(() => toggleButton.click());
                     clientMetrics = JSON.parse(testJob.clients_info[1].metrics);
-                    progressDetailsComponent = container.querySelectorAll(".job-client-progress .job-progress-detail")[1];
+                    progressDetailsComponent = container.querySelectorAll(
+                        ".job-client-progress .job-progress-detail",
+                    )[1];
                     elapsedTime = progressDetailsComponent.children[0];
                     expect(elapsedTime.children[0]).toHaveTextContent("Elapsed time:");
                     expect(elapsedTime.children[1]).toHaveTextContent("06m 13s");
