@@ -193,7 +193,8 @@ export function JobProgressBar({
     let endRoundKey;
     if (metricsJson.type === "server") {
         endRoundKey = "fit_end";
-    } if (metricsJson.type === "client") {
+    }
+    if (metricsJson.type === "client") {
         endRoundKey = "shutdown";
     }
 
@@ -272,9 +273,7 @@ export function JobProgressBar({
                             </a>
                         </div>
                     </div>
-                    <div className="row pb-2">
-                        {!collapsed ? <JobProgressDetails metrics={metricsJson} /> : null}
-                    </div>
+                    <div className="row pb-2">{!collapsed ? <JobProgressDetails metrics={metricsJson} /> : null}</div>
                 </div>
             </div>
         </div>
@@ -291,7 +290,8 @@ export function JobProgressDetails({ metrics }: { metrics: Object }): ReactEleme
     if (metrics.type === "server") {
         fitStartKey = "fit_start";
         fitEndKey = "fit_end";
-    } if (metrics.type === "client") {
+    }
+    if (metrics.type === "client") {
         fitStartKey = "initialized";
         fitEndKey = "shutdown";
     }
@@ -442,7 +442,18 @@ export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics:
 }
 
 export function JobProgressProperty({ name, value }: { name: string; value: string }): ReactElement {
-    if (["fit_start", "fit_end", "evaluate_start", "evaluate_end", "rounds", "type", "initialized", "shutdown"].includes(name)) {
+    if (
+        [
+            "fit_start",
+            "fit_end",
+            "evaluate_start",
+            "evaluate_end",
+            "rounds",
+            "type",
+            "initialized",
+            "shutdown",
+        ].includes(name)
+    ) {
         return null;
     }
     let renderedValue = value;
@@ -486,7 +497,7 @@ export function JobDetailsTable({ Component, title, data, properties }): ReactEl
     );
 }
 
-export function JobDetailsServerConfigTable({ data, properties }: { data: string, properties: Object }): ReactElement {
+export function JobDetailsServerConfigTable({ data, properties }: { data: string; properties: Object }): ReactElement {
     const emptyResponse = (
         <div className="container" id="job-details-server-config-empty">
             Empty.
@@ -543,7 +554,13 @@ export function JobDetailsServerConfigTable({ data, properties }: { data: string
     );
 }
 
-export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<ClientInfo>, properties: Object }): ReactElement {
+export function JobDetailsClientsInfoTable({
+    data,
+    properties,
+}: {
+    data: Array<ClientInfo>;
+    properties: Object;
+}): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
     return (
@@ -590,13 +607,11 @@ export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<C
                         </tr>,
                         <tr id={`job-client-progress-${i}`} key={`${i}-progress`}>
                             <td className={`job-client-progress-label col-sm ${additionalClasses}`}>
-                                {clientInfo.metrics ?
+                                {clientInfo.metrics ? (
                                     <div className="d-flex flex-column justify-content-center">
-                                        <span className="ps-3 text-secondary text-sm">
-                                            Progress:
-                                        </span>
+                                        <span className="ps-3 text-secondary text-sm">Progress:</span>
                                     </div>
-                                : null }
+                                ) : null}
                             </td>
                             <td
                                 className={`job-client-progress col-sm ${additionalClasses}`}
@@ -612,8 +627,8 @@ export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<C
                                     </span>
                                 </div>
                             </td>
-                        </tr>
-                    ]
+                        </tr>,
+                    ];
                 })}
             </tbody>
         </table>
