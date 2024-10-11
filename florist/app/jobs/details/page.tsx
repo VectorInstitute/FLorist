@@ -559,12 +559,9 @@ export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<C
             </thead>
             <tbody>
                 {data.map((clientInfo, i) => {
-                    let additionalClasses = "";
-                    if (!clientInfo.metrics) {
-                        additionalClasses += "empty-cell";
-                    }
+                    let additionalClasses = clientInfo.metrics ? "" : "empty-cell";
                     return [
-                        <tr className="job-client-details" key={`${i}-1`}>
+                        <tr className="job-client-details" key={`${i}-details`}>
                             <td className="col-sm" id={`job-details-client-config-client-${i}`}>
                                 <div className="d-flex flex-column justify-content-center">
                                     <span className="ps-3 text-secondary text-sm">{clientInfo.client}</span>
@@ -591,7 +588,7 @@ export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<C
                                 </div>
                             </td>
                         </tr>,
-                        <tr key={`${i}-2`}>
+                        <tr id={`job-client-progress-${i}`} key={`${i}-progress`}>
                             <td className={`job-client-progress-label col-sm ${additionalClasses}`}>
                                 {clientInfo.metrics ?
                                     <div className="d-flex flex-column justify-content-center">
