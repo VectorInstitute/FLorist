@@ -140,9 +140,7 @@ def client_training_listener(job: Job, client_info: ClientInfo, database: Databa
     """
     LOGGER.info(f"Starting listener for client messages from job {job.id} at channel {client_info.uuid}")
 
-    assert client_info.uuid is not None, "clientInfo.uuid is None."
-    assert client_info.redis_host is not None, "clientInfo.redis_host is None."
-    assert client_info.redis_port is not None, "clientInfo.redis_port is None."
+    assert client_info.uuid is not None, "client_info.uuid is None."
 
     # check if training has already finished before start listening
     client_metrics = get_from_redis(client_info.uuid, client_info.redis_host, client_info.redis_port)
