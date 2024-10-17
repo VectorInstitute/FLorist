@@ -44,7 +44,6 @@ repos:
       - id: nextjs-lint
         name: nextjs-lint
         entry: yarn lint-gh-action florist **/*.tsx
-        files: "florist/app"
         language: node
         additional_dependencies:
           - typescript
