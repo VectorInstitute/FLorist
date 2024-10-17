@@ -47,6 +47,7 @@ jobs:
       - uses: actions/setup-python@v5.2.0
         with:
           python-version: '3.9'
+          cache: 'poetry'
       - name: Install python dependencies and check code
         run: |
           poetry env use '3.9'
