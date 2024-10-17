@@ -12,6 +12,7 @@ on:
       - .github/workflows/tests.yml
       - '**.py'
       - '**.ipynb'
+      - '**.tsx'
       - poetry.lock
       - pyproject.toml
       - '**.rst'
@@ -27,6 +28,7 @@ on:
       - .github/workflows/tests.yml
       - '**.py'
       - '**.ipynb'
+      - '**.tsx'
       - poetry.lock
       - pyproject.toml
       - '**.rst'
