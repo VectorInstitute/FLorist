@@ -1,6 +1,6 @@
 {
-  "name": "nextjs-fastapi",
-  "version": "0.1.0",
+  "name": "florist",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "fastapi-dev": "poetry install --with test && python -m uvicorn florist.api.server:app --reload --log-level debug",
