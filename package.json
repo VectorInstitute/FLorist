@@ -1,6 +1,6 @@
 {
-  "name": "nextjs-fastapi",
-  "version": "0.1.0",
+  "name": "florist",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "fastapi-dev": "poetry install --with test && python -m uvicorn florist.api.server:app --reload --log-level debug",
@@ -11,7 +11,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint florist **/*.tsx",
-    "lint-gh-action": "next lint",
     "prettier": "prettier florist/app florist/tests/unit/app --write",
     "unit-test": "jest --coverage florist/tests/unit/",
     "integration-test": "jest --coverage florist/tests/integration/"
