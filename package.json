@@ -11,7 +11,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint florist **/*.tsx",
-    "lint-gh-action": "next lint",
     "prettier": "prettier florist/app florist/tests/unit/app --write",
     "unit-test": "jest --coverage florist/tests/unit/",
     "integration-test": "jest --coverage florist/tests/integration/"
