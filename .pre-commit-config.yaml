@@ -43,9 +43,10 @@ repos:
     hooks:
       - id: nextjs-lint
         name: nextjs-lint
-        entry: yarn lint-gh-action florist **/*.tsx
-        files: "florist/app"
-        language: system
+        entry: yarn lint
+        language: node
+        additional_dependencies:
+          - typescript
 
   - repo: local
     hooks:
