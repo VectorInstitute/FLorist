@@ -47,6 +47,7 @@ repos:
         language: node
         additional_dependencies:
           - typescript
+        exclude: ^[^.]+$|\.(?!(tsx)$)([^.]+$)  # excludes everything but .tsx files
 
   - repo: local
     hooks:
