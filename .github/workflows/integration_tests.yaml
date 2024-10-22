@@ -55,7 +55,7 @@ jobs:
           mongodb-version: 7.0.8
       - name: Install dependencies and check code
         run: |
-          poetry env use '3.9'
+          poetry env use '3.10'
           source .venv/bin/activate
           poetry install --with docs,test
           coverage run -m pytest florist/tests/integration && coverage xml && coverage report -m
