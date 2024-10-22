@@ -47,7 +47,7 @@ def get_server(
     :param n_clients: (int) the number of clients that will participate on training. Optional, default is 2.
     :param batch_size: (int) the size of the batch of samples. Optional, default is 8.
     :param local_epochs: (int) the number of local epochs the clients will run. Optional, default is 1.
-    :param metrics_reporter: (fl4health.reporting.base_reporter.BaseReporter) An optional metrics reporter instance.
+    :param reporters: (list[fl4health.reporting.base_reporter.BaseReporter]) An optional metrics reporter instance.
         Default is None.
     :return: (fl4health.server.base_server.FlServer) An instance of FlServer with FedAvg as strategy.
     """
