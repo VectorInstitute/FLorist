@@ -4,7 +4,7 @@ from functools import partial
 from typing import Callable, Dict, Union
 
 from fl4health.client_managers.base_sampling_manager import SimpleClientManager
-from fl4health.reporting.metrics import MetricsReporter
+from fl4health.reporting.base_reporter import BaseReporter
 from fl4health.server.base_server import FlServer
 from fl4health.utils.metric_aggregation import evaluate_metrics_aggregation_fn, fit_metrics_aggregation_fn
 from flwr.common.parameter import ndarrays_to_parameters
@@ -33,11 +33,11 @@ def fit_config(batch_size: int, local_epochs: int, current_server_round: int) ->
 
 def get_server(
     model: nn.Module,
+    reporters: list[BaseReporter],
     fit_config: Callable[[int, int, int], Dict[str, int]] = fit_config,
     n_clients: int = 2,
     batch_size: int = 8,
     local_epochs: int = 1,
-    metrics_reporter: MetricsReporter = None,
 ) -> FlServer:
     """
     Return a server instance with FedAvg aggregation strategy.
@@ -47,7 +47,7 @@ def get_server(
     :param n_clients: (int) the number of clients that will participate on training. Optional, default is 2.
     :param batch_size: (int) the size of the batch of samples. Optional, default is 8.
     :param local_epochs: (int) the number of local epochs the clients will run. Optional, default is 1.
-    :param metrics_reporter: (fl4health.reporting.metrics.MetricsReporter) An optional metrics reporter instance.
+    :param metrics_reporter: (fl4health.reporting.base_reporter.BaseReporter) An optional metrics reporter instance.
         Default is None.
     :return: (fl4health.server.base_server.FlServer) An instance of FlServer with FedAvg as strategy.
     """
@@ -64,4 +64,4 @@ def get_server(
         initial_parameters=initial_model_parameters,
     )
     client_manager = SimpleClientManager()
-    return FlServer(strategy=strategy, client_manager=client_manager, metrics_reporter=metrics_reporter)
+    return FlServer(strategy=strategy, client_manager=client_manager, reporters=reporters)

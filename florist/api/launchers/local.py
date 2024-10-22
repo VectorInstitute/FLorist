@@ -9,8 +9,10 @@ from typing import Callable, Sequence
 import flwr as fl
 from fl4health.clients.basic_client import BasicClient
 from fl4health.server.base_server import FlServer
-from flwr.common.logger import DEFAULT_FORMATTER
 from flwr.server import ServerConfig
+
+
+DEFAULT_FORMATTER = logging.Formatter("%(levelname)s %(name)s %(asctime)s | %(filename)s:%(lineno)d | %(message)s")
 
 
 def redirect_logging_from_console_to_file(log_file_path: str) -> None:
@@ -60,7 +62,6 @@ def start_server(
             config=ServerConfig(num_rounds=n_server_rounds),
         )
         server.shutdown()
-        server.metrics_reporter.dump()
 
 
 def start_client(client: BasicClient, server_address: str, client_log_file_name: str) -> None:
@@ -79,7 +80,6 @@ def start_client(client: BasicClient, server_address: str, client_log_file_name:
         sys.stderr = log_file
         fl.client.start_numpy_client(server_address=server_address, client=client)
         client.shutdown()
-        client.metrics_reporter.dump()
 
 
 def launch_server(

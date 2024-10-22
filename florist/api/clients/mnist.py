@@ -4,7 +4,7 @@ from typing import Tuple
 
 import torch
 from fl4health.clients.basic_client import BasicClient
-from fl4health.utils.dataset import MnistDataset
+from fl4health.utils.dataset import TensorDataset
 from fl4health.utils.load_data import load_mnist_data
 from flwr.common.typing import Config
 from torch import nn
@@ -18,7 +18,7 @@ from florist.api.models.mnist import MnistNet
 class MnistClient(BasicClient):  # type: ignore[misc]
     """Implementation of the MNIST client."""
 
-    def get_data_loaders(self, config: Config) -> Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]:
+    def get_data_loaders(self, config: Config) -> Tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]:
         """
         Return the data loader for MNIST data.
 
@@ -26,7 +26,7 @@ class MnistClient(BasicClient):  # type: ignore[misc]
         :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader
             and validation data loader respectively.
         """
-        train_loader, val_loader, _ = load_mnist_data(self.data_path, batch_size=config["batch_size"])
+        train_loader, val_loader, _ = load_mnist_data(self.data_path, batch_size=int(config["batch_size"]))
         return train_loader, val_loader
 
     def get_model(self, config: Config) -> nn.Module:

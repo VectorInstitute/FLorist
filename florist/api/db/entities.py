@@ -83,7 +83,7 @@ class Job(BaseModel):
     clients_info: Optional[Annotated[List[ClientInfo], Field(...)]]
 
     @classmethod
-    async def find_by_id(cls, job_id: str, database: AsyncIOMotorDatabase) -> Optional["Job"]:
+    async def find_by_id(cls, job_id: str, database: AsyncIOMotorDatabase[Any]) -> Optional["Job"]:
         """
         Find a job in the database by its id.
 
@@ -98,7 +98,7 @@ class Job(BaseModel):
         return Job(**result)
 
     @classmethod
-    async def find_by_status(cls, status: JobStatus, limit: int, database: AsyncIOMotorDatabase) -> List["Job"]:
+    async def find_by_status(cls, status: JobStatus, limit: int, database: AsyncIOMotorDatabase[Any]) -> List["Job"]:
         """
         Return all jobs with the given status.
 
@@ -114,7 +114,7 @@ class Job(BaseModel):
         assert isinstance(result, list)
         return [Job(**r) for r in result]
 
-    async def create(self, database: AsyncIOMotorDatabase) -> str:
+    async def create(self, database: AsyncIOMotorDatabase[Any]) -> str:
         """
         Save this instance under a new record in the database.
 
@@ -126,7 +126,7 @@ class Job(BaseModel):
         assert isinstance(result.inserted_id, str)
         return result.inserted_id
 
-    async def set_uuids(self, server_uuid: str, client_uuids: List[str], database: AsyncIOMotorDatabase) -> None:
+    async def set_uuids(self, server_uuid: str, client_uuids: List[str], database: AsyncIOMotorDatabase[Any]) -> None:
         """
         Save the server and clients' UUIDs in the database under the current job's id.
 
@@ -152,7 +152,7 @@ class Job(BaseModel):
             )
             assert_updated_successfully(update_result)
 
-    async def set_status(self, status: JobStatus, database: AsyncIOMotorDatabase) -> None:
+    async def set_status(self, status: JobStatus, database: AsyncIOMotorDatabase[Any]) -> None:
         """
         Save the status in the database under the current job's id.
 
