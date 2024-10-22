@@ -41,7 +41,7 @@ jobs:
       - name: Install dependencies and check code
         run: |
           yarn
-          poetry env use '3.9'
+          poetry env use '3.10'
           source .venv/bin/activate
           poetry install --with test --all-extras
           pre-commit run --all-files
