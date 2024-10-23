@@ -6,10 +6,11 @@ on:
       - main
     paths:
       - .pre-commit-config.yaml
-      - .github/workflows/static_code_checks.yml
+      - .github/workflows/static_code_checks.yaml
       - .github/workflows/docs_build.yml
       - .github/workflows/docs_deploy.yml
-      - .github/workflows/tests.yml
+      - .github/workflows/unit_tests.yaml
+      - .github/workflows/integration_tests.yaml
       - '**.py'
       - '**.ipynb'
       - poetry.lock
