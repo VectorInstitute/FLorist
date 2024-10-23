@@ -165,7 +165,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-/florist/tsconfig.json
 
 /metrics/
 /logs/
