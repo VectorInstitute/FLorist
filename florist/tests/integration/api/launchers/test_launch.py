@@ -23,13 +23,15 @@ def test_launch() -> None:
     n_server_rounds = 2
     server_address = "0.0.0.0:8080"
 
+    temp_dir = "."
+
     with tempfile.TemporaryDirectory() as temp_dir:
         client_data_paths = [Path(f"{temp_dir}/{i}") for i in range(n_clients)]
         for client_data_path in client_data_paths:
             os.mkdir(client_data_path)
         clients = [MnistClient(client_data_path, [], torch.device("cpu")) for client_data_path in client_data_paths]
 
-        server_constructor = partial(get_server, model=MnistNet())
+        server_constructor = partial(get_server, MnistNet(), [])
         server_path = os.path.join(temp_dir, "server")
         client_base_path = f"{temp_dir}/client"
         launch(
@@ -41,4 +43,4 @@ def test_launch() -> None:
             client_base_path,
         )
 
-        assert_string_in_file(f"{server_path}.out", "FL finished in")
+        assert_string_in_file(f"{server_path}.out", "[SUMMARY]")
