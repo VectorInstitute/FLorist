@@ -62,7 +62,7 @@ class ClientInfo(BaseModel):
                 "redis_host": "localhost",
                 "redis_port": "6380",
                 "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
-                "metrics": '{"type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
+                "metrics": '{"host_type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
             },
         }
 
@@ -219,7 +219,7 @@ class Job(BaseModel):
                 "server_address": "localhost:8000",
                 "server_config": '{"n_server_rounds": 3, "batch_size": 8, "local_epochs": 1}',
                 "server_uuid": "d73243cf-8b89-473b-9607-8cd0253a101d",
-                "server_metrics": '{"type": "server", "fit_start": "2024-04-23 15:33:12.865604", "rounds": {"1": {"fit_start": "2024-04-23 15:33:12.869001"}}}',
+                "server_metrics": '{"host_type": "server", "fit_start": "2024-04-23 15:33:12.865604", "rounds": {"1": {"fit_start": "2024-04-23 15:33:12.869001"}}}',
                 "redis_host": "localhost",
                 "redis_port": "6379",
                 "clients_info": [

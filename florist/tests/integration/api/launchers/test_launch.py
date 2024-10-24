@@ -23,8 +23,6 @@ def test_launch() -> None:
     n_server_rounds = 2
     server_address = "0.0.0.0:8080"
 
-    temp_dir = "."
-
     with tempfile.TemporaryDirectory() as temp_dir:
         client_data_paths = [Path(f"{temp_dir}/{i}") for i in range(n_clients)]
         for client_data_path in client_data_paths:
