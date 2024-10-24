@@ -14,17 +14,17 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9.0,<3.11"
+python = ">=3.10.0,<3.11"
 fastapi = "^0.115.2"
 uvicorn = {version = "^0.23.2", extras = ["standard"]}
-fl4health = "^0.1.15"
-wandb = "^0.16.3"
-torchvision = "^0.16.0"
+wandb = "^0.18.0"
+torchvision = "^0.18.0"
 redis = "^5.0.1"
 python-multipart = "^0.0.9"
 pydantic = "^1.10.15"
 motor = "^3.4.0"
 tqdm = "^4.66.3"
+fl4health = {git = "https://github.com/VectorInstitute/FL4Health.git"}
 
 [tool.poetry.group.test]
 optional = true

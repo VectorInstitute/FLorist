@@ -80,7 +80,7 @@ async def test_train():
                 server_metrics_result = redis_conn.get(server_uuid)
                 assert server_metrics_result is not None and isinstance(server_metrics_result, bytes)
                 server_metrics = json.loads(server_metrics_result.decode("utf8"))
-                assert server_metrics["type"] == "server"
+                assert server_metrics["host_type"] == "server"
                 assert "fit_start" in server_metrics
                 assert "fit_end" in server_metrics
                 assert len(server_metrics["rounds"]) == test_n_server_rounds
@@ -89,7 +89,7 @@ async def test_train():
                 client_metrics_result = redis_conn.get(client_uuid)
                 assert client_metrics_result is not None and isinstance(client_metrics_result, bytes)
                 client_metrics = json.loads(client_metrics_result.decode("utf8"))
-                assert client_metrics["type"] == "client"
+                assert client_metrics["host_type"] == "client"
                 assert "initialized" in client_metrics
                 assert "shutdown" in client_metrics
                 assert len(client_metrics["rounds"]) == test_n_server_rounds

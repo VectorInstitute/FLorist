@@ -38,7 +38,7 @@ def test_start_success(mock_launch_client: Mock) -> None:
     assert isinstance(client_obj, MnistClient)
     assert str(client_obj.data_path) == test_data_path
 
-    metrics_reporter = client_obj.metrics_reporter
+    metrics_reporter = client_obj.reports_manager.reporters[0]
     assert isinstance(metrics_reporter, RedisMetricsReporter)
     assert metrics_reporter.host == test_redis_host
     assert metrics_reporter.port == test_redis_port

@@ -42,11 +42,11 @@ def launch_local_server(
     metrics_reporter = RedisMetricsReporter(host=redis_host, port=redis_port, run_id=server_uuid)
     server_constructor = partial(
         get_server,
+        reporters=[metrics_reporter],
         model=model,
         n_clients=n_clients,
         batch_size=batch_size,
         local_epochs=local_epochs,
-        metrics_reporter=metrics_reporter,
     )
 
     log_file_name = str(get_server_log_file_path(server_uuid))

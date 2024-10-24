@@ -4,7 +4,7 @@ import logging
 from pytest import raises
 from unittest.mock import Mock, call, patch
 
-from fl4health.reporting.metrics import DateTimeEncoder
+from florist.api.monitoring.metrics import DateTimeEncoder
 from freezegun import freeze_time
 
 from florist.api.monitoring.metrics import RedisMetricsReporter, wait_for_metric, get_subscriber, get_from_redis
@@ -12,7 +12,7 @@ from florist.api.monitoring.metrics import RedisMetricsReporter, wait_for_metric
 
 @freeze_time("2012-12-11 10:09:08")
 @patch("florist.api.monitoring.metrics.redis.Redis")
-def test_add_to_metrics(mock_redis: Mock) -> None:
+def test_report(mock_redis: Mock) -> None:
     mock_redis_connection = Mock()
     mock_redis.return_value = mock_redis_connection
 
@@ -22,7 +22,7 @@ def test_add_to_metrics(mock_redis: Mock) -> None:
     test_data = {"test": "data", "date": datetime.datetime.now()}
 
     redis_metric_reporter = RedisMetricsReporter(test_host, test_port, test_run_id)
-    redis_metric_reporter.add_to_metrics(test_data)
+    redis_metric_reporter.report(test_data)
 
     mock_redis.assert_called_once_with(host=test_host, port=test_port)
     mock_redis_connection.set.assert_called_once_with(test_run_id, json.dumps(test_data, cls=DateTimeEncoder))
@@ -30,7 +30,7 @@ def test_add_to_metrics(mock_redis: Mock) -> None:
 
 @freeze_time("2012-12-11 10:09:08")
 @patch("florist.api.monitoring.metrics.redis.Redis")
-def test_add_to_metrics_at_round(mock_redis: Mock) -> None:
+def test_report_at_round(mock_redis: Mock) -> None:
     mock_redis_connection = Mock()
     mock_redis.return_value = mock_redis_connection
 
@@ -41,7 +41,7 @@ def test_add_to_metrics_at_round(mock_redis: Mock) -> None:
     test_round = 2
 
     redis_metric_reporter = RedisMetricsReporter(test_host, test_port, test_run_id)
-    redis_metric_reporter.add_to_metrics_at_round(test_round, test_data)
+    redis_metric_reporter.report(test_data, test_round)
 
     mock_redis.assert_called_once_with(host=test_host, port=test_port)
     expected_data = {
@@ -65,8 +65,8 @@ def test_dump_without_existing_connection(mock_redis: Mock) -> None:
     test_round = 2
 
     redis_metric_reporter = RedisMetricsReporter(test_host, test_port, test_run_id)
-    redis_metric_reporter.add_to_metrics(test_data)
-    redis_metric_reporter.add_to_metrics_at_round(test_round, test_data)
+    redis_metric_reporter.report(test_data)
+    redis_metric_reporter.report(test_data, test_round)
     redis_metric_reporter.dump()
 
     mock_redis.assert_called_once_with(host=test_host, port=test_port)

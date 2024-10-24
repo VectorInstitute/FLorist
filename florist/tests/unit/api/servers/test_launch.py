@@ -50,10 +50,10 @@ def test_launch_local_server(mock_launch_server: Mock) -> None:
         "n_clients": test_n_clients,
         "batch_size": test_batch_size,
         "local_epochs": test_local_epochs,
-        "metrics_reporter": ANY,
+        "reporters": ANY,
     }
 
-    metrics_reporter = call_args[0].keywords["metrics_reporter"]
+    metrics_reporter = call_args[0].keywords["reporters"][0]
     assert isinstance(metrics_reporter, RedisMetricsReporter)
     assert metrics_reporter.host == test_redis_host
     assert metrics_reporter.port == test_redis_port

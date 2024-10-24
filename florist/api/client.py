@@ -62,7 +62,7 @@ def start(server_address: str, client: str, data_path: str, redis_host: str, red
             data_path=Path(data_path),
             metrics=[],
             device=device,
-            metrics_reporter=metrics_reporter,
+            reporters=[metrics_reporter],
         )
 
         log_file_name = str(get_client_log_file_path(client_uuid))
