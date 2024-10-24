@@ -89,8 +89,7 @@ class RedisMetricsReporter(BaseReporter):  # type: ignore
                 scope of a training or evaluation step (eg. at the end of an epoch or round) Defaults to None.
         """
         if not self.initialized:
-            kwargs = {"run_id": self.run_id} if self.run_id is not None else {}
-            self.initialize(**kwargs)
+            self.initialize()
 
         if round is None:  # Reports outside of a fit round
             self.metrics.update(data)

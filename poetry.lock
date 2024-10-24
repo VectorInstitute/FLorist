@@ -1685,7 +1685,7 @@ wandb = "^0.18.0"
 
 [package.source]
 type = "git"
-url = "git@github.com:VectorInstitute/FL4Health.git"
+url = "https://github.com/VectorInstitute/FL4Health.git"
 reference = "HEAD"
 resolved_reference = "a38caa26df8cc733f65f625c08f2ef44dd2b2710"
 
@@ -7791,4 +7791,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10.0,<3.11"
-content-hash = "5417dc36d0eb58409ff4fe39326818c11730b3a992a09e6887f49f73fab4e5c9"
+content-hash = "aef6df7694d9da4efc41e5ce109ac67766a0dee7ebb3665ddedf5c66841983e5"
