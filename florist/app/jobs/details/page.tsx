@@ -54,6 +54,14 @@ export function JobDetailsBody(): ReactElement {
         );
     }
 
+    let totalEpochs = null;
+    let localEpochs = null;
+    if (job.server_config) {
+        const serverConfigJson = JSON.parse(job.server_config);
+        totalEpochs = serverConfigJson.n_server_rounds;
+        localEpochs = serverConfigJson.local_epochs;
+    }
+
     return (
         <div className="container pt-3 p-0">
             <div className="row pb-2">
@@ -105,7 +113,7 @@ export function JobDetailsBody(): ReactElement {
                 </div>
             </div>
 
-            <JobProgress serverMetrics={job.server_metrics} serverConfig={job.server_config} status={job.status} />
+            <JobProgressBar metrics={job.server_metrics} totalEpochs={totalEpochs} status={job.status} />
 
             <JobDetailsTable
                 Component={JobDetailsServerConfigTable}
@@ -117,6 +125,7 @@ export function JobDetailsBody(): ReactElement {
                 Component={JobDetailsClientsInfoTable}
                 title="Clients Configuration"
                 data={job.clients_info}
+                properties={{ localEpochs }}
             />
         </div>
     );
@@ -164,32 +173,50 @@ export function JobDetailsStatus({ status }: { status: string }): ReactElement {
     );
 }
 
-export function JobProgress({
-    serverMetrics,
-    serverConfig,
+export function JobProgressBar({
+    metrics,
+    totalEpochs,
     status,
 }: {
-    serverMetrics: string;
-    serverConfig: string;
+    metrics: string;
+    totalEpochs: number;
     status: status;
 }): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
-    if (!serverMetrics || !serverConfig) {
+    if (!metrics || !totalEpochs) {
         return null;
     }
 
-    const serverMetricsJson = JSON.parse(serverMetrics);
-    const serverConfigJson = JSON.parse(serverConfig);
+    const metricsJson = JSON.parse(metrics);
+
+    let endRoundKey;
+    if (metricsJson.type === "server") {
+        endRoundKey = "fit_end";
+    }
+    if (metricsJson.type === "client") {
+        endRoundKey = "shutdown";
+    }
 
     let progressPercent = 0;
-    if ("rounds" in serverMetricsJson && Object.keys(serverMetricsJson.rounds).length > 0) {
-        const totalServerRounds = serverConfigJson.n_server_rounds;
-        const lastRound = Math.max(...Object.keys(serverMetricsJson.rounds));
-        const lastCompletedRound = "fit_end" in serverMetricsJson ? lastRound : lastRound - 1;
-        progressPercent = (lastCompletedRound * 100) / totalServerRounds;
+    if ("rounds" in metricsJson && Object.keys(metricsJson.rounds).length > 0) {
+        const lastRound = Math.max(...Object.keys(metricsJson.rounds));
+        const lastCompletedRound = endRoundKey in metricsJson ? lastRound : lastRound - 1;
+        progressPercent = (lastCompletedRound * 100) / totalEpochs;
     }
     const progressWidth = progressPercent === 0 ? "100%" : `${progressPercent}%`;
+
+    // Clients will not have a status, so we need to set one based on the progress percent
+    if (!status) {
+        if (progressPercent === 0) {
+            status = "NOT_STARTED";
+        } else if (progressPercent === 100) {
+            status = "FINISHED_SUCCESSFULLY";
+        } else {
+            status = "IN_PROGRESS";
+        }
+        // TODO: add error status
+    }
 
     let progressBarClasses = "progress-bar progress-bar-striped";
     switch (String(validStatuses[status])) {
@@ -211,7 +238,7 @@ export function JobProgress({
     }
 
     return (
-        <div id="job-progress" className="mb-4">
+        <div className="job-progress-bar mb-4">
             <div className="card my-4">
                 <div className="card-header pb-0">
                     <strong className="text-dark">Progress:</strong>
@@ -230,7 +257,7 @@ export function JobProgress({
                                 <strong>{Math.floor(progressPercent)}%</strong>
                             </div>
                         </div>
-                        <div id="job-details-toggle" className="col-sm job-expand-button">
+                        <div className="job-details-toggle col-sm job-expand-button">
                             <a className="btn btn-link" onClick={() => setCollapsed(!collapsed)}>
                                 {collapsed ? (
                                     <span>
@@ -246,33 +273,46 @@ export function JobProgress({
                             </a>
                         </div>
                     </div>
-                    <div className="row pb-2">
-                        {!collapsed ? <JobProgressDetails serverMetrics={serverMetricsJson} /> : null}
-                    </div>
+                    <div className="row pb-2">{!collapsed ? <JobProgressDetails metrics={metricsJson} /> : null}</div>
                 </div>
             </div>
         </div>
     );
 }
 
-export function JobProgressDetails({ serverMetrics }: { serverMetrics: Object }): ReactElement {
-    if (!serverMetrics) {
+export function JobProgressDetails({ metrics }: { metrics: Object }): ReactElement {
+    if (!metrics) {
         return null;
     }
+
+    let fitStartKey;
+    let fitEndKey;
+    if (metrics.type === "server") {
+        fitStartKey = "fit_start";
+        fitEndKey = "fit_end";
+    }
+    if (metrics.type === "client") {
+        fitStartKey = "initialized";
+        fitEndKey = "shutdown";
+    }
+
     let elapsedTime = "";
-    if ("fit_start" in serverMetrics) {
-        const startDate = Date.parse(serverMetrics.fit_start);
-        const endDate = "fit_end" in serverMetrics ? Date.parse(serverMetrics.fit_end) : Date.now();
+    if (fitStartKey in metrics) {
+        const startDate = Date.parse(metrics[fitStartKey]);
+        const endDate = fitEndKey in metrics ? Date.parse(metrics[fitEndKey]) : Date.now();
         elapsedTime = getTimeString(endDate - startDate);
     }
 
-    const roundMetricsArray = Array(serverMetrics.rounds.length);
-    for (const [round, roundMetrics] of Object.entries(serverMetrics.rounds)) {
-        roundMetricsArray[parseInt(round) - 1] = roundMetrics;
+    let roundMetricsArray = [];
+    if (metrics.rounds) {
+        roundMetricsArray = Array(metrics.rounds.length);
+        for (const [round, roundMetrics] of Object.entries(metrics.rounds)) {
+            roundMetricsArray[parseInt(round) - 1] = roundMetrics;
+        }
     }
 
     return (
-        <div id="job-progress-detail">
+        <div className="job-progress-detail">
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">Elapsed time:</strong>
@@ -283,17 +323,17 @@ export function JobProgressDetails({ serverMetrics }: { serverMetrics: Object })
                 <div className="col-sm-2">
                     <strong className="text-dark">Start time:</strong>
                 </div>
-                <div className="col-sm">{"fit_start" in serverMetrics ? serverMetrics.fit_start : null}</div>
+                <div className="col-sm">{fitStartKey in metrics ? metrics[fitStartKey] : null}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">End time:</strong>
                 </div>
-                <div className="col-sm">{"fit_end" in serverMetrics ? serverMetrics.fit_end : null}</div>
+                <div className="col-sm">{fitEndKey in metrics ? metrics[fitEndKey] : null}</div>
             </div>
 
-            {Object.keys(serverMetrics).map((name, i) => (
-                <JobProgressProperty name={name} value={serverMetrics[name]} key={i} />
+            {Object.keys(metrics).map((name, i) => (
+                <JobProgressProperty name={name} value={metrics[name]} key={i} />
             ))}
 
             {roundMetricsArray.map((roundMetrics, i) => (
@@ -316,7 +356,7 @@ export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object
                 <div className="col-sm-2">
                     <strong className="text-dark">Round {index + 1}</strong>
                 </div>
-                <div id={`job-round-toggle-${index}`} className="col-sm job-expand-button">
+                <div className={`job-round-toggle-${index} col-sm job-expand-button`}>
                     <a className="btn btn-link" onClick={() => setCollapsed(!collapsed)}>
                         {collapsed ? (
                             <span>
@@ -357,7 +397,7 @@ export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics:
     }
 
     return (
-        <div id={`job-round-details-${index}`} className="job-round-details">
+        <div className={`job-round-details-${index} job-round-details`}>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">Fit elapsed time:</strong>
@@ -402,7 +442,18 @@ export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics:
 }
 
 export function JobProgressProperty({ name, value }: { name: string; value: string }): ReactElement {
-    if (["fit_start", "fit_end", "evaluate_start", "evaluate_end", "rounds", "type"].includes(name)) {
+    if (
+        [
+            "fit_start",
+            "fit_end",
+            "evaluate_start",
+            "evaluate_end",
+            "rounds",
+            "type",
+            "initialized",
+            "shutdown",
+        ].includes(name)
+    ) {
         return null;
     }
     let renderedValue = value;
@@ -424,7 +475,7 @@ export function JobProgressProperty({ name, value }: { name: string; value: stri
     );
 }
 
-export function JobDetailsTable({ Component, title, data }): ReactElement {
+export function JobDetailsTable({ Component, title, data, properties }): ReactElement {
     return (
         <div className="row">
             <div className="col-12">
@@ -437,7 +488,7 @@ export function JobDetailsTable({ Component, title, data }): ReactElement {
 
                     <div className="card-body px-0 pb-2">
                         <div className="table-responsive p-0">
-                            <Component data={data} />
+                            <Component data={data} properties={properties} />
                         </div>
                     </div>
                 </div>
@@ -446,7 +497,7 @@ export function JobDetailsTable({ Component, title, data }): ReactElement {
     );
 }
 
-export function JobDetailsServerConfigTable({ data }: { data: string }): ReactElement {
+export function JobDetailsServerConfigTable({ data, properties }: { data: string; properties: Object }): ReactElement {
     const emptyResponse = (
         <div className="container" id="job-details-server-config-empty">
             Empty.
@@ -503,7 +554,15 @@ export function JobDetailsServerConfigTable({ data }: { data: string }): ReactEl
     );
 }
 
-export function JobDetailsClientsInfoTable({ data }: { data: Array<ClientInfo> }): ReactElement {
+export function JobDetailsClientsInfoTable({
+    data,
+    properties,
+}: {
+    data: Array<ClientInfo>;
+    properties: Object;
+}): ReactElement {
+    const [collapsed, setCollapsed] = useState(true);
+
     return (
         <table className="table align-items-center mb-0">
             <thead>
@@ -516,35 +575,61 @@ export function JobDetailsClientsInfoTable({ data }: { data: Array<ClientInfo> }
                 </tr>
             </thead>
             <tbody>
-                {data.map((clientInfo, i) => (
-                    <tr key={i}>
-                        <td className="col-sm" id={`job-details-client-config-client-${i}`}>
-                            <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">{clientInfo.client}</span>
-                            </div>
-                        </td>
-                        <td className="col-sm" id={`job-details-client-config-service-address-${i}`}>
-                            <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">{clientInfo.service_address}</span>
-                            </div>
-                        </td>
-                        <td className="col-sm" id={`job-details-client-config-data-path-${i}`}>
-                            <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">{clientInfo.data_path}</span>
-                            </div>
-                        </td>
-                        <td className="col-sm" id={`job-details-client-config-redis-host-${i}`}>
-                            <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">{clientInfo.redis_host}</span>
-                            </div>
-                        </td>
-                        <td className="col-sm" id={`job-details-client-config-redis-port-${i}`}>
-                            <div className="d-flex flex-column justify-content-center">
-                                <span className="ps-3 text-secondary text-sm">{clientInfo.redis_port}</span>
-                            </div>
-                        </td>
-                    </tr>
-                ))}
+                {data.map((clientInfo, i) => {
+                    let additionalClasses = clientInfo.metrics ? "" : "empty-cell";
+                    return [
+                        <tr className="job-client-details" key={`${i}-details`}>
+                            <td className="col-sm" id={`job-details-client-config-client-${i}`}>
+                                <div className="d-flex flex-column justify-content-center">
+                                    <span className="ps-3 text-secondary text-sm">{clientInfo.client}</span>
+                                </div>
+                            </td>
+                            <td className="col-sm" id={`job-details-client-config-service-address-${i}`}>
+                                <div className="d-flex flex-column justify-content-center">
+                                    <span className="ps-3 text-secondary text-sm">{clientInfo.service_address}</span>
+                                </div>
+                            </td>
+                            <td className="col-sm" id={`job-details-client-config-data-path-${i}`}>
+                                <div className="d-flex flex-column justify-content-center">
+                                    <span className="ps-3 text-secondary text-sm">{clientInfo.data_path}</span>
+                                </div>
+                            </td>
+                            <td className="col-sm" id={`job-details-client-config-redis-host-${i}`}>
+                                <div className="d-flex flex-column justify-content-center">
+                                    <span className="ps-3 text-secondary text-sm">{clientInfo.redis_host}</span>
+                                </div>
+                            </td>
+                            <td className="col-sm" id={`job-details-client-config-redis-port-${i}`}>
+                                <div className="d-flex flex-column justify-content-center">
+                                    <span className="ps-3 text-secondary text-sm">{clientInfo.redis_port}</span>
+                                </div>
+                            </td>
+                        </tr>,
+                        <tr id={`job-client-progress-${i}`} key={`${i}-progress`}>
+                            <td className={`job-client-progress-label col-sm ${additionalClasses}`}>
+                                {clientInfo.metrics ? (
+                                    <div className="d-flex flex-column justify-content-center">
+                                        <span className="ps-3 text-secondary text-sm">Progress:</span>
+                                    </div>
+                                ) : null}
+                            </td>
+                            <td
+                                className={`job-client-progress col-sm ${additionalClasses}`}
+                                id={`job-details-client-config-progress-${i}`}
+                                colSpan="3"
+                            >
+                                <div className="d-flex flex-column justify-content-center">
+                                    <span className="ps-3 text-secondary text-sm">
+                                        <JobProgressBar
+                                            metrics={clientInfo.metrics}
+                                            totalEpochs={properties.localEpochs}
+                                        />
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>,
+                    ];
+                })}
             </tbody>
         </table>
     );
