@@ -509,9 +509,9 @@
 
 
 
-<div class="viewcode-block" id="test_set_metrics_success">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_metrics_success">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_set_metrics_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="test_set_server_metrics_success">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_server_metrics_success">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_set_server_metrics_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_job</span> <span class="o">=</span> <span class="n">get_test_job</span><span class="p">()</span>
     <span class="n">result_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">test_job</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">test_job</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">result_id</span>
@@ -519,14 +519,44 @@
     <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">ANY</span>
 
     <span class="n">test_server_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test-server&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">}</span>
-    <span class="n">test_client_metrics</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;test-client-1&quot;</span><span class="p">:</span> <span class="mi">456</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;test-client-2&quot;</span><span class="p">:</span> <span class="mi">789</span><span class="p">}]</span>
 
-    <span class="n">test_job</span><span class="o">.</span><span class="n">set_metrics</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">,</span> <span class="n">test_client_metrics</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">synchronous_database</span><span class="p">)</span>
+    <span class="n">test_job</span><span class="o">.</span><span class="n">set_server_metrics</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">synchronous_database</span><span class="p">)</span>
 
     <span class="n">result_job</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Job</span><span class="o">.</span><span class="n">find_by_id</span><span class="p">(</span><span class="n">result_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">test_job</span><span class="o">.</span><span class="n">server_metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">)</span>
-    <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">test_client_metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">test_client_metrics</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">result_job</span> <span class="o">==</span> <span class="n">test_job</span></div>
+
+
+
+<div class="viewcode-block" id="test_set_server_metrics_fail_update_result">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_server_metrics_fail_update_result">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_set_server_metrics_fail_update_result</span><span class="p">(</span><span class="n">mock_request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_job</span> <span class="o">=</span> <span class="n">get_test_job</span><span class="p">()</span>
+    <span class="n">test_job</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">test_job</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="n">test_server_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test-server&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">}</span>
+
+    <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;UpdateResult&#39;s &#39;n&#39; is not 1&quot;</span>
+    <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="ne">AssertionError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)):</span>
+        <span class="n">test_job</span><span class="o">.</span><span class="n">set_server_metrics</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">synchronous_database</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_set_client_metrics_success">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_client_metrics_success">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_set_client_metrics_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_job</span> <span class="o">=</span> <span class="n">get_test_job</span><span class="p">()</span>
+    <span class="n">result_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">test_job</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">test_job</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">result_id</span>
+    <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">ANY</span>
+    <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">ANY</span>
+
+    <span class="n">test_client_metrics</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;test-metric-1&quot;</span><span class="p">:</span> <span class="mi">456</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;test-metric-2&quot;</span><span class="p">:</span> <span class="mi">789</span><span class="p">}]</span>
+
+    <span class="n">test_job</span><span class="o">.</span><span class="n">set_client_metrics</span><span class="p">(</span><span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">test_client_metrics</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">synchronous_database</span><span class="p">)</span>
+
+    <span class="n">result_job</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Job</span><span class="o">.</span><span class="n">find_by_id</span><span class="p">(</span><span class="n">result_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">test_client_metrics</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">result_job</span> <span class="o">==</span> <span class="n">test_job</span></div>
 
 
@@ -535,49 +565,33 @@
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_metrics_fail_clients_info_is_none">[docs]</a>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_set_metrics_fail_clients_info_is_none</span><span class="p">(</span><span class="n">mock_request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_job</span> <span class="o">=</span> <span class="n">get_test_job</span><span class="p">()</span>
-    <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">result_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">test_job</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">test_job</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">result_id</span>
 
-    <span class="n">test_server_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test-server&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">}</span>
-    <span class="n">test_client_metrics</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;test-client-1&quot;</span><span class="p">:</span> <span class="mi">456</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;test-client-2&quot;</span><span class="p">:</span> <span class="mi">789</span><span class="p">}]</span>
+    <span class="n">test_wrong_client_uuid</span> <span class="o">=</span> <span class="s2">&quot;client-id-that-does-not-exist&quot;</span>
+    <span class="n">test_client_metrics</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;test-metric-1&quot;</span><span class="p">:</span> <span class="mi">456</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;test-metric-2&quot;</span><span class="p">:</span> <span class="mi">789</span><span class="p">}]</span>
 
-    <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;self.clients_info and client_metrics must have the same length (None!=2).&quot;</span>
+    <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;client uuid </span><span class="si">{</span><span class="n">test_wrong_client_uuid</span><span class="si">}</span><span class="s2"> is not in clients_info ([&#39;</span><span class="si">{</span><span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&#39;, &#39;</span><span class="si">{</span><span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&#39;])&quot;</span>
     <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="ne">AssertionError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)):</span>
-        <span class="n">test_job</span><span class="o">.</span><span class="n">set_metrics</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">,</span> <span class="n">test_client_metrics</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">synchronous_database</span><span class="p">)</span></div>
+        <span class="n">test_job</span><span class="o">.</span><span class="n">set_client_metrics</span><span class="p">(</span><span class="n">test_wrong_client_uuid</span><span class="p">,</span> <span class="n">test_client_metrics</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">synchronous_database</span><span class="p">)</span></div>
 
 
 
-<div class="viewcode-block" id="test_set_metrics_fail_clients_info_is_not_same_length">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_metrics_fail_clients_info_is_not_same_length">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_set_metrics_fail_clients_info_is_not_same_length</span><span class="p">(</span><span class="n">mock_request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">test_job</span> <span class="o">=</span> <span class="n">get_test_job</span><span class="p">()</span>
-    <span class="n">result_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">test_job</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
-    <span class="n">test_job</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">result_id</span>
-    <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">ANY</span>
-    <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">ANY</span>
-
-    <span class="n">test_server_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test-server&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">}</span>
-    <span class="n">test_client_metrics</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;test-client-1&quot;</span><span class="p">:</span> <span class="mi">456</span><span class="p">}]</span>
-
-    <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;self.clients_info and client_metrics must have the same length (2!=1).&quot;</span>
-    <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="ne">AssertionError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)):</span>
-        <span class="n">test_job</span><span class="o">.</span><span class="n">set_metrics</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">,</span> <span class="n">test_client_metrics</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">synchronous_database</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="test_set_metrics_fail_update_result">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_metrics_fail_update_result">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_set_metrics_fail_update_result</span><span class="p">(</span><span class="n">mock_request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="test_set_client_metrics_fail_update_result">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_client_metrics_fail_update_result">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_set_client_metrics_fail_update_result</span><span class="p">(</span><span class="n">mock_request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_job</span> <span class="o">=</span> <span class="n">get_test_job</span><span class="p">()</span>
     <span class="n">test_job</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">test_job</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
-    <span class="n">test_server_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test-server&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">}</span>
-    <span class="n">test_client_metrics</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;test-client-1&quot;</span><span class="p">:</span> <span class="mi">456</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;test-client-2&quot;</span><span class="p">:</span> <span class="mi">789</span><span class="p">}]</span>
+    <span class="n">test_client_metrics</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;test-metric-1&quot;</span><span class="p">:</span> <span class="mi">456</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;test-metric-2&quot;</span><span class="p">:</span> <span class="mi">789</span><span class="p">}]</span>
 
     <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;UpdateResult&#39;s &#39;n&#39; is not 1&quot;</span>
     <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="ne">AssertionError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)):</span>
-        <span class="n">test_job</span><span class="o">.</span><span class="n">set_metrics</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">,</span> <span class="n">test_client_metrics</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">synchronous_database</span><span class="p">)</span></div>
+        <span class="n">test_job</span><span class="o">.</span><span class="n">set_client_metrics</span><span class="p">(</span>
+            <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+            <span class="n">test_client_metrics</span><span class="p">,</span>
+            <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">synchronous_database</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 

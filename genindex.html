@@ -380,13 +380,13 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="reference/api/florist.api.routes.server.training.html#florist.api.routes.server.training.client_training_listener">client_training_listener() (in module florist.api.routes.server.training)</a>
+</li>
         <li><a href="reference/api/florist.api.db.entities.html#florist.api.db.entities.ClientInfo">ClientInfo (class in florist.api.db.entities)</a>
 </li>
         <li><a href="reference/api/florist.api.db.entities.html#florist.api.db.entities.ClientInfo.Config">ClientInfo.Config (class in florist.api.db.entities)</a>
 </li>
         <li><a href="reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.clients_info">clients_info (Job attribute)</a>
-</li>
-        <li><a href="reference/api/florist.api.routes.server.training.html#florist.api.routes.server.training.close_job">close_job() (in module florist.api.routes.server.training)</a>
 </li>
         <li><a href="reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.config_parser">config_parser (Job attribute)</a>
 </li>
@@ -1123,9 +1123,11 @@
 </li>
         <li><a href="reference/api/florist.api.db.entities.html#florist.api.db.entities.ClientInfo.service_address">service_address (ClientInfo attribute)</a>
 </li>
+        <li><a href="reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.set_client_metrics">set_client_metrics() (Job method)</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.set_metrics">set_metrics() (Job method)</a>
+        <li><a href="reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.set_server_metrics">set_server_metrics() (Job method)</a>
 </li>
         <li><a href="reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.set_status">set_status() (Job method)</a>
 </li>
@@ -1181,6 +1183,12 @@
           <li><a href="reference/api/florist.tests.unit.api.test_client.html#florist.tests.unit.api.test_client.test_check_status_not_found">(in module florist.tests.unit.api.test_client)</a>
 </li>
         </ul></li>
+        <li><a href="reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_client_training_listener">test_client_training_listener() (in module florist.tests.unit.api.routes.server.test_training)</a>
+</li>
+        <li><a href="reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_client_training_listener_already_finished">test_client_training_listener_already_finished() (in module florist.tests.unit.api.routes.server.test_training)</a>
+</li>
+        <li><a href="reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_client_training_listener_fail_no_uuid">test_client_training_listener_fail_no_uuid() (in module florist.tests.unit.api.routes.server.test_training)</a>
+</li>
         <li><a href="reference/api/florist.tests.unit.api.test_client.html#florist.tests.unit.api.test_client.test_connect">test_connect() (in module florist.tests.unit.api.test_client)</a>
 </li>
         <li><a href="reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_dump_with_existing_connection">test_dump_with_existing_connection() (in module florist.tests.unit.api.monitoring.test_metrics)</a>
@@ -1227,23 +1235,25 @@
 </li>
         <li><a href="reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_server_training_listener">test_server_training_listener() (in module florist.tests.unit.api.routes.server.test_training)</a>
 </li>
-        <li><a href="reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_server_training_listener_already_finished">test_server_training_listener_already_finished() (in module florist.tests.unit.api.routes.server.test_training)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_server_training_listener_already_finished">test_server_training_listener_already_finished() (in module florist.tests.unit.api.routes.server.test_training)</a>
+</li>
         <li><a href="reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_server_training_listener_fail_no_redis_host">test_server_training_listener_fail_no_redis_host() (in module florist.tests.unit.api.routes.server.test_training)</a>
 </li>
         <li><a href="reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_server_training_listener_fail_no_redis_port">test_server_training_listener_fail_no_redis_port() (in module florist.tests.unit.api.routes.server.test_training)</a>
 </li>
         <li><a href="reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_server_training_listener_fail_no_server_uuid">test_server_training_listener_fail_no_server_uuid() (in module florist.tests.unit.api.routes.server.test_training)</a>
 </li>
+        <li><a href="reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_client_metrics_fail_update_result">test_set_client_metrics_fail_update_result() (in module florist.tests.integration.api.db.test_entities)</a>
+</li>
+        <li><a href="reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_client_metrics_success">test_set_client_metrics_success() (in module florist.tests.integration.api.db.test_entities)</a>
+</li>
         <li><a href="reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_metrics_fail_clients_info_is_none">test_set_metrics_fail_clients_info_is_none() (in module florist.tests.integration.api.db.test_entities)</a>
 </li>
-        <li><a href="reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_metrics_fail_clients_info_is_not_same_length">test_set_metrics_fail_clients_info_is_not_same_length() (in module florist.tests.integration.api.db.test_entities)</a>
+        <li><a href="reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_server_metrics_fail_update_result">test_set_server_metrics_fail_update_result() (in module florist.tests.integration.api.db.test_entities)</a>
 </li>
-        <li><a href="reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_metrics_fail_update_result">test_set_metrics_fail_update_result() (in module florist.tests.integration.api.db.test_entities)</a>
-</li>
-        <li><a href="reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_metrics_success">test_set_metrics_success() (in module florist.tests.integration.api.db.test_entities)</a>
+        <li><a href="reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_server_metrics_success">test_set_server_metrics_success() (in module florist.tests.integration.api.db.test_entities)</a>
 </li>
         <li><a href="reference/api/florist.tests.integration.api.db.test_entities.html#florist.tests.integration.api.db.test_entities.test_set_status_fail_update_result">test_set_status_fail_update_result() (in module florist.tests.integration.api.db.test_entities)</a>
 </li>
@@ -1312,10 +1322,6 @@
 <section id="U" class="genindex-section">
   <h2>U</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="reference/api/florist.api.routes.server.training.html#florist.api.routes.server.training.update_job_metrics">update_job_metrics() (in module florist.api.routes.server.training)</a>
-</li>
-    </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/api/florist.api.db.entities.html#florist.api.db.entities.ClientInfo.uuid">uuid (ClientInfo attribute)</a>
 </li>

@@ -310,7 +310,7 @@
 <span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
 <span class="kn">from</span> <span class="nn">pymongo.database</span> <span class="kn">import</span> <span class="n">Database</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span>
+<span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">ClientInfo</span><span class="p">,</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span>
 <span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">get_from_redis</span><span class="p">,</span> <span class="n">get_subscriber</span><span class="p">,</span> <span class="n">wait_for_metric</span>
 <span class="kn">from</span> <span class="nn">florist.api.servers.common</span> <span class="kn">import</span> <span class="n">Model</span>
 <span class="kn">from</span> <span class="nn">florist.api.servers.config_parsers</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
@@ -409,8 +409,10 @@
         <span class="k">await</span> <span class="n">job</span><span class="o">.</span><span class="n">set_uuids</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">,</span> <span class="n">client_uuids</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
 
         <span class="c1"># Start the server training listener as a background task to update</span>
-        <span class="c1"># the job&#39;s status once the training is done</span>
+        <span class="c1"># the job&#39;s metrics and status once the training is done</span>
         <span class="n">background_tasks</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">server_training_listener</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">synchronous_database</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">client_info</span> <span class="ow">in</span> <span class="n">job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">:</span>
+            <span class="n">background_tasks</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">client_training_listener</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">client_info</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">synchronous_database</span><span class="p">)</span>
 
         <span class="c1"># Return the UUIDs</span>
         <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;server_uuid&quot;</span><span class="p">:</span> <span class="n">server_uuid</span><span class="p">,</span> <span class="s2">&quot;client_uuids&quot;</span><span class="p">:</span> <span class="n">client_uuids</span><span class="p">})</span>
@@ -425,6 +427,50 @@
         <span class="k">if</span> <span class="n">job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">job</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_WITH_ERROR</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="client_training_listener">
+<a class="viewcode-back" href="../../../../../reference/api/florist.api.routes.server.training.html#florist.api.routes.server.training.client_training_listener">[docs]</a>
+<span class="k">def</span> <span class="nf">client_training_listener</span><span class="p">(</span><span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">client_info</span><span class="p">:</span> <span class="n">ClientInfo</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="n">Database</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Listen to the Redis&#39; channel that reports updates on the training process of a FL client.</span>
+
+<span class="sd">    Keeps consuming updates to the channel until it finds `shutdown` in the client metrics.</span>
+
+<span class="sd">    :param job: (Job) The job that has this client&#39;s metrics.</span>
+<span class="sd">    :param client_info: (ClientInfo) The ClientInfo with the client_uuid to listen to.</span>
+<span class="sd">    :param database: (pymongo.database.Database) An instance of the database to save the information</span>
+<span class="sd">        into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async</span>
+<span class="sd">        because of limitations with FastAPI&#39;s BackgroundTasks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting listener for client messages from job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> at channel </span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;client_info.uuid is None.&quot;</span>
+
+    <span class="c1"># check if training has already finished before start listening</span>
+    <span class="n">client_metrics</span> <span class="o">=</span> <span class="n">get_from_redis</span><span class="p">(</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_port</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Current metrics for client </span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">client_metrics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">client_metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Updating client metrics for client </span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2"> on job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">job</span><span class="o">.</span><span class="n">set_client_metrics</span><span class="p">(</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">client_metrics</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Client metrics for client </span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has been updated.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;shutdown&quot;</span> <span class="ow">in</span> <span class="n">client_metrics</span><span class="p">:</span>
+            <span class="k">return</span>
+
+    <span class="n">subscriber</span> <span class="o">=</span> <span class="n">get_subscriber</span><span class="p">(</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_port</span><span class="p">)</span>
+    <span class="c1"># TODO add a max retries mechanism, maybe?</span>
+    <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">subscriber</span><span class="o">.</span><span class="n">listen</span><span class="p">():</span>  <span class="c1"># type: ignore[no-untyped-call]</span>
+        <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span>
+            <span class="c1"># The contents of the message do not matter, we just use it to get notified</span>
+            <span class="n">client_metrics</span> <span class="o">=</span> <span class="n">get_from_redis</span><span class="p">(</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_port</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Current metrics for client </span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">client_metrics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">client_metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Updating client metrics for client </span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2"> on job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">job</span><span class="o">.</span><span class="n">set_client_metrics</span><span class="p">(</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">client_metrics</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Client metrics for client </span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has been updated.&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;shutdown&quot;</span> <span class="ow">in</span> <span class="n">client_metrics</span><span class="p">:</span>
+                    <span class="k">return</span></div>
 
 
 
@@ -453,9 +499,13 @@
     <span class="n">server_metrics</span> <span class="o">=</span> <span class="n">get_from_redis</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">server_uuid</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_port</span><span class="p">)</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Current metrics for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">server_metrics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">server_metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">update_job_metrics</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">server_metrics</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Updating server metrics for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">job</span><span class="o">.</span><span class="n">set_server_metrics</span><span class="p">(</span><span class="n">server_metrics</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Server metrics for </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has been updated.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;fit_end&quot;</span> <span class="ow">in</span> <span class="n">server_metrics</span><span class="p">:</span>
-            <span class="n">close_job</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Training finished for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">job</span><span class="o">.</span><span class="n">set_status_sync</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_SUCCESSFULLY</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> status has been set to </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
     <span class="n">subscriber</span> <span class="o">=</span> <span class="n">get_subscriber</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">server_uuid</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_port</span><span class="p">)</span>
@@ -467,62 +517,14 @@
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Message received for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">. Metrics: </span><span class="si">{</span><span class="n">server_metrics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">server_metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">update_job_metrics</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">server_metrics</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Updating server metrics for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">job</span><span class="o">.</span><span class="n">set_server_metrics</span><span class="p">(</span><span class="n">server_metrics</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Server metrics for </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has been updated.&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="s2">&quot;fit_end&quot;</span> <span class="ow">in</span> <span class="n">server_metrics</span><span class="p">:</span>
-                    <span class="n">close_job</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Training finished for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">job</span><span class="o">.</span><span class="n">set_status_sync</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_SUCCESSFULLY</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
+                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> status has been set to </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                     <span class="k">return</span></div>
-
-
-
-<div class="viewcode-block" id="update_job_metrics">
-<a class="viewcode-back" href="../../../../../reference/api/florist.api.routes.server.training.html#florist.api.routes.server.training.update_job_metrics">[docs]</a>
-<span class="k">def</span> <span class="nf">update_job_metrics</span><span class="p">(</span><span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">server_metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">database</span><span class="p">:</span> <span class="n">Database</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Update the job with server and client metrics.</span>
-
-<span class="sd">    Collect the job&#39;s clients metrics, saving them and the server&#39;s metrics to the job.</span>
-
-<span class="sd">    :param job: (Job) The job to be updated.</span>
-<span class="sd">    :param server_metrics: (Dict[str, Any]) The server&#39;s metrics to be saved into the job.</span>
-<span class="sd">    :param database: (pymongo.database.Database) An instance of the database to save the information</span>
-<span class="sd">        into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async</span>
-<span class="sd">        because of limitations with FastAPI&#39;s BackgroundTasks.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Updating metrics for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">clients_metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">clients_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">client_info</span> <span class="ow">in</span> <span class="n">job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">service_address</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">CHECK_CLIENT_STATUS_API</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="n">params</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span>
-                    <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
-                <span class="p">},</span>
-            <span class="p">)</span>
-            <span class="n">client_metrics</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-            <span class="n">clients_metrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">client_metrics</span><span class="p">)</span>
-
-    <span class="n">job</span><span class="o">.</span><span class="n">set_metrics</span><span class="p">(</span><span class="n">server_metrics</span><span class="p">,</span> <span class="n">clients_metrics</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
-
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has been updated.&quot;</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="close_job">
-<a class="viewcode-back" href="../../../../../reference/api/florist.api.routes.server.training.html#florist.api.routes.server.training.close_job">[docs]</a>
-<span class="k">def</span> <span class="nf">close_job</span><span class="p">(</span><span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="n">Database</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Close the job by marking its status as FINISHED_SUCCESSFULLY.</span>
-
-<span class="sd">    :param job: (Job) The job to be closed.</span>
-<span class="sd">    :param database: (pymongo.database.Database) An instance of the database to save the information</span>
-<span class="sd">        into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async</span>
-<span class="sd">        because of limitations with FastAPI&#39;s BackgroundTasks.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Training finished for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">job</span><span class="o">.</span><span class="n">set_status_sync</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_SUCCESSFULLY</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listener: Job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> status has been set to </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

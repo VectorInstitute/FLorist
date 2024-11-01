@@ -304,13 +304,15 @@
 <span id="florist-api-routes-server-training-module"></span><h1>florist.api.routes.server.training module<a class="headerlink" href="#module-florist.api.routes.server.training" title="Link to this heading">#</a></h1>
 <p>FastAPI routes for training.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.api.routes.server.training.close_job">
-<span class="sig-name descname"><span class="pre">close_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/routes/server/training.html#close_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.routes.server.training.close_job" title="Link to this definition">#</a></dt>
-<dd><p>Close the job by marking its status as FINISHED_SUCCESSFULLY.</p>
+<dt class="sig sig-object py" id="florist.api.routes.server.training.client_training_listener">
+<span class="sig-name descname"><span class="pre">client_training_listener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/routes/server/training.html#client_training_listener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.routes.server.training.client_training_listener" title="Link to this definition">#</a></dt>
+<dd><p>Listen to the Redis’ channel that reports updates on the training process of a FL client.</p>
+<p>Keeps consuming updates to the channel until it finds <cite>shutdown</cite> in the client metrics.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>job</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.entities.html#florist.api.db.entities.Job" title="florist.api.db.entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></span>) – (Job) The job to be closed.</p></li>
+<li><p><strong>job</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.entities.html#florist.api.db.entities.Job" title="florist.api.db.entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></span>) – (Job) The job that has this client’s metrics.</p></li>
+<li><p><strong>client_info</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.entities.html#florist.api.db.entities.ClientInfo" title="florist.api.db.entities.ClientInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientInfo</span></code></a></span>) – (ClientInfo) The ClientInfo with the client_uuid to listen to.</p></li>
 <li><p><strong>database</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code>[<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]]</span>) – (pymongo.database.Database) An instance of the database to save the information
 into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async
 because of limitations with FastAPI’s BackgroundTasks.</p></li>
@@ -377,27 +379,6 @@ the clients in the format below. The UUIDs can be used to pull metrics from Redi
 </dd>
 </dl>
 </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="florist.api.routes.server.training.update_job_metrics">
-<span class="sig-name descname"><span class="pre">update_job_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/routes/server/training.html#update_job_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.routes.server.training.update_job_metrics" title="Link to this definition">#</a></dt>
-<dd><p>Update the job with server and client metrics.</p>
-<p>Collect the job’s clients metrics, saving them and the server’s metrics to the job.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>job</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.entities.html#florist.api.db.entities.Job" title="florist.api.db.entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></span>) – (Job) The job to be updated.</p></li>
-<li><p><strong>server_metrics</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – (Dict[str, Any]) The server’s metrics to be saved into the job.</p></li>
-<li><p><strong>database</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code>[<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]]</span>) – (pymongo.database.Database) An instance of the database to save the information
-into the Job. MUST BE A SYNCHRONOUS DATABASE since this function cannot be marked as async
-because of limitations with FastAPI’s BackgroundTasks.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -469,10 +450,9 @@ because of limitations with FastAPI’s BackgroundTasks.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">florist.api.routes.server.training module</a><ul>
-<li><a class="reference internal" href="#florist.api.routes.server.training.close_job"><code class="docutils literal notranslate"><span class="pre">close_job()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.routes.server.training.client_training_listener"><code class="docutils literal notranslate"><span class="pre">client_training_listener()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.routes.server.training.server_training_listener"><code class="docutils literal notranslate"><span class="pre">server_training_listener()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.routes.server.training.start"><code class="docutils literal notranslate"><span class="pre">start()</span></code></a></li>
-<li><a class="reference internal" href="#florist.api.routes.server.training.update_job_metrics"><code class="docutils literal notranslate"><span class="pre">update_job_metrics()</span></code></a></li>
 </ul>
 </li>
 </ul>
