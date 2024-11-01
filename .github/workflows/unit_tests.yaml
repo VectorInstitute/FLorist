@@ -13,6 +13,7 @@ on:
       - .github/workflows/integration_tests.yaml
       - '**.py'
       - '**.ipynb'
+      - '**.tsx'
       - poetry.lock
       - pyproject.toml
       - '**.rst'
@@ -29,6 +30,7 @@ on:
       - .github/workflows/integration_tests.yaml
       - '**.py'
       - '**.ipynb'
+      - '**.tsx'
       - poetry.lock
       - pyproject.toml
       - '**.rst'
