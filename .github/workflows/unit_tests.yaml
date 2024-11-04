@@ -63,7 +63,6 @@ jobs:
             token: ${{ secrets.CODECOV_TOKEN }}
             name: codecov-umbrella
             fail_ci_if_error: true
-            verbose: true
           attempt_limit: 5
           attempt_delay: 30000
       - name: Setup yarn
