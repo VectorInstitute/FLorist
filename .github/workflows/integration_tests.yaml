@@ -63,7 +63,7 @@ jobs:
       - name: Upload python coverage to Codecov
         uses: Wandalen/wretry.action@v3.7.0
         with:
-          action: codecov/codecov-action@v4.0.1
+          action: codecov/codecov-action@v4.6.0
           with: |
             token: ${{ secrets.CODECOV_TOKEN }}
             name: codecov-umbrella
