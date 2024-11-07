@@ -1,17 +1,33 @@
 """Classes for the instrumentation of metrics reporting from clients and servers."""
 
+import datetime
 import json
 import time
+import uuid
 from logging import DEBUG, Logger
 from typing import Any, Dict, Optional
 
 import redis
-from fl4health.reporting.metrics import DateTimeEncoder, MetricsReporter
+from fl4health.reporting.base_reporter import BaseReporter
 from flwr.common.logger import log
 from redis.client import PubSub
 
 
-class RedisMetricsReporter(MetricsReporter):  # type: ignore
+class DateTimeEncoder(json.JSONEncoder):
+    """Converts a datetime object to string in order to make json encoding easier."""
+
+    def default(self, o: Any) -> Any:
+        """
+        Return string of datetime if datetime object is passed else return result of the default encoder method.
+
+        :param o: Object to encode.
+        """
+        if isinstance(o, datetime.datetime):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
+
+
+class RedisMetricsReporter(BaseReporter):  # type: ignore
     """
     Save the metrics to a Redis instance while it records them.
 
@@ -27,32 +43,65 @@ class RedisMetricsReporter(MetricsReporter):  # type: ignore
         :param run_id: (Optional[str]) the identifier for the run which these metrics are from.
             It will be used as the name of the object in Redis. Optional, default is a random UUID.
         """
-        super().__init__(run_id)
         self.host = host
         self.port = port
+        self.run_id = run_id
+        self.initialized = False
+
         self.redis_connection: Optional[redis.Redis] = None
+        self.metrics: Dict[str, Any] = {}
 
-    def add_to_metrics(self, data: Dict[str, Any]) -> None:
+    def initialize(self, **kwargs: Any) -> None:
         """
-        Add a dictionary of data into the main metrics dictionary.
+        Initialize RedisMetricReporter with run_id and set initialized to True.
 
-        At the end, dumps the current state of the metrics to Redis.
-
-        :param data: (Dict[str, Any]) Data to be added to the metrics dictionary via .update().
+        :param kwargs: (Any) The keyword arguments required to initialize the Reporter.
         """
-        super().add_to_metrics(data)
-        self.dump()
+        # If run_id was not specified on init try first to initialize with client name
+        if self.run_id is None:
+            self.run_id = kwargs.get("id")
+        # If client name was not provided, init run id manually
+        if self.run_id is None:
+            self.run_id = str(uuid.uuid4())
 
-    def add_to_metrics_at_round(self, fl_round: int, data: Dict[str, Any]) -> None:
+        self.initialized = True
+
+    def report(
+        self,
+        data: dict[str, Any],
+        round: int | None = None,  # noqa: A002
+        epoch: int | None = None,
+        step: int | None = None,
+    ) -> None:
+        """Send data to the reporter.
+
+        The report method is called by the client/server at frequent intervals (ie step, epoch, round) and sometimes
+        outside of a FL round (for high level summary data). The json reporter is hardcoded to report at the 'round'
+        level and therefore ignores calls to the report method made every epoch or every step.
+
+        Args:
+            data (dict): The data to maybe report from the server or client.
+            round (int | None, optional): The current FL round. If None, this indicates that the method was called
+                outside of a round (e.g. for summary information). Defaults to None.
+            epoch (int | None, optional): The current epoch. If None then this method was not called within the scope
+                of an epoch. Defaults to None.
+            step (int | None, optional): The current step (total). If None then this method was called outside the
+                scope of a training or evaluation step (eg. at the end of an epoch or round) Defaults to None.
         """
-        Add a dictionary of data into the metrics dictionary for a specific FL round.
+        if not self.initialized:
+            self.initialize()
 
-        At the end, dumps the current state of the metrics to Redis.
+        if round is None:  # Reports outside of a fit round
+            self.metrics.update(data)
+        # Ensure we don't report for each epoch or step
+        elif epoch is None and step is None:
+            if "rounds" not in self.metrics:
+                self.metrics["rounds"] = {}
+            if round not in self.metrics["rounds"]:
+                self.metrics["rounds"][round] = {}
 
-        :param fl_round: (int) the FL round these metrics are from.
-        :param data: (Dict[str, Any]) Data to be added to the round's metrics dictionary via .update().
-        """
-        super().add_to_metrics_at_round(fl_round, data)
+            self.metrics["rounds"][round].update(data)
+
         self.dump()
 
     def dump(self) -> None:
@@ -63,6 +112,8 @@ class RedisMetricsReporter(MetricsReporter):  # type: ignore
         """
         if self.redis_connection is None:
             self.redis_connection = redis.Redis(host=self.host, port=self.port)
+
+        assert self.run_id is not None, "Run ID is None, ensure reporter is initialized prior to dumping metrics."
 
         encoded_metrics = json.dumps(self.metrics, cls=DateTimeEncoder)
         log(DEBUG, f"Dumping metrics to redis at key '{self.run_id}': {encoded_metrics}")

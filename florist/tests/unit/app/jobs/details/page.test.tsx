@@ -42,7 +42,7 @@ function makeTestJob(): JobData {
             local_epochs: 2,
         }),
         server_metrics: JSON.stringify({
-            type: "server",
+            host_type: "server",
             fit_start: "2020-01-01 12:07:07.0707",
             rounds: {
                 "1": {
@@ -79,7 +79,7 @@ function makeTestJob(): JobData {
                 redis_host: "test-redis-host-1",
                 redis_port: "test-redis-port-1",
                 metrics: JSON.stringify({
-                    type: "client",
+                    host_type: "client",
                     initialized: "2024-10-10 15:05:59.025693",
                     shutdown: "2024-10-10 15:12:34.888213",
                     rounds: {
@@ -105,7 +105,7 @@ function makeTestJob(): JobData {
                 redis_host: "test-redis-host-2",
                 redis_port: "test-redis-port-2",
                 metrics: JSON.stringify({
-                    type: "client",
+                    host_type: "client",
                     initialized: "2024-10-10 15:05:59.025693",
                     rounds: {
                         "1": {

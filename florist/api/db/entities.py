@@ -62,7 +62,7 @@ class ClientInfo(BaseModel):
                 "redis_host": "localhost",
                 "redis_port": "6380",
                 "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
-                "metrics": '{"type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
+                "metrics": '{"host_type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
             },
         }
 
@@ -83,7 +83,7 @@ class Job(BaseModel):
     clients_info: Optional[Annotated[List[ClientInfo], Field(...)]]
 
     @classmethod
-    async def find_by_id(cls, job_id: str, database: AsyncIOMotorDatabase) -> Optional["Job"]:
+    async def find_by_id(cls, job_id: str, database: AsyncIOMotorDatabase[Any]) -> Optional["Job"]:
         """
         Find a job in the database by its id.
 
@@ -98,7 +98,7 @@ class Job(BaseModel):
         return Job(**result)
 
     @classmethod
-    async def find_by_status(cls, status: JobStatus, limit: int, database: AsyncIOMotorDatabase) -> List["Job"]:
+    async def find_by_status(cls, status: JobStatus, limit: int, database: AsyncIOMotorDatabase[Any]) -> List["Job"]:
         """
         Return all jobs with the given status.
 
@@ -114,7 +114,7 @@ class Job(BaseModel):
         assert isinstance(result, list)
         return [Job(**r) for r in result]
 
-    async def create(self, database: AsyncIOMotorDatabase) -> str:
+    async def create(self, database: AsyncIOMotorDatabase[Any]) -> str:
         """
         Save this instance under a new record in the database.
 
@@ -126,7 +126,7 @@ class Job(BaseModel):
         assert isinstance(result.inserted_id, str)
         return result.inserted_id
 
-    async def set_uuids(self, server_uuid: str, client_uuids: List[str], database: AsyncIOMotorDatabase) -> None:
+    async def set_uuids(self, server_uuid: str, client_uuids: List[str], database: AsyncIOMotorDatabase[Any]) -> None:
         """
         Save the server and clients' UUIDs in the database under the current job's id.
 
@@ -152,7 +152,7 @@ class Job(BaseModel):
             )
             assert_updated_successfully(update_result)
 
-    async def set_status(self, status: JobStatus, database: AsyncIOMotorDatabase) -> None:
+    async def set_status(self, status: JobStatus, database: AsyncIOMotorDatabase[Any]) -> None:
         """
         Save the status in the database under the current job's id.
 
@@ -232,7 +232,7 @@ class Job(BaseModel):
                 "server_address": "localhost:8000",
                 "server_config": '{"n_server_rounds": 3, "batch_size": 8, "local_epochs": 1}',
                 "server_uuid": "d73243cf-8b89-473b-9607-8cd0253a101d",
-                "server_metrics": '{"type": "server", "fit_start": "2024-04-23 15:33:12.865604", "rounds": {"1": {"fit_start": "2024-04-23 15:33:12.869001"}}}',
+                "server_metrics": '{"host_type": "server", "fit_start": "2024-04-23 15:33:12.865604", "rounds": {"1": {"fit_start": "2024-04-23 15:33:12.869001"}}}',
                 "redis_host": "localhost",
                 "redis_port": "6379",
                 "clients_info": [
