@@ -13,6 +13,7 @@ on:
       - .github/workflows/integration_tests.yaml
       - '**.py'
       - '**.ipynb'
+      - '**.tsx'
       - poetry.lock
       - pyproject.toml
       - '**.rst'
@@ -29,6 +30,7 @@ on:
       - .github/workflows/integration_tests.yaml
       - '**.py'
       - '**.ipynb'
+      - '**.tsx'
       - poetry.lock
       - pyproject.toml
       - '**.rst'
@@ -38,13 +40,13 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - name: Install and configure Poetry
         uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
-      - uses: actions/setup-python@v5.2.0
+      - uses: actions/setup-python@v5.3.0
         with:
           python-version: '3.10'
       - name: Install python dependencies and check code
@@ -54,14 +56,13 @@ jobs:
           poetry install --with docs,test
           coverage run -m pytest florist/tests/unit && coverage xml && coverage report -m
       - name: Upload python coverage to Codecov
-        uses: Wandalen/wretry.action@v3.5.0
+        uses: Wandalen/wretry.action@v3.7.0
         with:
-          action: codecov/codecov-action@v4.0.1
+          action: codecov/codecov-action@v4.6.0
           with: |
             token: ${{ secrets.CODECOV_TOKEN }}
             name: codecov-umbrella
             fail_ci_if_error: true
-            verbose: true
           attempt_limit: 5
           attempt_delay: 30000
       - name: Setup yarn
@@ -71,7 +72,7 @@ jobs:
           yarn
           yarn unit-test
       - name: Upload js coverage to Codecov
-        uses: Wandalen/wretry.action@v3.5.0
+        uses: Wandalen/wretry.action@v3.7.0
         with:
           action: codecov/codecov-action@v4.0.1
           with: |

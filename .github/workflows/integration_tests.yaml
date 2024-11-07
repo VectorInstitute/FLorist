@@ -22,10 +22,11 @@ on:
       - main
     paths:
       - .pre-commit-config.yaml
-      - .github/workflows/static_code_checks.yml
+      - .github/workflows/static_code_checks.yaml
       - .github/workflows/docs_build.yml
       - .github/workflows/docs_deploy.yml
-      - .github/workflows/integration_tests.yml
+      - .github/workflows/unit_tests.yaml
+      - .github/workflows/integration_tests.yaml
       - '**.py'
       - '**.ipynb'
       - poetry.lock
@@ -37,13 +38,13 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - name: Install and configure Poetry
         uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
-      - uses: actions/setup-python@v5.2.0
+      - uses: actions/setup-python@v5.3.0
         with:
           python-version: '3.10'
       - name: Setup redis
@@ -61,14 +62,13 @@ jobs:
           poetry install --with docs,test
           coverage run -m pytest florist/tests/integration && coverage xml && coverage report -m
       - name: Upload python coverage to Codecov
-        uses: Wandalen/wretry.action@v3.5.0
+        uses: Wandalen/wretry.action@v3.7.0
         with:
-          action: codecov/codecov-action@v4.0.1
+          action: codecov/codecov-action@v4.6.0
           with: |
             token: ${{ secrets.CODECOV_TOKEN }}
             name: codecov-umbrella
             fail_ci_if_error: true
-            verbose: true
           attempt_limit: 5
           attempt_delay: 30000
 
@@ -80,7 +80,7 @@ jobs:
 #          yarn
 #          yarn integration-test
 #      - name: Upload js coverage to Codecov
-#        uses: Wandalen/wretry.action@v3.5.0
+#        uses: Wandalen/wretry.action@v3.7.0
 #        with:
 #          action: codecov/codecov-action@v4.0.1
 #          with: |

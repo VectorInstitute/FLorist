@@ -62,17 +62,17 @@
     color: white;
 }
 
-#job-progress .progress {
+.job-progress-bar .progress {
     padding: 0;
     margin: 0 12px;
     height: max-content;
 }
 
-#job-progress .progress-bar {
+.job-progress-bar .progress-bar {
     height: 25px;
 }
 
-#job-progress .progress-bar.bg-disabled {
+.job-progress-bar .progress-bar.bg-disabled {
     background-color: lightgray !important;
 }
 
@@ -87,4 +87,64 @@
 
 .job-round-details .col-sm-2 {
     width: 20%;
+}
+
+.job-client-details {
+    border-bottom-style: hidden;
+}
+
+.job-client-progress-label div {
+    margin-top: -15px;
+}
+
+.job-client-progress-label.empty-cell {
+    padding: 0px;
+}
+
+.job-client-progress.empty-cell {
+    padding: 0px;
+}
+
+.job-client-progress .card {
+    flex-direction: row;
+    box-shadow: none;
+    margin: 0 !important;
+}
+
+.job-client-progress .card .row,
+.job-client-progress .card .row .text-dark {
+    color: #7b809a !important;
+    font-weight: normal;
+    text-wrap: wrap;
+}
+
+.job-client-progress .card .card-body {
+    padding: 0;
+}
+
+.job-client-progress .card .card-header {
+    height: 0px;
+    width: 0px;
+    overflow: hidden;
+    padding: 0;
+}
+
+.job-client-progress .card .card-body .row .col-sm {
+    align-content: center;
+}
+
+.job-client-progress .job-progress-bar {
+    margin-left: -5px;
+    margin-bottom: 0px !important;
+    padding-left: 1rem !important;
+}
+
+.job-client-progress .job-progress-bar .progress {
+    width: 50%;
+    height: max-content;
+    margin: auto;
+}
+
+.job-client-progress .job-progress-bar .progress .progress-bar {
+    height: max-content;
 }
