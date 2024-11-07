@@ -191,10 +191,10 @@ export function JobProgressBar({
     const metricsJson = JSON.parse(metrics);
 
     let endRoundKey;
-    if (metricsJson.host_type === "server") {
+    if (metricsJson.type === "server") {
         endRoundKey = "fit_end";
     }
-    if (metricsJson.host_type === "client") {
+    if (metricsJson.type === "client") {
         endRoundKey = "shutdown";
     }
 
@@ -287,11 +287,11 @@ export function JobProgressDetails({ metrics }: { metrics: Object }): ReactEleme
 
     let fitStartKey;
     let fitEndKey;
-    if (metrics.host_type === "server") {
+    if (metrics.type === "server") {
         fitStartKey = "fit_start";
         fitEndKey = "fit_end";
     }
-    if (metrics.host_type === "client") {
+    if (metrics.type === "client") {
         fitStartKey = "initialized";
         fitEndKey = "shutdown";
     }
@@ -449,7 +449,7 @@ export function JobProgressProperty({ name, value }: { name: string; value: stri
             "evaluate_start",
             "evaluate_end",
             "rounds",
-            "host_type",
+            "type",
             "initialized",
             "shutdown",
         ].includes(name)

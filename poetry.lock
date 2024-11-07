@@ -1657,7 +1657,7 @@ typing = ["typing-extensions (>=4.12.2)"]
 
 [[package]]
 name = "fl4health"
-version = "0.2.1"
+version = "0.2.2"
 description = "Federated Learning for Health"
 optional = false
 python-versions = ">=3.10.0,<3.11"
@@ -1687,7 +1687,7 @@ wandb = "^0.18.0"
 type = "git"
 url = "https://github.com/VectorInstitute/FL4Health.git"
 reference = "HEAD"
-resolved_reference = "a38caa26df8cc733f65f625c08f2ef44dd2b2710"
+resolved_reference = "657c4006aae6cd8c143eea23e9378b9e0b3cd357"
 
 [[package]]
 name = "flake8"
