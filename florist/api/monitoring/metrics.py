@@ -116,6 +116,17 @@ class RedisMetricsReporter(BaseReporter):  # type: ignore
         assert self.run_id is not None, "Run ID is None, ensure reporter is initialized prior to dumping metrics."
 
         encoded_metrics = json.dumps(self.metrics, cls=DateTimeEncoder)
+
+        previous_metrics_blob = self.redis_connection.get(self.run_id)
+        if previous_metrics_blob is not None and isinstance(previous_metrics_blob, bytes):
+            previous_metrics = json.loads(previous_metrics_blob)
+            current_metrics = json.loads(encoded_metrics)
+            if current_metrics == previous_metrics:
+                log(
+                    DEBUG, f"Skipping dumping: previous metrics are the same as current metrics at key '{self.run_id}'"
+                )
+                return
+
         log(DEBUG, f"Dumping metrics to redis at key '{self.run_id}': {encoded_metrics}")
         self.redis_connection.set(self.run_id, encoded_metrics)
         log(DEBUG, f"Notifying redis channel '{self.run_id}'")

@@ -2,7 +2,7 @@
 
 import logging
 from json import JSONDecodeError
-from multiprocessing import Process
+from threading import Thread
 from typing import List
 
 import requests
@@ -21,7 +21,6 @@ from florist.api.servers.launch import launch_local_server
 router = APIRouter()
 
 LOGGER = logging.getLogger("uvicorn.error")
-multiprocessing_logging.install_mp_handler()
 
 START_CLIENT_API = "api/client/start"
 CHECK_CLIENT_STATUS_API = "api/client/check_status"
@@ -108,11 +107,11 @@ async def start(job_id: str, request: Request) -> JSONResponse:
 
         # Start the server training listener and client training listeners as threads to update
         # the job's metrics and status once the training is done
-        server_listener_process = Process(target=server_training_listener, args=(job, LOGGER))
-        server_listener_process.start()
+        server_listener_thread = Thread(target=server_training_listener, args=(job, LOGGER))
+        server_listener_thread.start()
         for client_info in job.clients_info:
-            client_listener_process = Process(target=client_training_listener, args=(job, client_info, LOGGER))
-            client_listener_process.start()
+            client_listener_thread = Thread(target=client_training_listener, args=(job, client_info, LOGGER))
+            client_listener_thread.start()
 
         # Return the UUIDs
         return JSONResponse({"server_uuid": server_uuid, "client_uuids": client_uuids})
@@ -148,29 +147,38 @@ def client_training_listener(job: Job, client_info: ClientInfo, logger) -> None:
 
     # check if training has already finished before start listening
     client_metrics = get_from_redis(client_info.uuid, client_info.redis_host, client_info.redis_port)
-    logger.debug(f"Listener: Current metrics for client {client_info.uuid}: {client_metrics}")
+    logger.debug(f"Client listener: Current metrics for client {client_info.uuid}: {client_metrics}")
     if client_metrics is not None:
-        logger.info(f"Listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
+        logger.info(f"Client listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
         job.set_client_metrics(client_info.uuid, client_metrics, database)
-        logger.info(f"Listener: Client metrics for client {client_info.uuid} on {job.id} has been updated.")
+        logger.info(f"Client listener: Client metrics for client {client_info.uuid} on {job.id} have been updated.")
         if "shutdown" in client_metrics:
             db_client.close()
             return
 
     subscriber = get_subscriber(client_info.uuid, client_info.redis_host, client_info.redis_port)
     # TODO add a max retries mechanism, maybe?
+    previous_metrics = None
     for message in subscriber.listen():  # type: ignore[no-untyped-call]
         if message["type"] == "message":
             # The contents of the message do not matter, we just use it to get notified
             client_metrics = get_from_redis(client_info.uuid, client_info.redis_host, client_info.redis_port)
-            logger.debug(f"Listener: Current metrics for client {client_info.uuid}: {client_metrics}")
-            if client_metrics is not None:
-                logger.info(f"Listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
-                job.set_client_metrics(client_info.uuid, client_metrics, database)
-                logger.info(f"Listener: Client metrics for client {client_info.uuid} on {job.id} has been updated.")
-                if "shutdown" in client_metrics:
-                    db_client.close()
-                    return
+            logger.debug(f"Client listener: Current metrics for client {client_info.uuid}: {client_metrics}")
+
+            if client_metrics is None or client_metrics == previous_metrics:
+                logger.debug("Client listener: Current metrics for client have not changed. Not updating.")
+                continue
+
+            previous_metrics = client_metrics
+
+            logger.info(f"Client listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
+            job.set_client_metrics(client_info.uuid, client_metrics, database)
+            logger.info(
+                f"Client listener: Client metrics for client {client_info.uuid} on {job.id} have been updated."
+            )
+            if "shutdown" in client_metrics:
+                db_client.close()
+                return
 
     db_client.close()
 
@@ -197,35 +205,41 @@ def server_training_listener(job: Job, logger) -> None:
 
     # check if training has already finished before start listening
     server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
-    logger.debug(f"Listener: Current metrics for job {job.id}: {server_metrics}")
+    logger.debug(f"Server listener: Current metrics for job {job.id}: {server_metrics}")
     if server_metrics is not None:
-        logger.info(f"Listener: Updating server metrics for job {job.id}")
+        logger.info(f"Server listener: Updating server metrics for job {job.id}")
         job.set_server_metrics(server_metrics, database)
-        logger.info(f"Listener: Server metrics for {job.id} has been updated.")
+        logger.info(f"Server listener: Server metrics for {job.id} have been updated.")
         if "fit_end" in server_metrics:
-            logger.info(f"Listener: Training finished for job {job.id}")
+            logger.info(f"Server listener: Training finished for job {job.id}")
             job.set_status_sync(JobStatus.FINISHED_SUCCESSFULLY, database)
-            logger.info(f"Listener: Job {job.id} status has been set to {job.status.value}.")
+            logger.info(f"Server listener: Job {job.id} status have been set to {job.status.value}.")
             db_client.close()
             return
 
     subscriber = get_subscriber(job.server_uuid, job.redis_host, job.redis_port)
     # TODO add a max retries mechanism, maybe?
+    previous_metrics = None
     for message in subscriber.listen():  # type: ignore[no-untyped-call]
         if message["type"] == "message":
             # The contents of the message do not matter, we just use it to get notified
             server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
-            logger.debug(f"Listener: Message received for job {job.id}. Metrics: {server_metrics}")
+            logger.debug(f"Server listener: Message received for job {job.id}. Metrics: {server_metrics}")
 
-            if server_metrics is not None:
-                logger.info(f"Listener: Updating server metrics for job {job.id}")
-                job.set_server_metrics(server_metrics, database)
-                logger.info(f"Listener: Server metrics for {job.id} has been updated.")
-                if "fit_end" in server_metrics:
-                    logger.info(f"Listener: Training finished for job {job.id}")
-                    job.set_status_sync(JobStatus.FINISHED_SUCCESSFULLY, database)
-                    logger.info(f"Listener: Job {job.id} status has been set to {job.status.value}.")
-                    db_client.close()
-                    return
+            if server_metrics is None or server_metrics == previous_metrics:
+                logger.debug("Server listener: Current metrics for server have not changed. Not updating.")
+                continue
+
+            previous_metrics = server_metrics
+
+            logger.info(f"Server listener: Updating server metrics for job {job.id}")
+            job.set_server_metrics(server_metrics, database)
+            logger.info(f"Server listener: Server metrics for {job.id} have been updated.")
+            if "fit_end" in server_metrics:
+                logger.info(f"Server listener: Training finished for job {job.id}")
+                job.set_status_sync(JobStatus.FINISHED_SUCCESSFULLY, database)
+                logger.info(f"Server listener: Job {job.id} status have been set to {job.status.value}.")
+                db_client.close()
+                return
 
     db_client.close()

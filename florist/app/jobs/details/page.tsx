@@ -55,11 +55,9 @@ export function JobDetailsBody(): ReactElement {
     }
 
     let totalEpochs = null;
-    let localEpochs = null;
     if (job.server_config) {
         const serverConfigJson = JSON.parse(job.server_config);
         totalEpochs = serverConfigJson.n_server_rounds;
-        localEpochs = serverConfigJson.local_epochs;
     }
 
     return (
@@ -125,7 +123,7 @@ export function JobDetailsBody(): ReactElement {
                 Component={JobDetailsClientsInfoTable}
                 title="Clients Configuration"
                 data={job.clients_info}
-                properties={{ localEpochs }}
+                properties={{ totalEpochs }}
             />
         </div>
     );
@@ -192,16 +190,16 @@ export function JobProgressBar({
 
     let endRoundKey;
     if (metricsJson.host_type === "server") {
-        endRoundKey = "fit_end";
+        endRoundKey = "eval_round_end";
     }
     if (metricsJson.host_type === "client") {
-        endRoundKey = "shutdown";
+        endRoundKey = "round_end";
     }
 
     let progressPercent = 0;
     if ("rounds" in metricsJson && Object.keys(metricsJson.rounds).length > 0) {
         const lastRound = Math.max(...Object.keys(metricsJson.rounds));
-        const lastCompletedRound = endRoundKey in metricsJson ? lastRound : lastRound - 1;
+        const lastCompletedRound = endRoundKey in metricsJson.rounds[lastRound] ? lastRound : lastRound - 1;
         progressPercent = (lastCompletedRound * 100) / totalEpochs;
     }
     const progressWidth = progressPercent === 0 ? "100%" : `${progressPercent}%`;
@@ -648,7 +646,7 @@ export function JobDetailsClientsInfoTable({
                                     <span className="ps-3 text-secondary text-sm">
                                         <JobProgressBar
                                             metrics={clientInfo.metrics}
-                                            totalEpochs={properties.localEpochs}
+                                            totalEpochs={properties.totalEpochs}
                                         />
                                     </span>
                                 </div>
