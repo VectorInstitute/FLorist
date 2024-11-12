@@ -1,14 +1,15 @@
 """FastAPI routes for training."""
 
+import asyncio
 import logging
 from json import JSONDecodeError
 from threading import Thread
-from typing import List
+from typing import Any, List
 
 import requests
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
 from florist.api.db.entities import ClientInfo, Job, JobStatus
@@ -107,10 +108,10 @@ async def start(job_id: str, request: Request) -> JSONResponse:
 
         # Start the server training listener and client training listeners as threads to update
         # the job's metrics and status once the training is done
-        server_listener_thread = Thread(target=server_training_listener, args=(job, LOGGER))
+        server_listener_thread = Thread(target=asyncio.run, args=(server_training_listener(job),))
         server_listener_thread.start()
         for client_info in job.clients_info:
-            client_listener_thread = Thread(target=client_training_listener, args=(job, client_info, LOGGER))
+            client_listener_thread = Thread(target=asyncio.run, args=(client_training_listener(job, client_info),))
             client_listener_thread.start()
 
         # Return the UUIDs
@@ -128,7 +129,7 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-def client_training_listener(job: Job, client_info: ClientInfo, logger) -> None:
+async def client_training_listener(job: Job, client_info: ClientInfo) -> None:
     """
     Listen to the Redis' channel that reports updates on the training process of a FL client.
 
@@ -136,22 +137,21 @@ def client_training_listener(job: Job, client_info: ClientInfo, logger) -> None:
 
     :param job: (Job) The job that has this client's metrics.
     :param client_info: (ClientInfo) The ClientInfo with the client_uuid to listen to.
-    # TODO add logger docstring
     """
-    logger.info(f"Starting listener for client messages from job {job.id} at channel {client_info.uuid}")
+    LOGGER.info(f"Starting listener for client messages from job {job.id} at channel {client_info.uuid}")
 
     assert client_info.uuid is not None, "client_info.uuid is None."
 
-    db_client = MongoClient(MONGODB_URI)
+    db_client = AsyncIOMotorClient(MONGODB_URI)
     database = db_client[DATABASE_NAME]
 
     # check if training has already finished before start listening
     client_metrics = get_from_redis(client_info.uuid, client_info.redis_host, client_info.redis_port)
-    logger.debug(f"Client listener: Current metrics for client {client_info.uuid}: {client_metrics}")
+    LOGGER.debug(f"Client listener: Current metrics for client {client_info.uuid}: {client_metrics}")
     if client_metrics is not None:
-        logger.info(f"Client listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
-        job.set_client_metrics(client_info.uuid, client_metrics, database)
-        logger.info(f"Client listener: Client metrics for client {client_info.uuid} on {job.id} have been updated.")
+        LOGGER.info(f"Client listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
+        await job.set_client_metrics(client_info.uuid, client_metrics, database)
+        LOGGER.info(f"Client listener: Client metrics for client {client_info.uuid} on {job.id} have been updated.")
         if "shutdown" in client_metrics:
             db_client.close()
             return
@@ -163,17 +163,17 @@ def client_training_listener(job: Job, client_info: ClientInfo, logger) -> None:
         if message["type"] == "message":
             # The contents of the message do not matter, we just use it to get notified
             client_metrics = get_from_redis(client_info.uuid, client_info.redis_host, client_info.redis_port)
-            logger.debug(f"Client listener: Current metrics for client {client_info.uuid}: {client_metrics}")
+            LOGGER.debug(f"Client listener: Current metrics for client {client_info.uuid}: {client_metrics}")
 
             if client_metrics is None or client_metrics == previous_metrics:
-                logger.debug("Client listener: Current metrics for client have not changed. Not updating.")
+                LOGGER.debug("Client listener: Current metrics for client have not changed. Not updating.")
                 continue
 
             previous_metrics = client_metrics
 
-            logger.info(f"Client listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
-            job.set_client_metrics(client_info.uuid, client_metrics, database)
-            logger.info(
+            LOGGER.info(f"Client listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
+            await job.set_client_metrics(client_info.uuid, client_metrics, database)
+            LOGGER.info(
                 f"Client listener: Client metrics for client {client_info.uuid} on {job.id} have been updated."
             )
             if "shutdown" in client_metrics:
@@ -183,7 +183,7 @@ def client_training_listener(job: Job, client_info: ClientInfo, logger) -> None:
     db_client.close()
 
 
-def server_training_listener(job: Job, logger) -> None:
+async def server_training_listener(job: Job) -> None:
     """
     Listen to the Redis' channel that reports updates on the training process of a FL server.
 
@@ -192,28 +192,27 @@ def server_training_listener(job: Job, logger) -> None:
     to the job in the database.
 
     :param job: (Job) The job with the server_uuid to listen to.
-    # TODO add logger docstring
     """
-    logger.info(f"Starting listener for server messages from job {job.id} at channel {job.server_uuid}")
-
-    db_client = MongoClient(MONGODB_URI)
-    database = db_client[DATABASE_NAME]
+    LOGGER.info(f"Starting listener for server messages from job {job.id} at channel {job.server_uuid}")
 
     assert job.server_uuid is not None, "job.server_uuid is None."
     assert job.redis_host is not None, "job.redis_host is None."
     assert job.redis_port is not None, "job.redis_port is None."
 
+    db_client = AsyncIOMotorClient(MONGODB_URI)
+    database = db_client[DATABASE_NAME]
+
     # check if training has already finished before start listening
     server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
-    logger.debug(f"Server listener: Current metrics for job {job.id}: {server_metrics}")
+    LOGGER.debug(f"Server listener: Current metrics for job {job.id}: {server_metrics}")
     if server_metrics is not None:
-        logger.info(f"Server listener: Updating server metrics for job {job.id}")
-        job.set_server_metrics(server_metrics, database)
-        logger.info(f"Server listener: Server metrics for {job.id} have been updated.")
+        LOGGER.info(f"Server listener: Updating server metrics for job {job.id}")
+        await job.set_server_metrics(server_metrics, database)
+        LOGGER.info(f"Server listener: Server metrics for {job.id} have been updated.")
         if "fit_end" in server_metrics:
-            logger.info(f"Server listener: Training finished for job {job.id}")
-            job.set_status_sync(JobStatus.FINISHED_SUCCESSFULLY, database)
-            logger.info(f"Server listener: Job {job.id} status have been set to {job.status.value}.")
+            LOGGER.info(f"Server listener: Training finished for job {job.id}")
+            await job.set_status(JobStatus.FINISHED_SUCCESSFULLY, database)
+            LOGGER.info(f"Server listener: Job {job.id} status have been set to {job.status.value}.")
             db_client.close()
             return
 
@@ -224,21 +223,21 @@ def server_training_listener(job: Job, logger) -> None:
         if message["type"] == "message":
             # The contents of the message do not matter, we just use it to get notified
             server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
-            logger.debug(f"Server listener: Message received for job {job.id}. Metrics: {server_metrics}")
+            LOGGER.debug(f"Server listener: Message received for job {job.id}. Metrics: {server_metrics}")
 
             if server_metrics is None or server_metrics == previous_metrics:
-                logger.debug("Server listener: Current metrics for server have not changed. Not updating.")
+                LOGGER.debug("Server listener: Current metrics for server have not changed. Not updating.")
                 continue
 
             previous_metrics = server_metrics
 
-            logger.info(f"Server listener: Updating server metrics for job {job.id}")
-            job.set_server_metrics(server_metrics, database)
-            logger.info(f"Server listener: Server metrics for {job.id} have been updated.")
+            LOGGER.info(f"Server listener: Updating server metrics for job {job.id}")
+            await job.set_server_metrics(server_metrics, database)
+            LOGGER.info(f"Server listener: Server metrics for {job.id} have been updated.")
             if "fit_end" in server_metrics:
-                logger.info(f"Server listener: Training finished for job {job.id}")
-                job.set_status_sync(JobStatus.FINISHED_SUCCESSFULLY, database)
-                logger.info(f"Server listener: Job {job.id} status have been set to {job.status.value}.")
+                LOGGER.info(f"Server listener: Training finished for job {job.id}")
+                await job.set_status(JobStatus.FINISHED_SUCCESSFULLY, database)
+                LOGGER.info(f"Server listener: Job {job.id} status have been set to {job.status.value}.")
                 db_client.close()
                 return
 
