@@ -2,7 +2,7 @@ import asyncio
 import json
 from pytest import raises
 from typing import Dict, Any, Tuple
-from unittest.mock import Mock, patch, ANY, call
+from unittest.mock import Mock, AsyncMock, patch, ANY, call
 
 from florist.api.db.config import DATABASE_NAME
 from florist.api.db.entities import Job, JobStatus, JOB_COLLECTION_NAME
@@ -64,8 +64,8 @@ async def test_start_success(
     mock_response.json.side_effect = [{"uuid": test_client_1_uuid}, {"uuid": test_client_2_uuid}]
     mock_requests.get.return_value = mock_response
 
-    mock_client_training_listener.return_value = async_return(None)
-    mock_server_training_listener.return_value = async_return(None)
+    mock_client_training_listener.return_value = AsyncMock()
+    mock_server_training_listener.return_value = AsyncMock()
 
     # Act
     response = await start(test_job_id, mock_fastapi_request)
@@ -366,22 +366,22 @@ async def test_server_training_listener(
         {"type": "message"},
     ]
     mock_get_subscriber.return_value = mock_subscriber
-    mock_database = Mock()
-    mock_motor_client.return_value = {DATABASE_NAME: mock_database}
+    mock_db_client = make_mock_db_client()
+    mock_motor_client.return_value = mock_db_client
 
-    with patch.object(Job, "set_status", Mock()) as mock_set_status:
-        with patch.object(Job, "set_server_metrics", Mock()) as mock_set_server_metrics:
+    with patch.object(Job, "set_status", AsyncMock()) as mock_set_status:
+        with patch.object(Job, "set_server_metrics", AsyncMock()) as mock_set_server_metrics:
             # Act
             await server_training_listener(test_job)
 
             # Assert
-            mock_set_status.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY)
+            mock_set_status.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_db_client[DATABASE_NAME])
 
             assert mock_set_server_metrics.call_count == 3
             mock_set_server_metrics.assert_has_calls([
-                call(test_server_metrics[0], mock_database),
-                call(test_server_metrics[1], mock_database),
-                call(test_server_metrics[2], mock_database),
+                call(test_server_metrics[0], mock_db_client[DATABASE_NAME]),
+                call(test_server_metrics[1], mock_db_client[DATABASE_NAME]),
+                call(test_server_metrics[2], mock_db_client[DATABASE_NAME]),
             ])
 
     assert mock_get_from_redis.call_count == 3
@@ -409,17 +409,17 @@ async def test_server_training_listener_already_finished(mock_get_from_redis: Mo
     })
     test_server_final_metrics = {"fit_start": "2022-02-02 02:02:02", "rounds": [], "fit_end": "2022-02-02 03:03:03"}
     mock_get_from_redis.side_effect = [test_server_final_metrics]
-    mock_database = Mock()
-    mock_motor_client.return_value = {DATABASE_NAME: mock_database}
+    mock_db_client = make_mock_db_client()
+    mock_motor_client.return_value = mock_db_client
 
-    with patch.object(Job, "set_status", Mock()) as mock_set_status:
-        with patch.object(Job, "set_server_metrics", Mock()) as mock_set_server_metrics:
+    with patch.object(Job, "set_status", AsyncMock()) as mock_set_status:
+        with patch.object(Job, "set_server_metrics", AsyncMock()) as mock_set_server_metrics:
             # Act
-            await server_training_listener(test_job, mock_database)
+            await server_training_listener(test_job)
 
             # Assert
-            mock_set_status.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_database)
-            mock_set_server_metrics.assert_called_once_with(test_server_final_metrics, mock_database)
+            mock_set_status.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_db_client[DATABASE_NAME])
+            mock_set_server_metrics.assert_called_once_with(test_server_final_metrics, mock_db_client[DATABASE_NAME])
 
     assert mock_get_from_redis.call_count == 1
 
@@ -491,21 +491,20 @@ async def test_client_training_listener(
         {"type": "message"},
     ]
     mock_get_subscriber.return_value = mock_subscriber
-    mock_database = Mock()
-    mock_motor_client.return_value = {DATABASE_NAME: mock_database}
+    mock_db_client = make_mock_db_client()
+    mock_motor_client.return_value = mock_db_client
 
-    with patch.object(Job, "set_status", Mock()) as mock_set_status:
-        with patch.object(Job, "set_client_metrics", Mock()) as mock_set_client_metrics:
-            # Act
-            await client_training_listener(test_job, test_job.clients_info[0])
+    with patch.object(Job, "set_client_metrics", AsyncMock()) as mock_set_client_metrics:
+        # Act
+        await client_training_listener(test_job, test_job.clients_info[0])
 
-            # Assert
-            assert mock_set_client_metrics.call_count == 3
-            mock_set_client_metrics.assert_has_calls([
-                call(test_client_uuid, test_client_metrics[0], mock_database),
-                call(test_client_uuid, test_client_metrics[1], mock_database),
-                call(test_client_uuid, test_client_metrics[2], mock_database),
-            ])
+        # Assert
+        assert mock_set_client_metrics.call_count == 3
+        mock_set_client_metrics.assert_has_calls([
+            call(test_client_uuid, test_client_metrics[0], mock_db_client[DATABASE_NAME]),
+            call(test_client_uuid, test_client_metrics[1], mock_db_client[DATABASE_NAME]),
+            call(test_client_uuid, test_client_metrics[2], mock_db_client[DATABASE_NAME]),
+        ])
 
     assert mock_get_from_redis.call_count == 3
     mock_get_subscriber.assert_called_once_with(
@@ -517,9 +516,9 @@ async def test_client_training_listener(
 
 @patch("florist.api.routes.server.training.AsyncIOMotorClient")
 @patch("florist.api.routes.server.training.get_from_redis")
-async def test_client_training_listener_already_finished(mock_get_from_redis: Mock, mock_motor_client: Mock,) -> None:
+async def test_client_training_listener_already_finished(mock_get_from_redis: Mock, mock_motor_client: Mock) -> None:
     # Setup
-    test_client_uuid = "test-client-uuid";
+    test_client_uuid = "test-client-uuid"
     test_job = Job(**{
         "clients_info": [
             {
@@ -534,16 +533,19 @@ async def test_client_training_listener_already_finished(mock_get_from_redis: Mo
     })
     test_client_final_metrics = {"initialized": "2022-02-02 02:02:02", "rounds": [], "shutdown": "2022-02-02 03:03:03"}
     mock_get_from_redis.side_effect = [test_client_final_metrics]
-    mock_database = Mock()
-    mock_motor_client.return_value = {DATABASE_NAME: mock_database}
+    mock_db_client = make_mock_db_client()
+    mock_motor_client.return_value = mock_db_client
 
-    with patch.object(Job, "set_status", Mock()) as mock_set_status:
-        with patch.object(Job, "set_client_metrics", Mock()) as mock_set_client_metrics:
-            # Act
-            await client_training_listener(test_job, test_job.clients_info[0])
+    with patch.object(Job, "set_client_metrics", AsyncMock()) as mock_set_client_metrics:
+        # Act
+        await client_training_listener(test_job, test_job.clients_info[0])
 
-            # Assert
-            mock_set_client_metrics.assert_called_once_with(test_client_uuid, test_client_final_metrics, mock_database)
+        # Assert
+        mock_set_client_metrics.assert_called_once_with(
+            test_client_uuid,
+            test_client_final_metrics,
+            mock_db_client[DATABASE_NAME],
+        )
 
     assert mock_get_from_redis.call_count == 1
 
@@ -613,7 +615,10 @@ def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, M
     return test_server_config, test_job, mock_job_collection, mock_fastapi_request
 
 
-def async_return(result):
-    f = asyncio.Future()
-    f.set_result(result)
-    return f
+def make_mock_db_client() -> Mock:
+    mock_database = Mock()
+    mock_db_client = Mock()
+    mock_db_client.__getitem__ = Mock(
+        side_effect=lambda database_name: mock_database if database_name == DATABASE_NAME else None
+    )
+    return mock_db_client

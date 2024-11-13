@@ -4,7 +4,7 @@ import asyncio
 import logging
 from json import JSONDecodeError
 from threading import Thread
-from typing import Any, List
+from typing import List
 
 import requests
 from fastapi import APIRouter, Request
