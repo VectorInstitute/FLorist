@@ -246,7 +246,7 @@ async def test_start_wait_for_metric_exception(mock_redis: Mock, mock_launch_loc
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.monitoring.metrics.time")  # just so time.sleep does not actually sleep
-async def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_launch_local_server: Mock, mock_set_status: Mock) -> None:
+async def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_launch_local_server: Mock, __: Mock) -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, _, _, mock_fastapi_request = _setup_test_job_and_mocks()
@@ -386,6 +386,7 @@ async def test_server_training_listener(
 
     assert mock_get_from_redis.call_count == 3
     mock_get_subscriber.assert_called_once_with(test_job.server_uuid, test_job.redis_host, test_job.redis_port)
+    mock_db_client.close.assert_called()
 
 
 @patch("florist.api.routes.server.training.AsyncIOMotorClient")
@@ -422,6 +423,7 @@ async def test_server_training_listener_already_finished(mock_get_from_redis: Mo
             mock_set_server_metrics.assert_called_once_with(test_server_final_metrics, mock_db_client[DATABASE_NAME])
 
     assert mock_get_from_redis.call_count == 1
+    mock_db_client.close.assert_called()
 
 
 async def test_server_training_listener_fail_no_server_uuid() -> None:
@@ -512,6 +514,7 @@ async def test_client_training_listener(
         test_job.clients_info[0].redis_host,
         test_job.clients_info[0].redis_port,
     )
+    mock_db_client.close.assert_called()
 
 
 @patch("florist.api.routes.server.training.AsyncIOMotorClient")
@@ -548,6 +551,7 @@ async def test_client_training_listener_already_finished(mock_get_from_redis: Mo
         )
 
     assert mock_get_from_redis.call_count == 1
+    mock_db_client.close.assert_called()
 
 
 async def test_client_training_listener_fail_no_uuid() -> None:
