@@ -4,7 +4,7 @@ import asyncio
 import logging
 from json import JSONDecodeError
 from threading import Thread
-from typing import List
+from typing import Any, List
 
 import requests
 from fastapi import APIRouter, Request
@@ -142,7 +142,7 @@ async def client_training_listener(job: Job, client_info: ClientInfo) -> None:
 
     assert client_info.uuid is not None, "client_info.uuid is None."
 
-    db_client = AsyncIOMotorClient(MONGODB_URI)
+    db_client: AsyncIOMotorClient[Any] = AsyncIOMotorClient(MONGODB_URI)
     database = db_client[DATABASE_NAME]
 
     # check if training has already finished before start listening
@@ -158,27 +158,21 @@ async def client_training_listener(job: Job, client_info: ClientInfo) -> None:
 
     subscriber = get_subscriber(client_info.uuid, client_info.redis_host, client_info.redis_port)
     # TODO add a max retries mechanism, maybe?
-    previous_metrics = None
     for message in subscriber.listen():  # type: ignore[no-untyped-call]
         if message["type"] == "message":
             # The contents of the message do not matter, we just use it to get notified
             client_metrics = get_from_redis(client_info.uuid, client_info.redis_host, client_info.redis_port)
             LOGGER.debug(f"Client listener: Current metrics for client {client_info.uuid}: {client_metrics}")
 
-            if client_metrics is None or client_metrics == previous_metrics:
-                LOGGER.debug("Client listener: Current metrics for client have not changed. Not updating.")
-                continue
-
-            previous_metrics = client_metrics
-
-            LOGGER.info(f"Client listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
-            await job.set_client_metrics(client_info.uuid, client_metrics, database)
-            LOGGER.info(
-                f"Client listener: Client metrics for client {client_info.uuid} on {job.id} have been updated."
-            )
-            if "shutdown" in client_metrics:
-                db_client.close()
-                return
+            if client_metrics is not None:
+                LOGGER.info(f"Client listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
+                await job.set_client_metrics(client_info.uuid, client_metrics, database)
+                LOGGER.info(
+                    f"Client listener: Client metrics for client {client_info.uuid} on {job.id} have been updated."
+                )
+                if "shutdown" in client_metrics:
+                    db_client.close()
+                    return
 
     db_client.close()
 
@@ -199,7 +193,7 @@ async def server_training_listener(job: Job) -> None:
     assert job.redis_host is not None, "job.redis_host is None."
     assert job.redis_port is not None, "job.redis_port is None."
 
-    db_client = AsyncIOMotorClient(MONGODB_URI)
+    db_client: AsyncIOMotorClient[Any] = AsyncIOMotorClient(MONGODB_URI)
     database = db_client[DATABASE_NAME]
 
     # check if training has already finished before start listening
@@ -218,27 +212,21 @@ async def server_training_listener(job: Job) -> None:
 
     subscriber = get_subscriber(job.server_uuid, job.redis_host, job.redis_port)
     # TODO add a max retries mechanism, maybe?
-    previous_metrics = None
     for message in subscriber.listen():  # type: ignore[no-untyped-call]
         if message["type"] == "message":
             # The contents of the message do not matter, we just use it to get notified
             server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
             LOGGER.debug(f"Server listener: Message received for job {job.id}. Metrics: {server_metrics}")
 
-            if server_metrics is None or server_metrics == previous_metrics:
-                LOGGER.debug("Server listener: Current metrics for server have not changed. Not updating.")
-                continue
-
-            previous_metrics = server_metrics
-
-            LOGGER.info(f"Server listener: Updating server metrics for job {job.id}")
-            await job.set_server_metrics(server_metrics, database)
-            LOGGER.info(f"Server listener: Server metrics for {job.id} have been updated.")
-            if "fit_end" in server_metrics:
-                LOGGER.info(f"Server listener: Training finished for job {job.id}")
-                await job.set_status(JobStatus.FINISHED_SUCCESSFULLY, database)
-                LOGGER.info(f"Server listener: Job {job.id} status have been set to {job.status.value}.")
-                db_client.close()
-                return
+            if server_metrics is not None:
+                LOGGER.info(f"Server listener: Updating server metrics for job {job.id}")
+                await job.set_server_metrics(server_metrics, database)
+                LOGGER.info(f"Server listener: Server metrics for {job.id} have been updated.")
+                if "fit_end" in server_metrics:
+                    LOGGER.info(f"Server listener: Training finished for job {job.id}")
+                    await job.set_status(JobStatus.FINISHED_SUCCESSFULLY, database)
+                    LOGGER.info(f"Server listener: Job {job.id} status have been set to {job.status.value}.")
+                    db_client.close()
+                    return
 
     db_client.close()
