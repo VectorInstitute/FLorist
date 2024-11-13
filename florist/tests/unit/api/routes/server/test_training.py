@@ -147,7 +147,7 @@ async def test_start_fail_unsupported_client() -> None:
 
 
 @patch("florist.api.db.entities.Job.set_status")
-async def test_start_fail_missing_info(mock_set_status: Mock) -> None:
+async def test_start_fail_missing_info(_: Mock) -> None:
     fields_to_be_removed = ["model", "server_config", "clients_info", "server_address", "redis_host", "redis_port"]
 
     for field_to_be_removed in fields_to_be_removed:
