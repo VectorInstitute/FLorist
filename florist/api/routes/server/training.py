@@ -71,7 +71,7 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
         model_class = Model.class_for_model(job.model)
 
         # Start the server
-        server_uuid, _ = launch_local_server(
+        server_uuid, _, server_log_file_path = launch_local_server(
             model=model_class(),
             n_clients=len(job.clients_info),
             server_address=job.server_address,
@@ -79,11 +79,13 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
             redis_port=job.redis_port,
             **server_config,
         )
+        await job.set_server_log_file_path(server_log_file_path, request.app.database)
         wait_for_metric(server_uuid, "fit_start", job.redis_host, job.redis_port, logger=LOGGER)
 
         # Start the clients
         client_uuids: List[str] = []
-        for client_info in job.clients_info:
+        for i in range(len(job.clients_info)):
+            client_info = job.clients_info[i]
             parameters = {
                 "server_address": job.server_address,
                 "client": client_info.client.value,
@@ -102,6 +104,8 @@ async def start(job_id: str, request: Request, background_tasks: BackgroundTasks
                 raise Exception(f"Client response did not return a UUID. Response: {json_response}")
 
             client_uuids.append(json_response["uuid"])
+
+            await job.set_client_log_file_path(i, json_response["log_file_path"], request.app.database)
 
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
 

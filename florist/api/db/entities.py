@@ -49,6 +49,7 @@ class ClientInfo(BaseModel):
     redis_port: str = Field(...)
     uuid: Optional[Annotated[str, Field(...)]]
     metrics: Optional[Annotated[str, Field(...)]]
+    log_file_path: Optional[Annotated[str, Field(...)]]
 
     class Config:
         """MongoDB config for the ClientInfo DB entity."""
@@ -63,6 +64,7 @@ class ClientInfo(BaseModel):
                 "redis_port": "6380",
                 "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
                 "metrics": '{"host_type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
+                "log_file_path": "/Users/foo/client/logfile.log",
             },
         }
 
@@ -78,6 +80,7 @@ class Job(BaseModel):
     config_parser: Optional[Annotated[ConfigParser, Field(...)]]
     server_uuid: Optional[Annotated[str, Field(...)]]
     server_metrics: Optional[Annotated[str, Field(...)]]
+    server_log_file_path: Optional[Annotated[str, Field(...)]]
     redis_host: Optional[Annotated[str, Field(...)]]
     redis_port: Optional[Annotated[str, Field(...)]]
     clients_info: Optional[Annotated[List[ClientInfo], Field(...)]]
@@ -130,7 +133,7 @@ class Job(BaseModel):
         """
         Save the server and clients' UUIDs in the database under the current job's id.
 
-        :param server_uuid: [str] the server_uuid to be saved in the database.
+        :param server_uuid: (str) the server_uuid to be saved in the database.
         :param client_uuids: List[str] the list of client_uuids to be saved in the database.
         :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
         """
@@ -220,6 +223,44 @@ class Job(BaseModel):
                 )
                 assert_updated_successfully(update_result)
 
+    async def set_server_log_file_path(self, log_file_path: str, database: AsyncIOMotorDatabase[Any]) -> None:
+        """
+        Save the server's log file path in the database under the current job's id.
+
+        :param log_file_path: (str) the file path to be saved in the database.
+        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
+        """
+        job_collection = database[JOB_COLLECTION_NAME]
+        self.server_log_file_path = log_file_path
+        update_result = await job_collection.update_one(
+            {"_id": self.id}, {"$set": {"server_log_file_path": log_file_path}}
+        )
+        assert_updated_successfully(update_result)
+
+    async def set_client_log_file_path(
+        self,
+        client_index: int,
+        log_file_path: str,
+        database: AsyncIOMotorDatabase[Any],
+    ) -> None:
+        """
+        Save the clients' log file path in the database under the given client index and current job's id.
+
+        :param client_index: (str) the index of the client in the job.
+        :param log_file_path: (str) the path oof the client's log file.
+        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
+        """
+        assert self.clients_info is not None, "Job has no clients."
+        assert (
+            0 <= client_index < len(self.clients_info)
+        ), f"Client index {client_index} is invalid (total: {len(self.clients_info)})"
+
+        job_collection = database[JOB_COLLECTION_NAME]
+        update_result = await job_collection.update_one(
+            {"_id": self.id}, {"$set": {f"clients_info.{client_index}.log_file_path": log_file_path}}
+        )
+        assert_updated_successfully(update_result)
+
     class Config:
         """MongoDB config for the Job DB entity."""
 
@@ -233,6 +274,7 @@ class Job(BaseModel):
                 "server_config": '{"n_server_rounds": 3, "batch_size": 8, "local_epochs": 1}',
                 "server_uuid": "d73243cf-8b89-473b-9607-8cd0253a101d",
                 "server_metrics": '{"host_type": "server", "fit_start": "2024-04-23 15:33:12.865604", "rounds": {"1": {"fit_start": "2024-04-23 15:33:12.869001"}}}',
+                "server_log_file_path": "/Users/foo/server/logfile.log",
                 "redis_host": "localhost",
                 "redis_port": "6379",
                 "clients_info": [
