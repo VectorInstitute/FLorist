@@ -1,10 +1,12 @@
+import os
 from unittest.mock import ANY
 
 from fastapi.encoders import jsonable_encoder
 
 from florist.api.clients.common import Client
 from florist.api.db.entities import ClientInfo, Job, JobStatus
-from florist.api.routes.server.job import list_jobs_with_status, new_job
+from florist.api.monitoring.logs import get_server_log_file_path, get_client_log_file_path
+from florist.api.routes.server.job import list_jobs_with_status, new_job, get_server_log
 from florist.api.servers.common import Model
 from florist.tests.integration.api.utils import mock_request
 from florist.api.servers.config_parsers import ConfigParser
@@ -26,6 +28,7 @@ async def test_new_job(mock_request) -> None:
         "clients_info": None,
         "server_metrics": None,
         "server_uuid": None,
+        "server_log_file_path": None,
     }
 
     test_job = Job(
@@ -39,6 +42,7 @@ async def test_new_job(mock_request) -> None:
         redis_port="test-redis-port",
         server_metrics="test-server-metrics",
         server_uuid="test-server-uuid",
+        server_log_file_path="test-server-log-file-path",
         clients_info=[
             ClientInfo(
                 client=Client.MNIST,
@@ -48,6 +52,7 @@ async def test_new_job(mock_request) -> None:
                 redis_port="test-redis-port-1",
                 metrics="test-client-metrics-1",
                 uuid="test-client-uuid-1",
+                log_file_path="test-log-file-path-1",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -55,8 +60,9 @@ async def test_new_job(mock_request) -> None:
                 data_path="test/data/path-2",
                 redis_host="test-redis-host-2",
                 redis_port="test-redis-port-2",
-                metrics="test-client-metrics-1",
-                uuid="test-client-uuid-1",
+                metrics="test-client-metrics-2",
+                uuid="test-client-uuid-2",
+                log_file_path="test-log-file-path-2",
             ),
         ]
     )
@@ -73,6 +79,7 @@ async def test_new_job(mock_request) -> None:
         "redis_port": test_job.redis_port,
         "server_uuid": test_job.server_uuid,
         "server_metrics": test_job.server_metrics,
+        "server_log_file_path": test_job.server_log_file_path,
         "clients_info": [
             {
                 "_id": ANY,
@@ -83,6 +90,7 @@ async def test_new_job(mock_request) -> None:
                 "redis_port": test_job.clients_info[0].redis_port,
                 "uuid": test_job.clients_info[0].uuid,
                 "metrics": test_job.clients_info[0].metrics,
+                "log_file_path": test_job.clients_info[0].log_file_path,
             }, {
                 "_id": ANY,
                 "client": test_job.clients_info[1].client.value,
@@ -92,6 +100,7 @@ async def test_new_job(mock_request) -> None:
                 "redis_port": test_job.clients_info[1].redis_port,
                 "uuid": test_job.clients_info[1].uuid,
                 "metrics": test_job.clients_info[1].metrics,
+                "log_file_path": test_job.clients_info[1].log_file_path,
             },
         ],
     }
@@ -109,6 +118,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         redis_port="test-redis-port1",
         server_metrics="test-server-metrics1",
         server_uuid="test-server-uuid1",
+        server_log_file_path="test-server-log-file-path1",
         clients_info=[
             ClientInfo(
                 client=Client.MNIST,
@@ -118,6 +128,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-1-1",
                 metrics="test-client-metrics-1-1",
                 uuid="test-client-uuid-1-1",
+                log_file_path="test-log-file-path-1-1",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -127,6 +138,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-2-1",
                 metrics="test-client-metrics-2-1",
                 uuid="test-client-uuid-2-1",
+                log_file_path="test-log-file-path-2-1",
             ),
         ]
     )
@@ -142,6 +154,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         redis_port="test-redis-port2",
         server_metrics="test-server-metrics2",
         server_uuid="test-server-uuid2",
+        server_log_file_path="test-server-log-file-path2",
         clients_info=[
             ClientInfo(
                 client=Client.MNIST,
@@ -151,6 +164,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-1-2",
                 metrics="test-client-metrics-1-2",
                 uuid="test-client-uuid-1-2",
+                log_file_path="test-log-file-path-1-2",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -160,6 +174,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-2-2",
                 metrics="test-client-metrics-2-2",
                 uuid="test-client-uuid-2-2",
+                log_file_path="test-log-file-path-2-2",
             ),
         ]
     )
@@ -175,6 +190,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         redis_port="test-redis-port3",
         server_metrics="test-server-metrics3",
         server_uuid="test-server-uuid3",
+        server_log_file_path="test-server-log-file-path3",
         clients_info=[
             ClientInfo(
                 client=Client.MNIST,
@@ -184,6 +200,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-1-3",
                 metrics="test-client-metrics-1-3",
                 uuid="test-client-uuid-1-3",
+                log_file_path="test-log-file-path-1-3",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -193,6 +210,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-2-3",
                 metrics="test-client-metrics-2-3",
                 uuid="test-client-uuid-2-3",
+                log_file_path="test-log-file-path-2-3",
             ),
         ]
     )
@@ -208,6 +226,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         redis_port="test-redis-port4",
         server_metrics="test-server-metrics4",
         server_uuid="test-server-uuid4",
+        server_log_file_path="test-server-log-file-path4",
         clients_info=[
             ClientInfo(
                 client=Client.MNIST,
@@ -217,6 +236,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-1-4",
                 metrics="test-client-metrics-1-4",
                 uuid="test-client-uuid-1-4",
+                log_file_path="test-log-file-path-1-4",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -226,6 +246,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-2-4",
                 metrics="test-client-metrics-2-4",
                 uuid="test-client-uuid-2-4",
+                log_file_path="test-log-file-path-2-4",
             ),
         ]
     )
@@ -255,6 +276,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "redis_port": test_job1.redis_port,
         "server_metrics": test_job1.server_metrics,
         "server_uuid": test_job1.server_uuid,
+        "server_log_file_path": test_job1.server_log_file_path,
         "clients_info": [
             {
                 "_id": ANY,
@@ -265,6 +287,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job1.clients_info[0].redis_port,
                 "metrics": test_job1.clients_info[0].metrics,
                 "uuid": test_job1.clients_info[0].uuid,
+                "log_file_path": test_job1.clients_info[0].log_file_path,
             }, {
                 "_id": ANY,
                 "client": test_job1.clients_info[1].client.value,
@@ -274,6 +297,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job1.clients_info[1].redis_port,
                 "metrics": test_job1.clients_info[1].metrics,
                 "uuid": test_job1.clients_info[1].uuid,
+                "log_file_path": test_job1.clients_info[1].log_file_path,
             },
         ],
     }
@@ -289,6 +313,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "redis_port": test_job2.redis_port,
         "server_metrics": test_job2.server_metrics,
         "server_uuid": test_job2.server_uuid,
+        "server_log_file_path": test_job2.server_log_file_path,
         "clients_info": [
             {
                 "_id": ANY,
@@ -299,6 +324,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job2.clients_info[0].redis_port,
                 "metrics": test_job2.clients_info[0].metrics,
                 "uuid": test_job2.clients_info[0].uuid,
+                "log_file_path": test_job2.clients_info[0].log_file_path,
             }, {
                 "_id": ANY,
                 "client": test_job2.clients_info[1].client.value,
@@ -308,6 +334,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job2.clients_info[1].redis_port,
                 "metrics": test_job2.clients_info[1].metrics,
                 "uuid": test_job2.clients_info[1].uuid,
+                "log_file_path": test_job2.clients_info[1].log_file_path,
             },
         ],
     }
@@ -323,6 +350,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "redis_port": test_job3.redis_port,
         "server_metrics": test_job3.server_metrics,
         "server_uuid": test_job3.server_uuid,
+        "server_log_file_path": test_job3.server_log_file_path,
         "clients_info": [
             {
                 "_id": ANY,
@@ -333,6 +361,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job3.clients_info[0].redis_port,
                 "metrics": test_job3.clients_info[0].metrics,
                 "uuid": test_job3.clients_info[0].uuid,
+                "log_file_path": test_job3.clients_info[0].log_file_path,
             }, {
                 "_id": ANY,
                 "client": test_job3.clients_info[1].client.value,
@@ -342,6 +371,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job3.clients_info[1].redis_port,
                 "metrics": test_job3.clients_info[1].metrics,
                 "uuid": test_job3.clients_info[1].uuid,
+                "log_file_path": test_job3.clients_info[1].log_file_path,
             },
         ],
     }
@@ -357,6 +387,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "redis_port": test_job4.redis_port,
         "server_metrics": test_job4.server_metrics,
         "server_uuid": test_job4.server_uuid,
+        "server_log_file_path": test_job4.server_log_file_path,
         "clients_info": [
             {
                 "_id": ANY,
@@ -367,6 +398,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job4.clients_info[0].redis_port,
                 "metrics": test_job4.clients_info[0].metrics,
                 "uuid": test_job4.clients_info[0].uuid,
+                "log_file_path": test_job4.clients_info[0].log_file_path,
             }, {
                 "_id": ANY,
                 "client": test_job4.clients_info[1].client.value,
@@ -376,6 +408,27 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job4.clients_info[1].redis_port,
                 "metrics": test_job4.clients_info[1].metrics,
                 "uuid": test_job4.clients_info[1].uuid,
+                "log_file_path": test_job4.clients_info[1].log_file_path,
             },
         ],
     }
+
+
+async def test_get_server_log_success(mock_request):
+    test_log_file_name = "test-log-file-name"
+    test_log_file_content = "this is a test log file content"
+    test_log_file_path = str(get_server_log_file_path(test_log_file_name))
+
+    with open(test_log_file_path, "w") as f:
+        f.write(test_log_file_content)
+
+    result_job = await new_job(mock_request, Job(server_log_file_path=test_log_file_path))
+
+    result = await get_server_log(result_job.id, mock_request)
+
+    assert result.status_code == 200
+    assert result.body.decode() == f"\"{test_log_file_content}\""
+
+    os.remove(test_log_file_path)
+
+# TODO test assertion errors for get server log
