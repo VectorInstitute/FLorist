@@ -16,6 +16,7 @@ on:
       - '**.tsx'
       - poetry.lock
       - pyproject.toml
+      - yarn.lock
       - '**.rst'
       - '**.md'
   pull_request:
@@ -33,6 +34,7 @@ on:
       - '**.tsx'
       - poetry.lock
       - pyproject.toml
+      - yarn.lock
       - '**.rst'
       - '**.md'
 

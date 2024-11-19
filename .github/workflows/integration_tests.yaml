@@ -15,6 +15,7 @@ on:
       - '**.ipynb'
       - poetry.lock
       - pyproject.toml
+      - yarn.lock
       - '**.rst'
       - '**.md'
   pull_request:
@@ -31,6 +32,7 @@ on:
       - '**.ipynb'
       - poetry.lock
       - pyproject.toml
+      - yarn.lock
       - '**.rst'
       - '**.md'
 
