@@ -10,7 +10,6 @@ from florist.api.routes.server.training import (
     client_training_listener,
     start,
     server_training_listener,
-    CHECK_CLIENT_STATUS_API,
 )
 
 
@@ -19,7 +18,11 @@ from florist.api.routes.server.training import (
 @patch("florist.api.routes.server.training.requests")
 @patch("florist.api.db.entities.Job.set_status")
 @patch("florist.api.db.entities.Job.set_uuids")
+@patch("florist.api.db.entities.Job.set_server_log_file_path")
+@patch("florist.api.db.entities.Job.set_client_log_file_path")
 async def test_start_success(
+    mock_set_client_log_file_path: Mock,
+    mock_server_log_file_path: Mock,
     mock_set_uuids: Mock,
     mock_set_status: Mock,
     mock_requests: Mock,
@@ -31,7 +34,8 @@ async def test_start_success(
     test_server_config, test_job, mock_job_collection, mock_fastapi_request = _setup_test_job_and_mocks()
 
     test_server_uuid = "test-server-uuid"
-    mock_launch_local_server.return_value = (test_server_uuid, None)
+    test_server_log_file_path = "test-log-file-path"
+    mock_launch_local_server.return_value = (test_server_uuid, None, test_server_log_file_path)
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = b"{\"fit_start\": null}"
@@ -40,8 +44,13 @@ async def test_start_success(
     mock_response = Mock()
     mock_response.status_code = 200
     test_client_1_uuid = "test-client-1-uuid"
+    test_client_1_log_file_path = "test-client-1-log-file-path"
     test_client_2_uuid = "test-client-2-uuid"
-    mock_response.json.side_effect = [{"uuid": test_client_1_uuid}, {"uuid": test_client_2_uuid}]
+    test_client_2_log_file_path = "test-client-2-log-file-path"
+    mock_response.json.side_effect = [
+        {"uuid": test_client_1_uuid, "log_file_path": test_client_1_log_file_path},
+        {"uuid": test_client_2_uuid, "log_file_path": test_client_2_log_file_path},
+    ]
     mock_requests.get.return_value = mock_response
 
     mock_background_tasks = Mock()
@@ -230,13 +239,19 @@ async def test_start_launch_server_exception(mock_launch_local_server: Mock, _: 
 @patch("florist.api.db.entities.Job.set_status")
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
-async def test_start_wait_for_metric_exception(mock_redis: Mock, mock_launch_local_server: Mock, _: Mock) -> None:
+@patch("florist.api.db.entities.Job.set_server_log_file_path")
+async def test_start_wait_for_metric_exception(
+    mock_set_server_log_file_path: Mock,
+    mock_redis: Mock,
+    mock_launch_local_server: Mock,
+    _: Mock,
+) -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, _, _, mock_fastapi_request = _setup_test_job_and_mocks()
 
     test_server_uuid = "test-server-uuid"
-    mock_launch_local_server.return_value = (test_server_uuid, None)
+    mock_launch_local_server.return_value = (test_server_uuid, None, "test-log-file-path")
 
     test_exception = Exception("test exception")
     mock_redis.Redis.side_effect = test_exception
@@ -254,13 +269,20 @@ async def test_start_wait_for_metric_exception(mock_redis: Mock, mock_launch_loc
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.monitoring.metrics.time")  # just so time.sleep does not actually sleep
-async def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_launch_local_server: Mock, mock_set_status: Mock) -> None:
+@patch("florist.api.db.entities.Job.set_server_log_file_path")
+async def test_start_wait_for_metric_timeout(
+    mock_set_server_log_file_path: Mock,
+    _: Mock,
+    mock_redis: Mock,
+    mock_launch_local_server: Mock,
+    __: Mock,
+) -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, _, _, mock_fastapi_request = _setup_test_job_and_mocks()
 
     test_server_uuid = "test-server-uuid"
-    mock_launch_local_server.return_value = (test_server_uuid, None)
+    mock_launch_local_server.return_value = (test_server_uuid, None, "test-log-file-path")
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = b"{\"foo\": null}"
@@ -279,13 +301,20 @@ async def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_lau
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
-async def test_start_fail_response(mock_requests: Mock, mock_redis: Mock, mock_launch_local_server: Mock, _: Mock) -> None:
+@patch("florist.api.db.entities.Job.set_server_log_file_path")
+async def test_start_fail_response(
+    mock_set_server_log_file_path: Mock,
+    mock_requests: Mock,
+    mock_redis: Mock,
+    mock_launch_local_server: Mock,
+    _: Mock,
+) -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, _, _, mock_fastapi_request = _setup_test_job_and_mocks()
 
     test_server_uuid = "test-server-uuid"
-    mock_launch_local_server.return_value = (test_server_uuid, None)
+    mock_launch_local_server.return_value = (test_server_uuid, None, "test-log-file-path")
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = b"{\"fit_start\": null}"
@@ -309,13 +338,20 @@ async def test_start_fail_response(mock_requests: Mock, mock_redis: Mock, mock_l
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
-async def test_start_no_uuid_in_response(mock_requests: Mock, mock_redis: Mock, mock_launch_local_server: Mock, _: Mock) -> None:
+@patch("florist.api.db.entities.Job.set_server_log_file_path")
+async def test_start_no_uuid_in_response(
+    mock_set_server_log_file_path: Mock,
+    mock_requests: Mock,
+    mock_redis: Mock,
+    mock_launch_local_server: Mock,
+    _: Mock,
+) -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, _, _, mock_fastapi_request = _setup_test_job_and_mocks()
 
     test_server_uuid = "test-server-uuid"
-    mock_launch_local_server.return_value = (test_server_uuid, None)
+    mock_launch_local_server.return_value = (test_server_uuid, None, "test-log-file-path")
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = b"{\"fit_start\": null}"
@@ -458,7 +494,7 @@ def test_server_training_listener_fail_no_redis_port() -> None:
 @patch("florist.api.routes.server.training.get_subscriber")
 def test_client_training_listener(mock_get_subscriber: Mock, mock_get_from_redis: Mock) -> None:
     # Setup
-    test_client_uuid = "test-client-uuid";
+    test_client_uuid = "test-client-uuid"
     test_job = Job(**{
         "clients_info": [
             {
@@ -512,7 +548,7 @@ def test_client_training_listener(mock_get_subscriber: Mock, mock_get_from_redis
 @patch("florist.api.routes.server.training.get_from_redis")
 def test_client_training_listener_already_finished(mock_get_from_redis: Mock) -> None:
     # Setup
-    test_client_uuid = "test-client-uuid";
+    test_client_uuid = "test-client-uuid"
     test_job = Job(**{
         "clients_info": [
             {

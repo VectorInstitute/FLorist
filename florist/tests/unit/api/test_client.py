@@ -29,7 +29,7 @@ def test_start_success(mock_launch_client: Mock) -> None:
 
     assert response.status_code == 200
     json_body = json.loads(response.body.decode())
-    assert json_body == {"uuid": ANY}
+    assert json_body == {"uuid": ANY, "log_file_path": str(get_client_log_file_path(json_body["uuid"]))}
 
     log_file_name = str(get_client_log_file_path(json_body["uuid"]))
     mock_launch_client.assert_called_once_with(ANY, test_server_address, log_file_name)
