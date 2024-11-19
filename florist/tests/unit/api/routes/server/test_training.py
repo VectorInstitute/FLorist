@@ -64,6 +64,7 @@ async def test_start_success(
     assert json_body == {"server_uuid": test_server_uuid, "client_uuids": [test_client_1_uuid, test_client_2_uuid]}
 
     mock_job_collection.find_one.assert_called_with({"_id": test_job_id})
+    mock_set_status.assert_called_once_with(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database)
 
     assert isinstance(mock_launch_local_server.call_args_list[0][1]["model"], MnistNet)
     mock_launch_local_server.assert_called_once_with(
@@ -78,6 +79,8 @@ async def test_start_success(
     )
     mock_redis.Redis.assert_called_once_with(host=test_job["redis_host"], port=test_job["redis_port"])
     mock_redis_connection.get.assert_called_once_with(test_server_uuid)
+    mock_server_log_file_path.assert_called_once_with(test_server_log_file_path, mock_fastapi_request.app.database)
+
     mock_requests.get.assert_any_call(
         url=f"http://{test_job['clients_info'][0]['service_address']}/api/client/start",
         params={
@@ -99,7 +102,11 @@ async def test_start_success(
         },
     )
 
-    mock_set_status.assert_called_once_with(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database)
+    mock_set_client_log_file_path.assert_has_calls([
+        call(0, test_client_1_log_file_path, mock_fastapi_request.app.database),
+        call(1, test_client_2_log_file_path, mock_fastapi_request.app.database),
+    ])
+
     mock_set_uuids.assert_called_once_with(
         test_server_uuid,
         [test_client_1_uuid, test_client_2_uuid],
@@ -164,7 +171,7 @@ async def test_start_fail_unsupported_client() -> None:
 
 
 @patch("florist.api.db.entities.Job.set_status")
-async def test_start_fail_missing_info(mock_set_status: Mock) -> None:
+async def test_start_fail_missing_info(_: Mock) -> None:
     fields_to_be_removed = ["model", "server_config", "clients_info", "server_address", "redis_host", "redis_port"]
 
     for field_to_be_removed in fields_to_be_removed:
@@ -184,7 +191,7 @@ async def test_start_fail_missing_info(mock_set_status: Mock) -> None:
 
 
 @patch("florist.api.db.entities.Job.set_status")
-async def test_start_fail_invalid_server_config(mock_set_status: Mock) -> None:
+async def test_start_fail_invalid_server_config(_: Mock) -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
@@ -251,7 +258,8 @@ async def test_start_wait_for_metric_exception(
     _, _, _, mock_fastapi_request = _setup_test_job_and_mocks()
 
     test_server_uuid = "test-server-uuid"
-    mock_launch_local_server.return_value = (test_server_uuid, None, "test-log-file-path")
+    test_log_file_path = "test-log-file-path"
+    mock_launch_local_server.return_value = (test_server_uuid, None, test_log_file_path)
 
     test_exception = Exception("test exception")
     mock_redis.Redis.side_effect = test_exception
@@ -263,6 +271,8 @@ async def test_start_wait_for_metric_exception(
     assert response.status_code == 500
     json_body = json.loads(response.body.decode())
     assert json_body == {"error": str(test_exception)}
+
+    mock_set_server_log_file_path.assert_called_once_with(test_log_file_path, mock_fastapi_request.app.database)
 
 
 @patch("florist.api.db.entities.Job.set_status")
@@ -282,7 +292,8 @@ async def test_start_wait_for_metric_timeout(
     _, _, _, mock_fastapi_request = _setup_test_job_and_mocks()
 
     test_server_uuid = "test-server-uuid"
-    mock_launch_local_server.return_value = (test_server_uuid, None, "test-log-file-path")
+    test_log_file_path = "test-log-file-path"
+    mock_launch_local_server.return_value = (test_server_uuid, None, test_log_file_path)
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = b"{\"foo\": null}"
@@ -295,6 +306,8 @@ async def test_start_wait_for_metric_timeout(
     assert response.status_code == 500
     json_body = json.loads(response.body.decode())
     assert json_body == {"error": "Metric 'fit_start' not been found after 20 retries."}
+
+    mock_set_server_log_file_path.assert_called_once_with(test_log_file_path, mock_fastapi_request.app.database)
 
 
 @patch("florist.api.db.entities.Job.set_status")
@@ -314,7 +327,8 @@ async def test_start_fail_response(
     _, _, _, mock_fastapi_request = _setup_test_job_and_mocks()
 
     test_server_uuid = "test-server-uuid"
-    mock_launch_local_server.return_value = (test_server_uuid, None, "test-log-file-path")
+    test_log_file_path = "test-log-file-path"
+    mock_launch_local_server.return_value = (test_server_uuid, None, test_log_file_path)
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = b"{\"fit_start\": null}"
@@ -332,6 +346,8 @@ async def test_start_fail_response(
     assert response.status_code == 500
     json_body = json.loads(response.body.decode())
     assert json_body == {"error": f"Client response returned 403. Response: error"}
+
+    mock_set_server_log_file_path.assert_called_once_with(test_log_file_path, mock_fastapi_request.app.database)
 
 
 @patch("florist.api.db.entities.Job.set_status")
@@ -351,7 +367,8 @@ async def test_start_no_uuid_in_response(
     _, _, _, mock_fastapi_request = _setup_test_job_and_mocks()
 
     test_server_uuid = "test-server-uuid"
-    mock_launch_local_server.return_value = (test_server_uuid, None, "test-log-file-path")
+    test_log_file_path = "test-log-file-path"
+    mock_launch_local_server.return_value = (test_server_uuid, None, test_log_file_path)
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = b"{\"fit_start\": null}"
@@ -369,6 +386,8 @@ async def test_start_no_uuid_in_response(
     assert response.status_code == 500
     json_body = json.loads(response.body.decode())
     assert json_body == {"error": "Client response did not return a UUID. Response: {'foo': 'bar'}"}
+
+    mock_set_server_log_file_path.assert_called_once_with(test_log_file_path, mock_fastapi_request.app.database)
 
 
 @patch("florist.api.routes.server.training.get_from_redis")
