@@ -1,3 +1,4 @@
+import json
 import os
 from unittest.mock import ANY
 
@@ -431,4 +432,23 @@ async def test_get_server_log_success(mock_request):
 
     os.remove(test_log_file_path)
 
-# TODO test assertion errors for get server log
+
+async def test_get_server_log_error_no_job(mock_request):
+    test_job_id = "inexistent-job-id"
+
+    result = await get_server_log(test_job_id, mock_request)
+
+    assert result.status_code == 400
+    assert json.loads(result.body.decode()) == {"error": f"Job {test_job_id} not found"}
+
+
+async def test_get_server_log_error_no_log_path(mock_request):
+    result_job = await new_job(mock_request, Job())
+
+    result = await get_server_log(result_job.id, mock_request)
+
+    assert result.status_code == 400
+    assert json.loads(result.body.decode()) == {"error": f"Log file path is None or empty"}
+
+
+# TODO add tests for get client log

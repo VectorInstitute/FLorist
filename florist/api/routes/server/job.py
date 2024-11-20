@@ -120,7 +120,7 @@ async def get_server_log(job_id: str, request: Request) -> JSONResponse:
         assert job is not None, f"Job {job_id} not found"
         assert (
             job.server_log_file_path is not None and job.server_log_file_path != ""
-        ), "log file path is None or empty"
+        ), "Log file path is None or empty"
 
         with open(job.server_log_file_path, "r") as f:
             content = f.read()
@@ -157,7 +157,7 @@ async def get_client_log(job_id: str, client_index: int, request: Request) -> JS
         client_info = job.clients_info[client_index]
         assert (
             client_info.log_file_path is not None and client_info.log_file_path != ""
-        ), "log file path is None or empty"
+        ), "Log file path is None or empty"
 
         response = requests.get(
             url=f"http://{client_info.service_address}/api/client/get_log",
