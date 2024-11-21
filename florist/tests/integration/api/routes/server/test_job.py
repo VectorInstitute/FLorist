@@ -2,14 +2,15 @@ import json
 import os
 from unittest.mock import ANY
 
+import uvicorn
 from fastapi.encoders import jsonable_encoder
 
 from florist.api.clients.common import Client
 from florist.api.db.entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.logs import get_server_log_file_path, get_client_log_file_path
-from florist.api.routes.server.job import list_jobs_with_status, new_job, get_server_log
+from florist.api.routes.server.job import list_jobs_with_status, new_job, get_server_log, get_client_log
 from florist.api.servers.common import Model
-from florist.tests.integration.api.utils import mock_request
+from florist.tests.integration.api.utils import mock_request, TestUvicornServer
 from florist.api.servers.config_parsers import ConfigParser
 
 
@@ -451,4 +452,99 @@ async def test_get_server_log_error_no_log_path(mock_request):
     assert json.loads(result.body.decode()) == {"error": f"Log file path is None or empty"}
 
 
-# TODO add tests for get client log
+async def test_get_client_log_success(mock_request):
+    test_log_file_name = "test-log-file-name"
+    test_log_file_content = "this is a test log file content"
+    test_log_file_path = str(get_client_log_file_path(test_log_file_name))
+
+    with open(test_log_file_path, "w") as f:
+        f.write(test_log_file_content)
+
+    test_client_host = "localhost"
+    test_client_port = 8001
+
+    result_job = await new_job(mock_request, Job(
+        clients_info=[
+            ClientInfo(
+                client=Client.MNIST,
+                service_address=f"{test_client_host}:{test_client_port}",
+                data_path="test/data/path-1",
+                redis_host="test-redis-host-1",
+                redis_port="test-redis-port-1",
+            ),
+            ClientInfo(
+                client=Client.MNIST,
+                service_address=f"{test_client_host}:{test_client_port}",
+                data_path="test/data/path-2",
+                redis_host="test-redis-host-2",
+                redis_port="test-redis-port-2",
+                log_file_path=test_log_file_path,
+            ),
+        ],
+    ))
+
+    client_config = uvicorn.Config("florist.api.client:app", host=test_client_host, port=test_client_port, log_level="debug")
+    client_service = TestUvicornServer(config=client_config)
+    with client_service.run_in_thread():
+        result = await get_client_log(result_job.id, 1, mock_request)
+
+    assert result.status_code == 200
+    assert result.body.decode() == f"\"{test_log_file_content}\""
+
+    os.remove(test_log_file_path)
+
+
+async def test_get_client_log_error_no_job(mock_request):
+    test_job_id = "inexistent-job-id"
+
+    result = await get_client_log(test_job_id, 0, mock_request)
+
+    assert result.status_code == 400
+    assert json.loads(result.body.decode()) == {"error": f"Job {test_job_id} not found"}
+
+
+async def test_get_client_log_error_no_clients(mock_request):
+    result_job = await new_job(mock_request, Job())
+
+    result = await get_client_log(result_job.id, 0, mock_request)
+
+    assert result.status_code == 400
+    assert json.loads(result.body.decode()) == {"error": f"Job has no clients."}
+
+
+async def test_get_client_log_error_invalid_client_index(mock_request):
+    result_job = await new_job(mock_request, Job(
+        clients_info=[
+            ClientInfo(
+                client=Client.MNIST,
+                service_address=f"test-address",
+                data_path="test/data/path-1",
+                redis_host="test-redis-host-1",
+                redis_port="test-redis-port-1",
+            ),
+        ],
+    ))
+
+    result = await get_client_log(result_job.id, 1, mock_request)
+
+    assert result.status_code == 400
+    assert json.loads(result.body.decode()) == {"error": f"Client index 1 is invalid (total: 1)"}
+
+
+async def test_get_client_log_error_log_file_path_is_none(mock_request):
+    result_job = await new_job(mock_request, Job(
+        clients_info=[
+            ClientInfo(
+                client=Client.MNIST,
+                service_address=f"test-address",
+                data_path="test/data/path-1",
+                redis_host="test-redis-host-1",
+                redis_port="test-redis-port-1",
+            ),
+        ],
+    ))
+
+    result = await get_client_log(result_job.id, 0, mock_request)
+
+    assert result.status_code == 400
+    assert json.loads(result.body.decode()) == {"error": f"Log file path is None or empty"}
