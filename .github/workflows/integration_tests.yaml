@@ -15,6 +15,7 @@ on:
       - '**.ipynb'
       - poetry.lock
       - pyproject.toml
+      - yarn.lock
       - '**.rst'
       - '**.md'
   pull_request:
@@ -31,6 +32,7 @@ on:
       - '**.ipynb'
       - poetry.lock
       - pyproject.toml
+      - yarn.lock
       - '**.rst'
       - '**.md'
 
@@ -73,6 +75,7 @@ jobs:
           attempt_delay: 30000
 
 #      TODO enable this once we have integration tests for the UI
+#
 #      - name: Setup yarn
 #        uses: mskelton/setup-yarn@v1
 #      - name: Install nextjs dependencies and check code
