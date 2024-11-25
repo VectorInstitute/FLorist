@@ -684,6 +684,7 @@ export function JobLogsModal({
     hostType,
     jobId,
     clientIndex,
+    showLogs,
     setShowLogs,
 }: {
     type: string,
@@ -701,7 +702,27 @@ export function JobLogsModal({
     }
 
     return (
-        <div> modal </div>
+        <div className="log-viewer modal show" tabindex="-1">
+            <div className="modal-dialog modal-dialog-scrollable">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h1 className="modal-title fs-5">Log Viewer</h1>
+                        <button type="button" className="btn-close" onClick={() => setShowLogs(false)}>
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div className="modal-body">
+                        {isLoading?
+                            <Image src={loading_gif} alt="Loading Logs" height={64} width={64} />
+                            : error ?
+                                "Error loading logs"
+                                : data
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
     )
 }
 

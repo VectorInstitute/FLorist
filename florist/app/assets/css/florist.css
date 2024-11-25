@@ -148,3 +148,26 @@
 .job-client-progress .job-progress-bar .progress .progress-bar {
     height: max-content;
 }
+
+.log-viewer.show {
+    display: block;
+    z-index: 10000;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.log-viewer .modal-dialog {
+    max-width: 90%;
+}
+
+.log-viewer .btn-close {
+    color: black;
+    font-size: 30px;
+    margin-top: -25px;
+}
+
+.log-viewer .modal-body {
+    white-space: pre;
+    font-family: monospace;
+    font-size: 14px;
+}
+
