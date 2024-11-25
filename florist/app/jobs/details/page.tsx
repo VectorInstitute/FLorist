@@ -692,21 +692,32 @@ export function JobLogsModal({
     clientIndex: number,
     setShowLogs: Callable,
 }): ReactElement {
-
-    let data, error, isLoading;
+    let data, error, isLoading, fileName;
     if (hostType === "server") {
         ({ data, error, isLoading } = useGetServerLogs(jobId));
+        fileName = "server.log";
     }
     if (hostType === "client") {
         ({ data, error, isLoading } = useGetClientLogs(jobId, clientIndex));
+        fileName = `client-${clientIndex}.log`;
+    }
+
+    let dataURL = null;
+    if (data) {
+        dataURL = window.URL.createObjectURL(
+          new Blob([data]),
+        );
     }
 
     return (
-        <div className="log-viewer modal show" tabindex="-1">
+        <div className="log-viewer modal show" tabIndex="-1">
             <div className="modal-dialog modal-dialog-scrollable">
                 <div className="modal-content">
                     <div className="modal-header">
                         <h1 className="modal-title fs-5">Log Viewer</h1>
+                        <a className="download-button btn btn-link" href={dataURL} download={fileName}>
+                            Download
+                        </a>
                         <button type="button" className="btn-close" onClick={() => setShowLogs(false)}>
                             <span aria-hidden="true">&times;</span>
                         </button>
