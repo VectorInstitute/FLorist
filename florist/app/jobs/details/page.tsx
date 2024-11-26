@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { ReactElement } from "react/React";
 
-import { useGetJob, useGetServerLogs, useGetClientLogs } from "../hooks";
+import { useGetJob, getServerLogsKey, getClientLogsKey, useSWRWithKey } from "../hooks";
 import { validStatuses, ClientInfo } from "../definitions";
 import loading_gif from "../../assets/img/loading.gif";
 
@@ -189,8 +189,8 @@ export function JobProgressBar({
     metrics: string;
     totalEpochs: number;
     status: status;
-    jobId: string,
-    clientIndex: number,
+    jobId: string;
+    clientIndex: number;
 }): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
@@ -284,9 +284,9 @@ export function JobProgressBar({
                         </div>
                     </div>
                     <div className="row pb-2">
-                        {!collapsed ?
-                            <JobProgressDetails metrics={metricsJson} jobId={jobId} clientIndex={clientIndex}/>
-                        : null}
+                        {!collapsed ? (
+                            <JobProgressDetails metrics={metricsJson} jobId={jobId} clientIndex={clientIndex} />
+                        ) : null}
                     </div>
                 </div>
             </div>
@@ -299,16 +299,15 @@ export function JobProgressDetails({
     jobId,
     clientIndex,
 }: {
-    metrics: Object,
-    jobId: string,
-    clientIndex: number,
+    metrics: Object;
+    jobId: string;
+    clientIndex: number;
 }): ReactElement {
+    const [showLogs, setShowLogs] = useState(false);
 
     if (!metrics) {
         return null;
     }
-
-    const [showLogs, setShowLogs] = useState(false);
 
     let fitStartKey;
     let fitEndKey;
@@ -370,18 +369,20 @@ export function JobProgressDetails({
                     <strong className="text-dark">Logs:</strong>
                 </div>
                 <div className="col-sm job-details-button">
-                    <a className="btn btn-link" onClick={() => setShowLogs(true)}>Show Logs</a>
+                    <a className="btn btn-link" onClick={() => setShowLogs(true)}>
+                        Show Logs
+                    </a>
                 </div>
             </div>
 
-            {showLogs ?
+            {showLogs ? (
                 <JobLogsModal
                     hostType={metrics.host_type}
                     jobId={jobId}
                     clientIndex={clientIndex}
                     setShowLogs={setShowLogs}
                 />
-            : null}
+            ) : null}
         </div>
     );
 }
@@ -601,8 +602,8 @@ export function JobDetailsClientsInfoTable({
     data,
     properties,
 }: {
-    data: Array<ClientInfo>,
-    properties: Object,
+    data: Array<ClientInfo>;
+    properties: Object;
 }): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
@@ -687,26 +688,26 @@ export function JobLogsModal({
     showLogs,
     setShowLogs,
 }: {
-    type: string,
-    jobId: string,
-    clientIndex: number,
-    setShowLogs: Callable,
+    type: string;
+    jobId: string;
+    clientIndex: number;
+    setShowLogs: Callable;
 }): ReactElement {
-    let data, error, isLoading, fileName;
+    let apiKey, fileName;
     if (hostType === "server") {
-        ({ data, error, isLoading } = useGetServerLogs(jobId));
+        apiKey = getServerLogsKey(jobId);
         fileName = "server.log";
     }
     if (hostType === "client") {
-        ({ data, error, isLoading } = useGetClientLogs(jobId, clientIndex));
+        apiKey = getClientLogsKey(jobId, clientIndex);
         fileName = `client-${clientIndex}.log`;
     }
 
+    const { data, error, isLoading, isValidating, mutate } = useSWRWithKey(apiKey);
+
     let dataURL = null;
     if (data) {
-        dataURL = window.URL.createObjectURL(
-          new Blob([data]),
-        );
+        dataURL = window.URL.createObjectURL(new Blob([data]));
     }
 
     return (
@@ -715,6 +716,9 @@ export function JobLogsModal({
                 <div className="modal-content">
                     <div className="modal-header">
                         <h1 className="modal-title fs-5">Log Viewer</h1>
+                        <a className="refresh-button" onClick={() => mutate(apiKey)}>
+                            <i className="material-icons">refresh</i>
+                        </a>
                         <a className="download-button btn btn-link" href={dataURL} download={fileName}>
                             Download
                         </a>
@@ -724,17 +728,20 @@ export function JobLogsModal({
                     </div>
 
                     <div className="modal-body">
-                        {isLoading?
-                            <Image src={loading_gif} alt="Loading Logs" height={64} width={64} />
-                            : error ?
-                                "Error loading logs"
-                                : data
-                        }
+                        {isLoading || isValidating ? (
+                            <div className="loading-container">
+                                <Image src={loading_gif} alt="Loading Logs" height={64} width={64} />
+                            </div>
+                        ) : error ? (
+                            "Error loading logs"
+                        ) : (
+                            data
+                        )}
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export function getTimeString(timeInMiliseconds: number): string {

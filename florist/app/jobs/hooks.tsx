@@ -23,12 +23,16 @@ export function useGetClients() {
     return useSWR("/api/server/clients", fetcher);
 }
 
-export function useGetServerLogs(jobId: string) {
-    return useSWR(`/api/server/job/get_server_log/${jobId}`, fetcher);
+export function getServerLogsKey(jobId: string) {
+    return `/api/server/job/get_server_log/${jobId}`;
 }
 
-export function useGetClientLogs(jobId: string, clientIndex: number) {
-    return useSWR(`/api/server/job/get_client_log/${jobId}/${clientIndex}`, fetcher);
+export function getClientLogsKey(jobId: string, clientIndex: number) {
+    return `/api/server/job/get_client_log/${jobId}/${clientIndex}`;
+}
+
+export function useSWRWithKey(key: string) {
+    return useSWR(key, fetcher);
 }
 
 export const usePost = () => {

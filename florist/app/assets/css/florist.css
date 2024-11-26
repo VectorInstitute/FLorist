@@ -159,14 +159,24 @@
     max-width: 90%;
 }
 
+.log-viewer .modal-content {
+    height: 100%;
+}
+
 .log-viewer .btn-close {
     color: black;
     font-size: 30px;
     margin-top: -25px;
 }
 
+.log-viewer a.refresh-button {
+    cursor: pointer;
+    margin-left: 15px;
+    margin-top: 10px;
+}
+
 .log-viewer a.download-button {
-    margin: 0 0 0 20px;
+    margin: 3px 0 0 15px;
     padding: 0;
 }
 
@@ -176,3 +186,10 @@
     font-size: 14px;
 }
 
+.log-viewer .loading-container {
+    height: 100%;
+    width: 100%;
+    display: inline-grid;
+    align-content: center;
+    justify-content: center;
+}
