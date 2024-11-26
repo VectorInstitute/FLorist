@@ -169,15 +169,10 @@
     margin-top: -25px;
 }
 
-.log-viewer a.refresh-button {
+.log-viewer a.refresh-button, .log-viewer a.download-button {
     cursor: pointer;
     margin-left: 15px;
     margin-top: 10px;
-}
-
-.log-viewer a.download-button {
-    margin: 3px 0 0 15px;
-    padding: 0;
 }
 
 .log-viewer .modal-body {

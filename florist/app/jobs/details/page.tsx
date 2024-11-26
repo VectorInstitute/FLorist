@@ -369,7 +369,7 @@ export function JobProgressDetails({
                     <strong className="text-dark">Logs:</strong>
                 </div>
                 <div className="col-sm job-details-button">
-                    <a className="btn btn-link" onClick={() => setShowLogs(true)}>
+                    <a className="btn btn-link show-logs-button" onClick={() => setShowLogs(true)}>
                         Show Logs
                     </a>
                 </div>
@@ -719,8 +719,8 @@ export function JobLogsModal({
                         <a className="refresh-button" onClick={() => mutate(apiKey)}>
                             <i className="material-icons">refresh</i>
                         </a>
-                        <a className="download-button btn btn-link" href={dataURL} download={fileName}>
-                            Download
+                        <a className="download-button" title="Download" href={dataURL} download={fileName}>
+                            <i className="material-icons">download</i>
                         </a>
                         <button type="button" className="btn-close" onClick={() => setShowLogs(false)}>
                             <span aria-hidden="true">&times;</span>
