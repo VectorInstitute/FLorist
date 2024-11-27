@@ -479,7 +479,15 @@ describe("Job Details Page", () => {
                     );
                 });
             });
-            describe("Logs", () => {
+            describe("Logs Modal", () => {
+                let urlSpy;
+                afterEach(() => {
+                    if (urlSpy) {
+                        // making sure the mock is clear even on error,
+                        // otherwise some weird errors start popping up
+                        urlSpy.mockRestore();
+                    }
+                });
                 it("Should be hidden by default", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
@@ -491,7 +499,7 @@ describe("Job Details Page", () => {
                     const jobProgressDetailsComponent = container.querySelector(".job-progress-detail");
                     expect(jobProgressDetailsComponent.querySelector(".log-viewer")).toBeNull();
                 });
-                it("Should render the modal correctly when clicked", () => {
+                it("Should render the server logs modal correctly when clicked", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
                     const { container } = render(<JobDetails />);
@@ -502,21 +510,59 @@ describe("Job Details Page", () => {
                     const testLogContents = "[INFO] test log contents\n[INFO] second line";
                     setupUseSWRWithKeyMock({ data: testLogContents });
                     urlSpy = jest.spyOn(window, "URL");
-                    urlSpy.createObjectURL = jest.fn();
+                    const testURL = "test url";
+                    urlSpy.createObjectURL = jest.fn(_ => testURL);
 
                     const jobProgressDetailsComponent = container.querySelector(".job-progress-detail");
                     const showLogsButton = jobProgressDetailsComponent.querySelector(".show-logs-button");
                     act(() => showLogsButton.click());
 
-                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id))
+                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id));
+                    expect(urlSpy.createObjectURL).toHaveBeenCalledWith(new Blob([testLogContents]));
 
                     const logViewerComponent = jobProgressDetailsComponent.querySelector(".log-viewer");
                     expect(logViewerComponent).toHaveClass("modal", "show");
 
+                    const downloadButton = logViewerComponent.querySelector(".download-button");
+                    expect(downloadButton.getAttribute("href")).toBe(testURL);
+                    expect(downloadButton.getAttribute("download")).toBe("server.log");
+
                     const modalBody = logViewerComponent.querySelector(".modal-body");
                     expect(modalBody).toHaveTextContent(testLogContents.replace("\n", " "));
+                });
+                it("Should render the client logs modal correctly when clicked", () => {
+                    const testJob = makeTestJob();
+                    setupGetJobMock(testJob);
+                    const { container } = render(<JobDetails />);
 
-                    urlSpy.mockRestore();
+                    const testClientIndex = 1;
+                    let toggleButton = container.querySelectorAll(".job-client-progress .job-details-toggle a")[testClientIndex];
+                    act(() => toggleButton.click());
+
+                    const testLogContents = "[INFO] test log contents\n[INFO] second line";
+                    setupUseSWRWithKeyMock({ data: testLogContents });
+                    urlSpy = jest.spyOn(window, "URL");
+                    const testURL = "test url";
+                    urlSpy.createObjectURL = jest.fn(_ => testURL);
+
+                    const jobProgressDetailsComponent = container.querySelector(
+                        `#job-details-client-config-progress-${testClientIndex} .job-progress-detail`
+                    );
+                    const showLogsButton = jobProgressDetailsComponent.querySelector(".show-logs-button");
+                    act(() => showLogsButton.click());
+
+                    expect(useSWRWithKey).toHaveBeenCalledWith(getClientLogsKey(testJob._id, testClientIndex));
+                    expect(urlSpy.createObjectURL).toHaveBeenCalledWith(new Blob([testLogContents]));
+
+                    const logViewerComponent = jobProgressDetailsComponent.querySelector(".log-viewer");
+                    expect(logViewerComponent).toHaveClass("modal", "show");
+
+                    const downloadButton = logViewerComponent.querySelector(".download-button");
+                    expect(downloadButton.getAttribute("href")).toBe(testURL);
+                    expect(downloadButton.getAttribute("download")).toBe(`client-${testClientIndex}.log`);
+
+                    const modalBody = logViewerComponent.querySelector(".modal-body");
+                    expect(modalBody).toHaveTextContent(testLogContents.replace("\n", " "));
                 });
                 it("Should display spinner when loading", () => {
                     const testJob = makeTestJob();
@@ -601,6 +647,28 @@ describe("Job Details Page", () => {
                     act(() => refreshButton.click());
 
                     expect(mutateMock).toHaveBeenCalledWith(getServerLogsKey(testJob._id));
+                });
+                it("Clicking close should close the modal", () => {
+                    const testJob = makeTestJob();
+                    setupGetJobMock(testJob);
+                    const { container } = render(<JobDetails />);
+
+                    const progressToggleButton = container.querySelector(".job-details-toggle a");
+                    act(() => progressToggleButton.click());
+
+                    const mutateMock = setupUseSWRWithKeyMock({ data: null });
+
+                    const jobProgressDetailsComponent = container.querySelector(".job-progress-detail");
+                    const showLogsButton = jobProgressDetailsComponent.querySelector(".show-logs-button");
+                    act(() => showLogsButton.click());
+
+                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id))
+
+                    const logViewerComponent = jobProgressDetailsComponent.querySelector(".log-viewer");
+                    const closeButton = logViewerComponent.querySelector(".btn-close");
+                    act(() => closeButton.click());
+
+                    expect(jobProgressDetailsComponent.querySelector(".log-viewer")).toBeNull();
                 });
             });
             describe("Clients", () => {
