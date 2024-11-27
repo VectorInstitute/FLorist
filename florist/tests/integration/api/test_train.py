@@ -17,9 +17,21 @@ from florist.tests.integration.api.utils import TestUvicornServer, MockRequest, 
 
 async def test_train():
     # Define services
-    server_config = uvicorn.Config("florist.api.server:app", host="localhost", port=8000, log_level="debug", timeout_graceful_shutdown=60)
+    server_config = uvicorn.Config(
+        "florist.api.server:app",
+        host="localhost",
+        port=8000,
+        log_level="debug",
+        timeout_graceful_shutdown=60,
+    )
     server_service = TestUvicornServer(config=server_config)
-    client_config = uvicorn.Config("florist.api.client:app", host="localhost", port=8001, log_level="debug", timeout_graceful_shutdown=60)
+    client_config = uvicorn.Config(
+        "florist.api.client:app",
+        host="localhost",
+        port=8001,
+        log_level="debug",
+        timeout_graceful_shutdown=60,
+    )
     client_service = TestUvicornServer(config=client_config)
 
     # TODO figure out how to run fastapi with the test DB so we can use the fixture here
