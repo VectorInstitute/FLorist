@@ -486,7 +486,6 @@ describe("Job Details Page", () => {
                     setupGetJobMock(testJob);
                     const { container } = render(<JobDetails />);
 
-                    let blobSpy = jest.spyOn(Blob.prototype, "constructor");
                     const testURL = "test url";
                     urlSpy = setupURLSpyMock(urlSpy, testURL);
 
