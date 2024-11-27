@@ -22,7 +22,7 @@ async def test_train():
         host="localhost",
         port=8000,
         log_level="debug",
-        timeout_graceful_shutdown=60,
+        timeout_graceful_shutdown=120,
     )
     server_service = TestUvicornServer(config=server_config)
     client_config = uvicorn.Config(
@@ -30,7 +30,7 @@ async def test_train():
         host="localhost",
         port=8001,
         log_level="debug",
-        timeout_graceful_shutdown=60,
+        timeout_graceful_shutdown=120,
     )
     client_service = TestUvicornServer(config=client_config)
 
