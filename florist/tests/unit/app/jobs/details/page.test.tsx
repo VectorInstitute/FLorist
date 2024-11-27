@@ -38,6 +38,12 @@ function setupUseSWRWithKeyMock({ data, isLoading = false, error = null, isValid
     return mutateMock;
 }
 
+function setupURLSpyMock(urlSpy, testURL: string = "foo") {
+    urlSpy = jest.spyOn(window, "URL");
+    urlSpy.createObjectURL = jest.fn((_) => testURL);
+    return urlSpy;
+}
+
 function makeTestJob(): JobData {
     return {
         _id: testJobId,
@@ -303,6 +309,14 @@ describe("Job Details Page", () => {
             expect(progressBar).toHaveClass("bg-danger");
         });
         describe("Details", () => {
+            let urlSpy;
+            afterEach(() => {
+                if (urlSpy) {
+                    // making sure the mock is clear even on error,
+                    // otherwise some weird errors start popping up
+                    urlSpy.mockRestore();
+                }
+            });
             it("Should be collapsed by default", () => {
                 setupGetJobMock(makeTestJob());
                 const { container } = render(<JobDetails />);
@@ -480,14 +494,6 @@ describe("Job Details Page", () => {
                 });
             });
             describe("Logs Modal", () => {
-                let urlSpy;
-                afterEach(() => {
-                    if (urlSpy) {
-                        // making sure the mock is clear even on error,
-                        // otherwise some weird errors start popping up
-                        urlSpy.mockRestore();
-                    }
-                });
                 it("Should be hidden by default", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
@@ -509,9 +515,8 @@ describe("Job Details Page", () => {
 
                     const testLogContents = "[INFO] test log contents\n[INFO] second line";
                     setupUseSWRWithKeyMock({ data: testLogContents });
-                    urlSpy = jest.spyOn(window, "URL");
                     const testURL = "test url";
-                    urlSpy.createObjectURL = jest.fn((_) => testURL);
+                    urlSpy = setupURLSpyMock(urlSpy, testURL);
 
                     const jobProgressDetailsComponent = container.querySelector(".job-progress-detail");
                     const showLogsButton = jobProgressDetailsComponent.querySelector(".show-logs-button");
@@ -543,9 +548,8 @@ describe("Job Details Page", () => {
 
                     const testLogContents = "[INFO] test log contents\n[INFO] second line";
                     setupUseSWRWithKeyMock({ data: testLogContents });
-                    urlSpy = jest.spyOn(window, "URL");
                     const testURL = "test url";
-                    urlSpy.createObjectURL = jest.fn((_) => testURL);
+                    urlSpy = setupURLSpyMock(urlSpy, testURL);
 
                     const jobProgressDetailsComponent = container.querySelector(
                         `#job-details-client-config-progress-${testClientIndex} .job-progress-detail`,
