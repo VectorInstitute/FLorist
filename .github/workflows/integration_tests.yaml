@@ -57,12 +57,17 @@ jobs:
         uses: supercharge/mongodb-github-action@1.11.0
         with:
           mongodb-version: 7.0.8
-      - name: Install dependencies and check code
+      - name: Install dependencies
         run: |
           poetry env use '3.10'
           source .venv/bin/activate
           poetry install --with docs,test
-          coverage run -m pytest florist/tests/integration && coverage xml && coverage report -m
+      - name: Run integration tests
+        run: |
+          source .venv/bin/activate
+          coverage run -m pytest florist/tests/integration
+          coverage xml
+          coverage report -m
       - name: Upload python coverage to Codecov
         uses: Wandalen/wretry.action@v3.7.3
         with:
