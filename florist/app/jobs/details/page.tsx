@@ -179,10 +179,10 @@ export function JobProgressBar({
     status,
     clientIndex,
 }: {
-    metrics: string,
-    totalEpochs: number,
-    status: status,
-    clientIndex: number,
+    metrics: string;
+    totalEpochs: number;
+    status: status;
+    clientIndex: number;
 }): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
@@ -276,9 +276,7 @@ export function JobProgressBar({
                         </div>
                     </div>
                     <div className="row pb-2">
-                        {!collapsed ? (
-                            <JobProgressDetails metrics={metricsJson} clientIndex={clientIndex}/>
-                        ) : null}
+                        {!collapsed ? <JobProgressDetails metrics={metricsJson} clientIndex={clientIndex} /> : null}
                     </div>
                 </div>
             </div>
@@ -286,7 +284,7 @@ export function JobProgressBar({
     );
 }
 
-export function JobProgressDetails({ metrics, clientIndex }: { metrics: Object, clientIndex: number }): ReactElement {
+export function JobProgressDetails({ metrics, clientIndex }: { metrics: Object; clientIndex: number }): ReactElement {
     if (!metrics) {
         return null;
     }
@@ -362,7 +360,6 @@ export function JobProgressDetails({ metrics, clientIndex }: { metrics: Object, 
                     </a>
                 </div>
             </div>
-
         </div>
     );
 }

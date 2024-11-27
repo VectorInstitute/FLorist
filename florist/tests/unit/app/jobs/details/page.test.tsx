@@ -515,15 +515,22 @@ describe("Job Details Page", () => {
                     ];
                     act(() => toggleButton.click());
 
-                    const expectedClientMetrics = JSON.stringify(JSON.parse(testJob.clients_info[testClientIndex].metrics), null, 4);
+                    const expectedClientMetrics = JSON.stringify(
+                        JSON.parse(testJob.clients_info[testClientIndex].metrics),
+                        null,
+                        4,
+                    );
                     expect(urlSpy.createObjectURL).toHaveBeenCalledWith(new Blob([expectedClientMetrics]));
 
                     const clientProgressDetailsComponent = container.querySelector(
                         `#job-details-client-config-progress-${testClientIndex} .job-progress-detail`,
                     );
-                    const downloadMetricsButton = clientProgressDetailsComponent.querySelector(".download-metrics-button");
+                    const downloadMetricsButton =
+                        clientProgressDetailsComponent.querySelector(".download-metrics-button");
                     expect(downloadMetricsButton.getAttribute("href")).toBe(testURL);
-                    expect(downloadMetricsButton.getAttribute("download")).toBe(`client-metrics-${testClientIndex}.json`);
+                    expect(downloadMetricsButton.getAttribute("download")).toBe(
+                        `client-metrics-${testClientIndex}.json`,
+                    );
                 });
             });
             describe("Clients", () => {
