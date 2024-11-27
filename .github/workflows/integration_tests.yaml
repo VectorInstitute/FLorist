@@ -65,7 +65,7 @@ jobs:
       - name: Run integration tests
         run: |
           source .venv/bin/activate
-          coverage run -m pytest florist/tests/integration
+          pytest florist/tests/integration
           coverage xml
           coverage report -m
       - name: Upload python coverage to Codecov
