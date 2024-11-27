@@ -177,10 +177,12 @@ export function JobProgressBar({
     metrics,
     totalEpochs,
     status,
+    clientIndex,
 }: {
-    metrics: string;
-    totalEpochs: number;
-    status: status;
+    metrics: string,
+    totalEpochs: number,
+    status: status,
+    clientIndex: number,
 }): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
@@ -273,14 +275,18 @@ export function JobProgressBar({
                             </a>
                         </div>
                     </div>
-                    <div className="row pb-2">{!collapsed ? <JobProgressDetails metrics={metricsJson} /> : null}</div>
+                    <div className="row pb-2">
+                        {!collapsed ? (
+                            <JobProgressDetails metrics={metricsJson} clientIndex={clientIndex}/>
+                        ) : null}
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
 
-export function JobProgressDetails({ metrics }: { metrics: Object }): ReactElement {
+export function JobProgressDetails({ metrics, clientIndex }: { metrics: Object, clientIndex: number }): ReactElement {
     if (!metrics) {
         return null;
     }
@@ -311,6 +317,9 @@ export function JobProgressDetails({ metrics }: { metrics: Object }): ReactEleme
         }
     }
 
+    let metricsFileName = metrics.host_type === "server" ? "server-metrics.json" : `client-metrics-${clientIndex}.json`;
+    let metricsFileURL = window.URL.createObjectURL(new Blob([JSON.stringify(metrics, null, 4)]));
+
     return (
         <div className="job-progress-detail">
             <div className="row">
@@ -339,6 +348,21 @@ export function JobProgressDetails({ metrics }: { metrics: Object }): ReactEleme
             {roundMetricsArray.map((roundMetrics, i) => (
                 <JobProgressRound roundMetrics={roundMetrics} key={i} index={i} />
             ))}
+
+            <div className="row">
+                <div className="col-sm-4 job-details-download-button">
+                    <a
+                        className="btn btn-link download-metrics-button"
+                        title="Download metrics as JSON"
+                        href={metricsFileURL}
+                        download={metricsFileName}
+                    >
+                        <i className="material-icons">download</i>
+                        Download Metrics as JSON
+                    </a>
+                </div>
+            </div>
+
         </div>
     );
 }
@@ -623,6 +647,7 @@ export function JobDetailsClientsInfoTable({
                                         <JobProgressBar
                                             metrics={clientInfo.metrics}
                                             totalEpochs={properties.localEpochs}
+                                            clientIndex={i}
                                         />
                                     </span>
                                 </div>
