@@ -28,7 +28,7 @@ function setupGetJobMock(data: JobData, isLoading: boolean = false, error = null
 }
 
 function setupUseSWRWithKeyMock({ data, isLoading = false, error = null, isValidating = false }) {
-    getServerLogsKey.mockImplementation(jobId => `test server logs key: ${jobId}`);
+    getServerLogsKey.mockImplementation((jobId) => `test server logs key: ${jobId}`);
     getClientLogsKey.mockImplementation((jobId, clientIndex) => `test client logs key: ${jobId}, ${clientIndex}`);
 
     const mutateMock = jest.fn();
@@ -511,7 +511,7 @@ describe("Job Details Page", () => {
                     setupUseSWRWithKeyMock({ data: testLogContents });
                     urlSpy = jest.spyOn(window, "URL");
                     const testURL = "test url";
-                    urlSpy.createObjectURL = jest.fn(_ => testURL);
+                    urlSpy.createObjectURL = jest.fn((_) => testURL);
 
                     const jobProgressDetailsComponent = container.querySelector(".job-progress-detail");
                     const showLogsButton = jobProgressDetailsComponent.querySelector(".show-logs-button");
@@ -536,17 +536,19 @@ describe("Job Details Page", () => {
                     const { container } = render(<JobDetails />);
 
                     const testClientIndex = 1;
-                    let toggleButton = container.querySelectorAll(".job-client-progress .job-details-toggle a")[testClientIndex];
+                    let toggleButton = container.querySelectorAll(".job-client-progress .job-details-toggle a")[
+                        testClientIndex
+                    ];
                     act(() => toggleButton.click());
 
                     const testLogContents = "[INFO] test log contents\n[INFO] second line";
                     setupUseSWRWithKeyMock({ data: testLogContents });
                     urlSpy = jest.spyOn(window, "URL");
                     const testURL = "test url";
-                    urlSpy.createObjectURL = jest.fn(_ => testURL);
+                    urlSpy.createObjectURL = jest.fn((_) => testURL);
 
                     const jobProgressDetailsComponent = container.querySelector(
-                        `#job-details-client-config-progress-${testClientIndex} .job-progress-detail`
+                        `#job-details-client-config-progress-${testClientIndex} .job-progress-detail`,
                     );
                     const showLogsButton = jobProgressDetailsComponent.querySelector(".show-logs-button");
                     act(() => showLogsButton.click());
@@ -578,7 +580,7 @@ describe("Job Details Page", () => {
                     const showLogsButton = jobProgressDetailsComponent.querySelector(".show-logs-button");
                     act(() => showLogsButton.click());
 
-                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id))
+                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id));
 
                     const logViewerComponent = jobProgressDetailsComponent.querySelector(".log-viewer");
                     const modalBody = logViewerComponent.querySelector(".modal-body");
@@ -599,7 +601,7 @@ describe("Job Details Page", () => {
                     const showLogsButton = jobProgressDetailsComponent.querySelector(".show-logs-button");
                     act(() => showLogsButton.click());
 
-                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id))
+                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id));
 
                     const logViewerComponent = jobProgressDetailsComponent.querySelector(".log-viewer");
                     const modalBody = logViewerComponent.querySelector(".modal-body");
@@ -620,7 +622,7 @@ describe("Job Details Page", () => {
                     const showLogsButton = jobProgressDetailsComponent.querySelector(".show-logs-button");
                     act(() => showLogsButton.click());
 
-                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id))
+                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id));
 
                     const logViewerComponent = jobProgressDetailsComponent.querySelector(".log-viewer");
                     const modalBody = logViewerComponent.querySelector(".modal-body");
@@ -640,7 +642,7 @@ describe("Job Details Page", () => {
                     const showLogsButton = jobProgressDetailsComponent.querySelector(".show-logs-button");
                     act(() => showLogsButton.click());
 
-                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id))
+                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id));
 
                     const logViewerComponent = jobProgressDetailsComponent.querySelector(".log-viewer");
                     const refreshButton = logViewerComponent.querySelector(".refresh-button");
@@ -662,7 +664,7 @@ describe("Job Details Page", () => {
                     const showLogsButton = jobProgressDetailsComponent.querySelector(".show-logs-button");
                     act(() => showLogsButton.click());
 
-                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id))
+                    expect(useSWRWithKey).toHaveBeenCalledWith(getServerLogsKey(testJob._id));
 
                     const logViewerComponent = jobProgressDetailsComponent.querySelector(".log-viewer");
                     const closeButton = logViewerComponent.querySelector(".btn-close");
