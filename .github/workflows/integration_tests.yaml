@@ -62,7 +62,7 @@ jobs:
           poetry env use '3.10'
           source .venv/bin/activate
           poetry install --with docs,test
-          coverage run -m pytest florist/tests/integration && coverage xml && coverage report -m
+          coverage run -m pytest -s -vv florist/tests/integration && coverage xml && coverage report -m
       - name: Upload python coverage to Codecov
         uses: Wandalen/wretry.action@v3.7.3
         with:
