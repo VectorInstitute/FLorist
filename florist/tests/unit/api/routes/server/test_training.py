@@ -2,18 +2,36 @@ import asyncio
 import json
 from pytest import raises
 from typing import Dict, Any, Tuple
-from unittest.mock import Mock, patch, ANY, call
+from unittest.mock import Mock, AsyncMock, patch, ANY, call
 
+from florist.api.db.config import DATABASE_NAME
 from florist.api.db.entities import Job, JobStatus, JOB_COLLECTION_NAME
 from florist.api.models.mnist import MnistNet
 from florist.api.routes.server.training import (
     client_training_listener,
     start,
-    server_training_listener,
-    CHECK_CLIENT_STATUS_API,
+    server_training_listener
 )
 
 
+async def test_start_fail_unsupported_server_model() -> None:
+    # Arrange
+    test_job_id = "test-job-id"
+    _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
+    test_job["model"] = "WRONG MODEL"
+
+    # Act
+    response = await start(test_job_id, mock_fastapi_request)
+
+    # Assert
+    assert response.status_code == 500
+    json_body = json.loads(response.body.decode())
+    assert json_body == {"error": ANY}
+    assert "value is not a valid enumeration member" in json_body["error"]
+
+
+@patch("florist.api.routes.server.training.client_training_listener")
+@patch("florist.api.routes.server.training.server_training_listener")
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
@@ -25,6 +43,8 @@ async def test_start_success(
     mock_requests: Mock,
     mock_redis: Mock,
     mock_launch_local_server: Mock,
+    mock_server_training_listener: Mock,
+    mock_client_training_listener: Mock,
 ) -> None:
     # Arrange
     test_job_id = "test-job-id"
@@ -44,10 +64,11 @@ async def test_start_success(
     mock_response.json.side_effect = [{"uuid": test_client_1_uuid}, {"uuid": test_client_2_uuid}]
     mock_requests.get.return_value = mock_response
 
-    mock_background_tasks = Mock()
+    mock_client_training_listener.return_value = AsyncMock()
+    mock_server_training_listener.return_value = AsyncMock()
 
     # Act
-    response = await start(test_job_id, mock_fastapi_request, mock_background_tasks)
+    response = await start(test_job_id, mock_fastapi_request)
 
     # Assert
     assert response.status_code == 200
@@ -101,41 +122,12 @@ async def test_start_success(
     expected_job.id = ANY
     expected_job.clients_info[0].id = ANY
     expected_job.clients_info[1].id = ANY
-    mock_background_tasks.add_task.assert_has_calls([
-        call(
-            server_training_listener,
-            expected_job,
-            mock_fastapi_request.app.synchronous_database,
-        ),
-        call(
-            client_training_listener,
-            expected_job,
-            expected_job.clients_info[0],
-            mock_fastapi_request.app.synchronous_database,
-        ),
-        call(
-            client_training_listener,
-            expected_job,
-            expected_job.clients_info[1],
-            mock_fastapi_request.app.synchronous_database,
-        ),
+
+    mock_server_training_listener.assert_called_with(expected_job)
+    mock_client_training_listener.assert_has_calls([
+        call(expected_job, expected_job.clients_info[0]),
+        call(expected_job, expected_job.clients_info[1]),
     ])
-
-
-async def test_start_fail_unsupported_server_model() -> None:
-    # Arrange
-    test_job_id = "test-job-id"
-    _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
-    test_job["model"] = "WRONG MODEL"
-
-    # Act
-    response = await start(test_job_id, mock_fastapi_request, Mock())
-
-    # Assert
-    assert response.status_code == 500
-    json_body = json.loads(response.body.decode())
-    assert json_body == {"error": ANY}
-    assert "value is not a valid enumeration member" in json_body["error"]
 
 
 async def test_start_fail_unsupported_client() -> None:
@@ -145,7 +137,7 @@ async def test_start_fail_unsupported_client() -> None:
     test_job["clients_info"][1]["client"] = "WRONG CLIENT"
 
     # Act
-    response = await start(test_job_id, mock_fastapi_request, Mock())
+    response = await start(test_job_id, mock_fastapi_request)
 
     # Assert
     assert response.status_code == 500
@@ -155,7 +147,7 @@ async def test_start_fail_unsupported_client() -> None:
 
 
 @patch("florist.api.db.entities.Job.set_status")
-async def test_start_fail_missing_info(mock_set_status: Mock) -> None:
+async def test_start_fail_missing_info(_: Mock) -> None:
     fields_to_be_removed = ["model", "server_config", "clients_info", "server_address", "redis_host", "redis_port"]
 
     for field_to_be_removed in fields_to_be_removed:
@@ -165,7 +157,7 @@ async def test_start_fail_missing_info(mock_set_status: Mock) -> None:
         del test_job[field_to_be_removed]
 
         # Act
-        response = await start(test_job_id, mock_fastapi_request, Mock())
+        response = await start(test_job_id, mock_fastapi_request)
 
         # Assert
         assert response.status_code == 400
@@ -175,14 +167,14 @@ async def test_start_fail_missing_info(mock_set_status: Mock) -> None:
 
 
 @patch("florist.api.db.entities.Job.set_status")
-async def test_start_fail_invalid_server_config(mock_set_status: Mock) -> None:
+async def test_start_fail_invalid_server_config(_: Mock) -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
     test_job["server_config"] = "not json"
 
     # Act
-    response = await start(test_job_id, mock_fastapi_request, Mock())
+    response = await start(test_job_id, mock_fastapi_request)
 
     # Assert
     assert response.status_code == 400
@@ -199,7 +191,7 @@ async def test_start_fail_empty_clients_info(_: Mock) -> None:
     test_job["clients_info"] = []
 
     # Act
-    response = await start(test_job_id, mock_fastapi_request, Mock())
+    response = await start(test_job_id, mock_fastapi_request)
 
     # Assert
     assert response.status_code == 400
@@ -219,7 +211,7 @@ async def test_start_launch_server_exception(mock_launch_local_server: Mock, _: 
     mock_launch_local_server.side_effect = test_exception
 
     # Act
-    response = await start(test_job_id, mock_fastapi_request, Mock())
+    response = await start(test_job_id, mock_fastapi_request)
 
     # Assert
     assert response.status_code == 500
@@ -242,7 +234,7 @@ async def test_start_wait_for_metric_exception(mock_redis: Mock, mock_launch_loc
     mock_redis.Redis.side_effect = test_exception
 
     # Act
-    response = await start(test_job_id, mock_fastapi_request, Mock())
+    response = await start(test_job_id, mock_fastapi_request)
 
     # Assert
     assert response.status_code == 500
@@ -254,7 +246,7 @@ async def test_start_wait_for_metric_exception(mock_redis: Mock, mock_launch_loc
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.monitoring.metrics.time")  # just so time.sleep does not actually sleep
-async def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_launch_local_server: Mock, mock_set_status: Mock) -> None:
+async def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_launch_local_server: Mock, __: Mock) -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, _, _, mock_fastapi_request = _setup_test_job_and_mocks()
@@ -267,7 +259,7 @@ async def test_start_wait_for_metric_timeout(_: Mock, mock_redis: Mock, mock_lau
     mock_redis.Redis.return_value = mock_redis_connection
 
     # Act
-    response = await start(test_job_id, mock_fastapi_request, Mock())
+    response = await start(test_job_id, mock_fastapi_request)
 
     # Assert
     assert response.status_code == 500
@@ -297,7 +289,7 @@ async def test_start_fail_response(mock_requests: Mock, mock_redis: Mock, mock_l
     mock_requests.get.return_value = mock_response
 
     # Act
-    response = await start(test_job_id, mock_fastapi_request, Mock())
+    response = await start(test_job_id, mock_fastapi_request)
 
     # Assert
     assert response.status_code == 500
@@ -327,7 +319,7 @@ async def test_start_no_uuid_in_response(mock_requests: Mock, mock_redis: Mock, 
     mock_requests.get.return_value = mock_response
 
     # Act
-    response = await start(test_job_id, mock_fastapi_request, Mock())
+    response = await start(test_job_id, mock_fastapi_request)
 
     # Assert
     assert response.status_code == 500
@@ -335,9 +327,14 @@ async def test_start_no_uuid_in_response(mock_requests: Mock, mock_redis: Mock, 
     assert json_body == {"error": "Client response did not return a UUID. Response: {'foo': 'bar'}"}
 
 
+@patch("florist.api.routes.server.training.AsyncIOMotorClient")
 @patch("florist.api.routes.server.training.get_from_redis")
 @patch("florist.api.routes.server.training.get_subscriber")
-def test_server_training_listener(mock_get_subscriber: Mock, mock_get_from_redis: Mock) -> None:
+async def test_server_training_listener(
+    mock_get_subscriber: Mock,
+    mock_get_from_redis: Mock,
+    mock_motor_client: Mock,
+) -> None:
     # Setup
     test_job = Job(**{
         "server_uuid": "test-server-uuid",
@@ -369,29 +366,32 @@ def test_server_training_listener(mock_get_subscriber: Mock, mock_get_from_redis
         {"type": "message"},
     ]
     mock_get_subscriber.return_value = mock_subscriber
-    mock_database = Mock()
+    mock_db_client = make_mock_db_client()
+    mock_motor_client.return_value = mock_db_client
 
-    with patch.object(Job, "set_status_sync", Mock()) as mock_set_status_sync:
-        with patch.object(Job, "set_server_metrics", Mock()) as mock_set_server_metrics:
+    with patch.object(Job, "set_status", AsyncMock()) as mock_set_status:
+        with patch.object(Job, "set_server_metrics", AsyncMock()) as mock_set_server_metrics:
             # Act
-            server_training_listener(test_job, mock_database)
+            await server_training_listener(test_job)
 
             # Assert
-            mock_set_status_sync.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_database)
+            mock_set_status.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_db_client[DATABASE_NAME])
 
             assert mock_set_server_metrics.call_count == 3
             mock_set_server_metrics.assert_has_calls([
-                call(test_server_metrics[0], mock_database),
-                call(test_server_metrics[1], mock_database),
-                call(test_server_metrics[2], mock_database),
+                call(test_server_metrics[0], mock_db_client[DATABASE_NAME]),
+                call(test_server_metrics[1], mock_db_client[DATABASE_NAME]),
+                call(test_server_metrics[2], mock_db_client[DATABASE_NAME]),
             ])
 
     assert mock_get_from_redis.call_count == 3
     mock_get_subscriber.assert_called_once_with(test_job.server_uuid, test_job.redis_host, test_job.redis_port)
+    mock_db_client.close.assert_called()
 
 
+@patch("florist.api.routes.server.training.AsyncIOMotorClient")
 @patch("florist.api.routes.server.training.get_from_redis")
-def test_server_training_listener_already_finished(mock_get_from_redis: Mock) -> None:
+async def test_server_training_listener_already_finished(mock_get_from_redis: Mock, mock_motor_client: Mock) -> None:
     # Setup
     test_job = Job(**{
         "server_uuid": "test-server-uuid",
@@ -410,55 +410,62 @@ def test_server_training_listener_already_finished(mock_get_from_redis: Mock) ->
     })
     test_server_final_metrics = {"fit_start": "2022-02-02 02:02:02", "rounds": [], "fit_end": "2022-02-02 03:03:03"}
     mock_get_from_redis.side_effect = [test_server_final_metrics]
-    mock_database = Mock()
+    mock_db_client = make_mock_db_client()
+    mock_motor_client.return_value = mock_db_client
 
-    with patch.object(Job, "set_status_sync", Mock()) as mock_set_status_sync:
-        with patch.object(Job, "set_server_metrics", Mock()) as mock_set_server_metrics:
+    with patch.object(Job, "set_status", AsyncMock()) as mock_set_status:
+        with patch.object(Job, "set_server_metrics", AsyncMock()) as mock_set_server_metrics:
             # Act
-            server_training_listener(test_job, mock_database)
+            await server_training_listener(test_job)
 
             # Assert
-            mock_set_status_sync.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_database)
-            mock_set_server_metrics.assert_called_once_with(test_server_final_metrics, mock_database)
+            mock_set_status.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_db_client[DATABASE_NAME])
+            mock_set_server_metrics.assert_called_once_with(test_server_final_metrics, mock_db_client[DATABASE_NAME])
 
     assert mock_get_from_redis.call_count == 1
+    mock_db_client.close.assert_called()
 
 
-def test_server_training_listener_fail_no_server_uuid() -> None:
+async def test_server_training_listener_fail_no_server_uuid() -> None:
     test_job = Job(**{
         "redis_host": "test-redis-host",
         "redis_port": "test-redis-port",
     })
 
     with raises(AssertionError, match="job.server_uuid is None."):
-        server_training_listener(test_job, Mock())
+        await server_training_listener(test_job)
 
 
-def test_server_training_listener_fail_no_redis_host() -> None:
+async def test_server_training_listener_fail_no_redis_host() -> None:
     test_job = Job(**{
         "server_uuid": "test-server-uuid",
         "redis_port": "test-redis-port",
     })
 
     with raises(AssertionError, match="job.redis_host is None."):
-        server_training_listener(test_job, Mock())
+        await server_training_listener(test_job)
 
 
-def test_server_training_listener_fail_no_redis_port() -> None:
+async def test_server_training_listener_fail_no_redis_port() -> None:
     test_job = Job(**{
         "server_uuid": "test-server-uuid",
         "redis_host": "test-redis-host",
     })
 
     with raises(AssertionError, match="job.redis_port is None."):
-        server_training_listener(test_job, Mock())
+        await server_training_listener(test_job)
 
 
+@patch("florist.api.routes.server.training.AsyncIOMotorClient")
 @patch("florist.api.routes.server.training.get_from_redis")
 @patch("florist.api.routes.server.training.get_subscriber")
-def test_client_training_listener(mock_get_subscriber: Mock, mock_get_from_redis: Mock) -> None:
+async def test_client_training_listener(
+    mock_get_subscriber: Mock,
+    mock_get_from_redis: Mock,
+    mock_motor_client: Mock,
+) -> None:
     # Setup
-    test_client_uuid = "test-client-uuid";
+    test_client_uuid = "test-client-uuid"
     test_job = Job(**{
         "clients_info": [
             {
@@ -486,20 +493,20 @@ def test_client_training_listener(mock_get_subscriber: Mock, mock_get_from_redis
         {"type": "message"},
     ]
     mock_get_subscriber.return_value = mock_subscriber
-    mock_database = Mock()
+    mock_db_client = make_mock_db_client()
+    mock_motor_client.return_value = mock_db_client
 
-    with patch.object(Job, "set_status_sync", Mock()) as mock_set_status_sync:
-        with patch.object(Job, "set_client_metrics", Mock()) as mock_set_client_metrics:
-            # Act
-            client_training_listener(test_job, test_job.clients_info[0], mock_database)
+    with patch.object(Job, "set_client_metrics", AsyncMock()) as mock_set_client_metrics:
+        # Act
+        await client_training_listener(test_job, test_job.clients_info[0])
 
-            # Assert
-            assert mock_set_client_metrics.call_count == 3
-            mock_set_client_metrics.assert_has_calls([
-                call(test_client_uuid, test_client_metrics[0], mock_database),
-                call(test_client_uuid, test_client_metrics[1], mock_database),
-                call(test_client_uuid, test_client_metrics[2], mock_database),
-            ])
+        # Assert
+        assert mock_set_client_metrics.call_count == 3
+        mock_set_client_metrics.assert_has_calls([
+            call(test_client_uuid, test_client_metrics[0], mock_db_client[DATABASE_NAME]),
+            call(test_client_uuid, test_client_metrics[1], mock_db_client[DATABASE_NAME]),
+            call(test_client_uuid, test_client_metrics[2], mock_db_client[DATABASE_NAME]),
+        ])
 
     assert mock_get_from_redis.call_count == 3
     mock_get_subscriber.assert_called_once_with(
@@ -507,12 +514,14 @@ def test_client_training_listener(mock_get_subscriber: Mock, mock_get_from_redis
         test_job.clients_info[0].redis_host,
         test_job.clients_info[0].redis_port,
     )
+    mock_db_client.close.assert_called()
 
 
+@patch("florist.api.routes.server.training.AsyncIOMotorClient")
 @patch("florist.api.routes.server.training.get_from_redis")
-def test_client_training_listener_already_finished(mock_get_from_redis: Mock) -> None:
+async def test_client_training_listener_already_finished(mock_get_from_redis: Mock, mock_motor_client: Mock) -> None:
     # Setup
-    test_client_uuid = "test-client-uuid";
+    test_client_uuid = "test-client-uuid"
     test_job = Job(**{
         "clients_info": [
             {
@@ -527,20 +536,25 @@ def test_client_training_listener_already_finished(mock_get_from_redis: Mock) ->
     })
     test_client_final_metrics = {"initialized": "2022-02-02 02:02:02", "rounds": [], "shutdown": "2022-02-02 03:03:03"}
     mock_get_from_redis.side_effect = [test_client_final_metrics]
-    mock_database = Mock()
+    mock_db_client = make_mock_db_client()
+    mock_motor_client.return_value = mock_db_client
 
-    with patch.object(Job, "set_status_sync", Mock()) as mock_set_status_sync:
-        with patch.object(Job, "set_client_metrics", Mock()) as mock_set_client_metrics:
-            # Act
-            client_training_listener(test_job, test_job.clients_info[0], mock_database)
+    with patch.object(Job, "set_client_metrics", AsyncMock()) as mock_set_client_metrics:
+        # Act
+        await client_training_listener(test_job, test_job.clients_info[0])
 
-            # Assert
-            mock_set_client_metrics.assert_called_once_with(test_client_uuid, test_client_final_metrics, mock_database)
+        # Assert
+        mock_set_client_metrics.assert_called_once_with(
+            test_client_uuid,
+            test_client_final_metrics,
+            mock_db_client[DATABASE_NAME],
+        )
 
     assert mock_get_from_redis.call_count == 1
+    mock_db_client.close.assert_called()
 
 
-def test_client_training_listener_fail_no_uuid() -> None:
+async def test_client_training_listener_fail_no_uuid() -> None:
     test_job = Job(**{
         "clients_info": [
             {
@@ -554,7 +568,7 @@ def test_client_training_listener_fail_no_uuid() -> None:
     })
 
     with raises(AssertionError, match="client_info.uuid is None."):
-        client_training_listener(test_job, test_job.clients_info[0], Mock())
+        await client_training_listener(test_job, test_job.clients_info[0])
 
 
 def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, Mock]:
@@ -601,6 +615,14 @@ def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, M
     mock_job_collection.find_one.return_value = mock_find_one
     mock_fastapi_request = Mock()
     mock_fastapi_request.app.database = {JOB_COLLECTION_NAME: mock_job_collection}
-    mock_fastapi_request.app.synchronous_database = {JOB_COLLECTION_NAME: mock_job_collection}
 
     return test_server_config, test_job, mock_job_collection, mock_fastapi_request
+
+
+def make_mock_db_client() -> Mock:
+    mock_database = Mock()
+    mock_db_client = Mock()
+    mock_db_client.__getitem__ = Mock(
+        side_effect=lambda database_name: mock_database if database_name == DATABASE_NAME else None
+    )
+    return mock_db_client

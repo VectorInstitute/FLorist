@@ -79,6 +79,31 @@ def test_dump_without_existing_connection(mock_redis: Mock) -> None:
     assert mock_redis_connection.set.call_args_list[2][0][0] == test_run_id
     assert mock_redis_connection.set.call_args_list[2][0][1] == json.dumps(expected_data, cls=DateTimeEncoder)
 
+@freeze_time("2012-12-11 10:09:08")
+@patch("florist.api.monitoring.metrics.redis.Redis")
+def test_dump_does_not_save_duplicate(mock_redis: Mock) -> None:
+    mock_redis_connection = Mock()
+    mock_redis.return_value = mock_redis_connection
+
+    test_host = "test host"
+    test_port = "test port"
+    test_run_id = "123"
+    test_data = {"test": "data", "date": datetime.datetime.now()}
+    test_round = 2
+
+    redis_metric_reporter = RedisMetricsReporter(test_host, test_port, test_run_id)
+    redis_metric_reporter.report(test_data, test_round)
+
+    saved_data = json.dumps(redis_metric_reporter.metrics, cls=DateTimeEncoder)
+    mock_redis_connection.get.return_value = saved_data.encode("utf-8")
+
+    redis_metric_reporter.dump()
+
+    # assert this set has been called by the report only once and not called again by dump
+    assert mock_redis_connection.set.call_count == 1
+    assert mock_redis_connection.set.call_args_list[0][0][0] == test_run_id
+    assert mock_redis_connection.set.call_args_list[0][0][1] == saved_data
+
 
 @freeze_time("2012-12-11 10:09:08")
 @patch("florist.api.monitoring.metrics.redis.Redis")
