@@ -43,9 +43,14 @@ def start(server_address: str, client: str, data_path: str, redis_host: str, red
     :param redis_port: (str) the port for the Redis instance for metrics reporting.
     :return: (JSONResponse) If successful, returns 200 with a JSON containing the UUID for the client in the
         format below, which can be used to pull metrics from Redis.
-            {"uuid": <client uuid>}
+            {
+                "uuid": (str) The client's uuid, which can be used to pull metrics from Redis,
+                "log_file_path": (str) The local path of the log file for this client,
+            }
         If not successful, returns the appropriate error code with a JSON with the format below:
-            {"error": <error message>}
+            {
+                "error": (str) The error message,
+            }
     """
     try:
         if client not in Client.list():
@@ -65,10 +70,10 @@ def start(server_address: str, client: str, data_path: str, redis_host: str, red
             reporters=[metrics_reporter],
         )
 
-        log_file_name = str(get_client_log_file_path(client_uuid))
-        launch_client(client_obj, server_address, log_file_name)
+        log_file_path = str(get_client_log_file_path(client_uuid))
+        launch_client(client_obj, server_address, log_file_path)
 
-        return JSONResponse({"uuid": client_uuid})
+        return JSONResponse({"uuid": client_uuid, "log_file_path": log_file_path})
 
     except Exception as ex:
         return JSONResponse({"error": str(ex)}, status_code=500)
@@ -98,3 +103,17 @@ def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResp
     except Exception as ex:
         LOGGER.exception(ex)
         return JSONResponse({"error": str(ex)}, status_code=500)
+
+
+@app.get("/api/client/get_log")
+def get_log(log_file_path: str) -> JSONResponse:
+    """
+    Return the contents of the log file under the given path.
+
+    :param log_file_path: (str) the path of the logt file.
+
+    :return: (JSONResponse) Returns the contents of the file as a string.
+    """
+    with open(log_file_path, "r") as f:
+        content = f.read()
+        return JSONResponse(content)
