@@ -335,6 +335,9 @@ export function JobProgressDetails({
         }
     }
 
+    let metricsFileName = metrics.host_type === "server" ? "server-metrics.json" : `client-metrics-${clientIndex}.json`;
+    let metricsFileURL = window.URL.createObjectURL(new Blob([JSON.stringify(metrics, null, 4)]));
+
     return (
         <div className="job-progress-detail">
             <div className="row">
@@ -373,8 +376,20 @@ export function JobProgressDetails({
                         Show Logs
                     </a>
                 </div>
+              
+                <div className="col-sm-4 job-details-download-button">
+                    <a
+                        className="btn btn-link download-metrics-button"
+                        title="Download metrics as JSON"
+                        href={metricsFileURL}
+                        download={metricsFileName}
+                    >
+                        <i className="material-icons">download</i>
+                        Download Metrics as JSON
+                    </a>
+                </div>
             </div>
-
+            
             {showLogs ? (
                 <JobLogsModal
                     hostType={metrics.host_type}
@@ -383,6 +398,7 @@ export function JobProgressDetails({
                     setShowLogs={setShowLogs}
                 />
             ) : null}
+      
         </div>
     );
 }
