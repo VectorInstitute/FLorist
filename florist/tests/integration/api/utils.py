@@ -32,8 +32,6 @@ class MockApp:
     def __init__(self, database_name: str):
         self.db_client = AsyncIOMotorClient(MONGODB_URI)
         self.database = self.db_client[database_name]
-        self.synchronous_db_client = MongoClient(MONGODB_URI)
-        self.synchronous_database = self.synchronous_db_client[database_name]
 
 
 class MockRequest(Request):

@@ -63,10 +63,10 @@ function makeTestJob(): JobData {
             fit_start: "2020-01-01 12:07:07.0707",
             rounds: {
                 "1": {
-                    fit_start: "2020-01-01 12:08:08.0808",
-                    fit_end: "2020-01-01 12:09:09.0909",
-                    evaluate_start: "2020-01-01 12:08:09.0808",
-                    evaluate_end: "2020-01-01 12:08:10.0808",
+                    fit_round_start: "2020-01-01 12:08:08.0808",
+                    fit_round_end: "2020-01-01 12:09:09.0909",
+                    eval_round_start: "2020-01-01 12:08:09.0808",
+                    eval_round_end: "2020-01-01 12:08:10.0808",
                     custom_property_value: "133.7",
                     custom_property_array: [1337, 1338],
                     custom_property_object: {
@@ -74,12 +74,12 @@ function makeTestJob(): JobData {
                     },
                 },
                 "2": {
-                    fit_start: "2020-01-01 12:10:10.1010",
-                    fit_end: "2020-01-01 12:11:11.1111",
-                    evaluate_start: "2020-01-01 12:11:09.0808",
+                    fit_round_start: "2020-01-01 12:10:10.1010",
+                    fit_round_end: "2020-01-01 12:11:11.1111",
+                    eval_round_start: "2020-01-01 12:11:09.0808",
                 },
                 "3": {
-                    fit_start: "2020-01-01 12:12:00.1212",
+                    fit_round_start: "2020-01-01 12:12:00.1212",
                 },
             },
             custom_property_value: "133.7",
@@ -103,14 +103,30 @@ function makeTestJob(): JobData {
                         "1": {
                             fit_start: "2024-10-10 15:05:34.888213",
                             fit_end: "2024-10-10 15:06:59.032618",
-                            evaluate_start: "2024-10-10 15:07:59.032618",
-                            evaluate_end: "2024-10-10 15:08:34.888213",
+                            eval_start: "2024-10-10 15:07:59.032618",
+                            eval_end: "2024-10-10 15:08:34.888213",
+                            round_end: "2024-10-10 15:08:34.888213",
                         },
                         "2": {
                             fit_start: "2024-10-10 15:06:59.032618",
                             fit_end: "2024-10-10 15:07:34.888213",
-                            evaluate_start: "2024-10-10 15:08:34.888213",
-                            evaluate_end: "2024-10-10 15:09:59.032618",
+                            eval_start: "2024-10-10 15:08:34.888213",
+                            eval_end: "2024-10-10 15:09:59.032618",
+                            round_end: "2024-10-10 15:09:59.032618",
+                        },
+                        "3": {
+                            fit_start: "2024-10-10 15:10:59.032618",
+                            fit_end: "2024-10-10 15:11:34.888213",
+                            eval_start: "2024-10-10 15:12:34.888213",
+                            eval_end: "2024-10-10 15:13:59.032618",
+                            round_end: "2024-10-10 15:14:59.032618",
+                        },
+                        "4": {
+                            fit_start: "2024-10-10 15:15:59.032618",
+                            fit_end: "2024-10-10 15:16:34.888213",
+                            eval_start: "2024-10-10 15:17:34.888213",
+                            eval_end: "2024-10-10 15:18:59.032618",
+                            round_end: "2024-10-10 15:19:59.032618",
                         },
                     },
                 }),
@@ -128,8 +144,9 @@ function makeTestJob(): JobData {
                         "1": {
                             fit_start: "2024-10-10 15:05:34.888213",
                             fit_end: "2024-10-10 15:05:34.888213",
-                            evaluate_start: "2024-10-10 15:08:34.888213",
-                            evaluate_end: "2024-10-10 15:08:34.888213",
+                            eval_start: "2024-10-10 15:08:34.888213",
+                            eval_end: "2024-10-10 15:08:34.888213",
+                            round_end: "2024-10-10 15:08:34.888213",
                         },
                         "2": {
                             fit_start: "2024-10-10 15:06:59.032618",
@@ -439,15 +456,16 @@ describe("Job Details Page", () => {
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
                     act(() => progressToggleButton.click());
 
+                    const serverRounds = serverMetrics.rounds;
                     const expectedTimes = {
                         fit: [
-                            ["01m 01s", serverMetrics.rounds["1"].fit_start, serverMetrics.rounds["1"].fit_end],
-                            ["01m 01s", serverMetrics.rounds["2"].fit_start, serverMetrics.rounds["2"].fit_end],
-                            ["12s", serverMetrics.rounds["3"].fit_start, ""],
+                            ["01m 01s", serverRounds["1"].fit_round_start, serverRounds["1"].fit_round_end],
+                            ["01m 01s", serverRounds["2"].fit_round_start, serverRounds["2"].fit_round_end],
+                            ["12s", serverRounds["3"].fit_round_start, ""],
                         ],
                         evaluate: [
-                            ["01s", serverMetrics.rounds["1"].evaluate_start, serverMetrics.rounds["1"].evaluate_end],
-                            ["01m 03s", serverMetrics.rounds["2"].evaluate_start, ""],
+                            ["01s", serverRounds["1"].eval_round_start, serverRounds["1"].eval_round_end],
+                            ["01m 03s", serverRounds["2"].eval_round_start, ""],
                             ["", "", ""],
                         ],
                     };
@@ -752,7 +770,7 @@ describe("Job Details Page", () => {
 
                     progressBar = clientsProgress[1].querySelector("div.progress-bar");
                     expect(progressBar).toHaveClass("bg-warning");
-                    expect(progressBar).toHaveTextContent("50%");
+                    expect(progressBar).toHaveTextContent("25%");
                 });
                 it("Renders the progress details correctly", () => {
                     const testJob = makeTestJob();
