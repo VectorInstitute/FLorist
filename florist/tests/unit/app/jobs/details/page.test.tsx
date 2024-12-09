@@ -27,6 +27,12 @@ function setupGetJobMock(data: JobData, isLoading: boolean = false, error = null
     });
 }
 
+function setupURLSpyMock(urlSpy, testURL: string = "foo") {
+    urlSpy = jest.spyOn(window, "URL");
+    urlSpy.createObjectURL = jest.fn((_) => testURL);
+    return urlSpy;
+}
+
 function makeTestJob(): JobData {
     return {
         _id: testJobId,
@@ -309,6 +315,14 @@ describe("Job Details Page", () => {
             expect(progressBar).toHaveClass("bg-danger");
         });
         describe("Details", () => {
+            let urlSpy;
+            afterEach(() => {
+                if (urlSpy) {
+                    // making sure the mock is clear even on error,
+                    // otherwise some weird errors start popping up
+                    urlSpy.mockRestore();
+                }
+            });
             it("Should be collapsed by default", () => {
                 setupGetJobMock(makeTestJob());
                 const { container } = render(<JobDetails />);
@@ -317,6 +331,7 @@ describe("Job Details Page", () => {
             });
             it("Should open when the toggle button is clicked", () => {
                 setupGetJobMock(makeTestJob());
+                setupURLSpyMock(urlSpy);
                 const { container } = render(<JobDetails />);
                 const toggleButton = container.querySelector(".job-details-toggle a");
                 expect(toggleButton).toHaveTextContent("Expand");
@@ -332,6 +347,7 @@ describe("Job Details Page", () => {
                 const testJob = makeTestJob();
                 const serverMetrics = JSON.parse(testJob.server_metrics);
                 setupGetJobMock(testJob);
+                setupURLSpyMock(urlSpy);
                 const { container } = render(<JobDetails />);
                 const toggleButton = container.querySelector(".job-details-toggle a");
                 act(() => toggleButton.click());
@@ -382,6 +398,7 @@ describe("Job Details Page", () => {
                     const testJob = makeTestJob();
                     const serverMetrics = JSON.parse(testJob.server_metrics);
                     setupGetJobMock(testJob);
+                    setupURLSpyMock(urlSpy);
                     const { container } = render(<JobDetails />);
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
                     act(() => progressToggleButton.click());
@@ -395,6 +412,7 @@ describe("Job Details Page", () => {
                     const testJob = makeTestJob();
                     const serverMetrics = JSON.parse(testJob.server_metrics);
                     setupGetJobMock(testJob);
+                    setupURLSpyMock(urlSpy);
                     const { container } = render(<JobDetails />);
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
                     act(() => progressToggleButton.click());
@@ -415,6 +433,7 @@ describe("Job Details Page", () => {
                     const testJob = makeTestJob();
                     const serverMetrics = JSON.parse(testJob.server_metrics);
                     setupGetJobMock(testJob);
+                    setupURLSpyMock(urlSpy);
                     const { container } = render(<JobDetails />);
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
                     act(() => progressToggleButton.click());
@@ -479,6 +498,58 @@ describe("Job Details Page", () => {
                     );
                 });
             });
+            describe("Download metrics", () => {
+                it("Should render the download server metrics button correctly", async () => {
+                    const testJob = makeTestJob();
+                    setupGetJobMock(testJob);
+                    const { container } = render(<JobDetails />);
+
+                    const testURL = "test url";
+                    urlSpy = setupURLSpyMock(urlSpy, testURL);
+
+                    const progressToggleButton = container.querySelector(".job-details-toggle a");
+                    act(() => progressToggleButton.click());
+
+                    const expectedServerMetrics = JSON.stringify(JSON.parse(testJob.server_metrics), null, 4);
+                    expect(urlSpy.createObjectURL).toHaveBeenCalledWith(new Blob([expectedServerMetrics]));
+
+                    const jobProgressDetailsComponent = container.querySelector(".job-progress-detail");
+                    const downloadMetricsButton = jobProgressDetailsComponent.querySelector(".download-metrics-button");
+                    expect(downloadMetricsButton.getAttribute("href")).toBe(testURL);
+                    expect(downloadMetricsButton.getAttribute("download")).toBe("server-metrics.json");
+                });
+                it("Should render the download client metrics button correctly", () => {
+                    const testJob = makeTestJob();
+                    setupGetJobMock(testJob);
+                    const { container } = render(<JobDetails />);
+
+                    const testURL = "test url";
+                    urlSpy = setupURLSpyMock(urlSpy, testURL);
+
+                    const testClientIndex = 1;
+                    let toggleButton = container.querySelectorAll(".job-client-progress .job-details-toggle a")[
+                        testClientIndex
+                    ];
+                    act(() => toggleButton.click());
+
+                    const expectedClientMetrics = JSON.stringify(
+                        JSON.parse(testJob.clients_info[testClientIndex].metrics),
+                        null,
+                        4,
+                    );
+                    expect(urlSpy.createObjectURL).toHaveBeenCalledWith(new Blob([expectedClientMetrics]));
+
+                    const clientProgressDetailsComponent = container.querySelector(
+                        `#job-details-client-config-progress-${testClientIndex} .job-progress-detail`,
+                    );
+                    const downloadMetricsButton =
+                        clientProgressDetailsComponent.querySelector(".download-metrics-button");
+                    expect(downloadMetricsButton.getAttribute("href")).toBe(testURL);
+                    expect(downloadMetricsButton.getAttribute("download")).toBe(
+                        `client-metrics-${testClientIndex}.json`,
+                    );
+                });
+            });
             describe("Clients", () => {
                 it("Renders their progress bars correctly", () => {
                     const testJob = makeTestJob();
@@ -497,6 +568,7 @@ describe("Job Details Page", () => {
                 it("Renders the progress details correctly", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
+                    setupURLSpyMock(urlSpy);
                     const { container } = render(<JobDetails />);
 
                     let toggleButton = container.querySelectorAll(".job-client-progress .job-details-toggle a")[0];
