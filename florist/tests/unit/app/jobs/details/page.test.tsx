@@ -500,6 +500,10 @@ describe("Job Details Page", () => {
             });
             describe("Logs Modal", () => {
                 it("Should be hidden by default", () => {
+                    const testJob = makeTestJob();
+                    setupGetJobMock(testJob);
+                    const { container } = render(<JobDetails />);
+
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
                     act(() => progressToggleButton.click());
 
@@ -507,6 +511,11 @@ describe("Job Details Page", () => {
                     expect(jobProgressDetailsComponent.querySelector(".log-viewer")).toBeNull();
                 });
                 it("Should render the server logs modal correctly when clicked", () => {
+                    const testJob = makeTestJob();
+                    setupGetJobMock(testJob);
+                    setupURLSpyMock(urlSpy, "test url");
+                    const { container } = render(<JobDetails />);
+
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
                     act(() => progressToggleButton.click());
 
@@ -535,7 +544,15 @@ describe("Job Details Page", () => {
                 it("Should render the client logs modal correctly when clicked", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
+                    setupURLSpyMock(urlSpy, "test url");
                     const { container } = render(<JobDetails />);
+
+                    const testClientIndex = 1;
+                    let toggleButton = container.querySelectorAll(".job-client-progress .job-details-toggle a")[
+                        testClientIndex
+                    ];
+                    act(() => toggleButton.click());
+
                     const testLogContents = "[INFO] test log contents\n[INFO] second line";
                     setupUseSWRWithKeyMock({ data: testLogContents });
                     const testURL = "test url";
@@ -563,6 +580,7 @@ describe("Job Details Page", () => {
                 it("Should display spinner when loading", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
+                    setupURLSpyMock(urlSpy, "test url");
                     const { container } = render(<JobDetails />);
 
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
@@ -584,6 +602,7 @@ describe("Job Details Page", () => {
                 it("Should display spinner when validating", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
+                    setupURLSpyMock(urlSpy, "test url");
                     const { container } = render(<JobDetails />);
 
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
@@ -605,6 +624,7 @@ describe("Job Details Page", () => {
                 it("Should display error message", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
+                    setupURLSpyMock(urlSpy, "test url");
                     const { container } = render(<JobDetails />);
 
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
@@ -625,6 +645,7 @@ describe("Job Details Page", () => {
                 it("Clicking refresh should call mutate", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
+                    setupURLSpyMock(urlSpy, "test url");
                     const { container } = render(<JobDetails />);
 
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
@@ -647,6 +668,7 @@ describe("Job Details Page", () => {
                 it("Clicking close should close the modal", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
+                    setupURLSpyMock(urlSpy, "test url");
                     const { container } = render(<JobDetails />);
 
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
@@ -672,6 +694,7 @@ describe("Job Details Page", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
                     const { container } = render(<JobDetails />);
+
                     const testURL = "test url";
                     urlSpy = setupURLSpyMock(urlSpy, testURL);
 
@@ -690,6 +713,7 @@ describe("Job Details Page", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
                     const { container } = render(<JobDetails />);
+
                     const testURL = "test url";
                     urlSpy = setupURLSpyMock(urlSpy, testURL);
 
