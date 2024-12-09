@@ -214,6 +214,7 @@
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.db.html">florist.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.db.config.html">florist.api.db.config module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.db.entities.html">florist.api.db.entities module</a></li>
 </ul>
 </li>
@@ -477,6 +478,17 @@
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Run ID is None, ensure reporter is initialized prior to dumping metrics.&quot;</span>
 
         <span class="n">encoded_metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">DateTimeEncoder</span><span class="p">)</span>
+
+        <span class="n">previous_metrics_blob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">redis_connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">previous_metrics_blob</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">previous_metrics_blob</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">previous_metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">previous_metrics_blob</span><span class="p">)</span>
+            <span class="n">current_metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">encoded_metrics</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">current_metrics</span> <span class="o">==</span> <span class="n">previous_metrics</span><span class="p">:</span>
+                <span class="n">log</span><span class="p">(</span>
+                    <span class="n">DEBUG</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Skipping dumping: previous metrics are the same as current metrics at key &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+
         <span class="n">log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Dumping metrics to redis at key &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">encoded_metrics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">redis_connection</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span> <span class="n">encoded_metrics</span><span class="p">)</span>
         <span class="n">log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Notifying redis channel &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>

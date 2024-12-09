@@ -214,6 +214,7 @@
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.db.html">florist.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.db.config.html">florist.api.db.config module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.db.entities.html">florist.api.db.entities module</a></li>
 </ul>
 </li>
@@ -350,7 +351,6 @@
 <span class="kn">from</span> <span class="nn">fastapi.encoders</span> <span class="kn">import</span> <span class="n">jsonable_encoder</span>
 <span class="kn">from</span> <span class="nn">motor.motor_asyncio</span> <span class="kn">import</span> <span class="n">AsyncIOMotorDatabase</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
-<span class="kn">from</span> <span class="nn">pymongo.database</span> <span class="kn">import</span> <span class="n">Database</span>
 <span class="kn">from</span> <span class="nn">pymongo.results</span> <span class="kn">import</span> <span class="n">UpdateResult</span>
 
 <span class="kn">from</span> <span class="nn">florist.api.clients.common</span> <span class="kn">import</span> <span class="n">Client</span>
@@ -535,55 +535,43 @@
         <span class="n">assert_updated_successfully</span><span class="p">(</span><span class="n">update_result</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Job.set_status_sync">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.set_status_sync">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_status_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="n">Database</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sync function to save the status in the database under the current job&#39;s id.</span>
-
-<span class="sd">        :param status: (JobStatus) the status to be saved in the database.</span>
-<span class="sd">        :param database: (pymongo.database.Database) The database where the job collection is stored.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">job_collection</span> <span class="o">=</span> <span class="n">database</span><span class="p">[</span><span class="n">JOB_COLLECTION_NAME</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
-        <span class="n">update_result</span> <span class="o">=</span> <span class="n">job_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">}})</span>
-        <span class="n">assert_updated_successfully</span><span class="p">(</span><span class="n">update_result</span><span class="p">)</span></div>
-
-
 <div class="viewcode-block" id="Job.set_server_metrics">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.set_server_metrics">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_server_metrics</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">set_server_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">server_metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-        <span class="n">database</span><span class="p">:</span> <span class="n">Database</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">database</span><span class="p">:</span> <span class="n">AsyncIOMotorDatabase</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sync function to save the server&#39;s metrics in the database under the current job&#39;s id.</span>
+<span class="sd">        Save the server&#39;s metrics in the database under the current job&#39;s id.</span>
 
 <span class="sd">        :param server_metrics: (Dict[str, Any]) the server metrics to be saved.</span>
-<span class="sd">        :param database: (pymongo.database.Database) The database where the job collection is stored.</span>
+<span class="sd">        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">job_collection</span> <span class="o">=</span> <span class="n">database</span><span class="p">[</span><span class="n">JOB_COLLECTION_NAME</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">server_metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">server_metrics</span><span class="p">)</span>
-        <span class="n">update_result</span> <span class="o">=</span> <span class="n">job_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;server_metrics&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_metrics</span><span class="p">}})</span>
+        <span class="n">update_result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">job_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;server_metrics&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_metrics</span><span class="p">}},</span>
+        <span class="p">)</span>
         <span class="n">assert_updated_successfully</span><span class="p">(</span><span class="n">update_result</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Job.set_client_metrics">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.set_client_metrics">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_client_metrics</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">set_client_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">client_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">client_metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-        <span class="n">database</span><span class="p">:</span> <span class="n">Database</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">database</span><span class="p">:</span> <span class="n">AsyncIOMotorDatabase</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sync function to save a clients&#39; metrics in the database under the current job&#39;s id.</span>
+<span class="sd">        Save a client&#39;s metrics in the database under the current job&#39;s id.</span>
 
 <span class="sd">        :param client_uuid: (str) the client&#39;s uuid whose produced the metrics.</span>
 <span class="sd">        :param client_metrics: (Dict[str, Any]) the client&#39;s metrics to be saved.</span>
-<span class="sd">        :param database: (pymongo.database.Database) The database where the job collection is stored.</span>
+<span class="sd">        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">client_uuid</span> <span class="ow">in</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">uuid</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span><span class="p">]</span>
@@ -594,8 +582,9 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">client_uuid</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">client_metrics</span><span class="p">)</span>
-                <span class="n">update_result</span> <span class="o">=</span> <span class="n">job_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                    <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;clients_info.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.metrics&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">}}</span>
+                <span class="n">update_result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">job_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;clients_info.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.metrics&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">}},</span>
                 <span class="p">)</span>
                 <span class="n">assert_updated_successfully</span><span class="p">(</span><span class="n">update_result</span><span class="p">)</span></div>
 

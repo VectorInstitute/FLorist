@@ -214,6 +214,7 @@
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.db.html">florist.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.db.config.html">florist.api.db.config module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.db.entities.html">florist.api.db.entities module</a></li>
 </ul>
 </li>
@@ -384,9 +385,7 @@
 <span class="k">class</span> <span class="nc">MockApp</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_client</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">MONGODB_URI</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_client</span><span class="p">[</span><span class="n">database_name</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">synchronous_db_client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">MONGODB_URI</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">synchronous_database</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">synchronous_db_client</span><span class="p">[</span><span class="n">database_name</span><span class="p">]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_client</span><span class="p">[</span><span class="n">database_name</span><span class="p">]</span></div>
 
 
 

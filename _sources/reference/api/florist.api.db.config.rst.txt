@@ -1,0 +1,7 @@
+florist.api.db.config module
+============================
+
+.. automodule:: florist.api.db.config
+   :members:
+   :undoc-members:
+   :show-inheritance:
