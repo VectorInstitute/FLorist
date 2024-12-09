@@ -536,7 +536,7 @@ describe("Job Details Page", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
                     const { container } = render(<JobDetails />);
-                                      const testLogContents = "[INFO] test log contents\n[INFO] second line";
+                    const testLogContents = "[INFO] test log contents\n[INFO] second line";
                     setupUseSWRWithKeyMock({ data: testLogContents });
                     const testURL = "test url";
                     urlSpy = setupURLSpyMock(urlSpy, testURL);

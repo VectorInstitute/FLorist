@@ -376,7 +376,7 @@ export function JobProgressDetails({
                         Show Logs
                     </a>
                 </div>
-              
+
                 <div className="col-sm-4 job-details-download-button">
                     <a
                         className="btn btn-link download-metrics-button"
@@ -389,7 +389,7 @@ export function JobProgressDetails({
                     </a>
                 </div>
             </div>
-            
+
             {showLogs ? (
                 <JobLogsModal
                     hostType={metrics.host_type}
@@ -398,7 +398,6 @@ export function JobProgressDetails({
                     setShowLogs={setShowLogs}
                 />
             ) : null}
-      
         </div>
     );
 }
