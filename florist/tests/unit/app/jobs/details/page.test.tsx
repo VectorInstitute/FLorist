@@ -580,7 +580,6 @@ describe("Job Details Page", () => {
                 it("Should display spinner when loading", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
-                    setupURLSpyMock(urlSpy, "test url");
                     const { container } = render(<JobDetails />);
 
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
@@ -602,7 +601,6 @@ describe("Job Details Page", () => {
                 it("Should display spinner when validating", () => {
                     const testJob = makeTestJob();
                     setupGetJobMock(testJob);
-                    setupURLSpyMock(urlSpy, "test url");
                     const { container } = render(<JobDetails />);
 
                     const progressToggleButton = container.querySelector(".job-details-toggle a");
