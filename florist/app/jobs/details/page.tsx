@@ -333,7 +333,8 @@ export function JobProgressDetails({
         }
     }
 
-    const metricsFileName = metrics.host_type === "server" ? "server-metrics.json" : `client-metrics-${clientIndex}.json`;
+    const metricsFileName =
+        metrics.host_type === "server" ? "server-metrics.json" : `client-metrics-${clientIndex}.json`;
     let metricsFileURL = null;
     if (window.URL.createObjectURL) {
         // adding this check here to avoid overly complicated mocking in tests
