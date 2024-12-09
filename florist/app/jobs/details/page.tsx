@@ -379,7 +379,6 @@ export function JobProgressDetails({
                         Show Logs
                     </a>
                 </div>
-
             </div>
             <div className="row">
                 <div className="col-sm-4 job-details-download-button">
