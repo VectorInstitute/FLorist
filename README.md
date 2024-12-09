@@ -114,7 +114,7 @@ docker start redis-florist-client
 To start the client back-end service:
 
 ```shell
-uvicorn florist.api.client:app --reload --port 8001
+python -m uvicorn florist.api.client:app --reload --port 8001
 ```
 
 The service will be available at `http://localhost:8001`.
