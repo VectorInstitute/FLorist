@@ -55,11 +55,9 @@ export function JobDetailsBody(): ReactElement {
     }
 
     let totalEpochs = null;
-    let localEpochs = null;
     if (job.server_config) {
         const serverConfigJson = JSON.parse(job.server_config);
         totalEpochs = serverConfigJson.n_server_rounds;
-        localEpochs = serverConfigJson.local_epochs;
     }
 
     return (
@@ -125,7 +123,7 @@ export function JobDetailsBody(): ReactElement {
                 Component={JobDetailsClientsInfoTable}
                 title="Clients Configuration"
                 data={job.clients_info}
-                properties={{ localEpochs }}
+                properties={{ totalEpochs }}
             />
         </div>
     );
@@ -194,16 +192,16 @@ export function JobProgressBar({
 
     let endRoundKey;
     if (metricsJson.host_type === "server") {
-        endRoundKey = "fit_end";
+        endRoundKey = "eval_round_end";
     }
     if (metricsJson.host_type === "client") {
-        endRoundKey = "shutdown";
+        endRoundKey = "round_end";
     }
 
     let progressPercent = 0;
     if ("rounds" in metricsJson && Object.keys(metricsJson.rounds).length > 0) {
         const lastRound = Math.max(...Object.keys(metricsJson.rounds));
-        const lastCompletedRound = endRoundKey in metricsJson ? lastRound : lastRound - 1;
+        const lastCompletedRound = endRoundKey in metricsJson.rounds[lastRound] ? lastRound : lastRound - 1;
         progressPercent = (lastCompletedRound * 100) / totalEpochs;
     }
     const progressWidth = progressPercent === 0 ? "100%" : `${progressPercent}%`;
@@ -403,17 +401,39 @@ export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics:
         return null;
     }
 
-    let fitElapsedTime = "";
+    let fitStart = null;
+    let fitEnd = null;
     if ("fit_start" in roundMetrics) {
-        const startDate = Date.parse(roundMetrics.fit_start);
-        const endDate = "fit_end" in roundMetrics ? Date.parse(roundMetrics.fit_end) : Date.now();
+        fitStart = roundMetrics.fit_start;
+        fitEnd = roundMetrics.fit_end;
+    }
+    if ("fit_round_start" in roundMetrics) {
+        fitStart = roundMetrics.fit_round_start;
+        fitEnd = roundMetrics.fit_round_end;
+    }
+
+    let fitElapsedTime = "";
+    if (fitStart) {
+        const startDate = Date.parse(fitStart);
+        const endDate = fitEnd ? Date.parse(fitEnd) : Date.now();
         fitElapsedTime = getTimeString(endDate - startDate);
     }
 
+    let evalStart = null;
+    let evalEnd = null;
+    if ("eval_start" in roundMetrics) {
+        evalStart = roundMetrics.eval_start;
+        evalEnd = roundMetrics.eval_end;
+    }
+    if ("eval_round_start" in roundMetrics) {
+        evalStart = roundMetrics.eval_round_start;
+        evalEnd = roundMetrics.eval_round_end;
+    }
+
     let evaluateElapsedTime = "";
-    if ("evaluate_start" in roundMetrics) {
-        const startDate = Date.parse(roundMetrics.evaluate_start);
-        const endDate = "evaluate_end" in roundMetrics ? Date.parse(roundMetrics.evaluate_end) : Date.now();
+    if (evalStart !== null) {
+        const startDate = Date.parse(evalStart);
+        const endDate = evalEnd ? Date.parse(evalEnd) : Date.now();
         evaluateElapsedTime = getTimeString(endDate - startDate);
     }
 
@@ -429,13 +449,13 @@ export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics:
                 <div className="col-sm-2">
                     <strong className="text-dark">Fit start time:</strong>
                 </div>
-                <div className="col-sm">{"fit_start" in roundMetrics ? roundMetrics.fit_start : null}</div>
+                <div className="col-sm">{fitStart}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">Fit end time:</strong>
                 </div>
-                <div className="col-sm">{"fit_end" in roundMetrics ? roundMetrics.fit_end : null}</div>
+                <div className="col-sm">{fitEnd}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
@@ -447,13 +467,13 @@ export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics:
                 <div className="col-sm-2">
                     <strong className="text-dark">Evaluate start time:</strong>
                 </div>
-                <div className="col-sm">{"evaluate_start" in roundMetrics ? roundMetrics.evaluate_start : null}</div>
+                <div className="col-sm">{evalStart}</div>
             </div>
             <div className="row">
                 <div className="col-sm-2">
                     <strong className="text-dark">Evaluate end time:</strong>
                 </div>
-                <div className="col-sm">{"evaluate_end" in roundMetrics ? roundMetrics.evaluate_end : null}</div>
+                <div className="col-sm">{evalEnd}</div>
             </div>
             {Object.keys(roundMetrics).map((name, i) => (
                 <JobProgressProperty name={name} value={roundMetrics[name]} key={i} />
@@ -467,8 +487,12 @@ export function JobProgressProperty({ name, value }: { name: string; value: stri
         [
             "fit_start",
             "fit_end",
-            "evaluate_start",
-            "evaluate_end",
+            "fit_round_start",
+            "fit_round_end",
+            "eval_start",
+            "eval_end",
+            "eval_round_start",
+            "eval_round_end",
             "rounds",
             "host_type",
             "initialized",
@@ -643,7 +667,7 @@ export function JobDetailsClientsInfoTable({
                                     <span className="ps-3 text-secondary text-sm">
                                         <JobProgressBar
                                             metrics={clientInfo.metrics}
-                                            totalEpochs={properties.localEpochs}
+                                            totalEpochs={properties.totalEpochs}
                                             clientIndex={i}
                                         />
                                     </span>

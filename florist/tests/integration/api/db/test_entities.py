@@ -144,31 +144,6 @@ async def test_set_status_fail_update_result(mock_request) -> None:
         await test_job.set_status(JobStatus.IN_PROGRESS, mock_request.app.database)
 
 
-async def test_set_status_sync_success(mock_request) -> None:
-    test_job = get_test_job()
-    result_id = await test_job.create(mock_request.app.database)
-    test_job.id = result_id
-    test_job.clients_info[0].id = ANY
-    test_job.clients_info[1].id = ANY
-
-    test_status = JobStatus.IN_PROGRESS
-
-    test_job.set_status_sync(test_status, mock_request.app.synchronous_database)
-
-    result_job = await Job.find_by_id(result_id, mock_request.app.database)
-    test_job.status = test_status
-    assert result_job == test_job
-
-
-async def test_set_status_sync_fail_update_result(mock_request) -> None:
-    test_job = get_test_job()
-    test_job.id = str(test_job.id)
-
-    error_msg = "UpdateResult's 'n' is not 1"
-    with raises(AssertionError, match=re.escape(error_msg)):
-        test_job.set_status_sync(JobStatus.IN_PROGRESS, mock_request.app.synchronous_database)
-
-
 async def test_set_server_metrics_success(mock_request) -> None:
     test_job = get_test_job()
     result_id = await test_job.create(mock_request.app.database)
@@ -178,7 +153,7 @@ async def test_set_server_metrics_success(mock_request) -> None:
 
     test_server_metrics = {"test-server": 123}
 
-    test_job.set_server_metrics(test_server_metrics, mock_request.app.synchronous_database)
+    await test_job.set_server_metrics(test_server_metrics, mock_request.app.database)
 
     result_job = await Job.find_by_id(result_id, mock_request.app.database)
     test_job.server_metrics = json.dumps(test_server_metrics)
@@ -193,7 +168,7 @@ async def test_set_server_metrics_fail_update_result(mock_request) -> None:
 
     error_msg = "UpdateResult's 'n' is not 1"
     with raises(AssertionError, match=re.escape(error_msg)):
-        test_job.set_server_metrics(test_server_metrics, mock_request.app.synchronous_database)
+        await test_job.set_server_metrics(test_server_metrics, mock_request.app.database)
 
 
 async def test_set_client_metrics_success(mock_request) -> None:
@@ -205,7 +180,7 @@ async def test_set_client_metrics_success(mock_request) -> None:
 
     test_client_metrics = [{"test-metric-1": 456}, {"test-metric-2": 789}]
 
-    test_job.set_client_metrics(test_job.clients_info[1].uuid, test_client_metrics, mock_request.app.synchronous_database)
+    await test_job.set_client_metrics(test_job.clients_info[1].uuid, test_client_metrics, mock_request.app.database)
 
     result_job = await Job.find_by_id(result_id, mock_request.app.database)
     test_job.clients_info[1].metrics = json.dumps(test_client_metrics)
@@ -222,7 +197,7 @@ async def test_set_metrics_fail_clients_info_is_none(mock_request) -> None:
 
     error_msg = f"client uuid {test_wrong_client_uuid} is not in clients_info (['{test_job.clients_info[0].uuid}', '{test_job.clients_info[1].uuid}'])"
     with raises(AssertionError, match=re.escape(error_msg)):
-        test_job.set_client_metrics(test_wrong_client_uuid, test_client_metrics, mock_request.app.synchronous_database)
+        await test_job.set_client_metrics(test_wrong_client_uuid, test_client_metrics, mock_request.app.database)
 
 
 async def test_set_client_metrics_fail_update_result(mock_request) -> None:
@@ -233,10 +208,10 @@ async def test_set_client_metrics_fail_update_result(mock_request) -> None:
 
     error_msg = "UpdateResult's 'n' is not 1"
     with raises(AssertionError, match=re.escape(error_msg)):
-        test_job.set_client_metrics(
+        await test_job.set_client_metrics(
             test_job.clients_info[0].uuid,
             test_client_metrics,
-            mock_request.app.synchronous_database,
+            mock_request.app.database,
         )
 
 
