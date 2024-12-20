@@ -260,6 +260,10 @@ export function EditJobServerConfig({ state, setState }): ReactElement {
         <div id="job-server-config">
             <div className="input-group-header">
                 <h6>Server Configuration</h6>
+                <a id="job-server-config-import" className="btn btn-link" title="Import Server Config JSON">
+                    <i className="material-icons">upload</i>
+                    Import JSON
+                </a>
                 <i
                     id="job-server-config-add"
                     className="material-icons opacity-10 input-group-action"

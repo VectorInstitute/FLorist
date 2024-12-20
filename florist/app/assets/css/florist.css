@@ -153,3 +153,8 @@
 .job-client-progress .job-progress-bar .progress .progress-bar {
     height: max-content;
 }
+
+#job-server-config-import {
+    padding: 0;
+    margin: 4px 15px;
+}
