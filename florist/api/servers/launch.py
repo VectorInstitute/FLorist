@@ -22,7 +22,7 @@ def launch_local_server(
     local_epochs: int,
     redis_host: str,
     redis_port: str,
-) -> Tuple[str, Process]:
+) -> Tuple[str, Process, str]:
     """
     Launch a FL server locally.
 
@@ -34,8 +34,10 @@ def launch_local_server(
     :param local_epochs: (int) The number of epochs to run by the clients.
     :param redis_host: (str) the host name for the Redis instance for metrics reporting.
     :param redis_port: (str) the port for the Redis instance for metrics reporting.
-    :return: (Tuple[str, multiprocessing.Process]) the UUID of the server, which can be used to pull
-        metrics from Redis, along with its local process object.
+    :return: (Tuple[str, multiprocessing.Process, str]) a tuple with
+        - The UUID of the server, which can be used to pull metrics from Redis
+        - The server's local process object
+        - The local path for the log file
     """
     server_uuid = str(uuid.uuid4())
 
@@ -49,13 +51,13 @@ def launch_local_server(
         local_epochs=local_epochs,
     )
 
-    log_file_name = str(get_server_log_file_path(server_uuid))
+    log_file_path = str(get_server_log_file_path(server_uuid))
     server_process = launch_server(
         server_constructor,
         server_address,
         n_server_rounds,
-        log_file_name,
+        log_file_path,
         seconds_to_sleep=0,
     )
 
-    return server_uuid, server_process
+    return server_uuid, server_process, log_file_path
