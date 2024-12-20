@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent } from "react";
+import { FormEvent, useRef } from "react";
 import { ReactElement } from "react/React";
 import { useImmer } from "use-immer";
 import { produce } from "immer";
@@ -260,10 +260,9 @@ export function EditJobServerConfig({ state, setState }): ReactElement {
         <div id="job-server-config">
             <div className="input-group-header">
                 <h6>Server Configuration</h6>
-                <a id="job-server-config-import" className="btn btn-link" title="Import Server Config JSON">
-                    <i className="material-icons">upload</i>
-                    Import JSON
-                </a>
+
+                <EditJobServerConfigUploader state={state} setState={setState} />
+
                 <i
                     id="job-server-config-add"
                     className="material-icons opacity-10 input-group-action"
@@ -275,6 +274,24 @@ export function EditJobServerConfig({ state, setState }): ReactElement {
             {state.job.server_config.map((c, i) => (
                 <EditJobServerConfigItem key={i} index={i} state={state} setState={setState} />
             ))}
+        </div>
+    );
+}
+
+export function EditJobServerConfigUploader({ state, setState }): ReactElement {
+    const buttonRef = useRef(null);
+    return (
+        <div>
+            <a
+                id="job-server-config-import"
+                className="btn btn-link"
+                title="Import Server Config JSON"
+                onClick={() => buttonRef.current.click()}
+            >
+                <i className="material-icons">upload</i>
+                Import JSON
+            </a>
+            <input ref={buttonRef} id="job-server-config-uploader" type="file"/>
         </div>
     );
 }
