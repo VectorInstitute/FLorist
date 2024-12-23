@@ -335,10 +335,21 @@ export function EditJobServerConfigItem({ index, state, setState }): ReactElemen
     const changeServerConfigAttribute = produce((newState, attribute, value) => {
         newState.job.server_config[index][attribute] = value;
     });
+
+    let nameFieldClasses = "input-group input-group-outline gray-input-box mb-3 "
+    if (state.job.server_config[index].name) {
+        nameFieldClasses += "is-filled";
+    }
+
+    let valueFieldClasses = "input-group input-group-outline gray-input-box mb-3 "
+    if (state.job.server_config[index].value) {
+        valueFieldClasses += "is-filled";
+    }
+
     return (
         <div className="input-group-flex">
             <div className="input-group-column">
-                <div className="input-group input-group-outline gray-input-box mb-3">
+                <div className={nameFieldClasses}>
                     <label className="form-label" htmlFor={"job-server-config-name-" + index}>
                         Name
                     </label>
@@ -352,7 +363,7 @@ export function EditJobServerConfigItem({ index, state, setState }): ReactElemen
                 </div>
             </div>
             <div className="input-group-column">
-                <div className="input-group input-group-outline gray-input-box mb-3">
+                <div className={valueFieldClasses}>
                     <label className="form-label" htmlFor={"job-server-config-value-" + index}>
                         Value
                     </label>
