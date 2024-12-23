@@ -135,6 +135,56 @@ describe("New Job Page", () => {
             const jobServerConfigValue = container.querySelector("input#job-server-config-value-0");
             expect(jobServerConfigValue).not.toBeInTheDocument();
         });
+        describe("Import Button", () => {
+            it("renders correctly", () => {
+                setupPostMocks();
+                const { container } = render(<EditJob />);
+
+                const jobServerConfig = container.querySelector("div#job-server-config");
+                const importButton = jobServerConfig.querySelector("#job-server-config-import");
+                expect(importButton).toHaveTextContent("Import JSON or YAML");
+
+                const uploadFileButton = jobServerConfig.querySelector("#job-server-config-uploader");
+                expect(uploadFileButton).not.toBeNull();
+
+                act(() => fireEvent.change(uploadFileButton, null));
+            });
+            it("processes uploaded file correctly", async () => {
+                setupPostMocks();
+                const { container } = render(<EditJob />);
+
+                const jobServerConfig = container.querySelector("div#job-server-config");
+                const uploadFileButton = jobServerConfig.querySelector("#job-server-config-uploader");
+
+                const testData = [
+                    { name: "test_name_1", value: "test_value_1"},
+                    { name: "test_name_2", value: "test_value_2"},
+                    { name: "test_name_3", value: "test_value_3"},
+                ]
+
+                const yamlFileMock = {
+                    name: "test.yaml",
+                    text: async () => {
+                        return `${testData[0].name}: ${testData[0].value}\n` +
+                               `${testData[1].name}: ${testData[1].value}\n` +
+                               `${testData[2].name}: ${testData[2].value}\n`;
+                    },
+                }
+
+                await act(async () => fireEvent.change(uploadFileButton, { target: { files: [yamlFileMock] } }));
+
+                for (let i in testData) {
+                   const nameComponent = container.querySelector(`#job-server-config-name-${i}`);
+                   expect(nameComponent.value).toBe(testData[i].name);
+                   const valueComponent = container.querySelector(`#job-server-config-value-${i}`);
+                   expect(valueComponent.value).toBe(testData[i].value);
+                }
+
+                // TODO test .yml
+                // TODO test .json
+                // TODO test unknown file type
+            });
+        });
     });
 
     describe("Client Info", () => {

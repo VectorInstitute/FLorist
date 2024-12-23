@@ -282,36 +282,33 @@ export function EditJobServerConfig({ state, setState }): ReactElement {
 export function EditJobServerConfigUploader({ state, setState }): ReactElement {
     const buttonRef = useRef(null);
 
-    const handleFileUpload = event => {
+    const handleFileUpload = async(event) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
+            const fileText = await file.text()
 
-            const reader = new FileReader();
-            reader.readAsText(file);
-            reader.onloadend = event => {
-                let data;
-                if(file.name.endsWith(".json")) {
-                    data = JSON.parse(event.target.result);
-                } else if(file.name.endsWith(".yaml") || file.name.endsWith(".yml")) {
-                    data = yaml.load(event.target.result);
-                } else {
-                    console.error(`file extension not supported: ${file.name}`);
-                    return;
-                }
-
-                const importedServerConfig = [];
-                for (let property of Object.keys(data)) {
-                    const serverConfigItem = makeEmptyServerConfig();
-                    serverConfigItem.name = property;
-                    serverConfigItem.value = data[property];
-                    importedServerConfig.push(serverConfigItem);
-                }
-
-                const setServerConfig = produce((newState, newServerConfig) => {
-                    newState.job.server_config = newServerConfig;
-                });
-                setState(setServerConfig(state, importedServerConfig));
+            let data;
+            if(file.name.endsWith(".json")) {
+                data = JSON.parse(fileText);
+            } else if(file.name.endsWith(".yaml") || file.name.endsWith(".yml")) {
+                data = yaml.load(fileText);
+            } else {
+                console.error(`file extension not supported: ${file.name}`);
+                return;
             }
+
+            const importedServerConfig = [];
+            for (let property of Object.keys(data)) {
+                const serverConfigItem = makeEmptyServerConfig();
+                serverConfigItem.name = property;
+                serverConfigItem.value = data[property];
+                importedServerConfig.push(serverConfigItem);
+            }
+
+            const setServerConfig = produce((newState, newServerConfig) => {
+                newState.job.server_config = newServerConfig;
+            });
+            setState(setServerConfig(state, importedServerConfig));
         }
     }
 
