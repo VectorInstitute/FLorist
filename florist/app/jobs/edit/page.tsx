@@ -1,4 +1,5 @@
 "use client";
+import yaml from "js-yaml";
 
 import { FormEvent, useRef } from "react";
 import { ReactElement } from "react/React";
@@ -280,18 +281,52 @@ export function EditJobServerConfig({ state, setState }): ReactElement {
 
 export function EditJobServerConfigUploader({ state, setState }): ReactElement {
     const buttonRef = useRef(null);
+
+    const handleFileUpload = event => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+
+            const reader = new FileReader();
+            reader.readAsText(file);
+            reader.onloadend = event => {
+                let data;
+                if(file.name.endsWith(".json")) {
+                    data = JSON.parse(event.target.result);
+                } else if(file.name.endsWith(".yaml") || file.name.endsWith(".yml")) {
+                    data = yaml.load(event.target.result);
+                } else {
+                    console.error(`file extension not supported: ${file.name}`);
+                    return;
+                }
+
+                const importedServerConfig = [];
+                for (let property of Object.keys(data)) {
+                    const serverConfigItem = makeEmptyServerConfig();
+                    serverConfigItem.name = property;
+                    serverConfigItem.value = data[property];
+                    importedServerConfig.push(serverConfigItem);
+                }
+
+                const setServerConfig = produce((newState, newServerConfig) => {
+                    newState.job.server_config = newServerConfig;
+                });
+                setState(setServerConfig(state, importedServerConfig));
+            }
+        }
+    }
+
     return (
         <div>
             <a
                 id="job-server-config-import"
                 className="btn btn-link"
-                title="Import Server Config JSON"
+                title="Import Server Config as JSON or YAML"
                 onClick={() => buttonRef.current.click()}
             >
                 <i className="material-icons">upload</i>
-                Import JSON
+                Import JSON or YAML
             </a>
-            <input ref={buttonRef} id="job-server-config-uploader" type="file"/>
+            <input type="file" ref={buttonRef} id="job-server-config-uploader" onChange={handleFileUpload}/>
         </div>
     );
 }
