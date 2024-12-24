@@ -282,15 +282,15 @@ export function EditJobServerConfig({ state, setState }): ReactElement {
 export function EditJobServerConfigUploader({ state, setState }): ReactElement {
     const buttonRef = useRef(null);
 
-    const handleFileUpload = async(event) => {
+    const handleFileUpload = async (event) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
-            const fileText = await file.text()
+            const fileText = await file.text();
 
             let data;
-            if(file.name.endsWith(".json")) {
+            if (file.name.endsWith(".json")) {
                 data = JSON.parse(fileText);
-            } else if(file.name.endsWith(".yaml") || file.name.endsWith(".yml")) {
+            } else if (file.name.endsWith(".yaml") || file.name.endsWith(".yml")) {
                 data = yaml.load(fileText);
             } else {
                 console.error(`file extension not supported: ${file.name}`);
@@ -310,7 +310,7 @@ export function EditJobServerConfigUploader({ state, setState }): ReactElement {
             });
             setState(setServerConfig(state, importedServerConfig));
         }
-    }
+    };
 
     return (
         <div>
@@ -323,7 +323,7 @@ export function EditJobServerConfigUploader({ state, setState }): ReactElement {
                 <i className="material-icons">upload</i>
                 Import JSON or YAML
             </a>
-            <input type="file" ref={buttonRef} id="job-server-config-uploader" onChange={handleFileUpload}/>
+            <input type="file" ref={buttonRef} id="job-server-config-uploader" onChange={handleFileUpload} />
         </div>
     );
 }
@@ -333,12 +333,12 @@ export function EditJobServerConfigItem({ index, state, setState }): ReactElemen
         newState.job.server_config[index][attribute] = value;
     });
 
-    let nameFieldClasses = "input-group input-group-outline gray-input-box mb-3 "
+    let nameFieldClasses = "input-group input-group-outline gray-input-box mb-3 ";
     if (state.job.server_config[index].name) {
         nameFieldClasses += "is-filled";
     }
 
-    let valueFieldClasses = "input-group input-group-outline gray-input-box mb-3 "
+    let valueFieldClasses = "input-group input-group-outline gray-input-box mb-3 ";
     if (state.job.server_config[index].value) {
         valueFieldClasses += "is-filled";
     }

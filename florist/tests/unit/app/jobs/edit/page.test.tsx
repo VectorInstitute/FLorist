@@ -152,15 +152,15 @@ describe("New Job Page", () => {
                 act(() => fireEvent.change(uploadFileButton, null));
             });
             const testData = [
-                { name: "test_name_1", value: "test_value_1"},
-                { name: "test_name_2", value: "test_value_2"},
-                { name: "test_name_3", value: "test_value_3"},
-            ]
+                { name: "test_name_1", value: "test_value_1" },
+                { name: "test_name_2", value: "test_value_2" },
+                { name: "test_name_3", value: "test_value_3" },
+            ];
             const testCases = [
                 { name: ".yaml", fileName: "test.yaml", dumpFunction: yaml.dump },
                 { name: ".yml", fileName: "test.yml", dumpFunction: yaml.dump },
                 { name: ".json", fileName: "test.json", dumpFunction: JSON.stringify },
-            ]
+            ];
             for (let testCase of testCases) {
                 it(`processes uploaded ${testCase.name} file correctly`, async () => {
                     setupPostMocks();
@@ -169,19 +169,19 @@ describe("New Job Page", () => {
                     const jobServerConfig = container.querySelector("div#job-server-config");
                     const uploadFileButton = jobServerConfig.querySelector("#job-server-config-uploader");
 
-                    const transformedTestData = Object.fromEntries(testData.map(d => [d.name, d.value]));
+                    const transformedTestData = Object.fromEntries(testData.map((d) => [d.name, d.value]));
                     const fileMock = {
                         name: testCase.fileName,
                         text: async () => testCase.dumpFunction(transformedTestData),
-                    }
+                    };
 
                     await act(async () => fireEvent.change(uploadFileButton, { target: { files: [fileMock] } }));
 
                     for (let i in testData) {
-                       const nameComponent = container.querySelector(`#job-server-config-name-${i}`);
-                       expect(nameComponent.value).toBe(testData[i].name);
-                       const valueComponent = container.querySelector(`#job-server-config-value-${i}`);
-                       expect(valueComponent.value).toBe(testData[i].value);
+                        const nameComponent = container.querySelector(`#job-server-config-name-${i}`);
+                        expect(nameComponent.value).toBe(testData[i].name);
+                        const valueComponent = container.querySelector(`#job-server-config-value-${i}`);
+                        expect(valueComponent.value).toBe(testData[i].value);
                     }
                 });
             }
@@ -193,16 +193,15 @@ describe("New Job Page", () => {
                 const uploadFileButton = jobServerConfig.querySelector("#job-server-config-uploader");
 
                 const testData = [
-                    { name: "test_name_1", value: "test_value_1"},
-                    { name: "test_name_2", value: "test_value_2"},
-                    { name: "test_name_3", value: "test_value_3"},
-                ]
+                    { name: "test_name_1", value: "test_value_1" },
+                    { name: "test_name_2", value: "test_value_2" },
+                    { name: "test_name_3", value: "test_value_3" },
+                ];
                 const fileMock = {
                     name: "test.txt",
-                    text: async () => "test_name_1: test_value_1\n" +
-                                      "test_name_2: test_value_2\n" +
-                                      "test_name_3: test_value_3\n",
-                }
+                    text: async () =>
+                        "test_name_1: test_value_1\n" + "test_name_2: test_value_2\n" + "test_name_3: test_value_3\n",
+                };
 
                 await act(async () => fireEvent.change(uploadFileButton, { target: { files: [fileMock] } }));
 
