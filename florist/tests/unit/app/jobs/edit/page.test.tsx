@@ -139,6 +139,7 @@ describe("New Job Page", () => {
         });
         describe("Import Button", () => {
             it("renders correctly", () => {
+                setupGetMocks();
                 setupPostMocks();
                 const { container } = render(<EditJob />);
 
@@ -147,9 +148,11 @@ describe("New Job Page", () => {
                 expect(importButton).toHaveTextContent("Import JSON or YAML");
 
                 const uploadFileButton = jobServerConfig.querySelector("#job-server-config-uploader");
-                expect(uploadFileButton).not.toBeNull();
+                uploadFileButton.click = jest.fn();
 
-                act(() => fireEvent.change(uploadFileButton, null));
+                act(() => importButton.click());
+
+                expect(uploadFileButton.click).toHaveBeenCalled();
             });
             const testData = [
                 { name: "test_name_1", value: "test_value_1" },
@@ -163,6 +166,7 @@ describe("New Job Page", () => {
             ];
             for (let testCase of testCases) {
                 it(`processes uploaded ${testCase.name} file correctly`, async () => {
+                    setupGetMocks();
                     setupPostMocks();
                     const { container } = render(<EditJob />);
 
@@ -186,6 +190,7 @@ describe("New Job Page", () => {
                 });
             }
             it("does not process unknown file type", async () => {
+                setupGetMocks();
                 setupPostMocks();
                 const { container } = render(<EditJob />);
 
@@ -200,7 +205,7 @@ describe("New Job Page", () => {
                 const fileMock = {
                     name: "test.txt",
                     text: async () =>
-                        "test_name_1: test_value_1\n" + "test_name_2: test_value_2\n" + "test_name_3: test_value_3\n",
+                        "test_name_1: test_value_1\ntest_name_2: test_value_2\ntest_name_3: test_value_3\n",
                 };
 
                 await act(async () => fireEvent.change(uploadFileButton, { target: { files: [fileMock] } }));
