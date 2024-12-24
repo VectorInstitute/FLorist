@@ -3,6 +3,8 @@ import { getByText, render, cleanup, fireEvent } from "@testing-library/react";
 import { describe, afterEach, it, expect } from "@jest/globals";
 import { act } from "react-dom/test-utils";
 
+import yaml from "js-yaml";
+
 import EditJob, { makeEmptyJob } from "../../../../../app/jobs/edit/page";
 import { useGetModels, useGetClients, usePost } from "../../../../../app/jobs/hooks";
 
@@ -149,7 +151,41 @@ describe("New Job Page", () => {
 
                 act(() => fireEvent.change(uploadFileButton, null));
             });
-            it("processes uploaded file correctly", async () => {
+            const testData = [
+                { name: "test_name_1", value: "test_value_1"},
+                { name: "test_name_2", value: "test_value_2"},
+                { name: "test_name_3", value: "test_value_3"},
+            ]
+            const testCases = [
+                { name: ".yaml", fileName: "test.yaml", dumpFunction: yaml.dump },
+                { name: ".yml", fileName: "test.yml", dumpFunction: yaml.dump },
+                { name: ".json", fileName: "test.json", dumpFunction: JSON.stringify },
+            ]
+            for (let testCase of testCases) {
+                it(`processes uploaded ${testCase.name} file correctly`, async () => {
+                    setupPostMocks();
+                    const { container } = render(<EditJob />);
+
+                    const jobServerConfig = container.querySelector("div#job-server-config");
+                    const uploadFileButton = jobServerConfig.querySelector("#job-server-config-uploader");
+
+                    const transformedTestData = Object.fromEntries(testData.map(d => [d.name, d.value]));
+                    const fileMock = {
+                        name: testCase.fileName,
+                        text: async () => testCase.dumpFunction(transformedTestData),
+                    }
+
+                    await act(async () => fireEvent.change(uploadFileButton, { target: { files: [fileMock] } }));
+
+                    for (let i in testData) {
+                       const nameComponent = container.querySelector(`#job-server-config-name-${i}`);
+                       expect(nameComponent.value).toBe(testData[i].name);
+                       const valueComponent = container.querySelector(`#job-server-config-value-${i}`);
+                       expect(valueComponent.value).toBe(testData[i].value);
+                    }
+                });
+            }
+            it("does not process unknown file type", async () => {
                 setupPostMocks();
                 const { container } = render(<EditJob />);
 
@@ -161,28 +197,19 @@ describe("New Job Page", () => {
                     { name: "test_name_2", value: "test_value_2"},
                     { name: "test_name_3", value: "test_value_3"},
                 ]
-
-                const yamlFileMock = {
-                    name: "test.yaml",
-                    text: async () => {
-                        return `${testData[0].name}: ${testData[0].value}\n` +
-                               `${testData[1].name}: ${testData[1].value}\n` +
-                               `${testData[2].name}: ${testData[2].value}\n`;
-                    },
+                const fileMock = {
+                    name: "test.txt",
+                    text: async () => "test_name_1: test_value_1\n" +
+                                      "test_name_2: test_value_2\n" +
+                                      "test_name_3: test_value_3\n",
                 }
 
-                await act(async () => fireEvent.change(uploadFileButton, { target: { files: [yamlFileMock] } }));
+                await act(async () => fireEvent.change(uploadFileButton, { target: { files: [fileMock] } }));
 
-                for (let i in testData) {
-                   const nameComponent = container.querySelector(`#job-server-config-name-${i}`);
-                   expect(nameComponent.value).toBe(testData[i].name);
-                   const valueComponent = container.querySelector(`#job-server-config-value-${i}`);
-                   expect(valueComponent.value).toBe(testData[i].value);
-                }
-
-                // TODO test .yml
-                // TODO test .json
-                // TODO test unknown file type
+                const nameComponent = container.querySelector(`#job-server-config-name-0`);
+                expect(nameComponent.value).toBe("");
+                const valueComponent = container.querySelector(`#job-server-config-value-0`);
+                expect(valueComponent.value).toBe("");
             });
         });
     });
