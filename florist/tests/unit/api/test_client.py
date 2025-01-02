@@ -24,12 +24,17 @@ def test_start_success(mock_launch_client: Mock) -> None:
     test_data_path = "test/data/path"
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
+    test_client_pid = 1234
+
+    mock_client_process = Mock()
+    mock_client_process.pid = test_client_pid
+    mock_launch_client.return_value = mock_client_process
 
     response = client.start(test_server_address, test_client, test_data_path, test_redis_host, test_redis_port)
 
     assert response.status_code == 200
     json_body = json.loads(response.body.decode())
-    assert json_body == {"uuid": ANY}
+    assert json_body == {"uuid": ANY, "pid": str(test_client_pid)}
 
     log_file_name = str(get_client_log_file_path(json_body["uuid"]))
     mock_launch_client.assert_called_once_with(ANY, test_server_address, log_file_name)

@@ -48,6 +48,7 @@ class ClientInfo(BaseModel):
     redis_port: str = Field(...)
     uuid: Optional[Annotated[str, Field(...)]]
     metrics: Optional[Annotated[str, Field(...)]]
+    pid: Optional[Annotated[str, Field(...)]]
 
     class Config:
         """MongoDB config for the ClientInfo DB entity."""
@@ -62,6 +63,7 @@ class ClientInfo(BaseModel):
                 "redis_port": "6380",
                 "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
                 "metrics": '{"host_type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
+                "pid": "123",
             },
         }
 
@@ -77,6 +79,7 @@ class Job(BaseModel):
     config_parser: Optional[Annotated[ConfigParser, Field(...)]]
     server_uuid: Optional[Annotated[str, Field(...)]]
     server_metrics: Optional[Annotated[str, Field(...)]]
+    server_pid: Optional[Annotated[str, Field(...)]]
     redis_host: Optional[Annotated[str, Field(...)]]
     redis_port: Optional[Annotated[str, Field(...)]]
     clients_info: Optional[Annotated[List[ClientInfo], Field(...)]]
@@ -129,8 +132,8 @@ class Job(BaseModel):
         """
         Save the server and clients' UUIDs in the database under the current job's id.
 
-        :param server_uuid: [str] the server_uuid to be saved in the database.
-        :param client_uuids: List[str] the list of client_uuids to be saved in the database.
+        :param server_uuid: [str] the server UUID to be saved in the database.
+        :param client_uuids: List[str] the list of client UUIDs to be saved in the database.
         :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
         """
         assert self.clients_info is not None and len(self.clients_info) == len(client_uuids), (
@@ -211,6 +214,32 @@ class Job(BaseModel):
                 )
                 assert_updated_successfully(update_result)
 
+    async def set_pids(self, server_pid: str, client_pids: List[str], database: AsyncIOMotorDatabase[Any]) -> None:
+        """
+        Save the server and clients' PIDs in the database under the current job's id.
+
+        :param server_pid: [str] the server PID to be saved in the database.
+        :param client_pids: List[str] the list of client PIDs to be saved in the database.
+        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
+        """
+        assert self.clients_info is not None and len(self.clients_info) == len(client_pids), (
+            "self.clients_info and client_pids must have the same length "
+            f"({'None' if self.clients_info is None else len(self.clients_info)}!={len(client_pids)})."
+        )
+
+        job_collection = database[JOB_COLLECTION_NAME]
+
+        self.server_pid = server_pid
+        update_result = await job_collection.update_one({"_id": self.id}, {"$set": {"server_pid": server_pid}})
+        assert_updated_successfully(update_result)
+
+        for i in range(len(client_pids)):
+            self.clients_info[i].pid = client_pids[i]
+            update_result = await job_collection.update_one(
+                {"_id": self.id}, {"$set": {f"clients_info.{i}.pid": client_pids[i]}}
+            )
+            assert_updated_successfully(update_result)
+
     class Config:
         """MongoDB config for the Job DB entity."""
 
@@ -224,6 +253,7 @@ class Job(BaseModel):
                 "server_config": '{"n_server_rounds": 3, "batch_size": 8, "local_epochs": 1}',
                 "server_uuid": "d73243cf-8b89-473b-9607-8cd0253a101d",
                 "server_metrics": '{"host_type": "server", "fit_start": "2024-04-23 15:33:12.865604", "rounds": {"1": {"fit_start": "2024-04-23 15:33:12.869001"}}}',
+                "server_pid": "123",
                 "redis_host": "localhost",
                 "redis_port": "6379",
                 "clients_info": [
@@ -233,7 +263,9 @@ class Job(BaseModel):
                         "data_path": "path/to/data",
                         "redis_host": "localhost",
                         "redis_port": "6380",
-                        "client_uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
+                        "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
+                        "metrics": '{"host_type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
+                        "pid": "123",
                     },
                 ],
             },
