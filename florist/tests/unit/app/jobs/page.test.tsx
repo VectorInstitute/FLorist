@@ -175,7 +175,7 @@ describe("List Jobs Page", () => {
 
         for (let status of validStatusesKeys) {
             const element = queryByTestId(`job-details-button-${status}-0`);
-            expect(element.getAttribute("alt")).toBe("Details");
+            expect(element.getAttribute("title")).toBe("Details");
             expect(element.getAttribute("href")).toBe(`jobs/details?id=${data._id}`);
         }
     });

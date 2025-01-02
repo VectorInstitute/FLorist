@@ -126,13 +126,31 @@ export function JobDetailsButton({
             <Link
                 data-testid={`job-details-button-${status}-${rowId}`}
                 className="btn btn-primary btn-sm mb-0"
-                alt="Details"
+                title="Details"
                 href={{
                     pathname: "jobs/details",
                     query: { id: jobId },
                 }}
             >
                 <i className="material-icons text-sm">settings</i>
+            </Link>
+        </div>
+    );
+}
+
+export function StopJobButton({ rowId, jobId }: { rowId: number, jobId: string }): ReactElement {
+    return (
+        <div>
+            <Link
+                data-testid={`job-details-button-stop-${rowId}`}
+                className="btn btn-primary btn-sm mb-0"
+                title="Stop"
+                href={{
+                    pathname: "jobs/stop",
+                    query: { id: jobId },
+                }}
+            >
+                <i className="material-icons text-sm">stop</i>
             </Link>
         </div>
     );
@@ -174,6 +192,7 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                     Client Service Addresses
                                 </th>
+                                <th width="50"></th>
                                 <th width="50"></th>
                                 <th width="100"></th>
                             </tr>
@@ -251,7 +270,13 @@ export function TableRow({
             <td>
                 <JobDetailsButton rowId={rowId} jobId={jobId} status={status} />
             </td>
-            <td>{validStatuses[status] === "Not Started" ? <StartJobButton rowId={rowId} jobId={jobId} /> : null}</td>
+            <td>
+                {validStatuses[status] === "In Progress" ?
+                    <StopJobButton rowId={rowId} jobId={jobId} />
+                :validStatuses[status] === "Not Started" ?
+                    <StartJobButton rowId={rowId} jobId={jobId} />
+                :null}
+            </td>
         </tr>
     );
 }
