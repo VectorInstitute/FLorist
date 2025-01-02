@@ -110,6 +110,16 @@ export function JobDetailsBody(): ReactElement {
                     {job.redis_port}
                 </div>
             </div>
+            {job.error_message ?
+                <div className="row pb-2 mb-2">
+                    <div className="col-sm-2">
+                        <strong className="text-dark">Error:</strong>
+                    </div>
+                    <div className="col-sm" id="job-details-redis-port">
+                        {job.error_message}
+                    </div>
+                </div>
+            : null}
 
             <JobProgressBar metrics={job.server_metrics} totalEpochs={totalEpochs} status={job.status} />
 

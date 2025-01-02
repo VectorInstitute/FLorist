@@ -139,19 +139,44 @@ export function JobDetailsButton({
 }
 
 export function StopJobButton({ rowId, jobId }: { rowId: number, jobId: string }): ReactElement {
+    const { post, response, isLoading, error } = usePost();
+    const handleClickStopJobButton = async () => {
+        event.preventDefault();
+
+        if (isLoading) {
+            // Preventing double submit if already in progress
+            return;
+        }
+        const url = `/api/server/job/stop/${jobId}`;
+        await post(url, JSON.stringify({}));
+    };
+
+    // Only refresh the job data if there is an error or response
+    useEffect(() => refreshJobsByJobStatus(Object.keys(validStatuses)), [error, response]);
+
+    let buttonClasses = "btn btn-sm mb-0 ";
+    if (isLoading || response) {
+        // If is loading or if a successful response has been received,
+        // disable the button to avoid double submit.
+        buttonClasses += "btn-secondary disabled";
+    } else {
+        buttonClasses += "btn-primary";
+    }
+
     return (
         <div>
-            <Link
-                data-testid={`job-details-button-stop-${rowId}`}
-                className="btn btn-primary btn-sm mb-0"
+            <button
+                data-testid={`stop-training-button-${rowId}`}
+                onClick={handleClickStopJobButton}
+                className={buttonClasses}
                 title="Stop"
-                href={{
-                    pathname: "jobs/stop",
-                    query: { id: jobId },
-                }}
             >
-                <i className="material-icons text-sm">stop</i>
-            </Link>
+                {isLoading || response ? (
+                    <span class="spinner-border spinner-border-sm align-middle"></span>
+                ) : (
+                    <i className="material-icons text-sm">stop</i>
+                )}
+            </button>
         </div>
     );
 }

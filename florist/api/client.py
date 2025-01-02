@@ -1,6 +1,8 @@
 """FLorist client FastAPI endpoints."""
 
 import logging
+import os
+import signal
 import uuid
 from pathlib import Path
 
@@ -95,6 +97,27 @@ def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResp
 
         return JSONResponse({"error": f"Client {client_uuid} Not Found"}, status_code=404)
 
+    except Exception as ex:
+        LOGGER.exception(ex)
+        return JSONResponse({"error": str(ex)}, status_code=500)
+
+
+# TODO verify the safety of this call
+@app.get("/api/client/kill/{pid}")
+def kill(pid: str) -> JSONResponse:
+    """
+    Kills the client process with given PID.
+
+    :param pid: (str) the PID of the client to be killed.
+
+    :return: (JSONResponse) If successful, returns 200. If not successful, returns the appropriate
+        error code with a JSON with the format below:
+            {"error": <error message>}
+    """
+    try:
+        os.kill(int(pid), signal.SIGTERM)
+        LOGGER.info(f"Killed process with PID {pid}")
+        return JSONResponse(content={"status": "success"})
     except Exception as ex:
         LOGGER.exception(ex)
         return JSONResponse({"error": str(ex)}, status_code=500)

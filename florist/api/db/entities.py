@@ -83,6 +83,7 @@ class Job(BaseModel):
     redis_host: Optional[Annotated[str, Field(...)]]
     redis_port: Optional[Annotated[str, Field(...)]]
     clients_info: Optional[Annotated[List[ClientInfo], Field(...)]]
+    error_message: Optional[Annotated[str, Field(...)]]
 
     @classmethod
     async def find_by_id(cls, job_id: str, database: AsyncIOMotorDatabase[Any]) -> Optional["Job"]:
@@ -240,6 +241,18 @@ class Job(BaseModel):
             )
             assert_updated_successfully(update_result)
 
+    async def set_error_message(self, error_message: str, database: AsyncIOMotorDatabase[Any]) -> None:
+        """
+        Save an error message in the database under the current job's id.
+
+        :param error_message: (str) the error message to be saved in the database.
+        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
+        """
+        job_collection = database[JOB_COLLECTION_NAME]
+        self.error_message = error_message
+        update_result = await job_collection.update_one({"_id": self.id}, {"$set": {"error_message": error_message}})
+        assert_updated_successfully(update_result)
+
     class Config:
         """MongoDB config for the Job DB entity."""
 
@@ -268,6 +281,7 @@ class Job(BaseModel):
                         "pid": "123",
                     },
                 ],
+                "error_message": "Some plain text error message.",
             },
         }
 
