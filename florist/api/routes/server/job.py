@@ -135,7 +135,6 @@ async def stop_job(job_id: str, request: Request) -> JSONResponse:
         await job.set_status(JobStatus.FINISHED_WITH_ERROR, request.app.database)
         await job.set_error_message("Training job terminated manually.", request.app.database)
 
-
         return JSONResponse(content={"status": "success"})
     except AssertionError as assertion_e:
         return JSONResponse(content={"error": str(assertion_e)}, status_code=400)
