@@ -109,12 +109,14 @@ def kill(pid: str) -> JSONResponse:
     Kills the client process with given PID.
 
     :param pid: (str) the PID of the client to be killed.
-
     :return: (JSONResponse) If successful, returns 200. If not successful, returns the appropriate
         error code with a JSON with the format below:
             {"error": <error message>}
     """
     try:
+        if not pid:
+            return JSONResponse({"error": f"PID is not valid: {pid}"}, status_code=400)
+
         os.kill(int(pid), signal.SIGTERM)
         LOGGER.info(f"Killed process with PID {pid}")
         return JSONResponse(content={"status": "success"})

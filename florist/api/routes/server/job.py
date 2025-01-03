@@ -104,6 +104,7 @@ async def change_job_status(job_id: str, status: JobStatus, request: Request) ->
     except AssertionError as assertion_e:
         return JSONResponse(content={"error": str(assertion_e)}, status_code=400)
     except Exception as general_e:
+        LOGGER.exception(general_e)
         return JSONResponse(content={"error": str(general_e)}, status_code=500)
 
 
@@ -122,21 +123,32 @@ async def stop_job(job_id: str, request: Request) -> JSONResponse:
     try:
         assert job is not None, f"Job {job_id} not found"
 
+        user_error_message = ""
         for client_info in job.clients_info:
             response = requests.get(url=f"http://{client_info.service_address}/api/client/kill/{client_info.pid}")
-            if response.status_code != 200:
-                # TODO figure out what to do here
-                LOGGER.error(f"/api/client/kill returned status {response.status} for client {client_info.uuid}.")
-                pass
+            status_code = response.status_code
+            if status_code != 200:
+                response_data = response.json()
+                msg = f"/api/client/kill returned {status_code} for client {client_info.uuid}: {response_data}."
+                user_error_message += f"Failed to stop client {client_info.uuid}: {response_data['error']}. "
+                LOGGER.error(msg)
 
-        os.kill(int(job.server_pid), signal.SIGTERM)
-        LOGGER.info(f"Killed process with PID {job.server_pid}")
+        if not job.server_pid:
+            user_error_message += f"PID for server {job.server_uuid} is not valid: {job.server_pid}. "
+        else:
+            try:
+                os.kill(int(job.server_pid), signal.SIGTERM)
+                LOGGER.info(f"Killed process with PID {job.server_pid}")
+            except Exception as e:
+                user_error_message += f"Failed to stop server {job.server_uuid}: {str(e)}. "
 
         await job.set_status(JobStatus.FINISHED_WITH_ERROR, request.app.database)
-        await job.set_error_message("Training job terminated manually.", request.app.database)
+        user_error_message = "Training job terminated manually. " + user_error_message
+        await job.set_error_message(user_error_message, request.app.database)
 
         return JSONResponse(content={"status": "success"})
     except AssertionError as assertion_e:
         return JSONResponse(content={"error": str(assertion_e)}, status_code=400)
     except Exception as general_e:
+        LOGGER.exception(general_e)
         return JSONResponse(content={"error": str(general_e)}, status_code=500)

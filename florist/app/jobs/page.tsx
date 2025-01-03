@@ -103,7 +103,7 @@ export function StartJobButton({ rowId, jobId }: { rowId: number; jobId: string 
                 title="Start"
             >
                 {isLoading || response ? (
-                    <span class="spinner-border spinner-border-sm align-middle"></span>
+                    <span className="spinner-border spinner-border-sm align-middle"></span>
                 ) : (
                     <i className="material-icons text-sm">play_circle_outline</i>
                 )}
@@ -140,6 +140,9 @@ export function JobDetailsButton({
 
 export function StopJobButton({ rowId, jobId }: { rowId: number, jobId: string }): ReactElement {
     const { post, response, isLoading, error } = usePost();
+
+    console.log(`response: ${response}, row: ${rowId}`)
+
     const handleClickStopJobButton = async () => {
         event.preventDefault();
 
@@ -155,9 +158,8 @@ export function StopJobButton({ rowId, jobId }: { rowId: number, jobId: string }
     useEffect(() => refreshJobsByJobStatus(Object.keys(validStatuses)), [error, response]);
 
     let buttonClasses = "btn btn-sm mb-0 ";
-    if (isLoading || response) {
-        // If is loading or if a successful response has been received,
-        // disable the button to avoid double submit.
+    if (isLoading) {
+        // If is loading disable the button to avoid double submit.
         buttonClasses += "btn-secondary disabled";
     } else {
         buttonClasses += "btn-primary";
@@ -171,8 +173,8 @@ export function StopJobButton({ rowId, jobId }: { rowId: number, jobId: string }
                 className={buttonClasses}
                 title="Stop"
             >
-                {isLoading || response ? (
-                    <span class="spinner-border spinner-border-sm align-middle"></span>
+                {isLoading ? (
+                    <span className="spinner-border spinner-border-sm align-middle"></span>
                 ) : (
                     <i className="material-icons text-sm">stop</i>
                 )}
