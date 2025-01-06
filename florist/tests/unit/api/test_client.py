@@ -1,5 +1,6 @@
 """Tests for FLorist's client FastAPI endpoints."""
 import json
+import signal
 from unittest.mock import ANY, Mock, patch
 
 from florist.api import client
@@ -124,3 +125,29 @@ def test_check_status_fail_exception(mock_redis: Mock) -> None:
 
     assert response.status_code == 500
     assert json.loads(response.body.decode()) == {"error": "test exception"}
+
+@patch("florist.api.client.os.kill")
+def test_kill_success(mock_kill: Mock) -> None:
+    test_pid = 1234
+
+    response = client.kill(str(test_pid))
+
+    assert response.status_code == 200
+    assert json.loads(response.body.decode()) == {"status": "success"}
+    mock_kill.assert_called_once_with(test_pid, signal.SIGTERM)
+
+
+def test_kill_fail_no_pid() -> None:
+    response = client.kill("")
+
+    assert response.status_code == 400
+    assert json.loads(response.body.decode()) == {"error": "PID is not valid: "}
+
+
+def test_kill_fail_exception() -> None:
+    test_pid = "inexistant-pid"
+
+    response = client.kill(test_pid)
+
+    assert response.status_code == 500
+    assert json.loads(response.body.decode()) == {"error": f"invalid literal for int() with base 10: '{test_pid}'"}
