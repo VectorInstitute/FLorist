@@ -4,6 +4,7 @@ import logging
 import requests
 import os
 import signal
+from datetime import datetime
 from typing import List, Union
 
 from fastapi import APIRouter, Body, Request, status
@@ -143,7 +144,7 @@ async def stop_job(job_id: str, request: Request) -> JSONResponse:
                 user_error_message += f"Failed to stop server {job.server_uuid}: {str(e)}. "
 
         await job.set_status(JobStatus.FINISHED_WITH_ERROR, request.app.database)
-        user_error_message = "Training job terminated manually. " + user_error_message
+        user_error_message = f"Training job terminated manually on {datetime.now()}. {user_error_message}"
         await job.set_error_message(user_error_message, request.app.database)
 
         return JSONResponse(content={"status": "success"})
