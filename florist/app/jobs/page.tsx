@@ -141,8 +141,6 @@ export function JobDetailsButton({
 export function StopJobButton({ rowId, jobId }: { rowId: number, jobId: string }): ReactElement {
     const { post, response, isLoading, error } = usePost();
 
-    console.log(`response: ${response}, row: ${rowId}`)
-
     const handleClickStopJobButton = async () => {
         event.preventDefault();
 

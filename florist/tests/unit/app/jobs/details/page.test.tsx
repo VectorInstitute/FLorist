@@ -345,6 +345,7 @@ describe("Job Details Page", () => {
             });
             it("Should render the contents correctly", () => {
                 const testJob = makeTestJob();
+                testJob.status = "IN_PROGRESS";
                 const serverMetrics = JSON.parse(testJob.server_metrics);
                 setupGetJobMock(testJob);
                 setupURLSpyMock(urlSpy);
@@ -553,6 +554,7 @@ describe("Job Details Page", () => {
             describe("Clients", () => {
                 it("Renders their progress bars correctly", () => {
                     const testJob = makeTestJob();
+                    testJob.status = "IN_PROGRESS";
                     setupGetJobMock(testJob);
                     const { container } = render(<JobDetails />);
                     const clientsProgress = container.querySelectorAll(".job-client-progress");
@@ -567,6 +569,7 @@ describe("Job Details Page", () => {
                 });
                 it("Renders the progress details correctly", () => {
                     const testJob = makeTestJob();
+                    testJob.status = "IN_PROGRESS";
                     setupGetJobMock(testJob);
                     setupURLSpyMock(urlSpy);
                     const { container } = render(<JobDetails />);
