@@ -41,6 +41,7 @@ function makeTestJob(): JobData {
         server_address: "test-server-address",
         redis_host: "test-redis-host",
         redis_port: "test-redis-port",
+        error_message: "test-error-message",
         server_config: JSON.stringify({
             test_attribute_1: "test-value-1",
             test_attribute_2: "test-value-2",
@@ -244,6 +245,25 @@ describe("Job Details Page", () => {
             expect(statusComponent).toHaveClass("alert-secondary");
             const iconComponent = statusComponent.querySelector("#job-details-status-icon");
             expect(iconComponent).toHaveTextContent("");
+        });
+    });
+    describe("Error Message", () => {
+        it("Should render when error message is present", () => {
+            const testJob = makeTestJob();
+            setupGetJobMock(testJob);
+            const { container } = render(<JobDetails />);
+
+            const errorMessageComponent = container.querySelector("#job-details-error-message");
+            expect(errorMessageComponent).toHaveTextContent(testJob.error_message);
+        });
+        it("Should render when error message is present", () => {
+            const testJob = makeTestJob();
+            testJob.error_message = null;
+            setupGetJobMock(testJob);
+            const { container } = render(<JobDetails />);
+
+            const errorMessageComponent = container.querySelector("#job-details-error-message");
+            expect(errorMessageComponent).toBeNull();
         });
     });
     describe("Job progress", () => {

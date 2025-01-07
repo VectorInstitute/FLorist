@@ -115,7 +115,7 @@ export function JobDetailsBody(): ReactElement {
                     <div className="col-sm-2">
                         <strong className="text-dark">Error:</strong>
                     </div>
-                    <div className="col-sm" id="job-details-redis-port">
+                    <div className="col-sm" id="job-details-error-message">
                         {job.error_message}
                     </div>
                 </div>
