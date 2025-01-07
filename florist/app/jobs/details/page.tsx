@@ -110,7 +110,7 @@ export function JobDetailsBody(): ReactElement {
                     {job.redis_port}
                 </div>
             </div>
-            {job.error_message ?
+            {job.error_message ? (
                 <div className="row pb-2 mb-2">
                     <div className="col-sm-2">
                         <strong className="text-dark">Error:</strong>
@@ -119,7 +119,7 @@ export function JobDetailsBody(): ReactElement {
                         {job.error_message}
                     </div>
                 </div>
-            : null}
+            ) : null}
 
             <JobProgressBar metrics={job.server_metrics} totalEpochs={totalEpochs} jobStatus={job.status} />
 
@@ -220,7 +220,10 @@ export function JobProgressBar({
     // the server status and progress percent
     let status = jobStatus;
     if (metricsJson.host_type === "client") {
-        if (validStatuses[status] !== validStatuses.FINISHED_SUCCESSFULLY && validStatuses[status] !== validStatuses.FINISHED_WITH_ERROR ) {
+        if (
+            validStatuses[status] !== validStatuses.FINISHED_SUCCESSFULLY &&
+            validStatuses[status] !== validStatuses.FINISHED_WITH_ERROR
+        ) {
             if (progressPercent === 0) {
                 status = "NOT_STARTED";
             } else if (progressPercent === 100) {
@@ -287,9 +290,9 @@ export function JobProgressBar({
                         </div>
                     </div>
                     <div className="row pb-2">
-                        {!collapsed ?
+                        {!collapsed ? (
                             <JobProgressDetails metrics={metricsJson} clientIndex={clientIndex} status={status} />
-                        : null}
+                        ) : null}
                     </div>
                 </div>
             </div>
@@ -300,11 +303,11 @@ export function JobProgressBar({
 export function JobProgressDetails({
     metrics,
     clientIndex,
-    status
+    status,
 }: {
     metrics: Object;
-    clientIndex: number,
-    status: string,
+    clientIndex: number;
+    status: string;
 }): ReactElement {
     if (!metrics) {
         return null;

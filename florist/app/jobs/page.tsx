@@ -138,7 +138,7 @@ export function JobDetailsButton({
     );
 }
 
-export function StopJobButton({ rowId, jobId }: { rowId: number, jobId: string }): ReactElement {
+export function StopJobButton({ rowId, jobId }: { rowId: number; jobId: string }): ReactElement {
     const { post, response, isLoading, error } = usePost();
 
     const handleClickStopJobButton = async () => {
@@ -296,11 +296,11 @@ export function TableRow({
                 <JobDetailsButton rowId={rowId} jobId={jobId} status={status} />
             </td>
             <td>
-                {validStatuses[status] === "In Progress" ?
+                {validStatuses[status] === "In Progress" ? (
                     <StopJobButton rowId={rowId} jobId={jobId} />
-                :validStatuses[status] === "Not Started" ?
+                ) : validStatuses[status] === "Not Started" ? (
                     <StartJobButton rowId={rowId} jobId={jobId} />
-                :null}
+                ) : null}
             </td>
         </tr>
     );

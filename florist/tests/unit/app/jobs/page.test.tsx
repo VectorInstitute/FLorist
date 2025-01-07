@@ -58,9 +58,15 @@ function mockUsePost(postMock, isLoading) {
     };
 }
 
-function setupMock(validStatuses: Array<string>, data: Array<object>, error: boolean, isLoading: boolean, isPostLoading: boolean) {
+function setupMock(
+    validStatuses: Array<string>,
+    data: Array<object>,
+    error: boolean,
+    isLoading: boolean,
+    isPostLoading: boolean,
+) {
     useGetJobsByJobStatus.mockImplementation((status: string) =>
-        mockUseGetJobsByJobStatus(status, validStatuses, data, error, isLoading)
+        mockUseGetJobsByJobStatus(status, validStatuses, data, error, isLoading),
     );
     const postMock = jest.fn();
     usePost.mockImplementation(() => mockUsePost(postMock, isPostLoading));
@@ -123,14 +129,26 @@ describe("List Jobs Page", () => {
     });
 
     it("Renders Loading GIF only when all isLoading", () => {
-        setupMock(["NOT_STARTED", "IN_PROGRESS", "FINISHED_SUCCESSFULLY", "FINISHED_WITH_ERROR"], [], false, true, false);
+        setupMock(
+            ["NOT_STARTED", "IN_PROGRESS", "FINISHED_SUCCESSFULLY", "FINISHED_WITH_ERROR"],
+            [],
+            false,
+            true,
+            false,
+        );
         const { getByTestId } = render(<Page />);
         const element = getByTestId("jobs-page-loading-gif");
         expect(element).toBeInTheDocument();
     });
 
     it("Doesn't Render Loading GIF when not Loading", () => {
-        setupMock(["NOT_STARTED", "IN_PROGRESS", "FINISHED_SUCCESSFULLY", "FINISHED_WITH_ERROR"], [], false, false, false);
+        setupMock(
+            ["NOT_STARTED", "IN_PROGRESS", "FINISHED_SUCCESSFULLY", "FINISHED_WITH_ERROR"],
+            [],
+            false,
+            false,
+            false,
+        );
         const { queryByTestId } = render(<Page />);
         const element = queryByTestId("jobs-page-loading-gif");
         expect(element).not.toBeInTheDocument();
