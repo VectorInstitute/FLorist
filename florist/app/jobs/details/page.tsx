@@ -327,6 +327,7 @@ export function JobProgressDetails({
         if (fitEndKey in metrics) {
             elapsedTime = getTimeString(Date.parse(metrics[fitEndKey]) - startDate);
         } else if (validStatuses[status] === validStatuses.IN_PROGRESS) {
+            // only estimate elapsed time if the job is in progress
             elapsedTime = getTimeString(Date.now() - startDate);
         }
     }

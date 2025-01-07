@@ -103,8 +103,8 @@ def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResp
 
 
 # TODO verify the safety of this call
-@app.get("/api/client/kill/{pid}")
-def kill(pid: str) -> JSONResponse:
+@app.get("/api/client/stop/{pid}")
+def stop(pid: str) -> JSONResponse:
     """
     Kills the client process with given PID.
 
