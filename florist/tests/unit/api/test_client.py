@@ -1,5 +1,6 @@
 """Tests for FLorist's client FastAPI endpoints."""
 import json
+import signal
 from unittest.mock import ANY, Mock, patch
 
 from florist.api import client
@@ -24,12 +25,17 @@ def test_start_success(mock_launch_client: Mock) -> None:
     test_data_path = "test/data/path"
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
+    test_client_pid = 1234
+
+    mock_client_process = Mock()
+    mock_client_process.pid = test_client_pid
+    mock_launch_client.return_value = mock_client_process
 
     response = client.start(test_server_address, test_client, test_data_path, test_redis_host, test_redis_port)
 
     assert response.status_code == 200
     json_body = json.loads(response.body.decode())
-    assert json_body == {"uuid": ANY}
+    assert json_body == {"uuid": ANY, "pid": str(test_client_pid)}
 
     log_file_name = str(get_client_log_file_path(json_body["uuid"]))
     mock_launch_client.assert_called_once_with(ANY, test_server_address, log_file_name)
@@ -119,3 +125,29 @@ def test_check_status_fail_exception(mock_redis: Mock) -> None:
 
     assert response.status_code == 500
     assert json.loads(response.body.decode()) == {"error": "test exception"}
+
+@patch("florist.api.client.os.kill")
+def test_stop_success(mock_kill: Mock) -> None:
+    test_pid = 1234
+
+    response = client.stop(str(test_pid))
+
+    assert response.status_code == 200
+    assert json.loads(response.body.decode()) == {"status": "success"}
+    mock_kill.assert_called_once_with(test_pid, signal.SIGTERM)
+
+
+def test_stop_fail_no_pid() -> None:
+    response = client.stop("")
+
+    assert response.status_code == 400
+    assert json.loads(response.body.decode()) == {"error": "PID is not valid: "}
+
+
+def test_stop_fail_exception() -> None:
+    test_pid = "inexistant-pid"
+
+    response = client.stop(test_pid)
+
+    assert response.status_code == 500
+    assert json.loads(response.body.decode()) == {"error": f"invalid literal for int() with base 10: '{test_pid}'"}

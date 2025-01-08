@@ -37,7 +37,9 @@ async def test_start_fail_unsupported_server_model() -> None:
 @patch("florist.api.routes.server.training.requests")
 @patch("florist.api.db.entities.Job.set_status")
 @patch("florist.api.db.entities.Job.set_uuids")
+@patch("florist.api.db.entities.Job.set_pids")
 async def test_start_success(
+    mock_set_pids: Mock,
     mock_set_uuids: Mock,
     mock_set_status: Mock,
     mock_requests: Mock,
@@ -51,7 +53,10 @@ async def test_start_success(
     test_server_config, test_job, mock_job_collection, mock_fastapi_request = _setup_test_job_and_mocks()
 
     test_server_uuid = "test-server-uuid"
-    mock_launch_local_server.return_value = (test_server_uuid, None)
+    test_server_pid = 12345
+    mock_server_process = Mock()
+    mock_server_process.pid = test_server_pid
+    mock_launch_local_server.return_value = (test_server_uuid, mock_server_process)
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = b"{\"fit_start\": null}"
@@ -60,8 +65,13 @@ async def test_start_success(
     mock_response = Mock()
     mock_response.status_code = 200
     test_client_1_uuid = "test-client-1-uuid"
+    test_client_1_pid = "test-client-1-pid"
     test_client_2_uuid = "test-client-2-uuid"
-    mock_response.json.side_effect = [{"uuid": test_client_1_uuid}, {"uuid": test_client_2_uuid}]
+    test_client_2_pid = "test-client-2-pid"
+    mock_response.json.side_effect = [
+        {"uuid": test_client_1_uuid, "pid": test_client_1_pid},
+        {"uuid": test_client_2_uuid, "pid": test_client_2_pid},
+    ]
     mock_requests.get.return_value = mock_response
 
     mock_client_training_listener.return_value = AsyncMock()
@@ -115,6 +125,11 @@ async def test_start_success(
     mock_set_uuids.assert_called_once_with(
         test_server_uuid,
         [test_client_1_uuid, test_client_2_uuid],
+        mock_fastapi_request.app.database,
+    )
+    mock_set_pids.assert_called_once_with(
+        str(test_server_pid),
+        [test_client_1_pid, test_client_2_pid],
         mock_fastapi_request.app.database,
     )
 
