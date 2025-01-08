@@ -11,7 +11,7 @@ from florist.api.clients.mnist import MnistClient, MnistNet
 from florist.api.servers.utils import get_server
 
 
-def assert_string_in_file(file_path: str, search_string: str) -> bool:
+def assert_string_in_file(file_path: str, search_string: str) -> None:
     with open(file_path, "r") as f:
         file_contents = f.read()
         match = re.search(search_string, file_contents)

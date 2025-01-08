@@ -1,7 +1,6 @@
 from unittest.mock import ANY, Mock, patch
 
 from florist.api.clients.mnist import MnistNet
-from florist.api.monitoring.logs import get_server_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
 from florist.api.servers.launch import launch_local_server
 from florist.api.servers.utils import get_server
@@ -20,7 +19,7 @@ def test_launch_local_server(mock_launch_server: Mock) -> None:
     test_server_process = "test-server-process"
     mock_launch_server.return_value = test_server_process
 
-    server_uuid, server_process = launch_local_server(
+    server_uuid, server_process, log_file_path = launch_local_server(
         test_model,
         test_n_clients,
         test_server_address,
@@ -41,7 +40,7 @@ def test_launch_local_server(mock_launch_server: Mock) -> None:
         ANY,
         test_server_address,
         test_n_server_rounds,
-        str(get_server_log_file_path(server_uuid)),
+        log_file_path,
     )
     assert call_kwargs == {"seconds_to_sleep": 0}
     assert call_args[0].func == get_server
