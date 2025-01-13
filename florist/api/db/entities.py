@@ -196,9 +196,9 @@ class Job(BaseModel):
         :param client_metrics: (Dict[str, Any]) the client's metrics to be saved.
         :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
         """
-        assert (
-            self.clients_info is not None and client_uuid in [c.uuid for c in self.clients_info]
-        ), f"client uuid {client_uuid} is not in clients_info ({[c.uuid for c in self.clients_info] if self.clients_info is not None else None})"
+        assert self.clients_info is not None and client_uuid in [c.uuid for c in self.clients_info], (
+            f"client uuid {client_uuid} is not in clients_info ({[c.uuid for c in self.clients_info] if self.clients_info is not None else None})"
+        )
 
         job_collection = database[JOB_COLLECTION_NAME]
 
