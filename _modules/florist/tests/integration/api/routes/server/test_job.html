@@ -341,15 +341,19 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.integration.api.routes.server.test_job</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span>
 
+<span class="kn">import</span> <span class="nn">uvicorn</span>
 <span class="kn">from</span> <span class="nn">fastapi.encoders</span> <span class="kn">import</span> <span class="n">jsonable_encoder</span>
 
 <span class="kn">from</span> <span class="nn">florist.api.clients.common</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">ClientInfo</span><span class="p">,</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span>
-<span class="kn">from</span> <span class="nn">florist.api.routes.server.job</span> <span class="kn">import</span> <span class="n">list_jobs_with_status</span><span class="p">,</span> <span class="n">new_job</span>
+<span class="kn">from</span> <span class="nn">florist.api.monitoring.logs</span> <span class="kn">import</span> <span class="n">get_server_log_file_path</span><span class="p">,</span> <span class="n">get_client_log_file_path</span>
+<span class="kn">from</span> <span class="nn">florist.api.routes.server.job</span> <span class="kn">import</span> <span class="n">list_jobs_with_status</span><span class="p">,</span> <span class="n">new_job</span><span class="p">,</span> <span class="n">get_server_log</span><span class="p">,</span> <span class="n">get_client_log</span>
 <span class="kn">from</span> <span class="nn">florist.api.servers.common</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">florist.tests.integration.api.utils</span> <span class="kn">import</span> <span class="n">mock_request</span>
+<span class="kn">from</span> <span class="nn">florist.tests.integration.api.utils</span> <span class="kn">import</span> <span class="n">mock_request</span><span class="p">,</span> <span class="n">TestUvicornServer</span>
 <span class="kn">from</span> <span class="nn">florist.api.servers.config_parsers</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
 
 
@@ -371,6 +375,7 @@
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="s2">&quot;server_metrics&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="s2">&quot;server_uuid&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;server_log_file_path&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="n">test_job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span>
@@ -384,6 +389,7 @@
         <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port&quot;</span><span class="p">,</span>
         <span class="n">server_metrics</span><span class="o">=</span><span class="s2">&quot;test-server-metrics&quot;</span><span class="p">,</span>
         <span class="n">server_uuid</span><span class="o">=</span><span class="s2">&quot;test-server-uuid&quot;</span><span class="p">,</span>
+        <span class="n">server_log_file_path</span><span class="o">=</span><span class="s2">&quot;test-server-log-file-path&quot;</span><span class="p">,</span>
         <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
             <span class="n">ClientInfo</span><span class="p">(</span>
                 <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
@@ -393,6 +399,7 @@
                 <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-1&quot;</span><span class="p">,</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;test-client-metrics-1&quot;</span><span class="p">,</span>
                 <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-1&quot;</span><span class="p">,</span>
+                <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-1&quot;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">ClientInfo</span><span class="p">(</span>
                 <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
@@ -400,8 +407,9 @@
                 <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test/data/path-2&quot;</span><span class="p">,</span>
                 <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host-2&quot;</span><span class="p">,</span>
                 <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-2&quot;</span><span class="p">,</span>
-                <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;test-client-metrics-1&quot;</span><span class="p">,</span>
-                <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-1&quot;</span><span class="p">,</span>
+                <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;test-client-metrics-2&quot;</span><span class="p">,</span>
+                <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-2&quot;</span><span class="p">,</span>
+                <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-2&quot;</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
@@ -418,6 +426,7 @@
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
         <span class="s2">&quot;server_uuid&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">server_uuid</span><span class="p">,</span>
         <span class="s2">&quot;server_metrics&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">server_metrics</span><span class="p">,</span>
+        <span class="s2">&quot;server_log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">server_log_file_path</span><span class="p">,</span>
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
@@ -428,6 +437,7 @@
                 <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
                 <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
                 <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
+                <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span>
             <span class="p">},</span> <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
                 <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -437,6 +447,7 @@
                 <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
                 <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
                 <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
+                <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">],</span>
     <span class="p">}</span></div>
@@ -457,6 +468,7 @@
         <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port1&quot;</span><span class="p">,</span>
         <span class="n">server_metrics</span><span class="o">=</span><span class="s2">&quot;test-server-metrics1&quot;</span><span class="p">,</span>
         <span class="n">server_uuid</span><span class="o">=</span><span class="s2">&quot;test-server-uuid1&quot;</span><span class="p">,</span>
+        <span class="n">server_log_file_path</span><span class="o">=</span><span class="s2">&quot;test-server-log-file-path1&quot;</span><span class="p">,</span>
         <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
             <span class="n">ClientInfo</span><span class="p">(</span>
                 <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
@@ -466,6 +478,7 @@
                 <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-1-1&quot;</span><span class="p">,</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;test-client-metrics-1-1&quot;</span><span class="p">,</span>
                 <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-1-1&quot;</span><span class="p">,</span>
+                <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-1-1&quot;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">ClientInfo</span><span class="p">(</span>
                 <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
@@ -475,6 +488,7 @@
                 <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-2-1&quot;</span><span class="p">,</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;test-client-metrics-2-1&quot;</span><span class="p">,</span>
                 <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-2-1&quot;</span><span class="p">,</span>
+                <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-2-1&quot;</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
@@ -490,6 +504,7 @@
         <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port2&quot;</span><span class="p">,</span>
         <span class="n">server_metrics</span><span class="o">=</span><span class="s2">&quot;test-server-metrics2&quot;</span><span class="p">,</span>
         <span class="n">server_uuid</span><span class="o">=</span><span class="s2">&quot;test-server-uuid2&quot;</span><span class="p">,</span>
+        <span class="n">server_log_file_path</span><span class="o">=</span><span class="s2">&quot;test-server-log-file-path2&quot;</span><span class="p">,</span>
         <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
             <span class="n">ClientInfo</span><span class="p">(</span>
                 <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
@@ -499,6 +514,7 @@
                 <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-1-2&quot;</span><span class="p">,</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;test-client-metrics-1-2&quot;</span><span class="p">,</span>
                 <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-1-2&quot;</span><span class="p">,</span>
+                <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-1-2&quot;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">ClientInfo</span><span class="p">(</span>
                 <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
@@ -508,6 +524,7 @@
                 <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-2-2&quot;</span><span class="p">,</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;test-client-metrics-2-2&quot;</span><span class="p">,</span>
                 <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-2-2&quot;</span><span class="p">,</span>
+                <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-2-2&quot;</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
@@ -523,6 +540,7 @@
         <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port3&quot;</span><span class="p">,</span>
         <span class="n">server_metrics</span><span class="o">=</span><span class="s2">&quot;test-server-metrics3&quot;</span><span class="p">,</span>
         <span class="n">server_uuid</span><span class="o">=</span><span class="s2">&quot;test-server-uuid3&quot;</span><span class="p">,</span>
+        <span class="n">server_log_file_path</span><span class="o">=</span><span class="s2">&quot;test-server-log-file-path3&quot;</span><span class="p">,</span>
         <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
             <span class="n">ClientInfo</span><span class="p">(</span>
                 <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
@@ -532,6 +550,7 @@
                 <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-1-3&quot;</span><span class="p">,</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;test-client-metrics-1-3&quot;</span><span class="p">,</span>
                 <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-1-3&quot;</span><span class="p">,</span>
+                <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-1-3&quot;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">ClientInfo</span><span class="p">(</span>
                 <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
@@ -541,6 +560,7 @@
                 <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-2-3&quot;</span><span class="p">,</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;test-client-metrics-2-3&quot;</span><span class="p">,</span>
                 <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-2-3&quot;</span><span class="p">,</span>
+                <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-2-3&quot;</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
@@ -556,6 +576,7 @@
         <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port4&quot;</span><span class="p">,</span>
         <span class="n">server_metrics</span><span class="o">=</span><span class="s2">&quot;test-server-metrics4&quot;</span><span class="p">,</span>
         <span class="n">server_uuid</span><span class="o">=</span><span class="s2">&quot;test-server-uuid4&quot;</span><span class="p">,</span>
+        <span class="n">server_log_file_path</span><span class="o">=</span><span class="s2">&quot;test-server-log-file-path4&quot;</span><span class="p">,</span>
         <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
             <span class="n">ClientInfo</span><span class="p">(</span>
                 <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
@@ -565,6 +586,7 @@
                 <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-1-4&quot;</span><span class="p">,</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;test-client-metrics-1-4&quot;</span><span class="p">,</span>
                 <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-1-4&quot;</span><span class="p">,</span>
+                <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-1-4&quot;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">ClientInfo</span><span class="p">(</span>
                 <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
@@ -574,6 +596,7 @@
                 <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-2-4&quot;</span><span class="p">,</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;test-client-metrics-2-4&quot;</span><span class="p">,</span>
                 <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-2-4&quot;</span><span class="p">,</span>
+                <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-2-4&quot;</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
@@ -603,6 +626,7 @@
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
         <span class="s2">&quot;server_metrics&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">server_metrics</span><span class="p">,</span>
         <span class="s2">&quot;server_uuid&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">server_uuid</span><span class="p">,</span>
+        <span class="s2">&quot;server_log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">server_log_file_path</span><span class="p">,</span>
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
@@ -613,6 +637,7 @@
                 <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
                 <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
                 <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span>
             <span class="p">},</span> <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
                 <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -622,6 +647,7 @@
                 <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
                 <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
                 <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job1</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">],</span>
     <span class="p">}</span>
@@ -637,6 +663,7 @@
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
         <span class="s2">&quot;server_metrics&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">server_metrics</span><span class="p">,</span>
         <span class="s2">&quot;server_uuid&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">server_uuid</span><span class="p">,</span>
+        <span class="s2">&quot;server_log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">server_log_file_path</span><span class="p">,</span>
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
@@ -647,6 +674,7 @@
                 <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
                 <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
                 <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span>
             <span class="p">},</span> <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
                 <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -656,6 +684,7 @@
                 <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
                 <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
                 <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job2</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">],</span>
     <span class="p">}</span>
@@ -671,6 +700,7 @@
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
         <span class="s2">&quot;server_metrics&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">server_metrics</span><span class="p">,</span>
         <span class="s2">&quot;server_uuid&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">server_uuid</span><span class="p">,</span>
+        <span class="s2">&quot;server_log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">server_log_file_path</span><span class="p">,</span>
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
@@ -681,6 +711,7 @@
                 <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
                 <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
                 <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span>
             <span class="p">},</span> <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
                 <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -690,6 +721,7 @@
                 <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
                 <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
                 <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job3</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">],</span>
     <span class="p">}</span>
@@ -705,6 +737,7 @@
         <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
         <span class="s2">&quot;server_metrics&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">server_metrics</span><span class="p">,</span>
         <span class="s2">&quot;server_uuid&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">server_uuid</span><span class="p">,</span>
+        <span class="s2">&quot;server_log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">server_log_file_path</span><span class="p">,</span>
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
@@ -715,6 +748,7 @@
                 <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
                 <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
                 <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span>
             <span class="p">},</span> <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span>
                 <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -724,9 +758,168 @@
                 <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
                 <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
                 <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">test_job4</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">],</span>
     <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_server_log_success">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_get_server_log_success">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_server_log_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">test_log_file_name</span> <span class="o">=</span> <span class="s2">&quot;test-log-file-name&quot;</span>
+    <span class="n">test_log_file_content</span> <span class="o">=</span> <span class="s2">&quot;this is a test log file content&quot;</span>
+    <span class="n">test_log_file_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_server_log_file_path</span><span class="p">(</span><span class="n">test_log_file_name</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">test_log_file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">test_log_file_content</span><span class="p">)</span>
+
+    <span class="n">result_job</span> <span class="o">=</span> <span class="k">await</span> <span class="n">new_job</span><span class="p">(</span><span class="n">mock_request</span><span class="p">,</span> <span class="n">Job</span><span class="p">(</span><span class="n">server_log_file_path</span><span class="o">=</span><span class="n">test_log_file_path</span><span class="p">))</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_server_log</span><span class="p">(</span><span class="n">result_job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">{</span><span class="n">test_log_file_content</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">test_log_file_path</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_server_log_error_no_job">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_get_server_log_error_no_job">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_server_log_error_no_job</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">test_job_id</span> <span class="o">=</span> <span class="s2">&quot;inexistent-job-id&quot;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_server_log</span><span class="p">(</span><span class="n">test_job_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">test_job_id</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_server_log_error_no_log_path">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_get_server_log_error_no_log_path">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_server_log_error_no_log_path</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">result_job</span> <span class="o">=</span> <span class="k">await</span> <span class="n">new_job</span><span class="p">(</span><span class="n">mock_request</span><span class="p">,</span> <span class="n">Job</span><span class="p">())</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_server_log</span><span class="p">(</span><span class="n">result_job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Log file path is None or empty&quot;</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_client_log_success">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_get_client_log_success">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_client_log_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">test_log_file_name</span> <span class="o">=</span> <span class="s2">&quot;test-log-file-name&quot;</span>
+    <span class="n">test_log_file_content</span> <span class="o">=</span> <span class="s2">&quot;this is a test log file content&quot;</span>
+    <span class="n">test_log_file_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_client_log_file_path</span><span class="p">(</span><span class="n">test_log_file_name</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">test_log_file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">test_log_file_content</span><span class="p">)</span>
+
+    <span class="n">test_client_host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+    <span class="n">test_client_port</span> <span class="o">=</span> <span class="mi">8001</span>
+
+    <span class="n">result_job</span> <span class="o">=</span> <span class="k">await</span> <span class="n">new_job</span><span class="p">(</span><span class="n">mock_request</span><span class="p">,</span> <span class="n">Job</span><span class="p">(</span>
+        <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ClientInfo</span><span class="p">(</span>
+                <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
+                <span class="n">service_address</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">test_client_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">test_client_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test/data/path-1&quot;</span><span class="p">,</span>
+                <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host-1&quot;</span><span class="p">,</span>
+                <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-1&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">ClientInfo</span><span class="p">(</span>
+                <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
+                <span class="n">service_address</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">test_client_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">test_client_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test/data/path-2&quot;</span><span class="p">,</span>
+                <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host-2&quot;</span><span class="p">,</span>
+                <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-2&quot;</span><span class="p">,</span>
+                <span class="n">log_file_path</span><span class="o">=</span><span class="n">test_log_file_path</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">))</span>
+
+    <span class="n">client_config</span> <span class="o">=</span> <span class="n">uvicorn</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="s2">&quot;florist.api.client:app&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">test_client_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">test_client_port</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span>
+    <span class="n">client_service</span> <span class="o">=</span> <span class="n">TestUvicornServer</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">client_config</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">client_service</span><span class="o">.</span><span class="n">run_in_thread</span><span class="p">():</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_client_log</span><span class="p">(</span><span class="n">result_job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">{</span><span class="n">test_log_file_content</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">test_log_file_path</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_client_log_error_no_job">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_get_client_log_error_no_job">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_client_log_error_no_job</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">test_job_id</span> <span class="o">=</span> <span class="s2">&quot;inexistent-job-id&quot;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_client_log</span><span class="p">(</span><span class="n">test_job_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">test_job_id</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_client_log_error_no_clients">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_get_client_log_error_no_clients">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_client_log_error_no_clients</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">result_job</span> <span class="o">=</span> <span class="k">await</span> <span class="n">new_job</span><span class="p">(</span><span class="n">mock_request</span><span class="p">,</span> <span class="n">Job</span><span class="p">())</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_client_log</span><span class="p">(</span><span class="n">result_job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Job has no clients.&quot;</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_client_log_error_invalid_client_index">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_get_client_log_error_invalid_client_index">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_client_log_error_invalid_client_index</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">result_job</span> <span class="o">=</span> <span class="k">await</span> <span class="n">new_job</span><span class="p">(</span><span class="n">mock_request</span><span class="p">,</span> <span class="n">Job</span><span class="p">(</span>
+        <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ClientInfo</span><span class="p">(</span>
+                <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
+                <span class="n">service_address</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;test-address&quot;</span><span class="p">,</span>
+                <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test/data/path-1&quot;</span><span class="p">,</span>
+                <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host-1&quot;</span><span class="p">,</span>
+                <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-1&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">))</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_client_log</span><span class="p">(</span><span class="n">result_job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Client index 1 is invalid (total: 1)&quot;</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_client_log_error_log_file_path_is_none">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_job.html#florist.tests.integration.api.routes.server.test_job.test_get_client_log_error_log_file_path_is_none">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_client_log_error_log_file_path_is_none</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">result_job</span> <span class="o">=</span> <span class="k">await</span> <span class="n">new_job</span><span class="p">(</span><span class="n">mock_request</span><span class="p">,</span> <span class="n">Job</span><span class="p">(</span>
+        <span class="n">clients_info</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ClientInfo</span><span class="p">(</span>
+                <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span>
+                <span class="n">service_address</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;test-address&quot;</span><span class="p">,</span>
+                <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test/data/path-1&quot;</span><span class="p">,</span>
+                <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;test-redis-host-1&quot;</span><span class="p">,</span>
+                <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;test-redis-port-1&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">))</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_client_log</span><span class="p">(</span><span class="n">result_job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Log file path is None or empty&quot;</span><span class="p">}</span></div>
 
 </pre></div>
         </article>

@@ -368,6 +368,32 @@ and body: {“error”: &lt;error message&gt;}</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="florist.api.routes.server.job.get_client_log">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_client_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/routes/server/job.html#get_client_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.routes.server.job.get_client_log" title="Link to this definition">¶</a></dt>
+<dd><p>Return the contents of the log file for the client with given index under given job id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>job_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the ID of the job to get the client logs for.</p></li>
+<li><p><strong>client_index</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – (int) the index of the client within the job.</p></li>
+<li><p><strong>request</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></span>) – (fastapi.Request) the FastAPI request object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONResponse</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>(JSONResponse) if successful, returns the contents of the file as a string.
+If not successful, returns the appropriate error code with a JSON with the format below:</p>
+<blockquote>
+<div><p>{“error”: &lt;error message&gt;}</p>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="florist.api.routes.server.job.get_job">
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/routes/server/job.html#get_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.routes.server.job.get_job" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieve a training job by its ID.</p>
@@ -383,6 +409,31 @@ and body: {“error”: &lt;error message&gt;}</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(Union[Job, JSONResponse]) The job with the given ID, or a 400 JSONResponse if it hasn’t been found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.routes.server.job.get_server_log">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_server_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/routes/server/job.html#get_server_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.routes.server.job.get_server_log" title="Link to this definition">¶</a></dt>
+<dd><p>Return the contents of the server’s log file for the given job id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>job_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the ID of the job to get the server logs for.</p></li>
+<li><p><strong>request</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></span>) – (fastapi.Request) the FastAPI request object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONResponse</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>(JSONResponse) if successful, returns the contents of the file as a string.
+If not successful, returns the appropriate error code with a JSON with the format below:</p>
+<blockquote>
+<div><p>{“error”: &lt;error message&gt;}</p>
+</div></blockquote>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -502,7 +553,9 @@ See <cite>florist.api.db.entities.Job</cite> to check the list of attributes and
             <ul>
 <li><a class="reference internal" href="#">florist.api.routes.server.job module</a><ul>
 <li><a class="reference internal" href="#florist.api.routes.server.job.change_job_status"><code class="docutils literal notranslate"><span class="pre">change_job_status()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.routes.server.job.get_client_log"><code class="docutils literal notranslate"><span class="pre">get_client_log()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.routes.server.job.get_job"><code class="docutils literal notranslate"><span class="pre">get_job()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.routes.server.job.get_server_log"><code class="docutils literal notranslate"><span class="pre">get_server_log()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.routes.server.job.list_jobs_with_status"><code class="docutils literal notranslate"><span class="pre">list_jobs_with_status()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.routes.server.job.new_job"><code class="docutils literal notranslate"><span class="pre">new_job()</span></code></a></li>
 </ul>

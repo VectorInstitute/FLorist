@@ -391,9 +391,14 @@
 <span class="sd">    :param redis_port: (str) the port for the Redis instance for metrics reporting.</span>
 <span class="sd">    :return: (JSONResponse) If successful, returns 200 with a JSON containing the UUID for the client in the</span>
 <span class="sd">        format below, which can be used to pull metrics from Redis.</span>
-<span class="sd">            {&quot;uuid&quot;: &lt;client uuid&gt;}</span>
+<span class="sd">            {</span>
+<span class="sd">                &quot;uuid&quot;: (str) The client&#39;s uuid, which can be used to pull metrics from Redis,</span>
+<span class="sd">                &quot;log_file_path&quot;: (str) The local path of the log file for this client,</span>
+<span class="sd">            }</span>
 <span class="sd">        If not successful, returns the appropriate error code with a JSON with the format below:</span>
-<span class="sd">            {&quot;error&quot;: &lt;error message&gt;}</span>
+<span class="sd">            {</span>
+<span class="sd">                &quot;error&quot;: (str) The error message,</span>
+<span class="sd">            }</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">client</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Client</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
@@ -413,10 +418,10 @@
             <span class="n">reporters</span><span class="o">=</span><span class="p">[</span><span class="n">metrics_reporter</span><span class="p">],</span>
         <span class="p">)</span>
 
-        <span class="n">log_file_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_client_log_file_path</span><span class="p">(</span><span class="n">client_uuid</span><span class="p">))</span>
-        <span class="n">launch_client</span><span class="p">(</span><span class="n">client_obj</span><span class="p">,</span> <span class="n">server_address</span><span class="p">,</span> <span class="n">log_file_name</span><span class="p">)</span>
+        <span class="n">log_file_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_client_log_file_path</span><span class="p">(</span><span class="n">client_uuid</span><span class="p">))</span>
+        <span class="n">launch_client</span><span class="p">(</span><span class="n">client_obj</span><span class="p">,</span> <span class="n">server_address</span><span class="p">,</span> <span class="n">log_file_path</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">client_uuid</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">client_uuid</span><span class="p">,</span> <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">log_file_path</span><span class="p">})</span>
 
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span></div>
@@ -449,6 +454,23 @@
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_log">
+<a class="viewcode-back" href="../../../reference/api/florist.api.client.html#florist.api.client.get_log">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/api/client/get_log&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_log</span><span class="p">(</span><span class="n">log_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the contents of the log file under the given path.</span>
+
+<span class="sd">    :param log_file_path: (str) the path of the logt file.</span>
+
+<span class="sd">    :return: (JSONResponse) Returns the contents of the file as a string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">log_file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span><span class="n">content</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

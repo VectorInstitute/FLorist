@@ -399,6 +399,7 @@
     <span class="n">redis_port</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
     <span class="n">uuid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
     <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
+    <span class="n">log_file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
 
 <div class="viewcode-block" id="ClientInfo.Config">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.ClientInfo.Config">[docs]</a>
@@ -415,6 +416,7 @@
                 <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="s2">&quot;6380&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;0c316680-1375-4e07-84c3-a732a2e6d03f&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="s1">&#39;{&quot;host_type&quot;: &quot;client&quot;, &quot;initialized&quot;: &quot;2024-03-25 11:20:56.819569&quot;, &quot;rounds&quot;: {&quot;1&quot;: {&quot;fit_start&quot;: &quot;2024-03-25 11:20:56.827081&quot;}}}&#39;</span><span class="p">,</span>
+                <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="s2">&quot;/Users/foo/client/logfile.log&quot;</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">}</span></div>
 </div>
@@ -434,6 +436,7 @@
     <span class="n">config_parser</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">ConfigParser</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
     <span class="n">server_uuid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
     <span class="n">server_metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
+    <span class="n">server_log_file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
     <span class="n">redis_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
     <span class="n">redis_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
     <span class="n">clients_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ClientInfo</span><span class="p">],</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)]]</span>
@@ -497,7 +500,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the server and clients&#39; UUIDs in the database under the current job&#39;s id.</span>
 
-<span class="sd">        :param server_uuid: [str] the server_uuid to be saved in the database.</span>
+<span class="sd">        :param server_uuid: (str) the server_uuid to be saved in the database.</span>
 <span class="sd">        :param client_uuids: List[str] the list of client_uuids to be saved in the database.</span>
 <span class="sd">        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -589,6 +592,50 @@
                 <span class="n">assert_updated_successfully</span><span class="p">(</span><span class="n">update_result</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Job.set_server_log_file_path">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.set_server_log_file_path">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">set_server_log_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="n">AsyncIOMotorDatabase</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the server&#39;s log file path in the database under the current job&#39;s id.</span>
+
+<span class="sd">        :param log_file_path: (str) the file path to be saved in the database.</span>
+<span class="sd">        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">job_collection</span> <span class="o">=</span> <span class="n">database</span><span class="p">[</span><span class="n">JOB_COLLECTION_NAME</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_log_file_path</span> <span class="o">=</span> <span class="n">log_file_path</span>
+        <span class="n">update_result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">job_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;server_log_file_path&quot;</span><span class="p">:</span> <span class="n">log_file_path</span><span class="p">}}</span>
+        <span class="p">)</span>
+        <span class="n">assert_updated_successfully</span><span class="p">(</span><span class="n">update_result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Job.set_client_log_file_path">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.set_client_log_file_path">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">set_client_log_file_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">client_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">log_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">database</span><span class="p">:</span> <span class="n">AsyncIOMotorDatabase</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the clients&#39; log file path in the database under the given client index and current job&#39;s id.</span>
+
+<span class="sd">        :param client_index: (str) the index of the client in the job.</span>
+<span class="sd">        :param log_file_path: (str) the path oof the client&#39;s log file.</span>
+<span class="sd">        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Job has no clients.&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">client_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span><span class="p">)</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Client index </span><span class="si">{</span><span class="n">client_index</span><span class="si">}</span><span class="s2"> is invalid (total: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+        <span class="n">job_collection</span> <span class="o">=</span> <span class="n">database</span><span class="p">[</span><span class="n">JOB_COLLECTION_NAME</span><span class="p">]</span>
+        <span class="n">update_result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">job_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;clients_info.</span><span class="si">{</span><span class="n">client_index</span><span class="si">}</span><span class="s2">.log_file_path&quot;</span><span class="p">:</span> <span class="n">log_file_path</span><span class="p">}}</span>
+        <span class="p">)</span>
+        <span class="n">assert_updated_successfully</span><span class="p">(</span><span class="n">update_result</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Job.Config">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.entities.html#florist.api.db.entities.Job.Config">[docs]</a>
     <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
@@ -604,6 +651,7 @@
                 <span class="s2">&quot;server_config&quot;</span><span class="p">:</span> <span class="s1">&#39;{&quot;n_server_rounds&quot;: 3, &quot;batch_size&quot;: 8, &quot;local_epochs&quot;: 1}&#39;</span><span class="p">,</span>
                 <span class="s2">&quot;server_uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;d73243cf-8b89-473b-9607-8cd0253a101d&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;server_metrics&quot;</span><span class="p">:</span> <span class="s1">&#39;{&quot;host_type&quot;: &quot;server&quot;, &quot;fit_start&quot;: &quot;2024-04-23 15:33:12.865604&quot;, &quot;rounds&quot;: {&quot;1&quot;: {&quot;fit_start&quot;: &quot;2024-04-23 15:33:12.869001&quot;}}}&#39;</span><span class="p">,</span>
+                <span class="s2">&quot;server_log_file_path&quot;</span><span class="p">:</span> <span class="s2">&quot;/Users/foo/server/logfile.log&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="s2">&quot;6379&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>

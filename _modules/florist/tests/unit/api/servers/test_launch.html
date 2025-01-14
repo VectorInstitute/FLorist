@@ -344,7 +344,6 @@
 <span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 
 <span class="kn">from</span> <span class="nn">florist.api.clients.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.logs</span> <span class="kn">import</span> <span class="n">get_server_log_file_path</span>
 <span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">RedisMetricsReporter</span>
 <span class="kn">from</span> <span class="nn">florist.api.servers.launch</span> <span class="kn">import</span> <span class="n">launch_local_server</span>
 <span class="kn">from</span> <span class="nn">florist.api.servers.utils</span> <span class="kn">import</span> <span class="n">get_server</span>
@@ -365,7 +364,7 @@
     <span class="n">test_server_process</span> <span class="o">=</span> <span class="s2">&quot;test-server-process&quot;</span>
     <span class="n">mock_launch_server</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">test_server_process</span>
 
-    <span class="n">server_uuid</span><span class="p">,</span> <span class="n">server_process</span> <span class="o">=</span> <span class="n">launch_local_server</span><span class="p">(</span>
+    <span class="n">server_uuid</span><span class="p">,</span> <span class="n">server_process</span><span class="p">,</span> <span class="n">log_file_path</span> <span class="o">=</span> <span class="n">launch_local_server</span><span class="p">(</span>
         <span class="n">test_model</span><span class="p">,</span>
         <span class="n">test_n_clients</span><span class="p">,</span>
         <span class="n">test_server_address</span><span class="p">,</span>
@@ -386,7 +385,7 @@
         <span class="n">ANY</span><span class="p">,</span>
         <span class="n">test_server_address</span><span class="p">,</span>
         <span class="n">test_n_server_rounds</span><span class="p">,</span>
-        <span class="nb">str</span><span class="p">(</span><span class="n">get_server_log_file_path</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">)),</span>
+        <span class="n">log_file_path</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">assert</span> <span class="n">call_kwargs</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;seconds_to_sleep&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
     <span class="k">assert</span> <span class="n">call_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">func</span> <span class="o">==</span> <span class="n">get_server</span>
