@@ -242,9 +242,9 @@ class Job(BaseModel):
         :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
         """
         assert self.clients_info is not None, "Job has no clients."
-        assert (
-            0 <= client_index < len(self.clients_info)
-        ), f"Client index {client_index} is invalid (total: {len(self.clients_info)})"
+        assert 0 <= client_index < len(self.clients_info), (
+            f"Client index {client_index} is invalid (total: {len(self.clients_info)})"
+        )
 
         job_collection = database[JOB_COLLECTION_NAME]
         update_result = await job_collection.update_one(
