@@ -557,7 +557,7 @@ describe("Job Details Page", () => {
                     expect(downloadButton.getAttribute("download")).toBe("server.log");
 
                     const modalBody = logViewerComponent.querySelector(".modal-body");
-                    expect(modalBody).toHaveTextContent(testLogContents.replace("\n", " "));
+                    expect(modalBody).toHaveTextContent(testLogContents.replace(/\n/g, " "));
                 });
                 it("Should render the client logs modal correctly when clicked", () => {
                     const testJob = makeTestJob();
