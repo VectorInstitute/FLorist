@@ -593,7 +593,7 @@ describe("Job Details Page", () => {
                     expect(downloadButton.getAttribute("download")).toBe(`client-${testClientIndex}.log`);
 
                     const modalBody = logViewerComponent.querySelector(".modal-body");
-                    expect(modalBody).toHaveTextContent(testLogContents.replace("\n", " "));
+                    expect(modalBody).toHaveTextContent(testLogContents.replace(/\n/g, " "));
                 });
                 it("Should display spinner when loading", () => {
                     const testJob = makeTestJob();
