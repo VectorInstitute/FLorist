@@ -154,3 +154,73 @@ async def stop_job(job_id: str, request: Request) -> JSONResponse:
     except Exception as general_e:
         LOGGER.exception(general_e)
         return JSONResponse(content={"error": str(general_e)}, status_code=500)
+
+
+@router.get("/get_server_log/{job_id}")
+async def get_server_log(job_id: str, request: Request) -> JSONResponse:
+    """
+    Return the contents of the server's log file for the given job id.
+
+    :param job_id: (str) the ID of the job to get the server logs for.
+    :param request: (fastapi.Request) the FastAPI request object.
+
+    :return: (JSONResponse) if successful, returns the contents of the file as a string.
+        If not successful, returns the appropriate error code with a JSON with the format below:
+            {"error": <error message>}
+    """
+    try:
+        job = await Job.find_by_id(job_id, request.app.database)
+
+        assert job is not None, f"Job {job_id} not found"
+        assert job.server_log_file_path is not None and job.server_log_file_path != "", (
+            "Log file path is None or empty"
+        )
+
+        with open(job.server_log_file_path, "r") as f:
+            content = f.read()
+            return JSONResponse(content)
+
+    except AssertionError as assertion_e:
+        return JSONResponse(content={"error": str(assertion_e)}, status_code=400)
+    except Exception as general_e:
+        return JSONResponse(content={"error": str(general_e)}, status_code=500)
+
+
+@router.get("/get_client_log/{job_id}/{client_index}")
+async def get_client_log(job_id: str, client_index: int, request: Request) -> JSONResponse:
+    """
+    Return the contents of the log file for the client with given index under given job id.
+
+    :param job_id: (str) the ID of the job to get the client logs for.
+    :param client_index: (int) the index of the client within the job.
+    :param request: (fastapi.Request) the FastAPI request object.
+
+    :return: (JSONResponse) if successful, returns the contents of the file as a string.
+        If not successful, returns the appropriate error code with a JSON with the format below:
+            {"error": <error message>}
+    """
+    try:
+        job = await Job.find_by_id(job_id, request.app.database)
+
+        assert job is not None, f"Job {job_id} not found"
+        assert job.clients_info is not None, "Job has no clients."
+        assert 0 <= client_index < len(job.clients_info), (
+            f"Client index {client_index} is invalid (total: {len(job.clients_info)})"
+        )
+
+        client_info = job.clients_info[client_index]
+        assert client_info.log_file_path is not None and client_info.log_file_path != "", (
+            "Log file path is None or empty"
+        )
+
+        response = requests.get(
+            url=f"http://{client_info.service_address}/api/client/get_log",
+            params={"log_file_path": client_info.log_file_path},
+        )
+        json_response = response.json()
+        return JSONResponse(json_response)
+
+    except AssertionError as assertion_e:
+        return JSONResponse(content={"error": str(assertion_e)}, status_code=400)
+    except Exception as general_e:
+        return JSONResponse(content={"error": str(general_e)}, status_code=500)

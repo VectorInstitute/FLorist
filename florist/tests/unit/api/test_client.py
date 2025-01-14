@@ -1,5 +1,6 @@
 """Tests for FLorist's client FastAPI endpoints."""
 import json
+import os
 import signal
 from unittest.mock import ANY, Mock, patch
 
@@ -35,10 +36,10 @@ def test_start_success(mock_launch_client: Mock) -> None:
 
     assert response.status_code == 200
     json_body = json.loads(response.body.decode())
-    assert json_body == {"uuid": ANY, "pid": str(test_client_pid)}
+    log_file_path = str(get_client_log_file_path(json_body["uuid"]))
+    assert json_body == {"uuid": ANY, "pid": str(test_client_pid), "log_file_path": log_file_path}
 
-    log_file_name = str(get_client_log_file_path(json_body["uuid"]))
-    mock_launch_client.assert_called_once_with(ANY, test_server_address, log_file_name)
+    mock_launch_client.assert_called_once_with(ANY, test_server_address, log_file_path)
 
     client_obj = mock_launch_client.call_args_list[0][0][0]
     assert isinstance(client_obj, MnistClient)
@@ -67,7 +68,7 @@ def test_start_fail_unsupported_client() -> None:
 
 
 @patch("florist.api.client.launch_client", side_effect=Exception("test exception"))
-def test_start_fail_exception(mock_launch_client: Mock) -> None:
+def test_start_fail_exception(_: Mock) -> None:
     test_server_address = "test-server-address"
     test_client = "MNIST"
     test_data_path = "test/data/path"
@@ -97,6 +98,7 @@ def test_check_status(mock_redis: Mock) -> None:
     mock_redis.Redis.assert_called_with(host=test_redis_host, port=test_redis_port)
     assert json.loads(response.body.decode()) == {"info": "test"}
 
+
 @patch("florist.api.monitoring.metrics.redis")
 def test_check_status_not_found(mock_redis: Mock) -> None:
     mock_redis_connection = Mock()
@@ -114,8 +116,9 @@ def test_check_status_not_found(mock_redis: Mock) -> None:
     assert response.status_code == 404
     assert json.loads(response.body.decode()) == {"error": f"Client {test_uuid} Not Found"}
 
+
 @patch("florist.api.monitoring.metrics.redis.Redis", side_effect=Exception("test exception"))
-def test_check_status_fail_exception(mock_redis: Mock) -> None:
+def test_check_status_fail_exception(_: Mock) -> None:
 
     test_uuid = "test_uuid"
     test_redis_host = "localhost"
@@ -125,6 +128,22 @@ def test_check_status_fail_exception(mock_redis: Mock) -> None:
 
     assert response.status_code == 500
     assert json.loads(response.body.decode()) == {"error": "test exception"}
+
+
+def test_get_log() -> None:
+    test_client_uuid = "test-client-uuid"
+    test_log_file_content = "this is a test log file content"
+    test_log_file_path = str(get_client_log_file_path(test_client_uuid))
+
+    with open(test_log_file_path, "w") as f:
+        f.write(test_log_file_content)
+
+    response = client.get_log(test_log_file_path)
+
+    assert response.status_code == 200
+    assert response.body.decode() == f"\"{test_log_file_content}\""
+
+    os.remove(test_log_file_path)
 
 @patch("florist.api.client.os.kill")
 def test_stop_success(mock_kill: Mock) -> None:

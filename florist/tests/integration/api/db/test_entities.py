@@ -215,6 +215,38 @@ async def test_set_client_metrics_fail_update_result(mock_request) -> None:
         )
 
 
+async def test_set_server_log_file_path_success(mock_request) -> None:
+    test_job = get_test_job()
+    result_id = await test_job.create(mock_request.app.database)
+    test_job.id = result_id
+    test_job.clients_info[0].id = ANY
+    test_job.clients_info[1].id = ANY
+
+    test_log_file_path = "test/log/file/path.log"
+
+    await test_job.set_server_log_file_path(test_log_file_path, mock_request.app.database)
+
+    result_job = await Job.find_by_id(result_id, mock_request.app.database)
+    test_job.server_log_file_path = test_log_file_path
+    assert result_job == test_job
+
+
+async def test_set_client_log_file_path_success(mock_request) -> None:
+    test_job = get_test_job()
+    result_id = await test_job.create(mock_request.app.database)
+    test_job.id = result_id
+    test_job.clients_info[0].id = ANY
+    test_job.clients_info[1].id = ANY
+
+    test_log_file_path = "test/log/file/path.log"
+
+    await test_job.set_client_log_file_path(1, test_log_file_path, mock_request.app.database)
+
+    result_job = await Job.find_by_id(result_id, mock_request.app.database)
+    test_job.clients_info[1].log_file_path = test_log_file_path
+    assert result_job == test_job
+
+
 async def test_set_pid_success(mock_request) -> None:
     test_job = get_test_job()
     result_id = await test_job.create(mock_request.app.database)

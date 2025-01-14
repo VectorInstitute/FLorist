@@ -72,7 +72,7 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         model_class = Model.class_for_model(job.model)
 
         # Start the server
-        server_uuid, server_process = launch_local_server(
+        server_uuid, server_process, server_log_file_path = launch_local_server(
             model=model_class(),
             n_clients=len(job.clients_info),
             server_address=job.server_address,
@@ -85,13 +85,17 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         # Start the clients
         client_uuids: List[str] = []
         client_pids: List[str] = []
+        client_log_file_paths: List[str] = []
         for client_info in job.clients_info:
-            uuid, pid = _start_client(job.server_address, client_info)
+            uuid, pid, log_file_path = _start_client(job.server_address, client_info)
             client_uuids.append(uuid)
             client_pids.append(pid)
+            client_log_file_paths.append(log_file_path)
 
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
         await job.set_pids(str(server_process.pid), client_pids, request.app.database)
+        # TODO make this function
+        await job.set_log_file_paths(server_log_file_path, client_log_file_paths, request.app.database)
 
         # Start the server training listener and client training listeners as threads to update
         # the job's metrics and status once the training is done
@@ -221,13 +225,13 @@ async def server_training_listener(job: Job) -> None:
     db_client.close()
 
 
-def _start_client(server_address: str, client_info: ClientInfo) -> Tuple[str, str]:
+def _start_client(server_address: str, client_info: ClientInfo) -> Tuple[str, str, str]:
     """
     Start a client.
 
     :param server_address: (str) the address of the server the client needs to report to
     :param client_info: (ClientInfo) an instance of ClientInfo with the information needed to start the client
-    :return (Tuple[str, str]): A tuple containing two values: the client's UUID and PID
+    :return (Tuple[str, str, str]): A tuple containing two values: the client's UUID and PID
     """
     parameters = {
         "server_address": server_address,
@@ -249,4 +253,7 @@ def _start_client(server_address: str, client_info: ClientInfo) -> Tuple[str, st
     if "pid" not in json_response:
         raise Exception(f"Client response did not return a PID. Response: {json_response}")
 
-    return json_response["uuid"], json_response["pid"]
+    if "log_file_path" not in json_response:
+        raise Exception(f"Client response did not return a log file path. Response: {json_response}")
+
+    return json_response["uuid"], json_response["pid"], json_response["log_file_path"]
