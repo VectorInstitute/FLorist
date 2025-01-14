@@ -118,9 +118,9 @@ async def get_server_log(job_id: str, request: Request) -> JSONResponse:
         job = await Job.find_by_id(job_id, request.app.database)
 
         assert job is not None, f"Job {job_id} not found"
-        assert (
-            job.server_log_file_path is not None and job.server_log_file_path != ""
-        ), "Log file path is None or empty"
+        assert job.server_log_file_path is not None and job.server_log_file_path != "", (
+            "Log file path is None or empty"
+        )
 
         with open(job.server_log_file_path, "r") as f:
             content = f.read()
@@ -150,14 +150,14 @@ async def get_client_log(job_id: str, client_index: int, request: Request) -> JS
 
         assert job is not None, f"Job {job_id} not found"
         assert job.clients_info is not None, "Job has no clients."
-        assert (
-            0 <= client_index < len(job.clients_info)
-        ), f"Client index {client_index} is invalid (total: {len(job.clients_info)})"
+        assert 0 <= client_index < len(job.clients_info), (
+            f"Client index {client_index} is invalid (total: {len(job.clients_info)})"
+        )
 
         client_info = job.clients_info[client_index]
-        assert (
-            client_info.log_file_path is not None and client_info.log_file_path != ""
-        ), "Log file path is None or empty"
+        assert client_info.log_file_path is not None and client_info.log_file_path != "", (
+            "Log file path is None or empty"
+        )
 
         response = requests.get(
             url=f"http://{client_info.service_address}/api/client/get_log",
