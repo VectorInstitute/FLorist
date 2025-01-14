@@ -475,9 +475,9 @@
         <span class="n">job</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Job</span><span class="o">.</span><span class="n">find_by_id</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
 
         <span class="k">assert</span> <span class="n">job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2"> not found&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">job</span><span class="o">.</span><span class="n">server_log_file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">job</span><span class="o">.</span><span class="n">server_log_file_path</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span>
-        <span class="p">),</span> <span class="s2">&quot;Log file path is None or empty&quot;</span>
+        <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">server_log_file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">job</span><span class="o">.</span><span class="n">server_log_file_path</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">(</span>
+            <span class="s2">&quot;Log file path is None or empty&quot;</span>
+        <span class="p">)</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">server_log_file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -510,14 +510,14 @@
 
         <span class="k">assert</span> <span class="n">job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2"> not found&quot;</span>
         <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">clients_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Job has no clients.&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">client_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">)</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Client index </span><span class="si">{</span><span class="n">client_index</span><span class="si">}</span><span class="s2"> is invalid (total: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">client_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">),</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Client index </span><span class="si">{</span><span class="n">client_index</span><span class="si">}</span><span class="s2"> is invalid (total: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
 
         <span class="n">client_info</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="n">client_index</span><span class="p">]</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">client_info</span><span class="o">.</span><span class="n">log_file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">client_info</span><span class="o">.</span><span class="n">log_file_path</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span>
-        <span class="p">),</span> <span class="s2">&quot;Log file path is None or empty&quot;</span>
+        <span class="k">assert</span> <span class="n">client_info</span><span class="o">.</span><span class="n">log_file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">client_info</span><span class="o">.</span><span class="n">log_file_path</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">(</span>
+            <span class="s2">&quot;Log file path is None or empty&quot;</span>
+        <span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">service_address</span><span class="si">}</span><span class="s2">/api/client/get_log&quot;</span><span class="p">,</span>

@@ -625,9 +625,9 @@
 <span class="sd">        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Job has no clients.&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">client_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span><span class="p">)</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Client index </span><span class="si">{</span><span class="n">client_index</span><span class="si">}</span><span class="s2"> is invalid (total: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">client_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span><span class="p">),</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Client index </span><span class="si">{</span><span class="n">client_index</span><span class="si">}</span><span class="s2"> is invalid (total: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clients_info</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
 
         <span class="n">job_collection</span> <span class="o">=</span> <span class="n">database</span><span class="p">[</span><span class="n">JOB_COLLECTION_NAME</span><span class="p">]</span>
         <span class="n">update_result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">job_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
