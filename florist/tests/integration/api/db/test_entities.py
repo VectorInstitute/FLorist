@@ -215,37 +215,36 @@ async def test_set_client_metrics_fail_update_result(mock_request) -> None:
         )
 
 
-async def test_set_log_file_path_success(mock_request) -> None:
+async def test_set_server_log_file_path_success(mock_request) -> None:
     test_job = get_test_job()
     result_id = await test_job.create(mock_request.app.database)
     test_job.id = result_id
     test_job.clients_info[0].id = ANY
     test_job.clients_info[1].id = ANY
 
-    test_server_log_file_path = "test-server-log-file-path"
-    test_client_log_file_path_1 = "test-server-log-file-path-1"
-    test_client_log_file_path_2 = "test-server-log-file-path-2"
+    test_log_file_path = "test/log/file/path.log"
 
-    await test_job.set_log_file_paths(
-        test_server_log_file_path,
-        [test_client_log_file_path_1, test_client_log_file_path_2],
-        mock_request.app.database,
-    )
+    await test_job.set_server_log_file_path(test_log_file_path, mock_request.app.database)
 
     result_job = await Job.find_by_id(result_id, mock_request.app.database)
-    test_job.server_log_file_path = test_server_log_file_path
-    test_job.clients_info[0].log_file_path = test_client_log_file_path_1
-    test_job.clients_info[1].log_file_path = test_client_log_file_path_2
+    test_job.server_log_file_path = test_log_file_path
     assert result_job == test_job
 
 
-async def test_set_set_log_file_path_assertion_error(mock_request) -> None:
+async def test_set_client_log_file_path_success(mock_request) -> None:
     test_job = get_test_job()
-    await test_job.create(mock_request.app.database)
+    result_id = await test_job.create(mock_request.app.database)
+    test_job.id = result_id
+    test_job.clients_info[0].id = ANY
+    test_job.clients_info[1].id = ANY
 
-    error_message = "self.clients_info and client_log_file_paths must have the same length (2!=1)"
-    with raises(AssertionError, match=re.escape(error_message)):
-        await test_job.set_log_file_paths("test", ["test"], mock_request.app.database)
+    test_log_file_path = "test/log/file/path.log"
+
+    await test_job.set_client_log_file_path(1, test_log_file_path, mock_request.app.database)
+
+    result_job = await Job.find_by_id(result_id, mock_request.app.database)
+    test_job.clients_info[1].log_file_path = test_log_file_path
+    assert result_job == test_job
 
 
 async def test_set_pid_success(mock_request) -> None:
