@@ -94,7 +94,6 @@ async def start(job_id: str, request: Request) -> JSONResponse:
 
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
         await job.set_pids(str(server_process.pid), client_pids, request.app.database)
-        # TODO make this function
         await job.set_log_file_paths(server_log_file_path, client_log_file_paths, request.app.database)
 
         # Start the server training listener and client training listeners as threads to update

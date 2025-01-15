@@ -218,43 +218,39 @@ class Job(BaseModel):
                 )
                 assert_updated_successfully(update_result)
 
-    async def set_server_log_file_path(self, log_file_path: str, database: AsyncIOMotorDatabase[Any]) -> None:
-        """
-        Save the server's log file path in the database under the current job's id.
-
-        :param log_file_path: (str) the file path to be saved in the database.
-        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
-        """
-        job_collection = database[JOB_COLLECTION_NAME]
-        self.server_log_file_path = log_file_path
-        update_result = await job_collection.update_one(
-            {"_id": self.id}, {"$set": {"server_log_file_path": log_file_path}}
-        )
-        assert_updated_successfully(update_result)
-
-    async def set_client_log_file_path(
+    async def set_log_file_paths(
         self,
-        client_index: int,
-        log_file_path: str,
+        server_log_file_path: str,
+        client_log_file_paths: List[str],
         database: AsyncIOMotorDatabase[Any],
     ) -> None:
         """
-        Save the clients' log file path in the database under the given client index and current job's id.
+        Save the server and clients' log file paths in the database under the current job's id.
 
-        :param client_index: (str) the index of the client in the job.
-        :param log_file_path: (str) the path oof the client's log file.
+        :param server_log_file_path: [str] the server log file path to be saved in the database.
+        :param client_log_file_paths: List[str] the list of client log file paths to be saved in the database.
         :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
         """
-        assert self.clients_info is not None, "Job has no clients."
-        assert 0 <= client_index < len(self.clients_info), (
-            f"Client index {client_index} is invalid (total: {len(self.clients_info)})"
+        assert self.clients_info is not None and len(self.clients_info) == len(client_log_file_paths), (
+            "self.clients_info and client_log_file_paths must have the same length "
+            f"({'None' if self.clients_info is None else len(self.clients_info)}!={len(client_log_file_paths)})."
         )
 
         job_collection = database[JOB_COLLECTION_NAME]
+
+        self.server_log_file_path = server_log_file_path
         update_result = await job_collection.update_one(
-            {"_id": self.id}, {"$set": {f"clients_info.{client_index}.log_file_path": log_file_path}}
+            {"_id": self.id},
+            {"$set": {"server_log_file_path": server_log_file_path}},
         )
         assert_updated_successfully(update_result)
+
+        for i in range(len(client_log_file_paths)):
+            self.clients_info[i].log_file_path = client_log_file_paths[i]
+            update_result = await job_collection.update_one(
+                {"_id": self.id}, {"$set": {f"clients_info.{i}.log_file_path": client_log_file_paths[i]}}
+            )
+            assert_updated_successfully(update_result)
 
     async def set_pids(self, server_pid: str, client_pids: List[str], database: AsyncIOMotorDatabase[Any]) -> None:
         """
