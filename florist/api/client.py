@@ -44,7 +44,7 @@ def start(server_address: str, client: str, data_path: str, redis_host: str, red
     :param redis_host: (str) the host name for the Redis instance for metrics reporting.
     :param redis_port: (str) the port for the Redis instance for metrics reporting.
     :return: (JSONResponse) If successful, returns 200 with a JSON containing the UUID, the PID and the log
-        file patth for the client in the format below:
+        file path for the client in the format below:
             {
                 "uuid": (str) The client's uuid, which can be used to pull metrics from Redis,
                 "log_file_path": (str) The local path of the log file for this client,

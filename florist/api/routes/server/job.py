@@ -136,7 +136,7 @@ async def stop_job(job_id: str, request: Request) -> JSONResponse:
                 LOGGER.error(msg)
 
         if not job.server_pid:
-            user_error_message += f"PID for server {job.server_uuid} is not valid: {job.server_pid}. "
+            user_error_message += f"PID for server {job.server_uuid} is empty or None."
         else:
             try:
                 os.kill(int(job.server_pid), signal.SIGTERM)
