@@ -80,22 +80,24 @@ async def start(job_id: str, request: Request) -> JSONResponse:
             redis_port=job.redis_port,
             **server_config,
         )
+
+        await job.set_server_log_file_path(server_log_file_path, request.app.database)
+
         wait_for_metric(server_uuid, "fit_start", job.redis_host, job.redis_port, logger=LOGGER)
 
         # Start the clients
         client_uuids: List[str] = []
         client_pids: List[str] = []
-        client_log_file_paths: List[str] = []
-        for client_info in job.clients_info:
+        for i in range(len(job.clients_info)):
+            client_info = job.clients_info[i]
             uuid, pid, log_file_path = _start_client(job.server_address, client_info)
             client_uuids.append(uuid)
             client_pids.append(pid)
-            client_log_file_paths.append(log_file_path)
+
+            await job.set_client_log_file_path(i, log_file_path, request.app.database)
 
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
         await job.set_pids(str(server_process.pid), client_pids, request.app.database)
-        # TODO make this function
-        await job.set_log_file_paths(server_log_file_path, client_log_file_paths, request.app.database)
 
         # Start the server training listener and client training listeners as threads to update
         # the job's metrics and status once the training is done

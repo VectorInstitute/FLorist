@@ -134,12 +134,12 @@ def stop(pid: str) -> JSONResponse:
             {"error": <error message>}
     """
     try:
-        if not pid:
-            return JSONResponse({"error": f"PID is not valid: {pid}"}, status_code=400)
-
+        assert pid, "PID is empty or None."
         os.kill(int(pid), signal.SIGTERM)
         LOGGER.info(f"Killed process with PID {pid}")
         return JSONResponse(content={"status": "success"})
+    except AssertionError as err:
+        return JSONResponse(content={"error": str(err)}, status_code=400)
     except Exception as ex:
         LOGGER.exception(ex)
         return JSONResponse({"error": str(ex)}, status_code=500)

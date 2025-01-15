@@ -160,7 +160,7 @@ def test_stop_fail_no_pid() -> None:
     response = client.stop("")
 
     assert response.status_code == 400
-    assert json.loads(response.body.decode()) == {"error": "PID is not valid: "}
+    assert json.loads(response.body.decode()) == {"error": "PID is empty or None."}
 
 
 def test_stop_fail_exception() -> None:
