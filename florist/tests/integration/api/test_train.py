@@ -1,10 +1,12 @@
 import json
 import requests
 import tempfile
+from pathlib import Path
 from unittest.mock import ANY
 
 import redis
 import uvicorn
+from fl4health.utils.load_data import load_mnist_data
 
 from florist.api.clients.common import Client
 from florist.api.db.entities import Job, JobStatus, ClientInfo
@@ -32,6 +34,12 @@ async def test_train():
                 test_redis_host = "localhost"
                 test_redis_port = "6379"
                 test_n_server_rounds = 2
+                batch_size = 8
+                data_path = f"{temp_dir}/data"
+
+                print("Preloading MNIST dataset...")
+                load_mnist_data(Path(data_path), batch_size)
+                print("Finished preloading MNIST dataset")
 
                 job = await new_job(test_request, Job(
                     status=JobStatus.NOT_STARTED,
@@ -39,7 +47,7 @@ async def test_train():
                     server_address="localhost:8080",
                     server_config=json.dumps({
                         "n_server_rounds": test_n_server_rounds,
-                        "batch_size": 8,
+                        "batch_size": batch_size,
                         "local_epochs": 1,
                     }),
                     redis_host=test_redis_host,
@@ -48,7 +56,7 @@ async def test_train():
                         ClientInfo(
                             client=Client.MNIST,
                             service_address="localhost:8001",
-                            data_path=f"{temp_dir}/data",
+                            data_path=data_path,
                             redis_host=test_redis_host,
                             redis_port=test_redis_port,
                         )
