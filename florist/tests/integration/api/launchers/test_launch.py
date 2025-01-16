@@ -30,7 +30,7 @@ def test_launch() -> None:
 
     with tempfile.TemporaryDirectory() as temp_dir:
         client_data_paths = [Path(f"{temp_dir}/{i}") for i in range(n_clients)]
-        for i in range(client_data_paths):
+        for i in range(len(client_data_paths)):
             client_data_path = client_data_paths[i]
             os.mkdir(client_data_path)
             logger.info(f"Preloading MNIST dataset for client {i}...")
