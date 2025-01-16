@@ -112,15 +112,10 @@ async def start(job_id: str, request: Request) -> JSONResponse:
 
         # Start the server training listener and client training listeners as threads to update
         # the job's metrics and status once the training is done
-        server_listener_thread = Thread(target=asyncio.run, args=(server_training_listener(job),), daemon=True)
-        server_listener_thread.daemon = True
+        server_listener_thread = Thread(target=asyncio.run, args=(server_training_listener(job),))
         server_listener_thread.start()
         for client_info in job.clients_info:
-            client_listener_thread = Thread(
-                target=asyncio.run,
-                args=(client_training_listener(job, client_info),),
-                daemon=True,
-            )
+            client_listener_thread = Thread(target=asyncio.run, args=(client_training_listener(job, client_info),))
             client_listener_thread.start()
 
         # Return the UUIDs
