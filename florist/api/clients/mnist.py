@@ -11,6 +11,7 @@ from torch import nn
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader
+from torchvision.datasets import MNIST
 
 from florist.api.models.mnist import MnistNet
 
@@ -26,6 +27,12 @@ class MnistClient(BasicClient):  # type: ignore[misc]
         :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader
             and validation data loader respectively.
         """
+        # Removing LeCun's website from the list of mirrors to pull MNIST dataset from
+        # as it is timing out and adding considerable time to our tests
+        mirror_url_to_remove = "http://yann.lecun.com/exdb/mnist/"
+        if mirror_url_to_remove in MNIST.mirrors:
+            MNIST.mirrors.remove(mirror_url_to_remove)
+
         train_loader, val_loader, _ = load_mnist_data(self.data_path, batch_size=int(config["batch_size"]))
         return train_loader, val_loader
 
