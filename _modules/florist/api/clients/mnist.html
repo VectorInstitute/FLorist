@@ -354,6 +354,7 @@
 <span class="kn">from</span> <span class="nn">torch.nn.modules.loss</span> <span class="kn">import</span> <span class="n">_Loss</span>
 <span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">Optimizer</span>
 <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span> <span class="nn">torchvision.datasets</span> <span class="kn">import</span> <span class="n">MNIST</span>
 
 <span class="kn">from</span> <span class="nn">florist.api.models.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
 
@@ -373,6 +374,12 @@
 <span class="sd">        :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader</span>
 <span class="sd">            and validation data loader respectively.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Removing LeCun&#39;s website from the list of mirrors to pull MNIST dataset from</span>
+        <span class="c1"># as it is timing out and adding considerable time to our tests</span>
+        <span class="n">mirror_url_to_remove</span> <span class="o">=</span> <span class="s2">&quot;http://yann.lecun.com/exdb/mnist/&quot;</span>
+        <span class="k">if</span> <span class="n">mirror_url_to_remove</span> <span class="ow">in</span> <span class="n">MNIST</span><span class="o">.</span><span class="n">mirrors</span><span class="p">:</span>
+            <span class="n">MNIST</span><span class="o">.</span><span class="n">mirrors</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">mirror_url_to_remove</span><span class="p">)</span>
+
         <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_mnist_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">]))</span>
         <span class="k">return</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span></div>
 
