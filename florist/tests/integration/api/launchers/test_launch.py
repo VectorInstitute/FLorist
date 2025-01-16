@@ -27,7 +27,6 @@ def test_launch() -> None:
         client_data_paths = [Path(f"{temp_dir}/{i}") for i in range(n_clients)]
         for client_data_path in client_data_paths:
             os.mkdir(client_data_path)
-
         clients = [MnistClient(client_data_path, [], torch.device("cpu")) for client_data_path in client_data_paths]
 
         server_constructor = partial(get_server, MnistNet(), [])

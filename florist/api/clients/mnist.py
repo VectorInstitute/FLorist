@@ -28,7 +28,10 @@ class MnistClient(BasicClient):  # type: ignore[misc]
             and validation data loader respectively.
         """
         # Removing LeCun's website from the list of mirrors to pull MNIST dataset from
-        MNIST.mirrors.remove("http://yann.lecun.com/exdb/mnist/")
+        # as it is timing out and adding considerable time to our tests
+        mirror_url_to_remove = "http://yann.lecun.com/exdb/mnist/"
+        if mirror_url_to_remove in MNIST.mirrors:
+            MNIST.mirrors.remove(mirror_url_to_remove)
 
         train_loader, val_loader, _ = load_mnist_data(self.data_path, batch_size=int(config["batch_size"]))
         return train_loader, val_loader
