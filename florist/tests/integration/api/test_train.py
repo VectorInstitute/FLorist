@@ -1,4 +1,5 @@
 import json
+import logging
 import requests
 import tempfile
 from pathlib import Path
@@ -16,6 +17,8 @@ from florist.api.routes.server.job import new_job, list_jobs_with_status
 from florist.api.server import DATABASE_NAME
 from florist.tests.integration.api.utils import TestUvicornServer, MockRequest, MockApp
 
+
+logger = logging.getLogger()
 
 async def test_train():
     # Define services
@@ -37,9 +40,9 @@ async def test_train():
                 batch_size = 8
                 data_path = f"{temp_dir}/data"
 
-                print("Preloading MNIST dataset...")
+                logger.info("Preloading MNIST dataset...")
                 load_mnist_data(Path(data_path), batch_size)
-                print("Finished preloading MNIST dataset")
+                logger.info("Finished preloading MNIST dataset")
 
                 job = await new_job(test_request, Job(
                     status=JobStatus.NOT_STARTED,
