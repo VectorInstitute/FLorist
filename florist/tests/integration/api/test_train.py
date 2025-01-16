@@ -1,13 +1,10 @@
 import json
-import logging
 import requests
 import tempfile
-from pathlib import Path
 from unittest.mock import ANY
 
 import redis
 import uvicorn
-from fl4health.utils.load_data import load_mnist_data
 
 from florist.api.clients.common import Client
 from florist.api.db.entities import Job, JobStatus, ClientInfo
@@ -17,8 +14,6 @@ from florist.api.routes.server.job import new_job, list_jobs_with_status
 from florist.api.server import DATABASE_NAME
 from florist.tests.integration.api.utils import TestUvicornServer, MockRequest, MockApp
 
-
-logger = logging.getLogger()
 
 async def test_train():
     # Define services
@@ -39,10 +34,6 @@ async def test_train():
                 test_n_server_rounds = 2
                 batch_size = 8
                 data_path = f"{temp_dir}/data"
-
-                logger.info("Preloading MNIST dataset...")
-                load_mnist_data(Path(data_path), batch_size)
-                logger.info("Finished preloading MNIST dataset")
 
                 job = await new_job(test_request, Job(
                     status=JobStatus.NOT_STARTED,
