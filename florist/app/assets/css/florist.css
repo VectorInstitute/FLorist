@@ -76,7 +76,7 @@
     background-color: lightgray !important;
 }
 
-.job-details-button a.btn {
+.job-expand-button a.btn {
     padding: 0;
     margin: 0;
 }
@@ -154,43 +154,16 @@
     height: max-content;
 }
 
-.log-viewer.show {
-    display: block;
-    z-index: 10000;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.log-viewer .modal-dialog {
-    max-width: 90%;
-}
-
-.log-viewer .modal-content {
-    height: 100%;
-}
-
-.log-viewer .btn-close {
-    color: black;
-    font-size: 30px;
-    margin-top: -25px;
-}
-
-.log-viewer a.refresh-button,
-.log-viewer a.download-button {
-    cursor: pointer;
+#job-server-config-import {
+    padding: 0;
+    margin-top: 4px;
     margin-left: 15px;
-    margin-top: 10px;
 }
 
-.log-viewer .modal-body {
-    white-space: pre;
-    font-family: monospace;
-    font-size: 14px;
+#job-server-config-import .material-icons {
+    vertical-align: text-top;
 }
 
-.log-viewer .loading-container {
-    height: 100%;
-    width: 100%;
-    display: inline-grid;
-    align-content: center;
-    justify-content: center;
+#job-server-config-uploader {
+    opacity: 0;
 }
