@@ -115,12 +115,14 @@ async def start(job_id: str, request: Request) -> JSONResponse:
     except AssertionError as err:
         if job is not None:
             await job.set_status(JobStatus.FINISHED_WITH_ERROR, request.app.database)
+            await job.set_error_message(str(err), request.app.database)
         return JSONResponse(content={"error": str(err)}, status_code=400)
 
     except Exception as ex:
         LOGGER.exception(ex)
         if job is not None:
             await job.set_status(JobStatus.FINISHED_WITH_ERROR, request.app.database)
+            await job.set_error_message(str(ex), request.app.database)
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
