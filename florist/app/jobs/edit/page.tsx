@@ -323,7 +323,13 @@ export function EditJobServerConfigUploader({ state, setState }): ReactElement {
                 <i className="material-icons">upload</i>
                 Import JSON or YAML
             </a>
-            <input type="file" ref={buttonRef} id="job-server-config-uploader" onChange={handleFileUpload} />
+            <input
+                type="file"
+                ref={buttonRef}
+                id="job-server-config-uploader"
+                onChange={handleFileUpload}
+                accept=".json,.yaml,.yml,application/json,application/x-yaml,text/yaml"
+            />
         </div>
     );
 }
