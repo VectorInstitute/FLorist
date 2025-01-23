@@ -224,9 +224,7 @@ export function JobProgressBar({
             validStatuses[status] !== validStatuses.FINISHED_SUCCESSFULLY &&
             validStatuses[status] !== validStatuses.FINISHED_WITH_ERROR
         ) {
-            if (progressPercent === 0) {
-                status = "NOT_STARTED";
-            } else if (progressPercent === 100) {
+            if (progressPercent === 100) {
                 status = "FINISHED_SUCCESSFULLY";
             } else {
                 status = "IN_PROGRESS";
