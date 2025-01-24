@@ -5,7 +5,7 @@ from typing import Dict, Any, Tuple
 from unittest.mock import Mock, AsyncMock, patch, ANY, call
 
 from florist.api.db.config import DATABASE_NAME
-from florist.api.db.entities import Job, JobStatus, JOB_COLLECTION_NAME
+from florist.api.db.server_entities import Job, JobStatus, JOB_COLLECTION_NAME
 from florist.api.models.mnist import MnistNet
 from florist.api.routes.server.training import (
     client_training_listener,

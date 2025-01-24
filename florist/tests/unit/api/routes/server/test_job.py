@@ -4,7 +4,7 @@ from unittest.mock import patch, Mock, AsyncMock
 from fastapi.responses import JSONResponse
 
 from florist.api.routes.server.job import change_job_status, get_job
-from florist.api.db.entities import JobStatus
+from florist.api.db.server_entities import JobStatus
 
 
 @patch("florist.api.db.entities.Job.find_by_id")

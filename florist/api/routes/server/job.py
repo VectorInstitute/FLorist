@@ -6,7 +6,7 @@ import requests
 from fastapi import APIRouter, Body, Request, status
 from fastapi.responses import JSONResponse
 
-from florist.api.db.entities import MAX_RECORDS_TO_FETCH, Job, JobStatus
+from florist.api.db.server_entities import MAX_RECORDS_TO_FETCH, Job, JobStatus
 
 
 router = APIRouter()
@@ -155,14 +155,8 @@ async def get_client_log(job_id: str, client_index: int, request: Request) -> JS
         )
 
         client_info = job.clients_info[client_index]
-        assert client_info.log_file_path is not None and client_info.log_file_path != "", (
-            "Log file path is None or empty"
-        )
 
-        response = requests.get(
-            url=f"http://{client_info.service_address}/api/client/get_log",
-            params={"log_file_path": client_info.log_file_path},
-        )
+        response = requests.get(url=f"http://{client_info.service_address}/api/client/get_log/{client_info.uuid}")
         json_response = response.json()
         return JSONResponse(json_response)
 

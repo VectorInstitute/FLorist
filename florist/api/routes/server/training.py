@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
-from florist.api.db.entities import ClientInfo, Job, JobStatus
+from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
 from florist.api.servers.common import Model
 from florist.api.servers.config_parsers import ConfigParser
@@ -105,8 +105,6 @@ async def start(job_id: str, request: Request) -> JSONResponse:
                 raise Exception(f"Client response did not return a UUID. Response: {json_response}")
 
             client_uuids.append(json_response["uuid"])
-
-            await job.set_client_log_file_path(i, json_response["log_file_path"], request.app.database)
 
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
 
