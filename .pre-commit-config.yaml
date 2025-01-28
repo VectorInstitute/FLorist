@@ -16,7 +16,7 @@ repos:
     - id: check-toml
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.9.1'
+    rev: 'v0.9.3'
     hooks:
     - id: ruff
       args: [--fix, --exit-non-zero-on-fix]
@@ -54,7 +54,7 @@ repos:
       - id: prettier-js-format
         name: prettier-js-format
         entry: yarn prettier
-        files: "florist/app"
+        files: "(florist/app|florist/tests/unit/app)"
         language: node
         types: [javascript]
         additional_dependencies:

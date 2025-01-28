@@ -194,3 +194,17 @@
     align-content: center;
     justify-content: center;
 }
+
+#job-server-config-import {
+    padding: 0;
+    margin-top: 4px;
+    margin-left: 15px;
+}
+
+#job-server-config-import .material-icons {
+    vertical-align: text-top;
+}
+
+#job-server-config-uploader {
+    opacity: 0;
+}
