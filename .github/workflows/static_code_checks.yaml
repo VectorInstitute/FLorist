@@ -63,7 +63,5 @@ jobs:
         with:
           virtual-environment: .venv/
           # Skipping 1 cryptography issue that can't be patched because of Flower
-          # Skipping 1 pyarrow issue that can't be patched because of pycyclops
           ignore-vulns: |
             GHSA-h4gh-qq45-vh27
-            PYSEC-2024-161

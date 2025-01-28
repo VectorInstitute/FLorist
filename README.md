@@ -24,9 +24,10 @@ poetry install
 ### Install Yarn
 
 We use [Yarn](https://yarnpkg.com/) to manage front-end dependencies. Install it on MacOS
-using [Homebrew](https://brew.sh/):
+using [Homebrew](https://brew.sh/). Also make sure install Node in case you don't have it.
 
 ```shell
+brew install node
 brew install yarn
 ```
 
