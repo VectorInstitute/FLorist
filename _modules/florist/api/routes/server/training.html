@@ -347,7 +347,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">JSONDecodeError</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Request</span>
@@ -417,7 +417,7 @@
         <span class="n">model_class</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">class_for_model</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
 
         <span class="c1"># Start the server</span>
-        <span class="n">server_uuid</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">server_log_file_path</span> <span class="o">=</span> <span class="n">launch_local_server</span><span class="p">(</span>
+        <span class="n">server_uuid</span><span class="p">,</span> <span class="n">server_process</span><span class="p">,</span> <span class="n">server_log_file_path</span> <span class="o">=</span> <span class="n">launch_local_server</span><span class="p">(</span>
             <span class="n">model</span><span class="o">=</span><span class="n">model_class</span><span class="p">(),</span>
             <span class="n">n_clients</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">),</span>
             <span class="n">server_address</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">server_address</span><span class="p">,</span>
@@ -425,42 +425,33 @@
             <span class="n">redis_port</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
             <span class="o">**</span><span class="n">server_config</span><span class="p">,</span>
         <span class="p">)</span>
+
         <span class="k">await</span> <span class="n">job</span><span class="o">.</span><span class="n">set_server_log_file_path</span><span class="p">(</span><span class="n">server_log_file_path</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+
         <span class="n">wait_for_metric</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">,</span> <span class="s2">&quot;fit_start&quot;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">LOGGER</span><span class="p">)</span>
 
         <span class="c1"># Start the clients</span>
         <span class="n">client_uuids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">client_pids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">)):</span>
             <span class="n">client_info</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">server_address</span><span class="p">,</span>
-                <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="s2">&quot;data_path&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span>
-                <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span>
-                <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
-            <span class="p">}</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">service_address</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">START_CLIENT_API</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">)</span>
-            <span class="n">json_response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client response: </span><span class="si">{</span><span class="n">json_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">uuid</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">log_file_path</span> <span class="o">=</span> <span class="n">_start_client</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">server_address</span><span class="p">,</span> <span class="n">client_info</span><span class="p">)</span>
+            <span class="n">client_uuids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">uuid</span><span class="p">)</span>
+            <span class="n">client_pids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client response returned </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">. Response: </span><span class="si">{</span><span class="n">json_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="s2">&quot;uuid&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">json_response</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client response did not return a UUID. Response: </span><span class="si">{</span><span class="n">json_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-            <span class="n">client_uuids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">])</span>
-
-            <span class="k">await</span> <span class="n">job</span><span class="o">.</span><span class="n">set_client_log_file_path</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;log_file_path&quot;</span><span class="p">],</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">job</span><span class="o">.</span><span class="n">set_client_log_file_path</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">log_file_path</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
 
         <span class="k">await</span> <span class="n">job</span><span class="o">.</span><span class="n">set_uuids</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">,</span> <span class="n">client_uuids</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">job</span><span class="o">.</span><span class="n">set_pids</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">server_process</span><span class="o">.</span><span class="n">pid</span><span class="p">),</span> <span class="n">client_pids</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
 
         <span class="c1"># Start the server training listener and client training listeners as threads to update</span>
         <span class="c1"># the job&#39;s metrics and status once the training is done</span>
         <span class="n">server_listener_thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">server_training_listener</span><span class="p">(</span><span class="n">job</span><span class="p">),))</span>
+        <span class="n">server_listener_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">server_listener_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">client_info</span> <span class="ow">in</span> <span class="n">job</span><span class="o">.</span><span class="n">clients_info</span><span class="p">:</span>
             <span class="n">client_listener_thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">client_training_listener</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">client_info</span><span class="p">),))</span>
+            <span class="n">client_listener_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">client_listener_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
         <span class="c1"># Return the UUIDs</span>
@@ -469,12 +460,14 @@
     <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">job</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_WITH_ERROR</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">job</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">job</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_WITH_ERROR</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">job</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">),</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span></div>
 
 
@@ -586,6 +579,40 @@
 
     <span class="n">db_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
+
+
+<span class="k">def</span> <span class="nf">_start_client</span><span class="p">(</span><span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_info</span><span class="p">:</span> <span class="n">ClientInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Start a client.</span>
+
+<span class="sd">    :param server_address: (str) the address of the server the client needs to report to</span>
+<span class="sd">    :param client_info: (ClientInfo) an instance of ClientInfo with the information needed to start the client</span>
+<span class="sd">    :return (Tuple[str, str, str]): A tuple containing two values: the client&#39;s UUID and PID</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="n">server_address</span><span class="p">,</span>
+        <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="s2">&quot;data_path&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span>
+        <span class="s2">&quot;redis_host&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_host</span><span class="p">,</span>
+        <span class="s2">&quot;redis_port&quot;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_port</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">client_info</span><span class="o">.</span><span class="n">service_address</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">START_CLIENT_API</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="n">json_response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client response: </span><span class="si">{</span><span class="n">json_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client response returned </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">. Response: </span><span class="si">{</span><span class="n">json_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;uuid&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">json_response</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client response did not return a UUID. Response: </span><span class="si">{</span><span class="n">json_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;pid&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">json_response</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client response did not return a PID. Response: </span><span class="si">{</span><span class="n">json_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;log_file_path&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">json_response</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client response did not return a log file path. Response: </span><span class="si">{</span><span class="n">json_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">],</span> <span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">],</span> <span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;log_file_path&quot;</span><span class="p">]</span>
 </pre></div>
         </article>
       </div>

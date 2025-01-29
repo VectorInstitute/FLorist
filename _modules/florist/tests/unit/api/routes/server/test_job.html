@@ -342,12 +342,16 @@
         <article role="main">
           <h1>Source code for florist.tests.unit.api.routes.server.test_job</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
-<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">AsyncMock</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">AsyncMock</span><span class="p">,</span> <span class="n">call</span>
 <span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
+<span class="kn">from</span> <span class="nn">freezegun</span> <span class="kn">import</span> <span class="n">freeze_time</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.routes.server.job</span> <span class="kn">import</span> <span class="n">change_job_status</span><span class="p">,</span> <span class="n">get_job</span>
-<span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">JobStatus</span>
+<span class="kn">from</span> <span class="nn">florist.api.clients.common</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">florist.api.routes.server.job</span> <span class="kn">import</span> <span class="n">change_job_status</span><span class="p">,</span> <span class="n">get_job</span><span class="p">,</span> <span class="n">stop_job</span>
+<span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">ClientInfo</span>
 
 
 <div class="viewcode-block" id="test_get_job_success">
@@ -463,6 +467,170 @@
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">JSONResponse</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">500</span>
     <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Test Error&quot;</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_stop_job_success">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_job.html#florist.tests.unit.api.routes.server.test_job.test_stop_job_success">[docs]</a>
+<span class="nd">@freeze_time</span><span class="p">(</span><span class="s2">&quot;2012-12-11 10:09:08&quot;</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.entities.Job.find_by_id&quot;</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.job.requests&quot;</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.job.os.kill&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_stop_job_success</span><span class="p">(</span><span class="n">mock_kill</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_requests</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_find_by_id</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_job_id</span> <span class="o">=</span> <span class="s2">&quot;test-job-id&quot;</span>
+    <span class="n">test_pid</span> <span class="o">=</span> <span class="mi">1234</span>
+    <span class="n">test_clients</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">ClientInfo</span><span class="p">(</span><span class="n">service_address</span><span class="o">=</span><span class="s2">&quot;test-service-address-1&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="s2">&quot;test-pid-1&quot;</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span> <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+        <span class="n">ClientInfo</span><span class="p">(</span><span class="n">service_address</span><span class="o">=</span><span class="s2">&quot;test-service-address-2&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="s2">&quot;test-pid-2&quot;</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span> <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">mock_job</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">server_pid</span> <span class="o">=</span> <span class="n">test_pid</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">clients_info</span> <span class="o">=</span> <span class="n">test_clients</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">set_status</span> <span class="o">=</span> <span class="n">AsyncMock</span><span class="p">()</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">set_error_message</span> <span class="o">=</span> <span class="n">AsyncMock</span><span class="p">()</span>
+    <span class="n">mock_find_by_id</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_job</span>
+    <span class="n">mock_request</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_response</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">200</span>
+    <span class="n">mock_requests</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_response</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stop_job</span><span class="p">(</span><span class="n">test_job_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="n">mock_find_by_id</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_job_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">mock_kill</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_pid</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">)</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">set_status</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_WITH_ERROR</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training job terminated manually on </span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">mock_requests</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">assert_has_calls</span><span class="p">([</span>
+        <span class="n">call</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">service_address</span><span class="si">}</span><span class="s2">/api/client/stop/</span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+        <span class="n">call</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">service_address</span><span class="si">}</span><span class="s2">/api/client/stop/</span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+    <span class="p">])</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">JSONResponse</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_stop_job_fail_stop_client">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_job.html#florist.tests.unit.api.routes.server.test_job.test_stop_job_fail_stop_client">[docs]</a>
+<span class="nd">@freeze_time</span><span class="p">(</span><span class="s2">&quot;2012-12-11 10:09:08&quot;</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.entities.Job.find_by_id&quot;</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.job.requests&quot;</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.job.os.kill&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_stop_job_fail_stop_client</span><span class="p">(</span><span class="n">mock_kill</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_requests</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_find_by_id</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_job_id</span> <span class="o">=</span> <span class="s2">&quot;test-job-id&quot;</span>
+    <span class="n">test_pid</span> <span class="o">=</span> <span class="mi">1234</span>
+    <span class="n">test_clients</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">ClientInfo</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-1&quot;</span><span class="p">,</span> <span class="n">service_address</span><span class="o">=</span><span class="s2">&quot;test-service-address-1&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="s2">&quot;test-pid-1&quot;</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span> <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+        <span class="n">ClientInfo</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-1&quot;</span><span class="p">,</span> <span class="n">service_address</span><span class="o">=</span><span class="s2">&quot;test-service-address-2&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="s2">&quot;test-pid-2&quot;</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span> <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">test_error</span> <span class="o">=</span> <span class="s2">&quot;test-error&quot;</span>
+
+    <span class="n">mock_job</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">server_pid</span> <span class="o">=</span> <span class="n">test_pid</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">clients_info</span> <span class="o">=</span> <span class="n">test_clients</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">set_status</span> <span class="o">=</span> <span class="n">AsyncMock</span><span class="p">()</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">set_error_message</span> <span class="o">=</span> <span class="n">AsyncMock</span><span class="p">()</span>
+    <span class="n">mock_find_by_id</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_job</span>
+    <span class="n">mock_request</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_response</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">500</span>
+    <span class="n">mock_response</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">test_error</span><span class="p">}</span>
+    <span class="n">mock_requests</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_response</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stop_job</span><span class="p">(</span><span class="n">test_job_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="n">mock_find_by_id</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_job_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">mock_kill</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_pid</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">)</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">set_status</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_WITH_ERROR</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">mock_requests</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">assert_has_calls</span><span class="p">([</span>
+        <span class="n">call</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">service_address</span><span class="si">}</span><span class="s2">/api/client/stop/</span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+        <span class="n">call</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">service_address</span><span class="si">}</span><span class="s2">/api/client/stop/</span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+    <span class="p">],</span> <span class="n">any_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Training job terminated manually on </span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Failed to stop client </span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">test_error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Failed to stop client </span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">test_error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">JSONResponse</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_stop_job_fail_stop_server">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_job.html#florist.tests.unit.api.routes.server.test_job.test_stop_job_fail_stop_server">[docs]</a>
+<span class="nd">@freeze_time</span><span class="p">(</span><span class="s2">&quot;2012-12-11 10:09:08&quot;</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.entities.Job.find_by_id&quot;</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.job.requests&quot;</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.job.os.kill&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_stop_job_fail_stop_server</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_requests</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_find_by_id</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_job_id</span> <span class="o">=</span> <span class="s2">&quot;test-job-id&quot;</span>
+    <span class="n">test_server_uuid</span> <span class="o">=</span> <span class="s2">&quot;test-server-uuid&quot;</span>
+    <span class="n">test_pid</span> <span class="o">=</span> <span class="s2">&quot;incorrect-pid&quot;</span>
+    <span class="n">test_clients</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">ClientInfo</span><span class="p">(</span><span class="n">service_address</span><span class="o">=</span><span class="s2">&quot;test-service-address-1&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="s2">&quot;test-pid-1&quot;</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span> <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+        <span class="n">ClientInfo</span><span class="p">(</span><span class="n">service_address</span><span class="o">=</span><span class="s2">&quot;test-service-address-2&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="s2">&quot;test-pid-2&quot;</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="o">.</span><span class="n">MNIST</span><span class="p">,</span> <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">redis_host</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">redis_port</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">mock_job</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">server_uuid</span> <span class="o">=</span> <span class="n">test_server_uuid</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">server_pid</span> <span class="o">=</span> <span class="n">test_pid</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">clients_info</span> <span class="o">=</span> <span class="n">test_clients</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">set_status</span> <span class="o">=</span> <span class="n">AsyncMock</span><span class="p">()</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">set_error_message</span> <span class="o">=</span> <span class="n">AsyncMock</span><span class="p">()</span>
+    <span class="n">mock_find_by_id</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_job</span>
+    <span class="n">mock_request</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_response</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">200</span>
+    <span class="n">mock_requests</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_response</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stop_job</span><span class="p">(</span><span class="n">test_job_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="n">mock_find_by_id</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_job_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">set_status</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_WITH_ERROR</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">mock_requests</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">assert_has_calls</span><span class="p">([</span>
+        <span class="n">call</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">service_address</span><span class="si">}</span><span class="s2">/api/client/stop/</span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+        <span class="n">call</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">service_address</span><span class="si">}</span><span class="s2">/api/client/stop/</span><span class="si">{</span><span class="n">test_clients</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+    <span class="p">])</span>
+    <span class="n">mock_job</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Training job terminated manually on </span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Failed to stop server </span><span class="si">{</span><span class="n">test_server_uuid</span><span class="si">}</span><span class="s2">: invalid literal for int() with base 10: &#39;</span><span class="si">{</span><span class="n">test_pid</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">JSONResponse</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_stop_job_assertion_error">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_job.html#florist.tests.unit.api.routes.server.test_job.test_stop_job_assertion_error">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.entities.Job.find_by_id&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_stop_job_assertion_error</span><span class="p">(</span><span class="n">mock_find_by_id</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_job_id</span> <span class="o">=</span> <span class="s2">&quot;test-job-id&quot;</span>
+    <span class="n">mock_find_by_id</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mock_request</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stop_job</span><span class="p">(</span><span class="n">test_job_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="n">mock_find_by_id</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_job_id</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">JSONResponse</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">test_job_id</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">}</span></div>
 
 </pre></div>
         </article>

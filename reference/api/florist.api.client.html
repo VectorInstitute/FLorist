@@ -421,12 +421,13 @@ It should be comprised of the host name and port separated by colon (e.g. “loc
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONResponse</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><p>(JSONResponse) If successful, returns 200 with a JSON containing the UUID for the client in the
-format below, which can be used to pull metrics from Redis.</p>
+<dd class="field-odd"><p><p>(JSONResponse) If successful, returns 200 with a JSON containing the UUID, the PID and the log
+file path for the client in the format below:</p>
 <blockquote>
 <div><dl class="simple">
 <dt>{</dt><dd><p>“uuid”: (str) The client’s uuid, which can be used to pull metrics from Redis,
-“log_file_path”: (str) The local path of the log file for this client,</p>
+“log_file_path”: (str) The local path of the log file for this client,
+“pid”: (str) The PID of the client process</p>
 </dd>
 </dl>
 <p>}</p>
@@ -439,6 +440,28 @@ format below, which can be used to pull metrics from Redis.</p>
 <p>}</p>
 </dd>
 </dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.client.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/client.html#stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.client.stop" title="Link to this definition">¶</a></dt>
+<dd><p>Kills the client process with given PID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the PID of the client to be killed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONResponse</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>(JSONResponse) If successful, returns 200. If not successful, returns the appropriate
+error code with a JSON with the format below:</p>
+<blockquote>
+<div><p>{“error”: &lt;error message&gt;}</p>
+</div></blockquote>
 </p>
 </dd>
 </dl>
@@ -515,6 +538,7 @@ format below, which can be used to pull metrics from Redis.</p>
 <li><a class="reference internal" href="#florist.api.client.connect"><code class="docutils literal notranslate"><span class="pre">connect()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.client.get_log"><code class="docutils literal notranslate"><span class="pre">get_log()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.client.start"><code class="docutils literal notranslate"><span class="pre">start()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.client.stop"><code class="docutils literal notranslate"><span class="pre">stop()</span></code></a></li>
 </ul>
 </li>
 </ul>

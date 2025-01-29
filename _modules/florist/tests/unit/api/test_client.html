@@ -344,6 +344,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Tests for FLorist&#39;s client FastAPI endpoints.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">signal</span>
 <span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 
 <span class="kn">from</span> <span class="nn">florist.api</span> <span class="kn">import</span> <span class="n">client</span>
@@ -373,14 +374,18 @@
     <span class="n">test_data_path</span> <span class="o">=</span> <span class="s2">&quot;test/data/path&quot;</span>
     <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;test-redis-host&quot;</span>
     <span class="n">test_redis_port</span> <span class="o">=</span> <span class="s2">&quot;test-redis-port&quot;</span>
+    <span class="n">test_client_pid</span> <span class="o">=</span> <span class="mi">1234</span>
+
+    <span class="n">mock_client_process</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_client_process</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="n">test_client_pid</span>
+    <span class="n">mock_launch_client</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_client_process</span>
 
     <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">test_server_address</span><span class="p">,</span> <span class="n">test_client</span><span class="p">,</span> <span class="n">test_data_path</span><span class="p">,</span> <span class="n">test_redis_host</span><span class="p">,</span> <span class="n">test_redis_port</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
     <span class="n">json_body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
     <span class="n">log_file_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_client_log_file_path</span><span class="p">(</span><span class="n">json_body</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]))</span>
-
-    <span class="k">assert</span> <span class="n">json_body</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span> <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">log_file_path</span><span class="p">}</span>
+    <span class="k">assert</span> <span class="n">json_body</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">ANY</span><span class="p">,</span> <span class="s2">&quot;pid&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">test_client_pid</span><span class="p">),</span> <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="n">log_file_path</span><span class="p">}</span>
 
     <span class="n">mock_launch_client</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">ANY</span><span class="p">,</span> <span class="n">test_server_address</span><span class="p">,</span> <span class="n">log_file_path</span><span class="p">)</span>
 
@@ -505,6 +510,41 @@
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">{</span><span class="n">test_log_file_content</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
 
     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">test_log_file_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="test_stop_success">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.unit.api.test_client.html#florist.tests.unit.api.test_client.test_stop_success">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.client.os.kill&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_stop_success</span><span class="p">(</span><span class="n">mock_kill</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_pid</span> <span class="o">=</span> <span class="mi">1234</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">test_pid</span><span class="p">))</span>
+
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">}</span>
+    <span class="n">mock_kill</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_pid</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_stop_fail_no_pid">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.unit.api.test_client.html#florist.tests.unit.api.test_client.test_stop_fail_no_pid">[docs]</a>
+<span class="k">def</span> <span class="nf">test_stop_fail_no_pid</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;PID is empty or None.&quot;</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_stop_fail_exception">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.unit.api.test_client.html#florist.tests.unit.api.test_client.test_stop_fail_exception">[docs]</a>
+<span class="k">def</span> <span class="nf">test_stop_fail_exception</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_pid</span> <span class="o">=</span> <span class="s2">&quot;inexistant-pid&quot;</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">test_pid</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">500</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;invalid literal for int() with base 10: &#39;</span><span class="si">{</span><span class="n">test_pid</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">}</span></div>
 
 </pre></div>
         </article>
