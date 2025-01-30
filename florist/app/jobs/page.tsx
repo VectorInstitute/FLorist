@@ -166,6 +166,9 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
                         <thead>
                             <tr>
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    UUID
+                                </th>
+                                <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                     Model
                                 </th>
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
@@ -231,6 +234,11 @@ export function TableRow({
 
     return (
         <tr>
+            <td>
+                <div className="d-flex flex-column justify-content-center">
+                    <span className="ps-3 text-secondary text-xs font-weight-bold">{jobId}</span>
+                </div>
+            </td>
             <td>
                 <div className="d-flex flex-column justify-content-center">
                     <span className="ps-3 text-secondary text-xs font-weight-bold">{model}</span>

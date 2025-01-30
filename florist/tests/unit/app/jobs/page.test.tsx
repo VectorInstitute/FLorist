@@ -133,6 +133,7 @@ describe("List Jobs Page", () => {
 
         for (const status of validStatusesKeys) {
             const element = getByTestId(`status-table-${status}`);
+            expect(getByText(element, "UUID")).toBeInTheDocument();
             expect(getByText(element, "Model")).toBeInTheDocument();
             expect(getByText(element, "Server Address")).toBeInTheDocument();
             expect(getByText(element, "Client Service Addresses")).toBeInTheDocument();
