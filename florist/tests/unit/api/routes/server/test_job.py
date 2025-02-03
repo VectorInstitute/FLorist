@@ -11,7 +11,7 @@ from florist.api.routes.server.job import change_job_status, get_job, stop_job
 from florist.api.db.server_entities import JobStatus, ClientInfo
 
 
-@patch("florist.api.db.entities.Job.find_by_id")
+@patch("florist.api.db.server_entities.Job.find_by_id")
 async def test_get_job_success(mock_find_by_id: Mock) -> None:
     mock_job = Mock()
     mock_find_by_id.return_value = mock_job
@@ -28,7 +28,7 @@ async def test_get_job_success(mock_find_by_id: Mock) -> None:
     assert response == mock_job
 
 
-@patch("florist.api.db.entities.Job.find_by_id")
+@patch("florist.api.db.server_entities.Job.find_by_id")
 async def test_get_job_fail_none_job(mock_find_by_id: Mock) -> None:
     mock_find_by_id.return_value = None
 
@@ -46,7 +46,7 @@ async def test_get_job_fail_none_job(mock_find_by_id: Mock) -> None:
     assert json.loads(response.body.decode("utf-8")) == {"error": f"Job with ID {test_id} does not exist."}
 
 
-@patch("florist.api.db.entities.Job.find_by_id")
+@patch("florist.api.db.server_entities.Job.find_by_id")
 async def test_change_job_status_success(mock_find_by_id: Mock) -> None:
     mock_job = Mock()
     mock_job.set_status = AsyncMock()
@@ -69,7 +69,7 @@ async def test_change_job_status_success(mock_find_by_id: Mock) -> None:
     assert json.loads(response.body.decode("utf-8")) == {"status": "success"}
 
 
-@patch("florist.api.db.entities.Job.find_by_id")
+@patch("florist.api.db.server_entities.Job.find_by_id")
 async def test_change_job_status_failure_in_find_by_id(mock_find_by_id: Mock) -> None:
     mock_find_by_id.return_value = None
 
@@ -88,7 +88,7 @@ async def test_change_job_status_failure_in_find_by_id(mock_find_by_id: Mock) ->
     assert json.loads(response.body.decode("utf-8")) == {"error": "Job test_id not found"}
 
 
-@patch("florist.api.db.entities.Job.find_by_id")
+@patch("florist.api.db.server_entities.Job.find_by_id")
 async def test_change_job_status_failure_in_set_status(mock_find_by_id: Mock) -> None:
     mock_job = Mock()
     mock_job.set_status = AsyncMock()
@@ -113,7 +113,7 @@ async def test_change_job_status_failure_in_set_status(mock_find_by_id: Mock) ->
 
 
 @freeze_time("2012-12-11 10:09:08")
-@patch("florist.api.db.entities.Job.find_by_id")
+@patch("florist.api.db.server_entities.Job.find_by_id")
 @patch("florist.api.routes.server.job.requests")
 @patch("florist.api.routes.server.job.os.kill")
 async def test_stop_job_success(mock_kill: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
@@ -153,7 +153,7 @@ async def test_stop_job_success(mock_kill: Mock, mock_requests: Mock, mock_find_
 
 
 @freeze_time("2012-12-11 10:09:08")
-@patch("florist.api.db.entities.Job.find_by_id")
+@patch("florist.api.db.server_entities.Job.find_by_id")
 @patch("florist.api.routes.server.job.requests")
 @patch("florist.api.routes.server.job.os.kill")
 async def test_stop_job_fail_stop_client(mock_kill: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
@@ -202,7 +202,7 @@ async def test_stop_job_fail_stop_client(mock_kill: Mock, mock_requests: Mock, m
 
 
 @freeze_time("2012-12-11 10:09:08")
-@patch("florist.api.db.entities.Job.find_by_id")
+@patch("florist.api.db.server_entities.Job.find_by_id")
 @patch("florist.api.routes.server.job.requests")
 @patch("florist.api.routes.server.job.os.kill")
 async def test_stop_job_fail_stop_server(_: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
@@ -248,7 +248,7 @@ async def test_stop_job_fail_stop_server(_: Mock, mock_requests: Mock, mock_find
     assert json.loads(response.body.decode("utf-8")) == {"status": "success"}
 
 
-@patch("florist.api.db.entities.Job.find_by_id")
+@patch("florist.api.db.server_entities.Job.find_by_id")
 async def test_stop_job_assertion_error(mock_find_by_id: Mock) -> None:
     test_job_id = "test-job-id"
     mock_find_by_id.return_value = None

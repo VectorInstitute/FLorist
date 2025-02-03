@@ -58,8 +58,6 @@ async def test_new_job(mock_request) -> None:
                 redis_port="test-redis-port-1",
                 metrics="test-client-metrics-1",
                 uuid="test-client-uuid-1",
-                log_file_path="test-log-file-path-1",
-                pid="test-client-pid-1",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -69,8 +67,6 @@ async def test_new_job(mock_request) -> None:
                 redis_port="test-redis-port-2",
                 metrics="test-client-metrics-2",
                 uuid="test-client-uuid-2",
-                log_file_path="test-log-file-path-2",
-                pid="test-client-pid-2",
             ),
         ]
     )
@@ -100,8 +96,6 @@ async def test_new_job(mock_request) -> None:
                 "redis_port": test_job.clients_info[0].redis_port,
                 "uuid": test_job.clients_info[0].uuid,
                 "metrics": test_job.clients_info[0].metrics,
-                "log_file_path": test_job.clients_info[0].log_file_path,
-                "pid": test_job.clients_info[0].pid,
             }, {
                 "_id": ANY,
                 "client": test_job.clients_info[1].client.value,
@@ -111,8 +105,6 @@ async def test_new_job(mock_request) -> None:
                 "redis_port": test_job.clients_info[1].redis_port,
                 "uuid": test_job.clients_info[1].uuid,
                 "metrics": test_job.clients_info[1].metrics,
-                "log_file_path": test_job.clients_info[1].log_file_path,
-                "pid": test_job.clients_info[1].pid,
             },
         ],
     }
@@ -142,8 +134,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-1-1",
                 metrics="test-client-metrics-1-1",
                 uuid="test-client-uuid-1-1",
-                log_file_path="test-log-file-path-1-1",
-                pid="test-client-pid-1-1",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -153,8 +143,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-2-1",
                 metrics="test-client-metrics-2-1",
                 uuid="test-client-uuid-2-1",
-                log_file_path="test-log-file-path-2-1",
-                pid="test-client-pid-2-1",
             ),
         ]
     )
@@ -182,8 +170,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-1-2",
                 metrics="test-client-metrics-1-2",
                 uuid="test-client-uuid-1-2",
-                log_file_path="test-log-file-path-1-2",
-                pid="test-client-pid-1-2",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -193,8 +179,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-2-2",
                 metrics="test-client-metrics-2-2",
                 uuid="test-client-uuid-2-2",
-                log_file_path="test-log-file-path-2-2",
-                pid="test-client-pid-2-2",
             ),
         ]
     )
@@ -222,8 +206,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-1-3",
                 metrics="test-client-metrics-1-3",
                 uuid="test-client-uuid-1-3",
-                log_file_path="test-log-file-path-1-3",
-                pid="test-client-pid-1-3",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -233,8 +215,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-2-3",
                 metrics="test-client-metrics-2-3",
                 uuid="test-client-uuid-2-3",
-                log_file_path="test-log-file-path-2-3",
-                pid="test-client-pid-2-3",
             ),
         ]
     )
@@ -262,8 +242,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-1-4",
                 metrics="test-client-metrics-1-4",
                 uuid="test-client-uuid-1-4",
-                log_file_path="test-log-file-path-1-4",
-                pid="test-client-pid-1-4",
             ),
             ClientInfo(
                 client=Client.MNIST,
@@ -273,8 +251,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_port="test-redis-port-2-4",
                 metrics="test-client-metrics-2-4",
                 uuid="test-client-uuid-2-4",
-                log_file_path="test-log-file-path-2-4",
-                pid="test-client-pid-2-4",
             ),
         ]
     )
@@ -317,8 +293,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job1.clients_info[0].redis_port,
                 "metrics": test_job1.clients_info[0].metrics,
                 "uuid": test_job1.clients_info[0].uuid,
-                "log_file_path": test_job1.clients_info[0].log_file_path,
-                "pid": test_job1.clients_info[0].pid,
             }, {
                 "_id": ANY,
                 "client": test_job1.clients_info[1].client.value,
@@ -328,8 +302,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job1.clients_info[1].redis_port,
                 "metrics": test_job1.clients_info[1].metrics,
                 "uuid": test_job1.clients_info[1].uuid,
-                "log_file_path": test_job1.clients_info[1].log_file_path,
-                "pid": test_job1.clients_info[1].pid,
             },
         ],
     }
@@ -358,8 +330,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job2.clients_info[0].redis_port,
                 "metrics": test_job2.clients_info[0].metrics,
                 "uuid": test_job2.clients_info[0].uuid,
-                "log_file_path": test_job2.clients_info[0].log_file_path,
-                "pid": test_job2.clients_info[0].pid,
             }, {
                 "_id": ANY,
                 "client": test_job2.clients_info[1].client.value,
@@ -369,8 +339,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job2.clients_info[1].redis_port,
                 "metrics": test_job2.clients_info[1].metrics,
                 "uuid": test_job2.clients_info[1].uuid,
-                "log_file_path": test_job2.clients_info[1].log_file_path,
-                "pid": test_job2.clients_info[1].pid,
             },
         ],
     }
@@ -399,8 +367,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job3.clients_info[0].redis_port,
                 "metrics": test_job3.clients_info[0].metrics,
                 "uuid": test_job3.clients_info[0].uuid,
-                "log_file_path": test_job3.clients_info[0].log_file_path,
-                "pid": test_job3.clients_info[0].pid,
             }, {
                 "_id": ANY,
                 "client": test_job3.clients_info[1].client.value,
@@ -410,8 +376,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job3.clients_info[1].redis_port,
                 "metrics": test_job3.clients_info[1].metrics,
                 "uuid": test_job3.clients_info[1].uuid,
-                "log_file_path": test_job3.clients_info[1].log_file_path,
-                "pid": test_job3.clients_info[1].pid,
             },
         ],
     }
@@ -440,8 +404,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job4.clients_info[0].redis_port,
                 "metrics": test_job4.clients_info[0].metrics,
                 "uuid": test_job4.clients_info[0].uuid,
-                "log_file_path": test_job4.clients_info[0].log_file_path,
-                "pid": test_job4.clients_info[0].pid,
             }, {
                 "_id": ANY,
                 "client": test_job4.clients_info[1].client.value,
@@ -451,8 +413,6 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_port": test_job4.clients_info[1].redis_port,
                 "metrics": test_job4.clients_info[1].metrics,
                 "uuid": test_job4.clients_info[1].uuid,
-                "log_file_path": test_job4.clients_info[1].log_file_path,
-                "pid": test_job4.clients_info[1].pid,
             },
         ],
     }

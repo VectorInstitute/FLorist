@@ -18,13 +18,13 @@ from florist.api.routes.server.training import (
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
-@patch("florist.api.db.entities.Job.set_status")
-@patch("florist.api.db.entities.Job.set_uuids")
-@patch("florist.api.db.entities.Job.set_server_log_file_path")
-@patch("florist.api.db.entities.Job.set_client_log_file_path")
-@patch("florist.api.db.entities.Job.set_pids")
+@patch("florist.api.db.server_entities.Job.set_status")
+@patch("florist.api.db.server_entities.Job.set_uuids")
+@patch("florist.api.db.server_entities.Job.set_server_log_file_path")
+@patch("florist.api.db.server_entities.Job.set_client_log_file_path")
+@patch("florist.api.db.server_entities.Job.set_server_pid")
 async def test_start_success(
-    mock_set_pids: Mock,
+    mock_set_server_pid: Mock,
     mock_set_client_log_file_path: Mock,
     mock_server_log_file_path: Mock,
     mock_set_uuids: Mock,
@@ -124,11 +124,7 @@ async def test_start_success(
         [test_client_1_uuid, test_client_2_uuid],
         mock_fastapi_request.app.database,
     )
-    mock_set_pids.assert_called_once_with(
-        str(test_server_pid),
-        [test_client_1_pid, test_client_2_pid],
-        mock_fastapi_request.app.database,
-    )
+    mock_set_server_pid.assert_called_once_with(str(test_server_pid))
 
     expected_job = Job(**test_job)
     expected_job.id = ANY
@@ -178,8 +174,8 @@ async def test_start_fail_missing_info() -> None:
     fields_to_be_removed = ["model", "server_config", "clients_info", "server_address", "redis_host", "redis_port"]
 
     for field_to_be_removed in fields_to_be_removed:
-        with patch("florist.api.db.entities.Job.set_status") as mock_set_status:
-            with patch("florist.api.db.entities.Job.set_error_message") as mock_set_error_message:
+        with patch("florist.api.db.server_entities.Job.set_status") as mock_set_status:
+            with patch("florist.api.db.server_entities.Job.set_error_message") as mock_set_error_message:
                 # Arrange
                 test_job_id = "test-job-id"
                 _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
@@ -203,8 +199,8 @@ async def test_start_fail_missing_info() -> None:
 
 
 
-@patch("florist.api.db.entities.Job.set_status")
-@patch("florist.api.db.entities.Job.set_error_message")
+@patch("florist.api.db.server_entities.Job.set_status")
+@patch("florist.api.db.server_entities.Job.set_error_message")
 async def test_start_fail_invalid_server_config(mock_set_error_message: Mock, mock_set_status: Mock) -> None:
     # Arrange
     test_job_id = "test-job-id"
@@ -228,8 +224,8 @@ async def test_start_fail_invalid_server_config(mock_set_error_message: Mock, mo
     mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
 
 
-@patch("florist.api.db.entities.Job.set_status")
-@patch("florist.api.db.entities.Job.set_error_message")
+@patch("florist.api.db.server_entities.Job.set_status")
+@patch("florist.api.db.server_entities.Job.set_error_message")
 async def test_start_fail_empty_clients_info(mock_set_error_message: Mock, mock_set_status: Mock) -> None:
     # Arrange
     test_job_id = "test-job-id"
@@ -253,8 +249,8 @@ async def test_start_fail_empty_clients_info(mock_set_error_message: Mock, mock_
     mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
 
 
-@patch("florist.api.db.entities.Job.set_status")
-@patch("florist.api.db.entities.Job.set_error_message")
+@patch("florist.api.db.server_entities.Job.set_status")
+@patch("florist.api.db.server_entities.Job.set_error_message")
 @patch("florist.api.routes.server.training.launch_local_server")
 async def test_start_launch_server_exception(
     mock_launch_local_server: Mock,
@@ -283,11 +279,11 @@ async def test_start_launch_server_exception(
     mock_set_error_message.assert_called_once_with(str(test_exception), mock_fastapi_request.app.database)
 
 
-@patch("florist.api.db.entities.Job.set_status")
-@patch("florist.api.db.entities.Job.set_error_message")
+@patch("florist.api.db.server_entities.Job.set_status")
+@patch("florist.api.db.server_entities.Job.set_error_message")
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
-@patch("florist.api.db.entities.Job.set_server_log_file_path")
+@patch("florist.api.db.server_entities.Job.set_server_log_file_path")
 async def test_start_wait_for_metric_exception(
     mock_set_server_log_file_path: Mock,
     mock_redis: Mock,
@@ -323,12 +319,12 @@ async def test_start_wait_for_metric_exception(
     mock_set_error_message.assert_called_once_with(str(test_exception), mock_fastapi_request.app.database)
 
 
-@patch("florist.api.db.entities.Job.set_status")
-@patch("florist.api.db.entities.Job.set_error_message")
+@patch("florist.api.db.server_entities.Job.set_status")
+@patch("florist.api.db.server_entities.Job.set_error_message")
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.monitoring.metrics.time")  # just so time.sleep does not actually sleep
-@patch("florist.api.db.entities.Job.set_server_log_file_path")
+@patch("florist.api.db.server_entities.Job.set_server_log_file_path")
 async def test_start_wait_for_metric_timeout(
     mock_set_server_log_file_path: Mock,
     _: Mock,
@@ -367,12 +363,12 @@ async def test_start_wait_for_metric_timeout(
     mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
 
 
-@patch("florist.api.db.entities.Job.set_status")
-@patch("florist.api.db.entities.Job.set_error_message")
+@patch("florist.api.db.server_entities.Job.set_status")
+@patch("florist.api.db.server_entities.Job.set_error_message")
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
-@patch("florist.api.db.entities.Job.set_server_log_file_path")
+@patch("florist.api.db.server_entities.Job.set_server_log_file_path")
 async def test_start_fail_response(
     mock_set_server_log_file_path: Mock,
     mock_requests: Mock,
@@ -416,12 +412,12 @@ async def test_start_fail_response(
     mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
 
 
-@patch("florist.api.db.entities.Job.set_status")
-@patch("florist.api.db.entities.Job.set_error_message")
+@patch("florist.api.db.server_entities.Job.set_status")
+@patch("florist.api.db.server_entities.Job.set_error_message")
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
-@patch("florist.api.db.entities.Job.set_server_log_file_path")
+@patch("florist.api.db.server_entities.Job.set_server_log_file_path")
 async def test_start_no_uuid_in_response(
     mock_set_server_log_file_path: Mock,
     mock_requests: Mock,

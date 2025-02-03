@@ -19,6 +19,7 @@ def test_connect() -> None:
     assert json_body == {"status": "ok"}
 
 
+# TODO: add check for saved data
 @patch("florist.api.client.launch_client")
 def test_start_success(mock_launch_client: Mock) -> None:
     test_server_address = "test-server-address"
@@ -37,7 +38,7 @@ def test_start_success(mock_launch_client: Mock) -> None:
     assert response.status_code == 200
     json_body = json.loads(response.body.decode())
     log_file_path = str(get_client_log_file_path(json_body["uuid"]))
-    assert json_body == {"uuid": ANY, "pid": str(test_client_pid), "log_file_path": log_file_path}
+    assert json_body == {"uuid": ANY}
 
     mock_launch_client.assert_called_once_with(ANY, test_server_address, log_file_path)
 
@@ -156,17 +157,17 @@ def test_stop_success(mock_kill: Mock) -> None:
     mock_kill.assert_called_once_with(test_pid, signal.SIGTERM)
 
 
-def test_stop_fail_no_pid() -> None:
+def test_stop_fail_no_uuid() -> None:
     response = client.stop("")
 
     assert response.status_code == 400
-    assert json.loads(response.body.decode()) == {"error": "PID is empty or None."}
+    assert json.loads(response.body.decode()) == {"error": "UUID is empty or None."}
 
 
 def test_stop_fail_exception() -> None:
-    test_pid = "inexistant-pid"
+    test_uuid = "inexistant-uuid"
 
-    response = client.stop(test_pid)
+    response = client.stop(test_uuid)
 
     assert response.status_code == 500
     assert json.loads(response.body.decode()) == {"error": f"invalid literal for int() with base 10: '{test_pid}'"}
