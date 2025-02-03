@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from florist.api.clients.common import Client
-from florist.api.db.client_entities import ClientDB
+from florist.api.db.client_entities import ClientDAO
 from florist.api.launchers.local import launch_client
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter, get_from_redis
@@ -75,7 +75,7 @@ def start(server_address: str, client: str, data_path: str, redis_host: str, red
         log_file_path = str(get_client_log_file_path(client_uuid))
         client_process = launch_client(client_obj, server_address, log_file_path)
 
-        db_entity = ClientDB(uuid=client_uuid, log_file_path=log_file_path, pid=client_process.pid)
+        db_entity = ClientDAO(uuid=client_uuid, log_file_path=log_file_path, pid=client_process.pid)
         db_entity.save()
 
         return JSONResponse({"uuid": client_uuid})
@@ -121,7 +121,7 @@ def get_log(uuid: str) -> JSONResponse:
     :return: (JSONResponse) Returns the contents of the file as a string.
     """
     try:
-        client = ClientDB.find(uuid)
+        client = ClientDAO.find(uuid)
         with open(client.log_file_path, "r") as f:
             content = f.read()
             return JSONResponse(content)
@@ -131,21 +131,23 @@ def get_log(uuid: str) -> JSONResponse:
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-# TODO verify the safety of this call
-@app.get("/api/client/stop/{pid}")
-def stop(pid: str) -> JSONResponse:
+@app.get("/api/client/stop/{uuid}")
+def stop(uuid: str) -> JSONResponse:
     """
-    Kills the client process with given PID.
+    Stops the client with given UUID.
 
-    :param pid: (str) the PID of the client to be killed.
+    :param uuid: (str) the UUID of the client to be stopped.
     :return: (JSONResponse) If successful, returns 200. If not successful, returns the appropriate
         error code with a JSON with the format below:
             {"error": <error message>}
     """
     try:
-        assert pid, "PID is empty or None."
-        os.kill(int(pid), signal.SIGTERM)
-        LOGGER.info(f"Killed process with PID {pid}")
+        assert uuid, "UUID is empty or None."
+
+        client = ClientDAO.find(uuid)
+        os.kill(client.pid, signal.SIGTERM)
+        LOGGER.info(f"Stopped client with UUID {uuid} ({client.pid})")
+
         return JSONResponse(content={"status": "success"})
     except AssertionError as err:
         return JSONResponse(content={"error": str(err)}, status_code=400)

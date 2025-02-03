@@ -7,7 +7,7 @@ from typing_extensions import Self
 from florist.api.db.config import SQLITE_DB_PATH
 
 
-class EntityDB(object):
+class EntityDAO(object):
     __metaclass__ = ABCMeta
 
     table_name = "Entity"
@@ -63,10 +63,10 @@ class EntityDB(object):
         raise NotImplementedError
 
 
-class ClientDB(EntityDB):
+class ClientDAO(EntityDAO):
     table_name = "Client"
 
-    def __init__(self, uuid: str, log_file_path: str = None, pid: str = None):
+    def __init__(self, uuid: str, log_file_path: str = None, pid: int = None):
         super().__init__(uuid=uuid)
         self.log_file_path = log_file_path
         self.pid = pid

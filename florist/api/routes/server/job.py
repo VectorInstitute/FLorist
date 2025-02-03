@@ -127,7 +127,7 @@ async def stop_job(job_id: str, request: Request) -> JSONResponse:
 
         user_error_message = ""
         for client_info in job.clients_info:
-            response = requests.get(url=f"http://{client_info.service_address}/api/client/stop/{client_info.pid}")
+            response = requests.get(url=f"http://{client_info.service_address}/api/client/stop/{client_info.uuid}")
             status_code = response.status_code
             if status_code != 200:
                 response_data = response.json()
