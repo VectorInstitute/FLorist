@@ -78,9 +78,11 @@ class Job(BaseModel):
     server_uuid: Optional[Annotated[str, Field(...)]]
     server_metrics: Optional[Annotated[str, Field(...)]]
     server_log_file_path: Optional[Annotated[str, Field(...)]]
+    server_pid: Optional[Annotated[str, Field(...)]]
     redis_host: Optional[Annotated[str, Field(...)]]
     redis_port: Optional[Annotated[str, Field(...)]]
     clients_info: Optional[Annotated[List[ClientInfo], Field(...)]]
+    error_message: Optional[Annotated[str, Field(...)]]
 
     @classmethod
     async def find_by_id(cls, job_id: str, database: AsyncIOMotorDatabase[Any]) -> Optional["Job"]:
@@ -130,8 +132,8 @@ class Job(BaseModel):
         """
         Save the server and clients' UUIDs in the database under the current job's id.
 
-        :param server_uuid: (str) the server_uuid to be saved in the database.
-        :param client_uuids: List[str] the list of client_uuids to be saved in the database.
+        :param server_uuid: [str] the server UUID to be saved in the database.
+        :param client_uuids: List[str] the list of client UUIDs to be saved in the database.
         :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
         """
         assert self.clients_info is not None and len(self.clients_info) == len(client_uuids), (
@@ -250,6 +252,31 @@ class Job(BaseModel):
         )
         assert_updated_successfully(update_result)
 
+    async def set_server_pid(self, server_pid: str, database: AsyncIOMotorDatabase[Any]) -> None:
+        """
+        Save the server PID in the database under the current job's id.
+
+        :param server_pid: [str] the server PID to be saved in the database.
+        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
+        """
+        job_collection = database[JOB_COLLECTION_NAME]
+
+        self.server_pid = server_pid
+        update_result = await job_collection.update_one({"_id": self.id}, {"$set": {"server_pid": server_pid}})
+        assert_updated_successfully(update_result)
+
+    async def set_error_message(self, error_message: str, database: AsyncIOMotorDatabase[Any]) -> None:
+        """
+        Save an error message in the database under the current job's id.
+
+        :param error_message: (str) the error message to be saved in the database.
+        :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
+        """
+        job_collection = database[JOB_COLLECTION_NAME]
+        self.error_message = error_message
+        update_result = await job_collection.update_one({"_id": self.id}, {"$set": {"error_message": error_message}})
+        assert_updated_successfully(update_result)
+
     class Config:
         """MongoDB config for the Job DB entity."""
 
@@ -264,6 +291,7 @@ class Job(BaseModel):
                 "server_uuid": "d73243cf-8b89-473b-9607-8cd0253a101d",
                 "server_metrics": '{"host_type": "server", "fit_start": "2024-04-23 15:33:12.865604", "rounds": {"1": {"fit_start": "2024-04-23 15:33:12.869001"}}}',
                 "server_log_file_path": "/Users/foo/server/logfile.log",
+                "server_pid": "123",
                 "redis_host": "localhost",
                 "redis_port": "6379",
                 "clients_info": [
@@ -273,9 +301,10 @@ class Job(BaseModel):
                         "data_path": "path/to/data",
                         "redis_host": "localhost",
                         "redis_port": "6380",
-                        "client_uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
+                        "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
                     },
                 ],
+                "error_message": "Some plain text error message.",
             },
         }
 

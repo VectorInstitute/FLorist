@@ -24,7 +24,7 @@ python-multipart = "^0.0.18"
 pydantic = "^1.10.15"
 motor = "^3.4.0"
 tqdm = "^4.66.3"
-fl4health = {git = "https://github.com/VectorInstitute/FL4Health.git"}
+fl4health = "^0.2"
 
 [tool.poetry.group.test]
 optional = true

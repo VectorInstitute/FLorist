@@ -1,6 +1,8 @@
 """FLorist client FastAPI endpoints."""
 
 import logging
+import os
+import signal
 from pathlib import Path
 from uuid import uuid4
 
@@ -71,9 +73,9 @@ def start(server_address: str, client: str, data_path: str, redis_host: str, red
         )
 
         log_file_path = str(get_client_log_file_path(client_uuid))
-        launch_client(client_obj, server_address, log_file_path)
+        client_process = launch_client(client_obj, server_address, log_file_path)
 
-        db_entity = ClientDB(uuid=client_uuid, log_file_path=log_file_path)
+        db_entity = ClientDB(uuid=client_uuid, log_file_path=log_file_path, pid=client_process.pid)
         db_entity.save()
 
         return JSONResponse({"uuid": client_uuid})
@@ -124,6 +126,29 @@ def get_log(uuid: str) -> JSONResponse:
             content = f.read()
             return JSONResponse(content)
 
+    except Exception as ex:
+        LOGGER.exception(ex)
+        return JSONResponse({"error": str(ex)}, status_code=500)
+
+
+# TODO verify the safety of this call
+@app.get("/api/client/stop/{pid}")
+def stop(pid: str) -> JSONResponse:
+    """
+    Kills the client process with given PID.
+
+    :param pid: (str) the PID of the client to be killed.
+    :return: (JSONResponse) If successful, returns 200. If not successful, returns the appropriate
+        error code with a JSON with the format below:
+            {"error": <error message>}
+    """
+    try:
+        assert pid, "PID is empty or None."
+        os.kill(int(pid), signal.SIGTERM)
+        LOGGER.info(f"Killed process with PID {pid}")
+        return JSONResponse(content={"status": "success"})
+    except AssertionError as err:
+        return JSONResponse(content={"error": str(err)}, status_code=400)
     except Exception as ex:
         LOGGER.exception(ex)
         return JSONResponse({"error": str(ex)}, status_code=500)

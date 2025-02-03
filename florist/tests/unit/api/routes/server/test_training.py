@@ -22,7 +22,9 @@ from florist.api.routes.server.training import (
 @patch("florist.api.db.entities.Job.set_uuids")
 @patch("florist.api.db.entities.Job.set_server_log_file_path")
 @patch("florist.api.db.entities.Job.set_client_log_file_path")
+@patch("florist.api.db.entities.Job.set_pids")
 async def test_start_success(
+    mock_set_pids: Mock,
     mock_set_client_log_file_path: Mock,
     mock_server_log_file_path: Mock,
     mock_set_uuids: Mock,
@@ -39,7 +41,10 @@ async def test_start_success(
 
     test_server_uuid = "test-server-uuid"
     test_server_log_file_path = "test-log-file-path"
-    mock_launch_local_server.return_value = (test_server_uuid, None, test_server_log_file_path)
+    test_server_pid = 12345
+    mock_server_process = Mock()
+    mock_server_process.pid = test_server_pid
+    mock_launch_local_server.return_value = (test_server_uuid, mock_server_process, test_server_log_file_path)
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = b"{\"fit_start\": null}"
@@ -49,11 +54,13 @@ async def test_start_success(
     mock_response.status_code = 200
     test_client_1_uuid = "test-client-1-uuid"
     test_client_1_log_file_path = "test-client-1-log-file-path"
+    test_client_1_pid = "test-client-1-pid"
     test_client_2_uuid = "test-client-2-uuid"
     test_client_2_log_file_path = "test-client-2-log-file-path"
+    test_client_2_pid = "test-client-2-pid"
     mock_response.json.side_effect = [
-        {"uuid": test_client_1_uuid, "log_file_path": test_client_1_log_file_path},
-        {"uuid": test_client_2_uuid, "log_file_path": test_client_2_log_file_path},
+        {"uuid": test_client_1_uuid, "log_file_path": test_client_1_log_file_path, "pid": test_client_1_pid},
+        {"uuid": test_client_2_uuid, "log_file_path": test_client_2_log_file_path, "pid": test_client_2_pid},
     ]
     mock_requests.get.return_value = mock_response
 
@@ -117,6 +124,11 @@ async def test_start_success(
         [test_client_1_uuid, test_client_2_uuid],
         mock_fastapi_request.app.database,
     )
+    mock_set_pids.assert_called_once_with(
+        str(test_server_pid),
+        [test_client_1_pid, test_client_2_pid],
+        mock_fastapi_request.app.database,
+    )
 
     expected_job = Job(**test_job)
     expected_job.id = ANY
@@ -162,28 +174,38 @@ async def test_start_fail_unsupported_client() -> None:
     assert "value is not a valid enumeration member" in json_body["error"]
 
 
-@patch("florist.api.db.entities.Job.set_status")
-async def test_start_fail_missing_info(_: Mock) -> None:
+async def test_start_fail_missing_info() -> None:
     fields_to_be_removed = ["model", "server_config", "clients_info", "server_address", "redis_host", "redis_port"]
 
     for field_to_be_removed in fields_to_be_removed:
-        # Arrange
-        test_job_id = "test-job-id"
-        _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
-        del test_job[field_to_be_removed]
+        with patch("florist.api.db.entities.Job.set_status") as mock_set_status:
+            with patch("florist.api.db.entities.Job.set_error_message") as mock_set_error_message:
+                # Arrange
+                test_job_id = "test-job-id"
+                _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
+                del test_job[field_to_be_removed]
 
-        # Act
-        response = await start(test_job_id, mock_fastapi_request)
+                # Act
+                response = await start(test_job_id, mock_fastapi_request)
 
-        # Assert
-        assert response.status_code == 400
-        json_body = json.loads(response.body.decode())
-        assert json_body == {"error": ANY}
-        assert f"Missing Job information: {field_to_be_removed}" in json_body["error"]
+                # Assert
+                assert response.status_code == 400
+                json_body = json.loads(response.body.decode())
+                assert json_body == {"error": ANY}
+                error_message = f"Missing Job information: {field_to_be_removed}"
+                assert error_message in json_body["error"]
+
+                mock_set_status.assert_has_calls([
+                    call(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database),
+                    call(JobStatus.FINISHED_WITH_ERROR, mock_fastapi_request.app.database),
+                ])
+                mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
+
 
 
 @patch("florist.api.db.entities.Job.set_status")
-async def test_start_fail_invalid_server_config(_: Mock) -> None:
+@patch("florist.api.db.entities.Job.set_error_message")
+async def test_start_fail_invalid_server_config(mock_set_error_message: Mock, mock_set_status: Mock) -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
@@ -196,11 +218,19 @@ async def test_start_fail_invalid_server_config(_: Mock) -> None:
     assert response.status_code == 400
     json_body = json.loads(response.body.decode())
     assert json_body == {"error": ANY}
-    assert f"server_config is not a valid json string." in json_body["error"]
+    error_message = f"server_config is not a valid json string."
+    assert error_message in json_body["error"]
+
+    mock_set_status.assert_has_calls([
+        call(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database),
+        call(JobStatus.FINISHED_WITH_ERROR, mock_fastapi_request.app.database),
+    ])
+    mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
 
 
 @patch("florist.api.db.entities.Job.set_status")
-async def test_start_fail_empty_clients_info(_: Mock) -> None:
+@patch("florist.api.db.entities.Job.set_error_message")
+async def test_start_fail_empty_clients_info(mock_set_error_message: Mock, mock_set_status: Mock) -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
@@ -213,12 +243,24 @@ async def test_start_fail_empty_clients_info(_: Mock) -> None:
     assert response.status_code == 400
     json_body = json.loads(response.body.decode())
     assert json_body == {"error": ANY}
-    assert f"Missing Job information: clients_info" in json_body["error"]
+    error_message = f"Missing Job information: clients_info"
+    assert error_message in json_body["error"]
+
+    mock_set_status.assert_has_calls([
+        call(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database),
+        call(JobStatus.FINISHED_WITH_ERROR, mock_fastapi_request.app.database),
+    ])
+    mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
 
 
 @patch("florist.api.db.entities.Job.set_status")
+@patch("florist.api.db.entities.Job.set_error_message")
 @patch("florist.api.routes.server.training.launch_local_server")
-async def test_start_launch_server_exception(mock_launch_local_server: Mock, _: Mock) -> None:
+async def test_start_launch_server_exception(
+    mock_launch_local_server: Mock,
+    mock_set_error_message: Mock,
+    mock_set_status: Mock,
+) -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, _, _, mock_fastapi_request = _setup_test_job_and_mocks()
@@ -234,8 +276,15 @@ async def test_start_launch_server_exception(mock_launch_local_server: Mock, _: 
     json_body = json.loads(response.body.decode())
     assert json_body == {"error": str(test_exception)}
 
+    mock_set_status.assert_has_calls([
+        call(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database),
+        call(JobStatus.FINISHED_WITH_ERROR, mock_fastapi_request.app.database),
+    ])
+    mock_set_error_message.assert_called_once_with(str(test_exception), mock_fastapi_request.app.database)
+
 
 @patch("florist.api.db.entities.Job.set_status")
+@patch("florist.api.db.entities.Job.set_error_message")
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.db.entities.Job.set_server_log_file_path")
@@ -243,7 +292,8 @@ async def test_start_wait_for_metric_exception(
     mock_set_server_log_file_path: Mock,
     mock_redis: Mock,
     mock_launch_local_server: Mock,
-    _: Mock,
+    mock_set_error_message: Mock,
+    mock_set_status: Mock,
 ) -> None:
     # Arrange
     test_job_id = "test-job-id"
@@ -266,8 +316,15 @@ async def test_start_wait_for_metric_exception(
 
     mock_set_server_log_file_path.assert_called_once_with(test_log_file_path, mock_fastapi_request.app.database)
 
+    mock_set_status.assert_has_calls([
+        call(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database),
+        call(JobStatus.FINISHED_WITH_ERROR, mock_fastapi_request.app.database),
+    ])
+    mock_set_error_message.assert_called_once_with(str(test_exception), mock_fastapi_request.app.database)
+
 
 @patch("florist.api.db.entities.Job.set_status")
+@patch("florist.api.db.entities.Job.set_error_message")
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.monitoring.metrics.time")  # just so time.sleep does not actually sleep
@@ -277,7 +334,8 @@ async def test_start_wait_for_metric_timeout(
     _: Mock,
     mock_redis: Mock,
     mock_launch_local_server: Mock,
-    __: Mock,
+    mock_set_error_message: Mock,
+    mock_set_status: Mock,
 ) -> None:
     # Arrange
     test_job_id = "test-job-id"
@@ -297,12 +355,20 @@ async def test_start_wait_for_metric_timeout(
     # Assert
     assert response.status_code == 500
     json_body = json.loads(response.body.decode())
-    assert json_body == {"error": "Metric 'fit_start' not been found after 20 retries."}
+    error_message = "Metric 'fit_start' not been found after 20 retries."
+    assert json_body == {"error": error_message}
 
     mock_set_server_log_file_path.assert_called_once_with(test_log_file_path, mock_fastapi_request.app.database)
 
+    mock_set_status.assert_has_calls([
+        call(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database),
+        call(JobStatus.FINISHED_WITH_ERROR, mock_fastapi_request.app.database),
+    ])
+    mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
+
 
 @patch("florist.api.db.entities.Job.set_status")
+@patch("florist.api.db.entities.Job.set_error_message")
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
@@ -312,7 +378,8 @@ async def test_start_fail_response(
     mock_requests: Mock,
     mock_redis: Mock,
     mock_launch_local_server: Mock,
-    _: Mock,
+    mock_set_error_message: Mock,
+    mock_set_status: Mock,
 ) -> None:
     # Arrange
     test_job_id = "test-job-id"
@@ -337,12 +404,20 @@ async def test_start_fail_response(
     # Assert
     assert response.status_code == 500
     json_body = json.loads(response.body.decode())
-    assert json_body == {"error": f"Client response returned 403. Response: error"}
+    error_message = f"Client response returned 403. Response: error"
+    assert json_body == {"error": error_message}
 
     mock_set_server_log_file_path.assert_called_once_with(test_log_file_path, mock_fastapi_request.app.database)
 
+    mock_set_status.assert_has_calls([
+        call(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database),
+        call(JobStatus.FINISHED_WITH_ERROR, mock_fastapi_request.app.database),
+    ])
+    mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
+
 
 @patch("florist.api.db.entities.Job.set_status")
+@patch("florist.api.db.entities.Job.set_error_message")
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
@@ -352,7 +427,8 @@ async def test_start_no_uuid_in_response(
     mock_requests: Mock,
     mock_redis: Mock,
     mock_launch_local_server: Mock,
-    _: Mock,
+    mock_set_error_message: Mock,
+    mock_set_status: Mock,
 ) -> None:
     # Arrange
     test_job_id = "test-job-id"
@@ -377,9 +453,16 @@ async def test_start_no_uuid_in_response(
     # Assert
     assert response.status_code == 500
     json_body = json.loads(response.body.decode())
-    assert json_body == {"error": "Client response did not return a UUID. Response: {'foo': 'bar'}"}
+    error_message = "Client response did not return a UUID. Response: {'foo': 'bar'}"
+    assert json_body == {"error": error_message}
 
     mock_set_server_log_file_path.assert_called_once_with(test_log_file_path, mock_fastapi_request.app.database)
+
+    mock_set_status.assert_has_calls([
+        call(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database),
+        call(JobStatus.FINISHED_WITH_ERROR, mock_fastapi_request.app.database),
+    ])
+    mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
 
 
 @patch("florist.api.routes.server.training.AsyncIOMotorClient")

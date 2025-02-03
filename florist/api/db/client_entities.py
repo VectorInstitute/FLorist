@@ -1,8 +1,8 @@
 import json
-from abc import ABCMeta, abstractmethod
-from typing_extensions import Self
-
 import sqlite3
+from abc import ABCMeta, abstractmethod
+
+from typing_extensions import Self
 
 from florist.api.db.config import SQLITE_DB_PATH
 
@@ -77,8 +77,10 @@ class ClientDB(EntityDB):
         return cls(data["uuid"], data["log_file_path"], data["pid"])
 
     def to_json(self) -> str:
-        return json.dumps({
-            "uuid": self.uuid,
-            "log_file_path": self.log_file_path,
-            "pid": self.pid,
-        })
+        return json.dumps(
+            {
+                "uuid": self.uuid,
+                "log_file_path": self.log_file_path,
+                "pid": self.pid,
+            }
+        )
