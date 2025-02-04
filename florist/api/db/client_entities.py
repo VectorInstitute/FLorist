@@ -2,7 +2,7 @@
 
 import json
 import sqlite3
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import Optional
 
 from typing_extensions import Self
@@ -10,10 +10,8 @@ from typing_extensions import Self
 from florist.api.db.config import SQLITE_DB_PATH
 
 
-class EntityDAO(object):
+class EntityDAO(ABC):
     """Base Data Access Object (DAO) for SQLite entities."""
-
-    __metaclass__ = ABCMeta
 
     table_name = "Entity"
     db_path = SQLITE_DB_PATH
@@ -92,6 +90,16 @@ class EntityDAO(object):
             )
         sqlite_db.commit()
 
+    def __eq__(self, other: object) -> bool:
+        """
+        Check if two instances of this entity have the same values for the same attributes.
+
+        :param other: (object) the other instance to check against.
+        :return: (bool) True if they are equal, False otherwise.
+        """
+        assert isinstance(other, self.__class__), f"Other ({other}) is not instance of {self.__class__}."
+        return self.to_json() == other.to_json()
+
     @classmethod
     @abstractmethod
     def from_json(cls, json_data: str) -> Self:
@@ -103,7 +111,7 @@ class EntityDAO(object):
         :param json_data: (str) the entity data as a JSON string.
         :return: (Self) and instance of the entity populated with the JSON data.
         """
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def to_json(self) -> str:
@@ -114,7 +122,7 @@ class EntityDAO(object):
 
         :return: (str) the entity data as a JSON string.
         """
-        raise NotImplementedError
+        pass
 
 
 class ClientDAO(EntityDAO):
