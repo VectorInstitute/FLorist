@@ -193,7 +193,7 @@ def test_stop_fail_no_uuid() -> None:
     assert json.loads(response.body.decode()) == {"error": "UUID is empty or None."}
 
 
-def test_stop_fail_exception() -> None:
+def test_stop_fail_not_found() -> None:
     test_uuid = "inexistant-uuid"
 
     client_dao = ClientDAO(uuid="test-client-uuid", pid=1234)
@@ -203,3 +203,20 @@ def test_stop_fail_exception() -> None:
 
     assert response.status_code == 500
     assert json.loads(response.body.decode()) == {"error": f"Client with uuid '{test_uuid}' not found."}
+
+
+@patch("florist.api.client.os.kill")
+def test_stop_fail_exception(mock_kill: Mock) -> None:
+    test_client_uuid = "test-client-uuid"
+    test_pid = 1234
+    test_exception_message = "test-exception-message"
+    mock_kill.side_effect = Exception(test_exception_message)
+
+    client_dao = ClientDAO(uuid=test_client_uuid, pid=test_pid)
+    client_dao.save()
+
+    response = client.stop(test_client_uuid)
+
+    assert response.status_code == 500
+    assert json.loads(response.body.decode()) == {"error": test_exception_message}
+    mock_kill.assert_called_once_with(test_pid, signal.SIGTERM)

@@ -10,15 +10,36 @@ def test_get_connection(mock_request):
     db_connection = ClientDAO.get_connection()
     assert db_connection
 
+def test_eq(mock_request):
+    client_1 = ClientDAO(uuid="test-uuid-1", log_file_path="test-log-file-path-1", pid="test-pid-1")
+    client_2 = ClientDAO(uuid="test-uuid-2", log_file_path="test-log-file-path-2", pid="test-pid-2")
+    client_3 = ClientDAO(uuid="test-uuid-1", log_file_path="test-log-file-path-1", pid="test-pid-1")
+    not_a_client = "I'm not a client!"
+
+    assert client_1 != client_2
+    assert client_1 == client_3
+    assert client_1 != not_a_client
+
 
 def test_save_and_find(mock_request):
     test_uuid = "test-uuid"
-    client_save = ClientDAO(uuid=test_uuid, log_file_path="test-log-file-path", pid="test-pid")
-    client_save.save()
+    client = ClientDAO(uuid=test_uuid, log_file_path="test-log-file-path", pid="test-pid")
+    client.save()
 
-    client_find = ClientDAO.find(test_uuid)
+    assert ClientDAO.find(test_uuid) == client
 
-    assert client_save == client_find
+def test_saving_a_second_time_should_update(mock_request):
+    test_uuid = "test-uuid"
+    client = ClientDAO(uuid=test_uuid, log_file_path="test-log-file-path", pid="test-pid")
+    client.save()
+
+    assert ClientDAO.find(test_uuid) == client
+
+    client.log_file_path = "test-log-file-path-2"
+    client.pid = "test-pid-2"
+    client.save()
+
+    assert ClientDAO.find(test_uuid) == client
 
 
 def test_find_not_found(mock_request):
