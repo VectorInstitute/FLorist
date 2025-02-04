@@ -404,7 +404,7 @@ async def test_start_fail_response(
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
 @patch("florist.api.db.server_entities.Job.set_server_log_file_path")
-async def test_start_no_uuid_in_response(
+async def test_start_no_client_uuid_in_response(
     mock_set_server_log_file_path: Mock,
     mock_requests: Mock,
     mock_redis: Mock,
@@ -446,6 +446,54 @@ async def test_start_no_uuid_in_response(
     ])
     mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
 
+
+@patch("florist.api.db.server_entities.Job.set_status")
+@patch("florist.api.db.server_entities.Job.set_error_message")
+@patch("florist.api.routes.server.training.launch_local_server")
+@patch("florist.api.monitoring.metrics.redis")
+@patch("florist.api.routes.server.training.requests")
+@patch("florist.api.db.server_entities.Job.set_server_log_file_path")
+async def test_start_client_uuid_in_response_is_not_a_string(
+    mock_set_server_log_file_path: Mock,
+    mock_requests: Mock,
+    mock_redis: Mock,
+    mock_launch_local_server: Mock,
+    mock_set_error_message: Mock,
+    mock_set_status: Mock,
+) -> None:
+    # Arrange
+    test_job_id = "test-job-id"
+    _, _, _, mock_fastapi_request = _setup_test_job_and_mocks()
+
+    test_server_uuid = "test-server-uuid"
+    test_log_file_path = "test-log-file-path"
+    mock_launch_local_server.return_value = (test_server_uuid, None, test_log_file_path)
+
+    mock_redis_connection = Mock()
+    mock_redis_connection.get.return_value = b"{\"fit_start\": null}"
+    mock_redis.Redis.return_value = mock_redis_connection
+
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"uuid": 1234}
+    mock_requests.get.return_value = mock_response
+
+    # Act
+    response = await start(test_job_id, mock_fastapi_request)
+
+    # Assert
+    assert response.status_code == 500
+    json_body = json.loads(response.body.decode())
+    error_message = "Client UUID is not a string: 1234"
+    assert json_body == {"error": error_message}
+
+    mock_set_server_log_file_path.assert_called_once_with(test_log_file_path, mock_fastapi_request.app.database)
+
+    mock_set_status.assert_has_calls([
+        call(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database),
+        call(JobStatus.FINISHED_WITH_ERROR, mock_fastapi_request.app.database),
+    ])
+    mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
 
 @patch("florist.api.routes.server.training.AsyncIOMotorClient")
 @patch("florist.api.routes.server.training.get_from_redis")
