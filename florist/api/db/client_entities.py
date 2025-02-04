@@ -97,7 +97,8 @@ class EntityDAO(ABC):
         :param other: (object) the other instance to check against.
         :return: (bool) True if they are equal, False otherwise.
         """
-        assert isinstance(other, self.__class__), f"Other ({other}) is not instance of {self.__class__}."
+        if not isinstance(other, self.__class__):
+            return False
         return self.to_json() == other.to_json()
 
     @classmethod
