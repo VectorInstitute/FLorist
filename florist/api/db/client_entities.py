@@ -53,7 +53,7 @@ class EntityDAO(object):
         :raises ValueError: if no such entity exists in the database with given UUID.
         """
         sqlite_db = cls.get_connection()
-        results = sqlite_db.execute(f"SELECT * FROM {cls.table_name} WHERE uuid='{uuid}' LIMIT 1")
+        results = sqlite_db.execute(f"SELECT * FROM {cls.table_name} WHERE uuid=? LIMIT 1", (uuid,))
         for result in results:
             return cls.from_json(result[1])
 
@@ -68,7 +68,7 @@ class EntityDAO(object):
         :return: (bool) True if the entity exists, False otherwise.
         """
         sqlite_db = cls.get_connection()
-        results = sqlite_db.execute(f"SELECT EXISTS(SELECT 1 FROM {cls.table_name} WHERE uuid='{uuid}' LIMIT 1);")
+        results = sqlite_db.execute(f"SELECT EXISTS(SELECT 1 FROM {cls.table_name} WHERE uuid=? LIMIT 1);", (uuid,))
         for result in results:
             return bool(result[0])
 
@@ -84,11 +84,11 @@ class EntityDAO(object):
         sqlite_db = self.__class__.get_connection()
         if self.__class__.exists(self.uuid):
             sqlite_db.execute(
-                f"UPDATE {self.__class__.table_name} SET data='{self.to_json()}' WHERE uuid='{self.uuid}'"
+                f"UPDATE {self.__class__.table_name} SET data=? WHERE uuid=?", (self.to_json(), self.uuid)
             )
         else:
             sqlite_db.execute(
-                f"INSERT INTO {self.__class__.table_name} (uuid, data) VALUES('{self.uuid}', '{self.to_json()}')"
+                f"INSERT INTO {self.__class__.table_name} (uuid, data) VALUES(?, ?)", (self.uuid, self.to_json())
             )
         sqlite_db.commit()
 
