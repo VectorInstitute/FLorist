@@ -250,4 +250,7 @@ def _start_client(server_address: str, client_info: ClientInfo) -> str:
     if "uuid" not in json_response:
         raise Exception(f"Client response did not return a UUID. Response: {json_response}")
 
+    if not isinstance(json_response["uuid"], str):
+        raise Exception(f"Client UUID is not a string: {json_response['uuid']}")
+
     return json_response["uuid"]
