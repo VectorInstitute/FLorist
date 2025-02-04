@@ -171,6 +171,30 @@ def test_get_log() -> None:
 
     os.remove(test_log_file_path)
 
+
+def test_get_log_no_log_file_path() -> None:
+    test_client_uuid = "test-client-uuid"
+    client_dao = ClientDAO(uuid=test_client_uuid)
+    client_dao.save()
+
+    response = client.get_log(test_client_uuid)
+
+    assert response.status_code == 400
+    assert json.loads(response.body.decode()) == {"error": "Client log file path is None or empty"}
+
+
+@patch("florist.api.client.ClientDAO")
+def test_get_log_exception(mock_client_dao) -> None:
+    test_client_uuid = "test-client-uuid"
+    test_exception_message = "test-exception-message"
+    mock_client_dao.find.side_effect = Exception(test_exception_message)
+
+    response = client.get_log(test_client_uuid)
+
+    assert response.status_code == 500
+    assert json.loads(response.body.decode()) == {"error": test_exception_message}
+
+
 @patch("florist.api.client.os.kill")
 def test_stop_success(mock_kill: Mock) -> None:
     test_client_uuid = "test-client-uuid"
