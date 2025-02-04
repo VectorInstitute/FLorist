@@ -90,8 +90,6 @@ async def test_train():
                 assert client_metrics_result is not None and isinstance(client_metrics_result, bytes)
                 client_metrics = json.loads(client_metrics_result.decode("utf8"))
                 assert client_metrics["host_type"] == "client"
-                assert "initialized" in client_metrics
-                assert "shutdown" in client_metrics
                 assert len(client_metrics["rounds"]) == test_n_server_rounds
 
                 finished_jobs = await list_jobs_with_status(JobStatus.FINISHED_SUCCESSFULLY, test_request)

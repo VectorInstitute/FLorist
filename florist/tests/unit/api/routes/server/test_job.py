@@ -118,14 +118,14 @@ async def test_change_job_status_failure_in_set_status(mock_find_by_id: Mock) ->
 @patch("florist.api.routes.server.job.os.kill")
 async def test_stop_job_success(mock_kill: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
     test_job_id = "test-job-id"
-    test_pid = 1234
+    test_server_pid = 1234
     test_clients = [
-        ClientInfo(service_address="test-service-address-1", pid="test-pid-1", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
-        ClientInfo(service_address="test-service-address-2", pid="test-pid-2", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
+        ClientInfo(uuid="test-client-uuid-2", service_address="test-service-address-2", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
     ]
 
     mock_job = Mock()
-    mock_job.server_pid = test_pid
+    mock_job.server_pid = test_server_pid
     mock_job.clients_info = test_clients
     mock_job.set_status = AsyncMock()
     mock_job.set_error_message = AsyncMock()
@@ -139,12 +139,12 @@ async def test_stop_job_success(mock_kill: Mock, mock_requests: Mock, mock_find_
     response = await stop_job(test_job_id, mock_request)
 
     mock_find_by_id.assert_called_once_with(test_job_id, mock_request.app.database)
-    mock_kill.assert_called_once_with(test_pid, signal.SIGTERM)
+    mock_kill.assert_called_once_with(test_server_pid, signal.SIGTERM)
     mock_job.set_status.assert_called_once_with(JobStatus.FINISHED_WITH_ERROR, mock_request.app.database)
     mock_job.set_error_message(f"Training job terminated manually on {datetime.now()}", mock_request.app.database)
     mock_requests.get.assert_has_calls([
-        call(url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].pid}"),
-        call(url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].pid}"),
+        call(url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}"),
+        call(url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].uuid}"),
     ])
 
     assert isinstance(response, JSONResponse)
@@ -158,15 +158,15 @@ async def test_stop_job_success(mock_kill: Mock, mock_requests: Mock, mock_find_
 @patch("florist.api.routes.server.job.os.kill")
 async def test_stop_job_fail_stop_client(mock_kill: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
     test_job_id = "test-job-id"
-    test_pid = 1234
+    test_server_pid = 1234
     test_clients = [
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", pid="test-pid-1", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-2", pid="test-pid-2", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-2", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
     ]
     test_error = "test-error"
 
     mock_job = Mock()
-    mock_job.server_pid = test_pid
+    mock_job.server_pid = test_server_pid
     mock_job.clients_info = test_clients
     mock_job.set_status = AsyncMock()
     mock_job.set_error_message = AsyncMock()
@@ -181,11 +181,11 @@ async def test_stop_job_fail_stop_client(mock_kill: Mock, mock_requests: Mock, m
     response = await stop_job(test_job_id, mock_request)
 
     mock_find_by_id.assert_called_once_with(test_job_id, mock_request.app.database)
-    mock_kill.assert_called_once_with(test_pid, signal.SIGTERM)
+    mock_kill.assert_called_once_with(test_server_pid, signal.SIGTERM)
     mock_job.set_status.assert_called_once_with(JobStatus.FINISHED_WITH_ERROR, mock_request.app.database)
     mock_requests.get.assert_has_calls([
-        call(url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].pid}"),
-        call(url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].pid}"),
+        call(url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}"),
+        call(url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].uuid}"),
     ], any_order=True)
     mock_job.set_error_message(
         (
@@ -208,15 +208,15 @@ async def test_stop_job_fail_stop_client(mock_kill: Mock, mock_requests: Mock, m
 async def test_stop_job_fail_stop_server(_: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
     test_job_id = "test-job-id"
     test_server_uuid = "test-server-uuid"
-    test_pid = "incorrect-pid"
+    test_server_pid = "incorrect-pid"
     test_clients = [
-        ClientInfo(service_address="test-service-address-1", pid="test-pid-1", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
-        ClientInfo(service_address="test-service-address-2", pid="test-pid-2", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-2", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
     ]
 
     mock_job = Mock()
     mock_job.server_uuid = test_server_uuid
-    mock_job.server_pid = test_pid
+    mock_job.server_pid = test_server_pid
     mock_job.clients_info = test_clients
     mock_job.set_status = AsyncMock()
     mock_job.set_error_message = AsyncMock()
@@ -232,13 +232,13 @@ async def test_stop_job_fail_stop_server(_: Mock, mock_requests: Mock, mock_find
     mock_find_by_id.assert_called_once_with(test_job_id, mock_request.app.database)
     mock_job.set_status.assert_called_once_with(JobStatus.FINISHED_WITH_ERROR, mock_request.app.database)
     mock_requests.get.assert_has_calls([
-        call(url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].pid}"),
-        call(url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].pid}"),
+        call(url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}"),
+        call(url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].uuid}"),
     ])
     mock_job.set_error_message(
         (
             f"Training job terminated manually on {datetime.now()}",
-            f"Failed to stop server {test_server_uuid}: invalid literal for int() with base 10: '{test_pid}'",
+            f"Failed to stop server {test_server_uuid}: invalid literal for int() with base 10: '{test_server_pid}'",
         ),
         mock_request.app.database,
     )

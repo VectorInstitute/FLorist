@@ -171,3 +171,5 @@ next-env.d.ts
 /.ruff_cache/
 /.swc/
 /florist/api/client.db
+/florist/tests/integration/api/client.db
+/florist/tests/unit/api/client.db

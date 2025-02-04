@@ -4,10 +4,29 @@ import os
 import signal
 from unittest.mock import ANY, Mock, patch
 
+import pytest
+
 from florist.api import client
 from florist.api.clients.mnist import MnistClient
+from florist.api.db.client_entities import ClientDAO
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
+
+
+@pytest.fixture(autouse=True)
+async def mock_client_db() -> None:
+    test_sqlite_db_path = "florist/tests/unit/api/client.db"
+    print(f"Creating test detabase '{test_sqlite_db_path}'")
+    real_db_path = ClientDAO.db_path
+    ClientDAO.db_path = test_sqlite_db_path
+
+    yield
+
+    ClientDAO.db_path = real_db_path
+    if os.path.exists(test_sqlite_db_path):
+        print(f"Deleting test detabase '{test_sqlite_db_path}'")
+        os.remove(test_sqlite_db_path)
+
 
 
 def test_connect() -> None:
@@ -19,7 +38,6 @@ def test_connect() -> None:
     assert json_body == {"status": "ok"}
 
 
-# TODO: add check for saved data
 @patch("florist.api.client.launch_client")
 def test_start_success(mock_launch_client: Mock) -> None:
     test_server_address = "test-server-address"
@@ -51,6 +69,10 @@ def test_start_success(mock_launch_client: Mock) -> None:
     assert metrics_reporter.host == test_redis_host
     assert metrics_reporter.port == test_redis_port
     assert metrics_reporter.run_id == json_body["uuid"]
+
+    client_dao = ClientDAO.find(uuid=json_body["uuid"])
+    assert client_dao.pid == test_client_pid
+    assert client_dao.log_file_path == log_file_path
 
 
 def test_start_fail_unsupported_client() -> None:
@@ -139,7 +161,10 @@ def test_get_log() -> None:
     with open(test_log_file_path, "w") as f:
         f.write(test_log_file_content)
 
-    response = client.get_log(test_log_file_path)
+    client_dao = ClientDAO(uuid=test_client_uuid, log_file_path=test_log_file_path)
+    client_dao.save()
+
+    response = client.get_log(test_client_uuid)
 
     assert response.status_code == 200
     assert response.body.decode() == f"\"{test_log_file_content}\""
@@ -148,9 +173,13 @@ def test_get_log() -> None:
 
 @patch("florist.api.client.os.kill")
 def test_stop_success(mock_kill: Mock) -> None:
+    test_client_uuid = "test-client-uuid"
     test_pid = 1234
 
-    response = client.stop(str(test_pid))
+    client_dao = ClientDAO(uuid=test_client_uuid, pid=test_pid)
+    client_dao.save()
+
+    response = client.stop(test_client_uuid)
 
     assert response.status_code == 200
     assert json.loads(response.body.decode()) == {"status": "success"}
@@ -167,7 +196,10 @@ def test_stop_fail_no_uuid() -> None:
 def test_stop_fail_exception() -> None:
     test_uuid = "inexistant-uuid"
 
+    client_dao = ClientDAO(uuid="test-client-uuid", pid=1234)
+    client_dao.save()
+
     response = client.stop(test_uuid)
 
     assert response.status_code == 500
-    assert json.loads(response.body.decode()) == {"error": f"invalid literal for int() with base 10: '{test_pid}'"}
+    assert json.loads(response.body.decode()) == {"error": f"Client with uuid '{test_uuid}' not found."}

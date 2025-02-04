@@ -118,14 +118,21 @@ def get_log(uuid: str) -> JSONResponse:
 
     :param uuid: (str) the uuid of the client.
 
-    :return: (JSONResponse) Returns the contents of the file as a string.
+    :return: (JSONResponse) If successful, returns the contents of the file as a string.
+        If not successful, returns the appropriate error code with a JSON with the format below:
+            {"error": <error message>}
     """
     try:
         client = ClientDAO.find(uuid)
+
+        assert client.log_file_path, "Client log file path is None or empty"
+
         with open(client.log_file_path, "r") as f:
             content = f.read()
             return JSONResponse(content)
 
+    except AssertionError as err:
+        return JSONResponse(content={"error": str(err)}, status_code=400)
     except Exception as ex:
         LOGGER.exception(ex)
         return JSONResponse({"error": str(ex)}, status_code=500)
@@ -134,7 +141,7 @@ def get_log(uuid: str) -> JSONResponse:
 @app.get("/api/client/stop/{uuid}")
 def stop(uuid: str) -> JSONResponse:
     """
-    Stops the client with given UUID.
+    Stop the client with given UUID.
 
     :param uuid: (str) the UUID of the client to be stopped.
     :return: (JSONResponse) If successful, returns 200. If not successful, returns the appropriate
@@ -143,8 +150,9 @@ def stop(uuid: str) -> JSONResponse:
     """
     try:
         assert uuid, "UUID is empty or None."
-
         client = ClientDAO.find(uuid)
+        assert client.pid, "PID is empty or None."
+
         os.kill(client.pid, signal.SIGTERM)
         LOGGER.info(f"Stopped client with UUID {uuid} ({client.pid})")
 

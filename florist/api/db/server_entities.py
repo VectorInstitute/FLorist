@@ -1,4 +1,4 @@
-"""Definitions for the MongoDB database entities."""
+"""Definitions for the MongoDB database entities (server database)."""
 
 import json
 import uuid
