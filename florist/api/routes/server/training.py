@@ -53,9 +53,6 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         assert job.status == JobStatus.NOT_STARTED, f"Job status ({job.status.value}) is not NOT_STARTED"
         await job.set_status(JobStatus.IN_PROGRESS, request.app.database)
 
-        if job.config_parser is None:
-            job.config_parser = ConfigParser.BASIC
-
         assert job.model is not None, "Missing Job information: model"
         assert job.server_config is not None, "Missing Job information: server_config"
         assert job.clients_info is not None and len(job.clients_info) > 0, "Missing Job information: clients_info"
@@ -63,13 +60,14 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         assert job.redis_host is not None, "Missing Job information: redis_host"
         assert job.redis_port is not None, "Missing Job information: redis_port"
 
+        model_class = Model.class_for_model(job.model)
+        job.config_parser = Model.config_parser_for_model(job.model)
+
         try:
             config_parser = ConfigParser.class_for_parser(job.config_parser)
             server_config = config_parser.parse(job.server_config)
         except JSONDecodeError as err:
             raise AssertionError("server_config is not a valid json string.") from err
-
-        model_class = Model.class_for_model(job.model)
 
         # Start the server
         server_uuid, server_process, server_log_file_path = launch_local_server(
