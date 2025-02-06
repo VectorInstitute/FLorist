@@ -10,7 +10,7 @@ import requests
 from fastapi import APIRouter, Body, Request, status
 from fastapi.responses import JSONResponse
 
-from florist.api.db.entities import MAX_RECORDS_TO_FETCH, Job, JobStatus
+from florist.api.db.server_entities import MAX_RECORDS_TO_FETCH, Job, JobStatus
 
 
 router = APIRouter()
@@ -127,7 +127,7 @@ async def stop_job(job_id: str, request: Request) -> JSONResponse:
 
         user_error_message = ""
         for client_info in job.clients_info:
-            response = requests.get(url=f"http://{client_info.service_address}/api/client/stop/{client_info.pid}")
+            response = requests.get(url=f"http://{client_info.service_address}/api/client/stop/{client_info.uuid}")
             status_code = response.status_code
             if status_code != 200:
                 response_data = response.json()
@@ -183,6 +183,7 @@ async def get_server_log(job_id: str, request: Request) -> JSONResponse:
     except AssertionError as assertion_e:
         return JSONResponse(content={"error": str(assertion_e)}, status_code=400)
     except Exception as general_e:
+        LOGGER.exception(general_e)
         return JSONResponse(content={"error": str(general_e)}, status_code=500)
 
 
@@ -209,18 +210,19 @@ async def get_client_log(job_id: str, client_index: int, request: Request) -> JS
         )
 
         client_info = job.clients_info[client_index]
-        assert client_info.log_file_path is not None and client_info.log_file_path != "", (
-            "Log file path is None or empty"
-        )
 
-        response = requests.get(
-            url=f"http://{client_info.service_address}/api/client/get_log",
-            params={"log_file_path": client_info.log_file_path},
-        )
+        response = requests.get(url=f"http://{client_info.service_address}/api/client/get_log/{client_info.uuid}")
         json_response = response.json()
+
+        if response.status_code != 200:
+            if response.status_code == 400:
+                raise AssertionError(f"Client responded with code 400: '{json_response}'")
+            raise Exception(f"Client response with code != 200: '{json_response}'")
+
         return JSONResponse(json_response)
 
     except AssertionError as assertion_e:
         return JSONResponse(content={"error": str(assertion_e)}, status_code=400)
     except Exception as general_e:
+        LOGGER.exception(general_e)
         return JSONResponse(content={"error": str(general_e)}, status_code=500)

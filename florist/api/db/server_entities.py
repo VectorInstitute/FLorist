@@ -1,4 +1,4 @@
-"""Definitions for the MongoDB database entities."""
+"""Definitions for the MongoDB database entities (server database)."""
 
 import json
 import uuid
@@ -48,8 +48,6 @@ class ClientInfo(BaseModel):
     redis_port: str = Field(...)
     uuid: Optional[Annotated[str, Field(...)]]
     metrics: Optional[Annotated[str, Field(...)]]
-    log_file_path: Optional[Annotated[str, Field(...)]]
-    pid: Optional[Annotated[str, Field(...)]]
 
     class Config:
         """MongoDB config for the ClientInfo DB entity."""
@@ -64,8 +62,6 @@ class ClientInfo(BaseModel):
                 "redis_port": "6380",
                 "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
                 "metrics": '{"host_type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
-                "log_file_path": "/Users/foo/client/logfile.log",
-                "pid": "123",
             },
         }
 
@@ -256,31 +252,18 @@ class Job(BaseModel):
         )
         assert_updated_successfully(update_result)
 
-    async def set_pids(self, server_pid: str, client_pids: List[str], database: AsyncIOMotorDatabase[Any]) -> None:
+    async def set_server_pid(self, server_pid: str, database: AsyncIOMotorDatabase[Any]) -> None:
         """
-        Save the server and clients' PIDs in the database under the current job's id.
+        Save the server PID in the database under the current job's id.
 
         :param server_pid: [str] the server PID to be saved in the database.
-        :param client_pids: List[str] the list of client PIDs to be saved in the database.
         :param database: (motor.motor_asyncio.AsyncIOMotorDatabase) The database where the job collection is stored.
         """
-        assert self.clients_info is not None and len(self.clients_info) == len(client_pids), (
-            "self.clients_info and client_pids must have the same length "
-            f"({'None' if self.clients_info is None else len(self.clients_info)}!={len(client_pids)})."
-        )
-
         job_collection = database[JOB_COLLECTION_NAME]
 
         self.server_pid = server_pid
         update_result = await job_collection.update_one({"_id": self.id}, {"$set": {"server_pid": server_pid}})
         assert_updated_successfully(update_result)
-
-        for i in range(len(client_pids)):
-            self.clients_info[i].pid = client_pids[i]
-            update_result = await job_collection.update_one(
-                {"_id": self.id}, {"$set": {f"clients_info.{i}.pid": client_pids[i]}}
-            )
-            assert_updated_successfully(update_result)
 
     async def set_error_message(self, error_message: str, database: AsyncIOMotorDatabase[Any]) -> None:
         """
@@ -319,8 +302,6 @@ class Job(BaseModel):
                         "redis_host": "localhost",
                         "redis_port": "6380",
                         "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
-                        "metrics": '{"host_type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
-                        "pid": "123",
                     },
                 ],
                 "error_message": "Some plain text error message.",

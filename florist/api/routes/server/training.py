@@ -4,7 +4,7 @@ import asyncio
 import logging
 from json import JSONDecodeError
 from threading import Thread
-from typing import Any, List, Tuple
+from typing import Any, List
 
 import requests
 from fastapi import APIRouter, Request
@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
-from florist.api.db.entities import ClientInfo, Job, JobStatus
+from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
 from florist.api.servers.common import Model
 from florist.api.servers.config_parsers import ConfigParser
@@ -87,17 +87,13 @@ async def start(job_id: str, request: Request) -> JSONResponse:
 
         # Start the clients
         client_uuids: List[str] = []
-        client_pids: List[str] = []
         for i in range(len(job.clients_info)):
             client_info = job.clients_info[i]
-            uuid, pid, log_file_path = _start_client(job.server_address, client_info)
+            uuid = _start_client(job.server_address, client_info)
             client_uuids.append(uuid)
-            client_pids.append(pid)
-
-            await job.set_client_log_file_path(i, log_file_path, request.app.database)
 
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
-        await job.set_pids(str(server_process.pid), client_pids, request.app.database)
+        await job.set_server_pid(str(server_process.pid), request.app.database)
 
         # Start the server training listener and client training listeners as threads to update
         # the job's metrics and status once the training is done
@@ -229,7 +225,7 @@ async def server_training_listener(job: Job) -> None:
     db_client.close()
 
 
-def _start_client(server_address: str, client_info: ClientInfo) -> Tuple[str, str, str]:
+def _start_client(server_address: str, client_info: ClientInfo) -> str:
     """
     Start a client.
 
@@ -254,10 +250,7 @@ def _start_client(server_address: str, client_info: ClientInfo) -> Tuple[str, st
     if "uuid" not in json_response:
         raise Exception(f"Client response did not return a UUID. Response: {json_response}")
 
-    if "pid" not in json_response:
-        raise Exception(f"Client response did not return a PID. Response: {json_response}")
+    if not isinstance(json_response["uuid"], str):
+        raise Exception(f"Client UUID is not a string: {json_response['uuid']}")
 
-    if "log_file_path" not in json_response:
-        raise Exception(f"Client response did not return a log file path. Response: {json_response}")
-
-    return json_response["uuid"], json_response["pid"], json_response["log_file_path"]
+    return json_response["uuid"]

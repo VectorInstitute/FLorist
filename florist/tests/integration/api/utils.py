@@ -1,14 +1,16 @@
 import contextlib
+import os
+
 import pytest
 import time
 import threading
 import uvicorn
 
 from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo import MongoClient
 from starlette.requests import Request
 
 from florist.api.server import MONGODB_URI
+from florist.api.db.client_entities import EntityDAO
 
 
 class TestUvicornServer(uvicorn.Server):
@@ -49,6 +51,7 @@ class MockRequest(Request):
 
 
 TEST_DATABASE_NAME = "test-database"
+TEST_SQLITE_DB_PATH = "florist/tests/integration/api/client.db"
 
 
 @pytest.fixture
@@ -56,8 +59,16 @@ async def mock_request() -> MockRequest:
     print(f"Creating test detabase '{TEST_DATABASE_NAME}'")
     app = MockApp(TEST_DATABASE_NAME)
     request = MockRequest(app)
+    print(f"Creating test detabase '{TEST_SQLITE_DB_PATH}'")
+    real_db_path = EntityDAO.db_path
+    EntityDAO.db_path = TEST_SQLITE_DB_PATH
 
     yield request
 
     print(f"Deleting test detabase '{TEST_DATABASE_NAME}'")
     await app.db_client.drop_database(TEST_DATABASE_NAME)
+
+    EntityDAO.db_path = real_db_path
+    if os.path.exists(TEST_SQLITE_DB_PATH):
+        print(f"Deleting test detabase '{TEST_SQLITE_DB_PATH}'")
+        os.remove(TEST_SQLITE_DB_PATH)

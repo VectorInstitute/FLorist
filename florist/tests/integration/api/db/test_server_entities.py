@@ -3,7 +3,7 @@ import re
 from unittest.mock import ANY
 from pytest import raises
 
-from florist.api.db.entities import Job, JobStatus
+from florist.api.db.server_entities import Job, JobStatus
 from florist.tests.integration.api.utils import mock_request
 
 
@@ -230,24 +230,7 @@ async def test_set_server_log_file_path_success(mock_request) -> None:
     test_job.server_log_file_path = test_log_file_path
     assert result_job == test_job
 
-
-async def test_set_client_log_file_path_success(mock_request) -> None:
-    test_job = get_test_job()
-    result_id = await test_job.create(mock_request.app.database)
-    test_job.id = result_id
-    test_job.clients_info[0].id = ANY
-    test_job.clients_info[1].id = ANY
-
-    test_log_file_path = "test/log/file/path.log"
-
-    await test_job.set_client_log_file_path(1, test_log_file_path, mock_request.app.database)
-
-    result_job = await Job.find_by_id(result_id, mock_request.app.database)
-    test_job.clients_info[1].log_file_path = test_log_file_path
-    assert result_job == test_job
-
-
-async def test_set_pid_success(mock_request) -> None:
+async def test_set_server_pid_success(mock_request) -> None:
     test_job = get_test_job()
     result_id = await test_job.create(mock_request.app.database)
     test_job.id = result_id
@@ -255,24 +238,12 @@ async def test_set_pid_success(mock_request) -> None:
     test_job.clients_info[1].id = ANY
 
     test_server_pid = "new-server-pid"
-    test_client_pid_1 = "new-client-pid-1"
-    test_client_pid_2 = "new-client-pid-2"
 
-    await test_job.set_pids(test_server_pid, [test_client_pid_1, test_client_pid_2], mock_request.app.database)
+    await test_job.set_server_pid(test_server_pid, mock_request.app.database)
 
     result_job = await Job.find_by_id(result_id, mock_request.app.database)
     test_job.server_pid = test_server_pid
-    test_job.clients_info[0].pid = test_client_pid_1
-    test_job.clients_info[1].pid = test_client_pid_2
     assert result_job == test_job
-
-
-async def test_set_pid_assertion_error(mock_request) -> None:
-    test_job = get_test_job()
-    await test_job.create(mock_request.app.database)
-
-    with raises(AssertionError, match=re.escape("self.clients_info and client_pids must have the same length (2!=1)")):
-        await test_job.set_pids("test", ["test"], mock_request.app.database)
 
 
 async def test_set_error_message_success(mock_request) -> None:
