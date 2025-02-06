@@ -1,7 +1,0 @@
-florist.tests.integration.api.db.test\_entities module
-======================================================
-
-.. automodule:: florist.tests.integration.api.db.test_entities
-   :members:
-   :undoc-members:
-   :show-inheritance:

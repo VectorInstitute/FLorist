@@ -215,8 +215,9 @@
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.db.html">florist.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.db.client_entities.html">florist.api.db.client_entities module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.db.config.html">florist.api.db.config module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="florist.api.db.entities.html">florist.api.db.entities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.db.server_entities.html">florist.api.db.server_entities module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.launchers.html">florist.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of florist.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -256,7 +257,8 @@
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.tests.integration.html">florist.tests.integration package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of florist.tests.integration package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="florist.tests.integration.api.html">florist.tests.integration.api package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.integration.api.db.html">florist.tests.integration.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7"><a class="reference internal" href="florist.tests.integration.api.db.test_entities.html">florist.tests.integration.api.db.test_entities module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="florist.tests.integration.api.db.test_client_entities.html">florist.tests.integration.api.db.test_client_entities module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="florist.tests.integration.api.db.test_server_entities.html">florist.tests.integration.api.db.test_server_entities module</a></li>
 </ul>
 </li>
 <li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.integration.api.launchers.html">florist.tests.integration.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -346,6 +348,16 @@
 <span id="florist-tests-unit-api-test-client-module"></span><h1>florist.tests.unit.api.test_client module<a class="headerlink" href="#module-florist.tests.unit.api.test_client" title="Link to this heading">¶</a></h1>
 <p>Tests for FLorist’s client FastAPI endpoints.</p>
 <dl class="py function">
+<dt class="sig sig-object py" id="florist.tests.unit.api.test_client.mock_client_db">
+<span class="sig-name descname"><span class="pre">mock_client_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/unit/api/test_client.html#mock_client_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.unit.api.test_client.mock_client_db" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="florist.tests.unit.api.test_client.test_check_status">
 <span class="sig-name descname"><span class="pre">test_check_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_redis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/unit/api/test_client.html#test_check_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.unit.api.test_client.test_check_status" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -397,6 +409,26 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="florist.tests.unit.api.test_client.test_get_log_exception">
+<span class="sig-name descname"><span class="pre">test_get_log_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_client_dao</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/unit/api/test_client.html#test_get_log_exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.unit.api.test_client.test_get_log_exception" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.tests.unit.api.test_client.test_get_log_no_log_file_path">
+<span class="sig-name descname"><span class="pre">test_get_log_no_log_file_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/unit/api/test_client.html#test_get_log_no_log_file_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.unit.api.test_client.test_get_log_no_log_file_path" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="florist.tests.unit.api.test_client.test_start_fail_exception">
 <span class="sig-name descname"><span class="pre">test_start_fail_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/unit/api/test_client.html#test_start_fail_exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.unit.api.test_client.test_start_fail_exception" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -428,7 +460,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="florist.tests.unit.api.test_client.test_stop_fail_exception">
-<span class="sig-name descname"><span class="pre">test_stop_fail_exception</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/unit/api/test_client.html#test_stop_fail_exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.unit.api.test_client.test_stop_fail_exception" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">test_stop_fail_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_kill</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/unit/api/test_client.html#test_stop_fail_exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.unit.api.test_client.test_stop_fail_exception" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -437,8 +469,18 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.unit.api.test_client.test_stop_fail_no_pid">
-<span class="sig-name descname"><span class="pre">test_stop_fail_no_pid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/unit/api/test_client.html#test_stop_fail_no_pid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.unit.api.test_client.test_stop_fail_no_pid" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.unit.api.test_client.test_stop_fail_no_uuid">
+<span class="sig-name descname"><span class="pre">test_stop_fail_no_uuid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/unit/api/test_client.html#test_stop_fail_no_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.unit.api.test_client.test_stop_fail_no_uuid" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.tests.unit.api.test_client.test_stop_fail_not_found">
+<span class="sig-name descname"><span class="pre">test_stop_fail_not_found</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/unit/api/test_client.html#test_stop_fail_not_found"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.unit.api.test_client.test_stop_fail_not_found" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -515,16 +557,20 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">florist.tests.unit.api.test_client module</a><ul>
+<li><a class="reference internal" href="#florist.tests.unit.api.test_client.mock_client_db"><code class="docutils literal notranslate"><span class="pre">mock_client_db()</span></code></a></li>
 <li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_check_status"><code class="docutils literal notranslate"><span class="pre">test_check_status()</span></code></a></li>
 <li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_check_status_fail_exception"><code class="docutils literal notranslate"><span class="pre">test_check_status_fail_exception()</span></code></a></li>
 <li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_check_status_not_found"><code class="docutils literal notranslate"><span class="pre">test_check_status_not_found()</span></code></a></li>
 <li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_connect"><code class="docutils literal notranslate"><span class="pre">test_connect()</span></code></a></li>
 <li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_get_log"><code class="docutils literal notranslate"><span class="pre">test_get_log()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_get_log_exception"><code class="docutils literal notranslate"><span class="pre">test_get_log_exception()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_get_log_no_log_file_path"><code class="docutils literal notranslate"><span class="pre">test_get_log_no_log_file_path()</span></code></a></li>
 <li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_start_fail_exception"><code class="docutils literal notranslate"><span class="pre">test_start_fail_exception()</span></code></a></li>
 <li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_start_fail_unsupported_client"><code class="docutils literal notranslate"><span class="pre">test_start_fail_unsupported_client()</span></code></a></li>
 <li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_start_success"><code class="docutils literal notranslate"><span class="pre">test_start_success()</span></code></a></li>
 <li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_stop_fail_exception"><code class="docutils literal notranslate"><span class="pre">test_stop_fail_exception()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_stop_fail_no_pid"><code class="docutils literal notranslate"><span class="pre">test_stop_fail_no_pid()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_stop_fail_no_uuid"><code class="docutils literal notranslate"><span class="pre">test_stop_fail_no_uuid()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_stop_fail_not_found"><code class="docutils literal notranslate"><span class="pre">test_stop_fail_not_found()</span></code></a></li>
 <li><a class="reference internal" href="#florist.tests.unit.api.test_client.test_stop_success"><code class="docutils literal notranslate"><span class="pre">test_stop_success()</span></code></a></li>
 </ul>
 </li>

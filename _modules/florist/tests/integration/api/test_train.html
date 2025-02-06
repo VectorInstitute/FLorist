@@ -214,8 +214,9 @@
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.db.html">florist.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.db.client_entities.html">florist.api.db.client_entities module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.db.config.html">florist.api.db.config module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.db.entities.html">florist.api.db.entities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../reference/api/florist.api.db.server_entities.html">florist.api.db.server_entities module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.api.launchers.html">florist.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of florist.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -255,7 +256,8 @@
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../reference/api/florist.tests.integration.html">florist.tests.integration package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of florist.tests.integration package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="../../../../../reference/api/florist.tests.integration.api.html">florist.tests.integration.api package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6 has-children"><a class="reference internal" href="../../../../../reference/api/florist.tests.integration.api.db.html">florist.tests.integration.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7"><a class="reference internal" href="../../../../../reference/api/florist.tests.integration.api.db.test_entities.html">florist.tests.integration.api.db.test_entities module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html">florist.tests.integration.api.db.test_client_entities module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../../reference/api/florist.tests.integration.api.db.test_server_entities.html">florist.tests.integration.api.db.test_server_entities module</a></li>
 </ul>
 </li>
 <li class="toctree-l6 has-children"><a class="reference internal" href="../../../../../reference/api/florist.tests.integration.api.launchers.html">florist.tests.integration.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -350,7 +352,7 @@
 <span class="kn">import</span> <span class="nn">uvicorn</span>
 
 <span class="kn">from</span> <span class="nn">florist.api.clients.common</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">florist.api.db.entities</span> <span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">ClientInfo</span>
+<span class="kn">from</span> <span class="nn">florist.api.db.server_entities</span> <span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">ClientInfo</span>
 <span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">wait_for_metric</span>
 <span class="kn">from</span> <span class="nn">florist.api.routes.server.training</span> <span class="kn">import</span> <span class="n">LOGGER</span>
 <span class="kn">from</span> <span class="nn">florist.api.routes.server.job</span> <span class="kn">import</span> <span class="n">new_job</span><span class="p">,</span> <span class="n">list_jobs_with_status</span>
@@ -435,8 +437,6 @@
                 <span class="k">assert</span> <span class="n">client_metrics_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">client_metrics_result</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
                 <span class="n">client_metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">client_metrics_result</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf8&quot;</span><span class="p">))</span>
                 <span class="k">assert</span> <span class="n">client_metrics</span><span class="p">[</span><span class="s2">&quot;host_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;client&quot;</span>
-                <span class="k">assert</span> <span class="s2">&quot;initialized&quot;</span> <span class="ow">in</span> <span class="n">client_metrics</span>
-                <span class="k">assert</span> <span class="s2">&quot;shutdown&quot;</span> <span class="ow">in</span> <span class="n">client_metrics</span>
                 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">client_metrics</span><span class="p">[</span><span class="s2">&quot;rounds&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="n">test_n_server_rounds</span>
 
                 <span class="n">finished_jobs</span> <span class="o">=</span> <span class="k">await</span> <span class="n">list_jobs_with_status</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_SUCCESSFULLY</span><span class="p">,</span> <span class="n">test_request</span><span class="p">)</span>

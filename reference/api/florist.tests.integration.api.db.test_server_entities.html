@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.tests.integration.api.launchers package" href="florist.tests.integration.api.launchers.html" /><link rel="prev" title="florist.tests.integration.api.db package" href="florist.tests.integration.api.db.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.tests.integration.api.launchers package" href="florist.tests.integration.api.launchers.html" /><link rel="prev" title="florist.tests.integration.api.db.test_client_entities module" href="florist.tests.integration.api.db.test_client_entities.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>florist.tests.integration.api.db.test_entities module - FLorist</title>
+        <title>florist.tests.integration.api.db.test_server_entities module - FLorist</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -215,8 +215,9 @@
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.db.html">florist.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.db.client_entities.html">florist.api.db.client_entities module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.db.config.html">florist.api.db.config module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="florist.api.db.entities.html">florist.api.db.entities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.db.server_entities.html">florist.api.db.server_entities module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.launchers.html">florist.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of florist.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -256,7 +257,8 @@
 <li class="toctree-l4 current has-children"><a class="reference internal" href="florist.tests.integration.html">florist.tests.integration package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of florist.tests.integration package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5 current has-children"><a class="reference internal" href="florist.tests.integration.api.html">florist.tests.integration.api package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l6 current has-children"><a class="reference internal" href="florist.tests.integration.api.db.html">florist.tests.integration.api.db package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l7 current current-page"><a class="current reference internal" href="#">florist.tests.integration.api.db.test_entities module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="florist.tests.integration.api.db.test_client_entities.html">florist.tests.integration.api.db.test_client_entities module</a></li>
+<li class="toctree-l7 current current-page"><a class="current reference internal" href="#">florist.tests.integration.api.db.test_server_entities module</a></li>
 </ul>
 </li>
 <li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.integration.api.launchers.html">florist.tests.integration.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -342,31 +344,21 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-florist.tests.integration.api.db.test_entities">
-<span id="florist-tests-integration-api-db-test-entities-module"></span><h1>florist.tests.integration.api.db.test_entities module<a class="headerlink" href="#module-florist.tests.integration.api.db.test_entities" title="Link to this heading">¶</a></h1>
+          <section id="module-florist.tests.integration.api.db.test_server_entities">
+<span id="florist-tests-integration-api-db-test-server-entities-module"></span><h1>florist.tests.integration.api.db.test_server_entities module<a class="headerlink" href="#module-florist.tests.integration.api.db.test_server_entities" title="Link to this heading">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.get_test_job">
-<span class="sig-name descname"><span class="pre">get_test_job</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#get_test_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.get_test_job" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.get_test_job">
+<span class="sig-name descname"><span class="pre">get_test_job</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#get_test_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.get_test_job" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.entities.html#florist.api.db.entities.Job" title="florist.api.db.entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.server_entities.html#florist.api.db.server_entities.Job" title="florist.api.db.server_entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_job_create_success">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_job_create_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_job_create_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_job_create_success" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_job_find_by_id_not_found">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_job_find_by_id_not_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_job_find_by_id_not_found"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_job_find_by_id_not_found" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_job_create_success">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_job_create_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_job_create_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_job_create_success" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -375,8 +367,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_job_find_by_id_success">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_job_find_by_id_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_job_find_by_id_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_job_find_by_id_success" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_job_find_by_id_not_found">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_job_find_by_id_not_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_job_find_by_id_not_found"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_job_find_by_id_not_found" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -385,8 +377,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_job_find_by_status_success">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_job_find_by_status_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_job_find_by_status_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_job_find_by_status_success" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_job_find_by_id_success">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_job_find_by_id_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_job_find_by_id_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_job_find_by_id_success" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -395,8 +387,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_job_find_by_status_with_limit_success">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_job_find_by_status_with_limit_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_job_find_by_status_with_limit_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_job_find_by_status_with_limit_success" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_job_find_by_status_success">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_job_find_by_status_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_job_find_by_status_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_job_find_by_status_success" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -405,8 +397,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_client_log_file_path_success">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_client_log_file_path_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_client_log_file_path_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_client_log_file_path_success" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_job_find_by_status_with_limit_success">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_job_find_by_status_with_limit_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_job_find_by_status_with_limit_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_job_find_by_status_with_limit_success" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -415,8 +407,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_client_metrics_fail_update_result">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_client_metrics_fail_update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_client_metrics_fail_update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_client_metrics_fail_update_result" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_client_metrics_fail_update_result">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_client_metrics_fail_update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_client_metrics_fail_update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_client_metrics_fail_update_result" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -425,8 +417,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_client_metrics_success">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_client_metrics_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_client_metrics_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_client_metrics_success" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_client_metrics_success">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_client_metrics_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_client_metrics_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_client_metrics_success" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -435,8 +427,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_error_message_success">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_error_message_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_error_message_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_error_message_success" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_error_message_success">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_error_message_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_error_message_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_error_message_success" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -445,8 +437,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_metrics_fail_clients_info_is_none">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_metrics_fail_clients_info_is_none</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_metrics_fail_clients_info_is_none"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_metrics_fail_clients_info_is_none" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_metrics_fail_clients_info_is_none">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_metrics_fail_clients_info_is_none</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_metrics_fail_clients_info_is_none"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_metrics_fail_clients_info_is_none" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -455,8 +447,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_pid_assertion_error">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_pid_assertion_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_pid_assertion_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_pid_assertion_error" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_server_log_file_path_success">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_server_log_file_path_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_server_log_file_path_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_server_log_file_path_success" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -465,8 +457,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_pid_success">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_pid_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_pid_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_pid_success" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_server_metrics_fail_update_result">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_server_metrics_fail_update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_server_metrics_fail_update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_server_metrics_fail_update_result" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -475,8 +467,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_server_log_file_path_success">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_server_log_file_path_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_server_log_file_path_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_server_log_file_path_success" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_server_metrics_success">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_server_metrics_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_server_metrics_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_server_metrics_success" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -485,8 +477,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_server_metrics_fail_update_result">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_server_metrics_fail_update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_server_metrics_fail_update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_server_metrics_fail_update_result" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_server_pid_success">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_server_pid_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_server_pid_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_server_pid_success" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -495,8 +487,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_server_metrics_success">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_server_metrics_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_server_metrics_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_server_metrics_success" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_status_fail_update_result">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_status_fail_update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_status_fail_update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_status_fail_update_result" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -505,8 +497,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_status_fail_update_result">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_status_fail_update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_status_fail_update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_status_fail_update_result" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_status_success">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_status_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_status_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_status_success" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -515,8 +507,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_status_success">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_status_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_status_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_status_success" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_uuids_fail_clients_info_is_none">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_uuids_fail_clients_info_is_none</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_uuids_fail_clients_info_is_none"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_uuids_fail_clients_info_is_none" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -525,8 +517,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_uuids_fail_clients_info_is_none">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_uuids_fail_clients_info_is_none</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_uuids_fail_clients_info_is_none"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_uuids_fail_clients_info_is_none" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_uuids_fail_clients_info_is_not_same_length">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_uuids_fail_clients_info_is_not_same_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_uuids_fail_clients_info_is_not_same_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_uuids_fail_clients_info_is_not_same_length" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -535,8 +527,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_uuids_fail_clients_info_is_not_same_length">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_uuids_fail_clients_info_is_not_same_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_uuids_fail_clients_info_is_not_same_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_uuids_fail_clients_info_is_not_same_length" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_uuids_fail_update_result">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_uuids_fail_update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_uuids_fail_update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_uuids_fail_update_result" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -545,18 +537,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_uuids_fail_update_result">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_uuids_fail_update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_uuids_fail_update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_uuids_fail_update_result" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_entities.test_set_uuids_success">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_uuids_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_entities.html#test_set_uuids_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_entities.test_set_uuids_success" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="florist.tests.integration.api.db.test_server_entities.test_set_uuids_success">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_set_uuids_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/tests/integration/api/db/test_server_entities.html#test_set_uuids_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.tests.integration.api.db.test_server_entities.test_set_uuids_success" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -580,14 +562,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="florist.tests.integration.api.db.html">
+          <a class="prev-page" href="florist.tests.integration.api.db.test_client_entities.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">florist.tests.integration.api.db package</div>
+                <div class="title">florist.tests.integration.api.db.test_client_entities module</div>
                 
               </div>
             </a>
@@ -630,29 +612,27 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">florist.tests.integration.api.db.test_entities module</a><ul>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.get_test_job"><code class="docutils literal notranslate"><span class="pre">get_test_job()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_job_create_success"><code class="docutils literal notranslate"><span class="pre">test_job_create_success()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_job_find_by_id_not_found"><code class="docutils literal notranslate"><span class="pre">test_job_find_by_id_not_found()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_job_find_by_id_success"><code class="docutils literal notranslate"><span class="pre">test_job_find_by_id_success()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_job_find_by_status_success"><code class="docutils literal notranslate"><span class="pre">test_job_find_by_status_success()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_job_find_by_status_with_limit_success"><code class="docutils literal notranslate"><span class="pre">test_job_find_by_status_with_limit_success()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_client_log_file_path_success"><code class="docutils literal notranslate"><span class="pre">test_set_client_log_file_path_success()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_client_metrics_fail_update_result"><code class="docutils literal notranslate"><span class="pre">test_set_client_metrics_fail_update_result()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_client_metrics_success"><code class="docutils literal notranslate"><span class="pre">test_set_client_metrics_success()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_error_message_success"><code class="docutils literal notranslate"><span class="pre">test_set_error_message_success()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_metrics_fail_clients_info_is_none"><code class="docutils literal notranslate"><span class="pre">test_set_metrics_fail_clients_info_is_none()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_pid_assertion_error"><code class="docutils literal notranslate"><span class="pre">test_set_pid_assertion_error()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_pid_success"><code class="docutils literal notranslate"><span class="pre">test_set_pid_success()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_server_log_file_path_success"><code class="docutils literal notranslate"><span class="pre">test_set_server_log_file_path_success()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_server_metrics_fail_update_result"><code class="docutils literal notranslate"><span class="pre">test_set_server_metrics_fail_update_result()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_server_metrics_success"><code class="docutils literal notranslate"><span class="pre">test_set_server_metrics_success()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_status_fail_update_result"><code class="docutils literal notranslate"><span class="pre">test_set_status_fail_update_result()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_status_success"><code class="docutils literal notranslate"><span class="pre">test_set_status_success()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_uuids_fail_clients_info_is_none"><code class="docutils literal notranslate"><span class="pre">test_set_uuids_fail_clients_info_is_none()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_uuids_fail_clients_info_is_not_same_length"><code class="docutils literal notranslate"><span class="pre">test_set_uuids_fail_clients_info_is_not_same_length()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_uuids_fail_update_result"><code class="docutils literal notranslate"><span class="pre">test_set_uuids_fail_update_result()</span></code></a></li>
-<li><a class="reference internal" href="#florist.tests.integration.api.db.test_entities.test_set_uuids_success"><code class="docutils literal notranslate"><span class="pre">test_set_uuids_success()</span></code></a></li>
+<li><a class="reference internal" href="#">florist.tests.integration.api.db.test_server_entities module</a><ul>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.get_test_job"><code class="docutils literal notranslate"><span class="pre">get_test_job()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_job_create_success"><code class="docutils literal notranslate"><span class="pre">test_job_create_success()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_job_find_by_id_not_found"><code class="docutils literal notranslate"><span class="pre">test_job_find_by_id_not_found()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_job_find_by_id_success"><code class="docutils literal notranslate"><span class="pre">test_job_find_by_id_success()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_job_find_by_status_success"><code class="docutils literal notranslate"><span class="pre">test_job_find_by_status_success()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_job_find_by_status_with_limit_success"><code class="docutils literal notranslate"><span class="pre">test_job_find_by_status_with_limit_success()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_client_metrics_fail_update_result"><code class="docutils literal notranslate"><span class="pre">test_set_client_metrics_fail_update_result()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_client_metrics_success"><code class="docutils literal notranslate"><span class="pre">test_set_client_metrics_success()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_error_message_success"><code class="docutils literal notranslate"><span class="pre">test_set_error_message_success()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_metrics_fail_clients_info_is_none"><code class="docutils literal notranslate"><span class="pre">test_set_metrics_fail_clients_info_is_none()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_server_log_file_path_success"><code class="docutils literal notranslate"><span class="pre">test_set_server_log_file_path_success()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_server_metrics_fail_update_result"><code class="docutils literal notranslate"><span class="pre">test_set_server_metrics_fail_update_result()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_server_metrics_success"><code class="docutils literal notranslate"><span class="pre">test_set_server_metrics_success()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_server_pid_success"><code class="docutils literal notranslate"><span class="pre">test_set_server_pid_success()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_status_fail_update_result"><code class="docutils literal notranslate"><span class="pre">test_set_status_fail_update_result()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_status_success"><code class="docutils literal notranslate"><span class="pre">test_set_status_success()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_uuids_fail_clients_info_is_none"><code class="docutils literal notranslate"><span class="pre">test_set_uuids_fail_clients_info_is_none()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_uuids_fail_clients_info_is_not_same_length"><code class="docutils literal notranslate"><span class="pre">test_set_uuids_fail_clients_info_is_not_same_length()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_uuids_fail_update_result"><code class="docutils literal notranslate"><span class="pre">test_set_uuids_fail_update_result()</span></code></a></li>
+<li><a class="reference internal" href="#florist.tests.integration.api.db.test_server_entities.test_set_uuids_success"><code class="docutils literal notranslate"><span class="pre">test_set_uuids_success()</span></code></a></li>
 </ul>
 </li>
 </ul>

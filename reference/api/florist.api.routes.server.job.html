@@ -215,8 +215,9 @@
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.db.html">florist.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.db.client_entities.html">florist.api.db.client_entities module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.db.config.html">florist.api.db.config module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="florist.api.db.entities.html">florist.api.db.entities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.db.server_entities.html">florist.api.db.server_entities module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.launchers.html">florist.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of florist.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -256,7 +257,8 @@
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.tests.integration.html">florist.tests.integration package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of florist.tests.integration package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="florist.tests.integration.api.html">florist.tests.integration.api package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.integration.api.db.html">florist.tests.integration.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7"><a class="reference internal" href="florist.tests.integration.api.db.test_entities.html">florist.tests.integration.api.db.test_entities module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="florist.tests.integration.api.db.test_client_entities.html">florist.tests.integration.api.db.test_client_entities module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="florist.tests.integration.api.db.test_server_entities.html">florist.tests.integration.api.db.test_server_entities module</a></li>
 </ul>
 </li>
 <li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.integration.api.launchers.html">florist.tests.integration.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -353,7 +355,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>job_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) The id of the job to change the status of.</p></li>
-<li><p><strong>status</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.entities.html#florist.api.db.entities.JobStatus" title="florist.api.db.entities.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a></span>) – (JobStatus) The status to change job_id to.</p></li>
+<li><p><strong>status</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.server_entities.html#florist.api.db.server_entities.JobStatus" title="florist.api.db.server_entities.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a></span>) – (JobStatus) The status to change job_id to.</p></li>
 <li><p><strong>request</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></span>) – (fastapi.Request) the FastAPI request object.</p></li>
 </ul>
 </dd>
@@ -405,7 +407,7 @@ If not successful, returns the appropriate error code with a JSON with the forma
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference internal" href="florist.api.db.entities.html#florist.api.db.entities.Job" title="florist.api.db.entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONResponse</span></code>]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference internal" href="florist.api.db.server_entities.html#florist.api.db.server_entities.Job" title="florist.api.db.server_entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONResponse</span></code>]</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(Union[Job, JSONResponse]) The job with the given ID, or a 400 JSONResponse if it hasn’t been found.</p>
@@ -446,12 +448,12 @@ If not successful, returns the appropriate error code with a JSON with the forma
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>status</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.entities.html#florist.api.db.entities.JobStatus" title="florist.api.db.entities.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a></span>) – (JobStatus) The status of jobs to query the Job DB for.</p></li>
+<li><p><strong>status</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.server_entities.html#florist.api.db.server_entities.JobStatus" title="florist.api.db.server_entities.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a></span>) – (JobStatus) The status of jobs to query the Job DB for.</p></li>
 <li><p><strong>request</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></span>) – (fastapi.Request) the FastAPI request object.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference internal" href="florist.api.db.entities.html#florist.api.db.entities.Job" title="florist.api.db.entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a>]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference internal" href="florist.api.db.server_entities.html#florist.api.db.server_entities.Job" title="florist.api.db.server_entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a>]</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(List[Dict[str, Any]]) A list where each entry is a dictionary with the attributes
@@ -470,11 +472,11 @@ See <cite>florist.api.db.entities.Job</cite> to check the list of attributes and
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>request</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></span>) – (fastapi.Request) the FastAPI request object.</p></li>
-<li><p><strong>job</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.entities.html#florist.api.db.entities.Job" title="florist.api.db.entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></span>) – (Job) The Job instance to be saved in the database.</p></li>
+<li><p><strong>job</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.server_entities.html#florist.api.db.server_entities.Job" title="florist.api.db.server_entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></span>) – (Job) The Job instance to be saved in the database.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.entities.html#florist.api.db.entities.Job" title="florist.api.db.entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.db.server_entities.html#florist.api.db.server_entities.Job" title="florist.api.db.server_entities.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(Job) The job that has been saved in the database.</p>

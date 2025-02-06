@@ -12,5 +12,6 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   florist.api.db.client_entities
    florist.api.db.config
-   florist.api.db.entities
+   florist.api.db.server_entities

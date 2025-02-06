@@ -1,0 +1,7 @@
+florist.api.db.client\_entities module
+======================================
+
+.. automodule:: florist.api.db.client_entities
+   :members:
+   :undoc-members:
+   :show-inheritance:

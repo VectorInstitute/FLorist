@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.routes package" href="florist.api.routes.html" /><link rel="prev" title="florist.api.monitoring.logs module" href="florist.api.monitoring.logs.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.db.config module" href="florist.api.db.config.html" /><link rel="prev" title="florist.api.db package" href="florist.api.db.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>florist.api.monitoring.metrics module - FLorist</title>
+        <title>florist.api.db.client_entities module - FLorist</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -214,8 +214,8 @@
 <li class="toctree-l5"><a class="reference internal" href="florist.api.clients.mnist.html">florist.api.clients.mnist module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.db.html">florist.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="florist.api.db.client_entities.html">florist.api.db.client_entities module</a></li>
+<li class="toctree-l4 current has-children"><a class="reference internal" href="florist.api.db.html">florist.api.db package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">florist.api.db.client_entities module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.db.config.html">florist.api.db.config module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.db.server_entities.html">florist.api.db.server_entities module</a></li>
 </ul>
@@ -228,9 +228,9 @@
 <li class="toctree-l5"><a class="reference internal" href="florist.api.models.mnist.html">florist.api.models.mnist module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 current has-children"><a class="reference internal" href="florist.api.monitoring.html">florist.api.monitoring package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.monitoring.html">florist.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.monitoring.logs.html">florist.api.monitoring.logs module</a></li>
-<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">florist.api.monitoring.metrics module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.monitoring.metrics.html">florist.api.monitoring.metrics module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.routes.html">florist.api.routes package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of florist.api.routes package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -344,176 +344,194 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-florist.api.monitoring.metrics">
-<span id="florist-api-monitoring-metrics-module"></span><h1>florist.api.monitoring.metrics module<a class="headerlink" href="#module-florist.api.monitoring.metrics" title="Link to this heading">¶</a></h1>
-<p>Classes for the instrumentation of metrics reporting from clients and servers.</p>
+          <section id="module-florist.api.db.client_entities">
+<span id="florist-api-db-client-entities-module"></span><h1>florist.api.db.client_entities module<a class="headerlink" href="#module-florist.api.db.client_entities" title="Link to this heading">¶</a></h1>
+<p>Definitions for the SQLIte database entities (client database).</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="florist.api.monitoring.metrics.DateTimeEncoder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DateTimeEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipkeys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_ascii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#DateTimeEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.DateTimeEncoder" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONEncoder</span></code></p>
-<p>Converts a datetime object to string in order to make json encoding easier.</p>
+<dt class="sig sig-object py" id="florist.api.db.client_entities.ClientDAO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ClientDAO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/client_entities.html#ClientDAO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.client_entities.ClientDAO" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#florist.api.db.client_entities.EntityDAO" title="florist.api.db.client_entities.EntityDAO"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntityDAO</span></code></a></p>
+<p>Data Access Object (DAO) for the Client SQLite entity.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="florist.api.monitoring.metrics.DateTimeEncoder.default">
-<span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#DateTimeEncoder.default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.DateTimeEncoder.default" title="Link to this definition">¶</a></dt>
-<dd><p>Return string of datetime if datetime object is passed else return result of the default encoder method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>o</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Object to encode.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="florist.api.monitoring.metrics.RedisMetricsReporter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RedisMetricsReporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#RedisMetricsReporter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.RedisMetricsReporter" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseReporter</span></code></p>
-<p>Save the metrics to a Redis instance while it records them.</p>
-<p>Lazily instantiates a Redis connection when the first metrics are recorded.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="florist.api.monitoring.metrics.RedisMetricsReporter.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#RedisMetricsReporter.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.RedisMetricsReporter.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Init an instance of RedisMetricsReporter.</p>
+<dt class="sig sig-object py" id="florist.api.db.client_entities.ClientDAO.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/client_entities.html#ClientDAO.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.client_entities.ClientDAO.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize a Client entity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>host</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) The host address where the Redis instance is running.</p></li>
-<li><p><strong>port</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) The port where the Redis instance is running on the host.</p></li>
-<li><p><strong>run_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – (Optional[str]) the identifier for the run which these metrics are from.
-It will be used as the name of the object in Redis. Optional, default is a random UUID.</p></li>
+<li><p><strong>uuid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the UUID of the client.</p></li>
+<li><p><strong>log_file_path</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – the path in the filesystem where the client’s log can be located.</p></li>
+<li><p><strong>pid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>) – the PID of the client’s process.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="florist.api.monitoring.metrics.RedisMetricsReporter.dump">
-<span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#RedisMetricsReporter.dump"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.RedisMetricsReporter.dump" title="Link to this definition">¶</a></dt>
-<dd><p>Dump the current metrics to Redis under the run_id name.</p>
-<p>Will instantiate a Redis connection if it’s the first time it runs for this instance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="florist.api.monitoring.metrics.RedisMetricsReporter.initialize">
-<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#RedisMetricsReporter.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.RedisMetricsReporter.initialize" title="Link to this definition">¶</a></dt>
-<dd><p>Initialize RedisMetricReporter with run_id and set initialized to True.</p>
+<dt class="sig sig-object py" id="florist.api.db.client_entities.ClientDAO.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/client_entities.html#ClientDAO.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.client_entities.ClientDAO.from_json" title="Link to this definition">¶</a></dt>
+<dd><p>Convert from a JSON string into an instance of Client.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – (Any) The keyword arguments required to initialize the Reporter.</p>
+<dd class="field-odd"><p><strong>json_data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – the client’s data as a JSON string.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="florist.api.monitoring.metrics.RedisMetricsReporter.report">
-<span class="sig-name descname"><span class="pre">report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#RedisMetricsReporter.report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.RedisMetricsReporter.report" title="Link to this definition">¶</a></dt>
-<dd><p>Send data to the reporter.</p>
-<p>The report method is called by the client/server at frequent intervals (ie step, epoch, round) and sometimes
-outside of a FL round (for high level summary data). The json reporter is hardcoded to report at the ‘round’
-level and therefore ignores calls to the report method made every epoch or every step.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
-</dd>
-</dl>
-<dl>
-<dt>Args:</dt><dd><p>data (dict): The data to maybe report from the server or client.
-round (int | None, optional): The current FL round. If None, this indicates that the method was called</p>
-<blockquote>
-<div><p>outside of a round (e.g. for summary information). Defaults to None.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>epoch (int | None, optional): The current epoch. If None then this method was not called within the scope</dt><dd><p>of an epoch. Defaults to None.</p>
-</dd>
-<dt>step (int | None, optional): The current step (total). If None then this method was called outside the</dt><dd><p>scope of a training or evaluation step (eg. at the end of an epoch or round) Defaults to None.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="florist.api.monitoring.metrics.get_from_redis">
-<span class="sig-name descname"><span class="pre">get_from_redis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_port</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#get_from_redis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.get_from_redis" title="Link to this definition">¶</a></dt>
-<dd><p>Get the contents of what’s saved on Redis under the name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the name to look into Redis.</p></li>
-<li><p><strong>redis_host</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the hostname of the redis instance.</p></li>
-<li><p><strong>redis_port</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the port of the redis instance.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(Optional[Dict[str, Any]]) the contents under the name.</p>
+<dd class="field-odd"><p>(Self) and instancxe of ClientDAO populated with the JSON data.</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="florist.api.monitoring.metrics.get_subscriber">
-<span class="sig-name descname"><span class="pre">get_subscriber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_port</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#get_subscriber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.get_subscriber" title="Link to this definition">¶</a></dt>
-<dd><p>Return a PubSub instance with a subscription to the given channel.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.client_entities.ClientDAO.table_name">
+<span class="sig-name descname"><span class="pre">table_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Client'</span></em><a class="headerlink" href="#florist.api.db.client_entities.ClientDAO.table_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.db.client_entities.ClientDAO.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/client_entities.html#ClientDAO.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.client_entities.ClientDAO.to_json" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the client data into a JSON string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(str) the client data as a JSON string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="florist.api.db.client_entities.EntityDAO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EntityDAO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/client_entities.html#EntityDAO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.client_entities.EntityDAO" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/abc.html#abc.ABC" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Base Data Access Object (DAO) for SQLite entities.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.db.client_entities.EntityDAO.__init__">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/client_entities.html#EntityDAO.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.client_entities.EntityDAO.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize an Entity.</p>
+<p>Abstract method to be implemented by the child classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) The name of the channel to add a subscriber to.</p></li>
-<li><p><strong>redis_host</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the hostname of the redis instance.</p></li>
-<li><p><strong>redis_port</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the port of the redis instance.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>uuid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – the UUID of the entity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.client_entities.EntityDAO.db_path">
+<span class="sig-name descname"><span class="pre">db_path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'florist/api/client.db'</span></em><a class="headerlink" href="#florist.api.db.client_entities.EntityDAO.db_path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.db.client_entities.EntityDAO.exists">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/client_entities.html#EntityDAO.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.client_entities.EntityDAO.exists" title="Link to this definition">¶</a></dt>
+<dd><p>Check if an entity with the given UUID exists in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uuid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the UUID of the entity.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">PubSub</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(redis.client.PubSub) The PubSub instance subscribed to the given channel.</p>
+<dd class="field-odd"><p>(bool) True if the entity exists, False otherwise.</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="florist.api.monitoring.metrics.wait_for_metric">
-<span class="sig-name descname"><span class="pre">wait_for_metric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds_to_sleep_between_retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/monitoring/metrics.html#wait_for_metric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.monitoring.metrics.wait_for_metric" title="Link to this definition">¶</a></dt>
-<dd><p>Check metrics on Redis under the given UUID and wait until it appears.</p>
-<p>If the metrics are not there yet, it will retry up to max_retries times,
-sleeping an amount of <cite>seconds_to_sleep_between_retries</cite> between them.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.db.client_entities.EntityDAO.find">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/client_entities.html#EntityDAO.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.client_entities.EntityDAO.find" title="Link to this definition">¶</a></dt>
+<dd><p>Find the entity in the database with the given UUID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>uuid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) The UUID to pull the metrics from Redis.</p></li>
-<li><p><strong>metric</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) The metric to look for.</p></li>
-<li><p><strong>redis_host</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) The hostname of the Redis instance the metrics are being reported to.</p></li>
-<li><p><strong>redis_port</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) The port of the Redis instance the metrics are being reported to.</p></li>
-<li><p><strong>logger</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/logging.html#logging.Logger" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a></span>) – (logging.Logger) A logger instance to write logs to.</p></li>
-<li><p><strong>max_retries</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – (int) The maximum number of retries. Optional, default is 20.</p></li>
-<li><p><strong>seconds_to_sleep_between_retries</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – (int) The amount of seconds to sleep between retries.
-Optional, default is 1.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>uuid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the UUID of the entity.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(Self) an instance of the entity.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/exceptions.html#Exception" title="(in Python v3.9)"><strong>Exception</strong></a> – If it retries <cite>max_retries</cite> times and the right metrics have not been found.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if no such entity exists in the database with given UUID.</p>
 </dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.db.client_entities.EntityDAO.from_json">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/client_entities.html#EntityDAO.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.client_entities.EntityDAO.from_json" title="Link to this definition">¶</a></dt>
+<dd><p>Convert from a JSON string to an instance of the entity.</p>
+<p>Abstract method, to be implemented by the child classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>json_data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the entity data as a JSON string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(Self) and instance of the entity populated with the JSON data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.db.client_entities.EntityDAO.get_connection">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/client_entities.html#EntityDAO.get_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.client_entities.EntityDAO.get_connection" title="Link to this definition">¶</a></dt>
+<dd><p>Return the SQLite connection object.</p>
+<p>Will create the table of the entity in the DB if it doesn’t exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/sqlite3.html#sqlite3.Connection" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(sqlite3.Connection) The SQLite connection object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.db.client_entities.EntityDAO.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/client_entities.html#EntityDAO.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.client_entities.EntityDAO.save" title="Link to this definition">¶</a></dt>
+<dd><p>Save the current entity to the database.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
+<dl class="simple">
+<dt>Will insert a new record if an entity with self.uuid doesn’t yet exist in the database,</dt><dd><p>will update the database entity at self.uuid otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.db.client_entities.EntityDAO.table_name">
+<span class="sig-name descname"><span class="pre">table_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Entity'</span></em><a class="headerlink" href="#florist.api.db.client_entities.EntityDAO.table_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.db.client_entities.EntityDAO.to_json">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/db/client_entities.html#EntityDAO.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.db.client_entities.EntityDAO.to_json" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the entity data into a JSON string.</p>
+<p>Abstract method, to be implemented by the child classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(str) the entity data as a JSON string.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -523,23 +541,23 @@ Optional, default is 1.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="florist.api.routes.html">
+          <a class="next-page" href="florist.api.db.config.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">florist.api.routes package</div>
+                <div class="title">florist.api.db.config module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="florist.api.monitoring.logs.html">
+          <a class="prev-page" href="florist.api.db.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">florist.api.monitoring.logs module</div>
+                <div class="title">florist.api.db package</div>
                 
               </div>
             </a>
@@ -582,21 +600,26 @@ Optional, default is 1.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">florist.api.monitoring.metrics module</a><ul>
-<li><a class="reference internal" href="#florist.api.monitoring.metrics.DateTimeEncoder"><code class="docutils literal notranslate"><span class="pre">DateTimeEncoder</span></code></a><ul>
-<li><a class="reference internal" href="#florist.api.monitoring.metrics.DateTimeEncoder.default"><code class="docutils literal notranslate"><span class="pre">DateTimeEncoder.default()</span></code></a></li>
+<li><a class="reference internal" href="#">florist.api.db.client_entities module</a><ul>
+<li><a class="reference internal" href="#florist.api.db.client_entities.ClientDAO"><code class="docutils literal notranslate"><span class="pre">ClientDAO</span></code></a><ul>
+<li><a class="reference internal" href="#florist.api.db.client_entities.ClientDAO.__init__"><code class="docutils literal notranslate"><span class="pre">ClientDAO.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.client_entities.ClientDAO.from_json"><code class="docutils literal notranslate"><span class="pre">ClientDAO.from_json()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.client_entities.ClientDAO.table_name"><code class="docutils literal notranslate"><span class="pre">ClientDAO.table_name</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.client_entities.ClientDAO.to_json"><code class="docutils literal notranslate"><span class="pre">ClientDAO.to_json()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#florist.api.monitoring.metrics.RedisMetricsReporter"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter</span></code></a><ul>
-<li><a class="reference internal" href="#florist.api.monitoring.metrics.RedisMetricsReporter.__init__"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#florist.api.monitoring.metrics.RedisMetricsReporter.dump"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter.dump()</span></code></a></li>
-<li><a class="reference internal" href="#florist.api.monitoring.metrics.RedisMetricsReporter.initialize"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter.initialize()</span></code></a></li>
-<li><a class="reference internal" href="#florist.api.monitoring.metrics.RedisMetricsReporter.report"><code class="docutils literal notranslate"><span class="pre">RedisMetricsReporter.report()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.client_entities.EntityDAO"><code class="docutils literal notranslate"><span class="pre">EntityDAO</span></code></a><ul>
+<li><a class="reference internal" href="#florist.api.db.client_entities.EntityDAO.__init__"><code class="docutils literal notranslate"><span class="pre">EntityDAO.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.client_entities.EntityDAO.db_path"><code class="docutils literal notranslate"><span class="pre">EntityDAO.db_path</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.client_entities.EntityDAO.exists"><code class="docutils literal notranslate"><span class="pre">EntityDAO.exists()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.client_entities.EntityDAO.find"><code class="docutils literal notranslate"><span class="pre">EntityDAO.find()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.client_entities.EntityDAO.from_json"><code class="docutils literal notranslate"><span class="pre">EntityDAO.from_json()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.client_entities.EntityDAO.get_connection"><code class="docutils literal notranslate"><span class="pre">EntityDAO.get_connection()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.client_entities.EntityDAO.save"><code class="docutils literal notranslate"><span class="pre">EntityDAO.save()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.client_entities.EntityDAO.table_name"><code class="docutils literal notranslate"><span class="pre">EntityDAO.table_name</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.db.client_entities.EntityDAO.to_json"><code class="docutils literal notranslate"><span class="pre">EntityDAO.to_json()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#florist.api.monitoring.metrics.get_from_redis"><code class="docutils literal notranslate"><span class="pre">get_from_redis()</span></code></a></li>
-<li><a class="reference internal" href="#florist.api.monitoring.metrics.get_subscriber"><code class="docutils literal notranslate"><span class="pre">get_subscriber()</span></code></a></li>
-<li><a class="reference internal" href="#florist.api.monitoring.metrics.wait_for_metric"><code class="docutils literal notranslate"><span class="pre">wait_for_metric()</span></code></a></li>
 </ul>
 </li>
 </ul>

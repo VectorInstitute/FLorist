@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex.html" /><link rel="search" title="Search" href="../../../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>florist.tests.integration.api.launchers.test_launch - FLorist</title>
+        <title>florist.tests.integration.api.db.test_client_entities - FLorist</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
@@ -342,56 +342,120 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.tests.integration.api.launchers.test_launch</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+          <h1>Source code for florist.tests.integration.api.db.test_client_entities</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">florist.api.db.client_entities</span> <span class="kn">import</span> <span class="n">ClientDAO</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.launchers.local</span> <span class="kn">import</span> <span class="n">launch</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.mnist</span> <span class="kn">import</span> <span class="n">MnistClient</span><span class="p">,</span> <span class="n">MnistNet</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.utils</span> <span class="kn">import</span> <span class="n">get_server</span>
+<span class="kn">from</span> <span class="nn">florist.tests.integration.api.utils</span> <span class="kn">import</span> <span class="n">mock_request</span>
 
 
-<div class="viewcode-block" id="assert_string_in_file">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.launchers.test_launch.html#florist.tests.integration.api.launchers.test_launch.assert_string_in_file">[docs]</a>
-<span class="k">def</span> <span class="nf">assert_string_in_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">search_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">file_contents</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">search_string</span><span class="p">,</span> <span class="n">file_contents</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+<div class="viewcode-block" id="test_get_connection">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_get_connection">[docs]</a>
+<span class="k">def</span> <span class="nf">test_get_connection</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">db_connection</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">db_connection</span></div>
+
+
+<div class="viewcode-block" id="test_eq">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_eq">[docs]</a>
+<span class="k">def</span> <span class="nf">test_eq</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">client_1</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid-1&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-1&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+    <span class="n">client_2</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid-2&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-2&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">5678</span><span class="p">)</span>
+    <span class="n">client_3</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid-1&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-1&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+    <span class="n">not_a_client</span> <span class="o">=</span> <span class="s2">&quot;I&#39;m not a client!&quot;</span>
+
+    <span class="k">assert</span> <span class="n">client_1</span> <span class="o">!=</span> <span class="n">client_2</span>
+    <span class="k">assert</span> <span class="n">client_1</span> <span class="o">==</span> <span class="n">client_3</span>
+    <span class="k">assert</span> <span class="n">client_1</span> <span class="o">!=</span> <span class="n">not_a_client</span></div>
 
 
 
-<div class="viewcode-block" id="test_launch">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.launchers.test_launch.html#florist.tests.integration.api.launchers.test_launch.test_launch">[docs]</a>
-<span class="k">def</span> <span class="nf">test_launch</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">n_clients</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">n_server_rounds</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">server_address</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0:8080&quot;</span>
+<div class="viewcode-block" id="test_save_and_find">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_save_and_find">[docs]</a>
+<span class="k">def</span> <span class="nf">test_save_and_find</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test-uuid&quot;</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">test_uuid</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
-    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp_dir</span><span class="p">:</span>
-        <span class="n">client_data_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">temp_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_clients</span><span class="p">)]</span>
-        <span class="k">for</span> <span class="n">client_data_path</span> <span class="ow">in</span> <span class="n">client_data_paths</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">client_data_path</span><span class="p">)</span>
-        <span class="n">clients</span> <span class="o">=</span> <span class="p">[</span><span class="n">MnistClient</span><span class="p">(</span><span class="n">client_data_path</span><span class="p">,</span> <span class="p">[],</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">client_data_path</span> <span class="ow">in</span> <span class="n">client_data_paths</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">)</span> <span class="o">==</span> <span class="n">client</span></div>
 
-        <span class="n">server_constructor</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">get_server</span><span class="p">,</span> <span class="n">MnistNet</span><span class="p">(),</span> <span class="p">[])</span>
-        <span class="n">server_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">)</span>
-        <span class="n">client_base_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">temp_dir</span><span class="si">}</span><span class="s2">/client&quot;</span>
-        <span class="n">launch</span><span class="p">(</span>
-            <span class="n">server_constructor</span><span class="p">,</span>
-            <span class="n">server_address</span><span class="p">,</span>
-            <span class="n">n_server_rounds</span><span class="p">,</span>
-            <span class="n">clients</span><span class="p">,</span>
-            <span class="n">server_path</span><span class="p">,</span>
-            <span class="n">client_base_path</span><span class="p">,</span>
-        <span class="p">)</span>
 
-        <span class="n">assert_string_in_file</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_path</span><span class="si">}</span><span class="s2">.out&quot;</span><span class="p">,</span> <span class="s2">&quot;[SUMMARY]&quot;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="test_saving_a_second_time_should_update">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_saving_a_second_time_should_update">[docs]</a>
+<span class="k">def</span> <span class="nf">test_saving_a_second_time_should_update</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test-uuid&quot;</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">test_uuid</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="k">assert</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">)</span> <span class="o">==</span> <span class="n">client</span>
+
+    <span class="n">client</span><span class="o">.</span><span class="n">log_file_path</span> <span class="o">=</span> <span class="s2">&quot;test-log-file-path-2&quot;</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="s2">&quot;test-pid-2&quot;</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="k">assert</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">)</span> <span class="o">==</span> <span class="n">client</span></div>
+
+
+
+<div class="viewcode-block" id="test_find_not_found">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_find_not_found">[docs]</a>
+<span class="k">def</span> <span class="nf">test_find_not_found</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="n">test_bad_uuid</span> <span class="o">=</span> <span class="s2">&quot;wrong-uuid&quot;</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="n">ClientDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">test_bad_uuid</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;Client with uuid &#39;</span><span class="si">{</span><span class="n">test_bad_uuid</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span></div>
+
+
+<div class="viewcode-block" id="test_exists">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_exists">[docs]</a>
+<span class="k">def</span> <span class="nf">test_exists</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test-uuid&quot;</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">test_uuid</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="k">assert</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_exists_not_found">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_exists_not_found">[docs]</a>
+<span class="k">def</span> <span class="nf">test_exists_not_found</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;wrong-uuid&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_from_json">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_from_json">[docs]</a>
+<span class="k">def</span> <span class="nf">test_from_json</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;test-uuid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pid&quot;</span><span class="p">:</span> <span class="s2">&quot;test-pid&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">test_data</span><span class="p">))</span>
+
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">uuid</span> <span class="o">==</span> <span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">log_file_path</span> <span class="o">==</span> <span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;log_file_path&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">pid</span> <span class="o">==</span> <span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="test_to_json">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_to_json">[docs]</a>
+<span class="k">def</span> <span class="nf">test_to_json</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="o">==</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="s1">&quot;uuid&quot;: &quot;</span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s1">&quot;, &quot;log_file_path&quot;: &quot;</span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">log_file_path</span><span class="si">}</span><span class="s1">&quot;, &quot;pid&quot;: </span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="se">}}</span><span class="s1">&#39;</span></div>
 
 </pre></div>
         </article>

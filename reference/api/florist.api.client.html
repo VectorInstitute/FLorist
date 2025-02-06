@@ -215,8 +215,9 @@
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.db.html">florist.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.db.client_entities.html">florist.api.db.client_entities module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.db.config.html">florist.api.db.config module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="florist.api.db.entities.html">florist.api.db.entities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.db.server_entities.html">florist.api.db.server_entities module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.api.launchers.html">florist.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of florist.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -256,7 +257,8 @@
 <li class="toctree-l4 has-children"><a class="reference internal" href="florist.tests.integration.html">florist.tests.integration package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of florist.tests.integration package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="florist.tests.integration.api.html">florist.tests.integration.api package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.integration.api.db.html">florist.tests.integration.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7"><a class="reference internal" href="florist.tests.integration.api.db.test_entities.html">florist.tests.integration.api.db.test_entities module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="florist.tests.integration.api.db.test_client_entities.html">florist.tests.integration.api.db.test_client_entities module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="florist.tests.integration.api.db.test_server_entities.html">florist.tests.integration.api.db.test_server_entities module</a></li>
 </ul>
 </li>
 <li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.integration.api.launchers.html">florist.tests.integration.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -387,17 +389,22 @@ If not successful, returns the appropriate error code with a JSON with the forma
 
 <dl class="py function">
 <dt class="sig sig-object py" id="florist.api.client.get_log">
-<span class="sig-name descname"><span class="pre">get_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/client.html#get_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.client.get_log" title="Link to this definition">¶</a></dt>
-<dd><p>Return the contents of the log file under the given path.</p>
+<span class="sig-name descname"><span class="pre">get_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/client.html#get_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.client.get_log" title="Link to this definition">¶</a></dt>
+<dd><p>Return the contents of the logs for the given client uuid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log_file_path</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the path of the logt file.</p>
+<dd class="field-odd"><p><strong>uuid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the uuid of the client.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONResponse</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(JSONResponse) Returns the contents of the file as a string.</p>
+<dd class="field-odd"><p><p>(JSONResponse) If successful, returns the contents of the file as a string.
+If not successful, returns the appropriate error code with a JSON with the format below:</p>
+<blockquote>
+<div><p>{“error”: &lt;error message&gt;}</p>
+</div></blockquote>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -421,13 +428,11 @@ It should be comprised of the host name and port separated by colon (e.g. “loc
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONResponse</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><p>(JSONResponse) If successful, returns 200 with a JSON containing the UUID, the PID and the log
-file path for the client in the format below:</p>
+<dd class="field-odd"><p><p>(JSONResponse) If successful, returns 200 with a JSON containing the UUID for the client in the
+format below, which can be used to pull metrics from Redis.</p>
 <blockquote>
 <div><dl class="simple">
-<dt>{</dt><dd><p>“uuid”: (str) The client’s uuid, which can be used to pull metrics from Redis,
-“log_file_path”: (str) The local path of the log file for this client,
-“pid”: (str) The PID of the client process</p>
+<dt>{</dt><dd><p>“uuid”: (str) The client’s uuid, which can be used to pull metrics from Redis,</p>
 </dd>
 </dl>
 <p>}</p>
@@ -447,11 +452,11 @@ file path for the client in the format below:</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="florist.api.client.stop">
-<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/client.html#stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.client.stop" title="Link to this definition">¶</a></dt>
-<dd><p>Kills the client process with given PID.</p>
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/client.html#stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.client.stop" title="Link to this definition">¶</a></dt>
+<dd><p>Stop the client with given UUID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the PID of the client to be killed.</p>
+<dd class="field-odd"><p><strong>uuid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the UUID of the client to be stopped.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONResponse</span></code></span></p>

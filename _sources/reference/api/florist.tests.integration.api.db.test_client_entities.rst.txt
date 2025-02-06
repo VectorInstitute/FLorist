@@ -1,0 +1,7 @@
+florist.tests.integration.api.db.test\_client\_entities module
+==============================================================
+
+.. automodule:: florist.tests.integration.api.db.test_client_entities
+   :members:
+   :undoc-members:
+   :show-inheritance:

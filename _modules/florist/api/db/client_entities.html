@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>florist.api.servers.launch - FLorist</title>
+        <title>florist.api.db.client_entities - FLorist</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -342,72 +342,211 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.api.servers.launch</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Functions and definitions to launch local servers.&quot;&quot;&quot;</span>
+          <h1>Source code for florist.api.db.client_entities</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Definitions for the SQLIte database entities (client database).&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.launchers.local</span> <span class="kn">import</span> <span class="n">launch_server</span>
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.logs</span> <span class="kn">import</span> <span class="n">get_server_log_file_path</span>
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">RedisMetricsReporter</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.utils</span> <span class="kn">import</span> <span class="n">get_server</span>
+<span class="kn">from</span> <span class="nn">florist.api.db.config</span> <span class="kn">import</span> <span class="n">SQLITE_DB_PATH</span>
 
 
-<div class="viewcode-block" id="launch_local_server">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.servers.launch.html#florist.api.servers.launch.launch_local_server">[docs]</a>
-<span class="k">def</span> <span class="nf">launch_local_server</span><span class="p">(</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
-    <span class="n">n_clients</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">n_server_rounds</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">local_epochs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">redis_host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">redis_port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Process</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Launch a FL server locally.</span>
+<div class="viewcode-block" id="EntityDAO">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO">[docs]</a>
+<span class="k">class</span> <span class="nc">EntityDAO</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base Data Access Object (DAO) for SQLite entities.&quot;&quot;&quot;</span>
 
-<span class="sd">    :param model: (torch.nn.Module) The model to be used by the server. Should match the clients&#39; model.</span>
-<span class="sd">    :param n_clients: (int) The number of clients that will report to this server.</span>
-<span class="sd">    :param server_address: (str) The address the server should start at.</span>
-<span class="sd">    :param n_server_rounds: (int) The number of rounds the training should run for.</span>
-<span class="sd">    :param batch_size: (int) The size of the batch for training.</span>
-<span class="sd">    :param local_epochs: (int) The number of epochs to run by the clients.</span>
-<span class="sd">    :param redis_host: (str) the host name for the Redis instance for metrics reporting.</span>
-<span class="sd">    :param redis_port: (str) the port for the Redis instance for metrics reporting.</span>
-<span class="sd">    :return: (Tuple[str, multiprocessing.Process, str]) a tuple with</span>
-<span class="sd">        - The UUID of the server, which can be used to pull metrics from Redis</span>
-<span class="sd">        - The server&#39;s local process object</span>
-<span class="sd">        - The local path for the log file</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">server_uuid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+    <span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;Entity&quot;</span>
+    <span class="n">db_path</span> <span class="o">=</span> <span class="n">SQLITE_DB_PATH</span>
 
-    <span class="n">metrics_reporter</span> <span class="o">=</span> <span class="n">RedisMetricsReporter</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">redis_port</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="n">server_uuid</span><span class="p">)</span>
-    <span class="n">server_constructor</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
-        <span class="n">get_server</span><span class="p">,</span>
-        <span class="n">reporters</span><span class="o">=</span><span class="p">[</span><span class="n">metrics_reporter</span><span class="p">],</span>
-        <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-        <span class="n">n_clients</span><span class="o">=</span><span class="n">n_clients</span><span class="p">,</span>
-        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-        <span class="n">local_epochs</span><span class="o">=</span><span class="n">local_epochs</span><span class="p">,</span>
-    <span class="p">)</span>
+<div class="viewcode-block" id="EntityDAO.__init__">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.__init__">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize an Entity.</span>
 
-    <span class="n">log_file_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_server_log_file_path</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">))</span>
-    <span class="n">server_process</span> <span class="o">=</span> <span class="n">launch_server</span><span class="p">(</span>
-        <span class="n">server_constructor</span><span class="p">,</span>
-        <span class="n">server_address</span><span class="p">,</span>
-        <span class="n">n_server_rounds</span><span class="p">,</span>
-        <span class="n">log_file_path</span><span class="p">,</span>
-        <span class="n">seconds_to_sleep</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="p">)</span>
+<span class="sd">        Abstract method to be implemented by the child classes.</span>
 
-    <span class="k">return</span> <span class="n">server_uuid</span><span class="p">,</span> <span class="n">server_process</span><span class="p">,</span> <span class="n">log_file_path</span></div>
+<span class="sd">        :param uuid: the UUID of the entity</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid</span></div>
+
+
+<div class="viewcode-block" id="EntityDAO.get_connection">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.get_connection">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_connection</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Connection</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the SQLite connection object.</span>
+
+<span class="sd">        Will create the table of the entity in the DB if it doesn&#39;t exist.</span>
+
+<span class="sd">        :return: (sqlite3.Connection) The SQLite connection object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sqlite_db</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">db_path</span><span class="p">)</span>
+        <span class="n">sqlite_db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CREATE TABLE IF NOT EXISTS </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> (uuid TEXT, data TEXT)&quot;</span><span class="p">)</span>
+        <span class="n">sqlite_db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">sqlite_db</span></div>
+
+
+<div class="viewcode-block" id="EntityDAO.find">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.find">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the entity in the database with the given UUID.</span>
+
+<span class="sd">        :param uuid: (str) the UUID of the entity.</span>
+<span class="sd">        :return: (Self) an instance of the entity.</span>
+<span class="sd">        :raises ValueError: if no such entity exists in the database with given UUID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sqlite_db</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">sqlite_db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SELECT * FROM </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> WHERE uuid=? LIMIT 1&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">uuid</span><span class="p">,))</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client with uuid &#39;</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EntityDAO.exists">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.exists">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if an entity with the given UUID exists in the database.</span>
+
+<span class="sd">        :param uuid: (str) the UUID of the entity.</span>
+<span class="sd">        :return: (bool) True if the entity exists, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sqlite_db</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">sqlite_db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SELECT EXISTS(SELECT 1 FROM </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> WHERE uuid=? LIMIT 1);&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">uuid</span><span class="p">,))</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="EntityDAO.save">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.save">[docs]</a>
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the current entity to the database.</span>
+
+<span class="sd">        Will insert a new record if an entity with self.uuid doesn&#39;t yet exist in the database,</span>
+<span class="sd">            will update the database entity at self.uuid otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sqlite_db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">):</span>
+            <span class="n">sqlite_db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;UPDATE </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> SET data=? WHERE uuid=?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_json</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sqlite_db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;INSERT INTO </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> (uuid, data) VALUES(?, ?)&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
+            <span class="p">)</span>
+        <span class="n">sqlite_db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if two instances of this entity have the same values for the same attributes.</span>
+
+<span class="sd">        :param other: (object) the other instance to check against.</span>
+<span class="sd">        :return: (bool) True if they are equal, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+
+<div class="viewcode-block" id="EntityDAO.from_json">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.from_json">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert from a JSON string to an instance of the entity.</span>
+
+<span class="sd">        Abstract method, to be implemented by the child classes.</span>
+
+<span class="sd">        :param json_data: (str) the entity data as a JSON string.</span>
+<span class="sd">        :return: (Self) and instance of the entity populated with the JSON data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="EntityDAO.to_json">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.to_json">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the entity data into a JSON string.</span>
+
+<span class="sd">        Abstract method, to be implemented by the child classes.</span>
+
+<span class="sd">        :return: (str) the entity data as a JSON string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ClientDAO">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.ClientDAO">[docs]</a>
+<span class="k">class</span> <span class="nc">ClientDAO</span><span class="p">(</span><span class="n">EntityDAO</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data Access Object (DAO) for the Client SQLite entity.&quot;&quot;&quot;</span>
+
+    <span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;Client&quot;</span>
+
+<div class="viewcode-block" id="ClientDAO.__init__">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.ClientDAO.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">log_file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Client entity.</span>
+
+<span class="sd">        :param uuid: (str) the UUID of the client.</span>
+<span class="sd">        :param log_file_path: the path in the filesystem where the client&#39;s log can be located.</span>
+<span class="sd">        :param pid: the PID of the client&#39;s process.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file_path</span> <span class="o">=</span> <span class="n">log_file_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="n">pid</span></div>
+
+
+<div class="viewcode-block" id="ClientDAO.from_json">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.ClientDAO.from_json">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert from a JSON string into an instance of Client.</span>
+
+<span class="sd">        :param json_data: the client&#39;s data as a JSON string.</span>
+<span class="sd">        :return: (Self) and instancxe of ClientDAO populated with the JSON data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;log_file_path&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="ClientDAO.to_json">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.ClientDAO.to_json">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the client data into a JSON string.</span>
+
+<span class="sd">        :return: (str) the client data as a JSON string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span>
+                <span class="s2">&quot;pid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>
