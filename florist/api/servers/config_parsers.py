@@ -1,7 +1,6 @@
 """Parsers for FL server configurations."""
 
 import json
-from abc import ABC, abstractmethod
 from ast import literal_eval
 from contextlib import suppress
 from enum import Enum
@@ -10,18 +9,17 @@ from typing import Any, Dict, List
 from typing_extensions import Self
 
 
-class AbstractConfigParser(ABC):
-    """Abstract parser for server configurations."""
+class BasicConfigParser:
+    """Parser for basic server configurations."""
 
     @classmethod
-    @abstractmethod
     def mandatory_fields(cls) -> List[str]:
         """
-        Define the mandatory fields for server configuration.
+        Define the mandatory fields for basic server configuration.
 
-        :return: (List[str]) the list of required fields for server configuration.
+        :return: (List[str]) the list of required fields for basic server configuration.
         """
-        pass
+        return ["n_server_rounds", "batch_size", "local_epochs"]
 
     @classmethod
     def parse(cls, config_json_str: str) -> Dict[str, Any]:
@@ -49,21 +47,8 @@ class AbstractConfigParser(ABC):
         return config
 
 
-class FedAvgConfigParser(AbstractConfigParser):
-    """Parser for FedAvg server configurations."""
-
-    @classmethod
-    def mandatory_fields(cls) -> List[str]:
-        """
-        Define the mandatory fields for FedAvg configuration, namely `n_server_rounds`, `batch_size` and `local_epochs`.
-
-        :return: (List[str]) the list of required fields for FedAvg server configuration.
-        """
-        return ["n_server_rounds", "batch_size", "local_epochs"]
-
-
-class FedProxConfigParser(AbstractConfigParser):
-    """Parser for basic server configurations."""
+class FedProxConfigParser(BasicConfigParser):
+    """Parser for FedProx server configurations."""
 
     @classmethod
     def mandatory_fields(cls) -> List[str]:
@@ -74,35 +59,33 @@ class FedProxConfigParser(AbstractConfigParser):
 
         :return: (List[str]) the list of required fields for FedProx server configuration.
         """
-        return [
-            "n_server_rounds",
+        basic_fields = super().mandatory_fields()
+        return basic_fields + [
             "adapt_proximal_weight",
             "initial_proximal_weight",
             "proximal_weight_delta",
             "proximal_weight_patience",
             "n_clients",
-            "local_epochs",
-            "batch_size",
         ]
 
 
 class ConfigParser(Enum):
     """Enum to define the types of server configuration parsers."""
 
-    FEDAVG = "FEDAVG"
+    BASIC = "BASIC"
     FEDPROX = "FEDPROX"
 
     @classmethod
-    def class_for_parser(cls, config_parser: Self) -> type[AbstractConfigParser]:
+    def class_for_parser(cls, config_parser: Self) -> type[BasicConfigParser]:
         """
         Return the class for a given config parser.
 
         :param config_parser: (ConfigParser) The config parser enumeration instance.
-        :return: (type[BasicConfigParser]) A subclass of AbstractConfigParser corresponding to the given config parser.
+        :return: (type[BasicConfigParser]) A subclass of BasicConfigParser corresponding to the given config parser.
         :raises ValueError: if the config_parser is not supported.
         """
-        if config_parser == ConfigParser.FEDAVG:
-            return AbstractConfigParser
+        if config_parser == ConfigParser.BASIC:
+            return BasicConfigParser
         if config_parser == ConfigParser.FEDPROX:
             return FedProxConfigParser
 

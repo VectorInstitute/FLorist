@@ -7,6 +7,7 @@ from unittest.mock import Mock, AsyncMock, patch, ANY, call
 from florist.api.db.config import DATABASE_NAME
 from florist.api.db.server_entities import Job, JobStatus, JOB_COLLECTION_NAME
 from florist.api.models.mnist import MnistNet
+from florist.api.servers.models import Model
 from florist.api.routes.server.training import (
     client_training_listener,
     start,
@@ -747,7 +748,7 @@ def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, M
     }
     test_job = {
         "status": "NOT_STARTED",
-        "model": "MNIST",
+        "model": Model.MNIST_FEDAVG.value,
         "server_address": "test-server-address",
         "server_config": json.dumps(test_server_config),
         "config_parser": "BASIC",

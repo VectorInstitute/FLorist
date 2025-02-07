@@ -1,7 +1,7 @@
 import json
 
 from florist.api.server import list_models, list_clients
-from florist.api.servers.common import Model
+from florist.api.servers.models import Model
 from florist.api.clients.common import Client
 
 

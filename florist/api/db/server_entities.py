@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from pymongo.results import UpdateResult
 
 from florist.api.clients.common import Client
-from florist.api.servers.common import Model
+from florist.api.servers.models import Model
 from florist.api.servers.config_parsers import ConfigParser
 
 
