@@ -15,7 +15,8 @@ class BasicConfigParser:
     @classmethod
     def mandatory_fields(cls) -> List[str]:
         """
-        Define the mandatory fields for basic server configuration.
+        Define the mandatory fields for basic server configuration
+        namely `n_server_rounds`, `batch_size` and `local_epochs`.
 
         :return: (List[str]) the list of required fields for basic server configuration.
         """

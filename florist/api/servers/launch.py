@@ -21,7 +21,6 @@ def launch_local_server(
     server_factory: ServerFactory,
     server_config: dict[str, Any],
 ) -> tuple[str, Process, str]:
-    # TODO: add server factory docstring
     """
     Launch a FL server locally.
 
@@ -30,6 +29,10 @@ def launch_local_server(
     :param server_address: (str) The address the server should start at.
     :param redis_host: (str) the host name for the Redis instance for metrics reporting.
     :param redis_port: (str) the port for the Redis instance for metrics reporting.
+    :param server_factory: (ServerFactory) an instance of ServerFactory, which will be used to
+        make a server for the model
+    :param server_config: (dict[str, Any]) a dictionary with the necessary server configurations for
+        the model
     :return: (tuple[str, multiprocessing.Process, str]) a tuple with
         - The UUID of the server, which can be used to pull metrics from Redis
         - The server's local process object
