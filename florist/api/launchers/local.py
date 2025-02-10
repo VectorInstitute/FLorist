@@ -4,7 +4,7 @@ import logging
 import sys
 import time
 from multiprocessing import Process
-from typing import Callable, Sequence
+from typing import Callable
 
 import flwr as fl
 from fl4health.clients.basic_client import BasicClient
@@ -129,35 +129,3 @@ def launch_client(client: BasicClient, server_address: str, client_log_file_name
     client_process = Process(target=start_client, args=(client, server_address, client_log_file_name))
     client_process.start()
     return client_process
-
-
-def launch(
-    server_constructor: Callable[..., FlServer],
-    server_address: str,
-    n_server_rounds: int,
-    clients: Sequence[BasicClient],
-    server_base_log_file_name: str = "server",
-    client_base_log_file_name: str = "client",
-) -> None:
-    """
-    Launch an FL experiment.
-
-    First launches server than subsequently clients. Joins server
-    process after clients are launched to block until FL is complete.
-    (Server is last to finish executing).
-
-    Args:
-        server_constructor (Callable[FlServer]): Callable that constructs FL server.
-        server_address (str): String of <IP>:<PORT> to make server available.
-        n_server_rounds (str): The number of rounds to perform FL
-        clients (Sequence[BasicClient]): List of BasicClient instances to launch.
-        server_base_log_file_name: (Optional[str]): The name used for the server log file.
-        client_base_log_file_name: (Optional[str]): The base name used for the client log file.
-            _{i}.out appended to name to get final client log file name.
-    """
-    server_log_file_name = f"{server_base_log_file_name}.out"
-    server_process = launch_server(server_constructor, server_address, n_server_rounds, server_log_file_name)
-    for i, client in enumerate(clients):
-        client_log_file_name = f"{client_base_log_file_name}_{i}.out"
-        launch_client(client, server_address, client_log_file_name)
-    server_process.join()

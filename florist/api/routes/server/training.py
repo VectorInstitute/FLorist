@@ -14,9 +14,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
 from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
-from florist.api.servers.models import Model
 from florist.api.servers.config_parsers import ConfigParser
 from florist.api.servers.launch import launch_local_server
+from florist.api.servers.models import Model
 
 
 router = APIRouter()
@@ -60,7 +60,6 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         assert job.redis_host is not None, "Missing Job information: redis_host"
         assert job.redis_port is not None, "Missing Job information: redis_port"
 
-        model_class = Model.class_for_model(job.model)
         job.config_parser = Model.config_parser_for_model(job.model)
         server_factory = Model.server_factory_for_model(job.model)
 
@@ -72,13 +71,12 @@ async def start(job_id: str, request: Request) -> JSONResponse:
 
         # Start the server
         server_uuid, server_process, server_log_file_path = launch_local_server(
-            model=model_class(),
-            n_clients=len(job.clients_info),
-            server_address=job.server_address,
-            redis_host=job.redis_host,
-            redis_port=job.redis_port,
             server_config=server_config,
             server_factory=server_factory,
+            server_address=job.server_address,
+            n_clients=len(job.clients_info),
+            redis_host=job.redis_host,
+            redis_port=job.redis_port,
         )
 
         await job.set_server_log_file_path(server_log_file_path, request.app.database)

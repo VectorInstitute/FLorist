@@ -20,52 +20,7 @@ from florist.api.servers.config_parsers import ConfigParser
 
 
 GetServerFunction: TypeAlias = Callable[[nn.Module, int, list[BaseReporter], dict[str, Any]], FlServer]
-FitConfigFn = Callable[[int], dict[str, Union[bool, bytes, float, int, str]]]
-
-
-class ServerFactory:
-    """Factory class that will provide the server constructor."""
-
-    def __init__(self, get_server_function: GetServerFunction):
-        """
-        Initialize a ServerFactory.
-
-        :param get_server_function: (GetServerFunction) The function that will be used to produce
-            the server constructor.
-        """
-        self.get_server_function = get_server_function
-
-    def get_server_constructor(
-        self,
-        model: nn.Module,
-        n_clients: int,
-        reporters: list[BaseReporter],
-        server_config: dict[str, Any],
-    ) -> Callable[[Any], FlServer]:
-        """
-        Make the server constructor based on the self.get_server_function.
-
-        :param model: (nn.Module) The torch.nn.Module instance for the model.
-        :param n_clients: (int) The number of clients participating in the FL training.
-        :param reporters: (list[BaseReporter]) A list of reporters to be passed to the FL server.
-        :param server_config: (dict[str, Any]) A dictionary with the server configuration values.
-        :return: (Callable[[Any], FlServer]) A callable function that will construct an FL server.
-        """
-        return partial(self.get_server_function, model, n_clients, reporters, server_config)
-
-    def __eq__(self, other: Any) -> bool:
-        """
-        Check if the self instance is equal to the given other instance.
-
-        :param other: (Any) The other instance to compare it to.
-        :return: (bool) True if the instances are the same, False otherwise.
-        """
-        if not isinstance(other, self.__class__):
-            return False
-        if self.get_server_function != other.get_server_function:  # noqa: SIM103
-            return False
-
-        return True
+FitConfigFn: TypeAlias = Callable[[int], dict[str, Union[bool, bytes, float, int, str]]]
 
 
 class Model(Enum):
@@ -105,7 +60,7 @@ class Model(Enum):
         raise ValueError(f"Model {model.value} not supported.")
 
     @classmethod
-    def server_factory_for_model(cls, model: Self) -> ServerFactory:
+    def server_factory_for_model(cls, model: Self) -> "ServerFactory":
         """
         Return the server factory instance for a given model.
 
@@ -115,9 +70,9 @@ class Model(Enum):
         :raises ValueError: if the client is not supported.
         """
         if model == Model.MNIST_FEDAVG:
-            return ServerFactory(get_server_function=get_fedavg_server)
+            return ServerFactory(get_server_function=get_fedavg_server, model=model)
         if model == Model.MNIST_FEDPROX:
-            return ServerFactory(get_server_function=get_fedprox_server)
+            return ServerFactory(get_server_function=get_fedprox_server, model=model)
 
         raise ValueError(f"Model {model.value} not supported.")
 
@@ -129,6 +84,52 @@ class Model(Enum):
         :return: (list[str]) a list of supported models.
         """
         return [model.value for model in Model]
+
+
+class ServerFactory:
+    """Factory class that will provide the server constructor."""
+
+    def __init__(self, get_server_function: GetServerFunction, model: Model):
+        """
+        Initialize a ServerFactory.
+
+        :param get_server_function: (GetServerFunction) The function that will be used to produce
+            the server constructor.
+        :param model: (Model) The model to call the server function with.
+        """
+        self.get_server_function = get_server_function
+        self.model = model
+
+    def get_server_constructor(
+        self,
+        n_clients: int,
+        reporters: list[BaseReporter],
+        server_config: dict[str, Any],
+    ) -> Callable[[Any], FlServer]:
+        """
+        Make the server constructor based on the self.get_server_function.
+
+        :param n_clients: (int) The number of clients participating in the FL training.
+        :param reporters: (list[BaseReporter]) A list of reporters to be passed to the FL server.
+        :param server_config: (dict[str, Any]) A dictionary with the server configuration values.
+        :return: (Callable[[Any], FlServer]) A callable function that will construct an FL server.
+        """
+        torch_model_class = Model.class_for_model(self.model)
+        return partial(self.get_server_function, torch_model_class(), n_clients, reporters, server_config)
+
+    def __eq__(self, other: Any) -> bool:
+        """
+        Check if the self instance is equal to the given other instance.
+
+        :param other: (Any) The other instance to compare it to.
+        :return: (bool) True if the instances are the same, False otherwise.
+        """
+        if not isinstance(other, self.__class__):
+            return False
+        if self.get_server_function != other.get_server_function:  # noqa: SIM103
+            return False
+
+        return True
 
 
 def fit_config_function(server_config: dict[str, Any], current_server_round: int) -> dict[str, int]:
