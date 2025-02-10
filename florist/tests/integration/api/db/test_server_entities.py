@@ -4,7 +4,6 @@ from unittest.mock import ANY
 from pytest import raises
 
 from florist.api.db.server_entities import Job, JobStatus
-from florist.api.servers.models import Model
 from florist.tests.integration.api.utils import mock_request
 
 
@@ -271,7 +270,7 @@ def get_test_job() -> Job:
     }
     return Job(**{
         "status": "NOT_STARTED",
-        "model": Model.MNIST_FEDAVG.value,
+        "model": "MNIST",
         "server_address": "test-server-address",
         "server_config": json.dumps(test_server_config),
         "config_parser": "BASIC",

@@ -7,7 +7,7 @@ from florist.api.clients.common import Client
 
 def test_list_models() -> None:
     result = list_models()
-    assert result.body.decode() == json.dumps(Model.list()).replace(", ", ",")
+    assert result.body.decode() == json.dumps(Model.list())
 
 
 def test_list_clients() -> None:
