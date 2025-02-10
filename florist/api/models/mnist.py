@@ -1,7 +1,5 @@
 """Definitions for the MNIST model."""
 
-from typing import Any
-
 import torch
 import torch.nn.functional as f
 from torch import nn
@@ -31,15 +29,3 @@ class MnistNet(nn.Module):
         x = x.view(-1, 16 * 4 * 4)
         x = f.relu(self.fc1(x))
         return f.relu(self.fc2(x))
-
-    def __eq__(self, other: Any) -> bool:
-        """
-        Check if the self instance is equal to the given other instance.
-
-        :param other: (Any) The other instance to compare it to.
-        :return: (bool) True if the instances are the same, False otherwise.
-        """
-        if not isinstance(other, self.__class__):  # noqa SIM103
-            return False
-
-        return True

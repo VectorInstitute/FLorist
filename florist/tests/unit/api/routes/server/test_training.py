@@ -6,7 +6,6 @@ from unittest.mock import Mock, AsyncMock, patch, ANY, call
 
 from florist.api.db.config import DATABASE_NAME
 from florist.api.db.server_entities import Job, JobStatus, JOB_COLLECTION_NAME
-from florist.api.models.mnist import MnistNet
 from florist.api.servers.models import Model
 from florist.api.routes.server.training import (
     client_training_listener,
@@ -70,8 +69,12 @@ async def test_start_success(
     mock_job_collection.find_one.assert_called_with({"_id": test_job_id})
     mock_set_status.assert_called_once_with(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database)
 
+    assert isinstance(
+        mock_launch_local_server.call_args_list[0][1]["model"],
+        Model.class_for_model(Model(test_job["model"])),
+    )
     mock_launch_local_server.assert_called_once_with(
-        model=Model.class_for_model(Model(test_job["model"]))(),
+        model=ANY,
         n_clients=len(test_job["clients_info"]),
         server_address=test_job["server_address"],
         redis_host=test_job["redis_host"],
