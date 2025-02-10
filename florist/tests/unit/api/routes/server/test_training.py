@@ -33,92 +33,107 @@ async def test_start_success(
     mock_server_training_listener: Mock,
     mock_client_training_listener: Mock,
 ) -> None:
-    # Arrange
-    test_job_id = "test-job-id"
-    test_server_config, test_job, mock_job_collection, mock_fastapi_request = _setup_test_job_and_mocks()
+    for test_model in Model:
+        # Arrange
+        test_job_id = "test-job-id"
+        test_server_config = _get_test_server_config(test_model)
+        _, test_job, mock_job_collection, mock_fastapi_request = _setup_test_job_and_mocks()
+        test_job["model"] = test_model.value
+        test_job["server_config"] = json.dumps(test_server_config)
+        test_job["config_parser"] = Model.config_parser_for_model(test_model).value
 
-    test_server_uuid = "test-server-uuid"
-    test_server_log_file_path = "test-log-file-path"
-    test_server_pid = 12345
-    mock_server_process = Mock()
-    mock_server_process.pid = test_server_pid
-    mock_launch_local_server.return_value = (test_server_uuid, mock_server_process, test_server_log_file_path)
+        test_server_uuid = "test-server-uuid"
+        test_server_log_file_path = "test-log-file-path"
+        test_server_pid = 12345
+        mock_server_process = Mock()
+        mock_server_process.pid = test_server_pid
+        mock_launch_local_server.return_value = (test_server_uuid, mock_server_process, test_server_log_file_path)
 
-    mock_redis_connection = Mock()
-    mock_redis_connection.get.return_value = b"{\"fit_start\": null}"
-    mock_redis.Redis.return_value = mock_redis_connection
+        mock_redis_connection = Mock()
+        mock_redis_connection.get.return_value = b"{\"fit_start\": null}"
+        mock_redis.Redis.return_value = mock_redis_connection
 
-    mock_response = Mock()
-    mock_response.status_code = 200
-    test_client_1_uuid = "test-client-1-uuid"
-    test_client_2_uuid = "test-client-2-uuid"
-    mock_response.json.side_effect = [{"uuid": test_client_1_uuid}, {"uuid": test_client_2_uuid}]
-    mock_requests.get.return_value = mock_response
+        mock_response = Mock()
+        mock_response.status_code = 200
+        test_client_1_uuid = "test-client-1-uuid"
+        test_client_2_uuid = "test-client-2-uuid"
+        mock_response.json.side_effect = [{"uuid": test_client_1_uuid}, {"uuid": test_client_2_uuid}]
+        mock_requests.get.return_value = mock_response
 
-    mock_client_training_listener.return_value = AsyncMock()
-    mock_server_training_listener.return_value = AsyncMock()
+        mock_client_training_listener.return_value = AsyncMock()
+        mock_server_training_listener.return_value = AsyncMock()
 
-    # Act
-    response = await start(test_job_id, mock_fastapi_request)
+        # Act
+        response = await start(test_job_id, mock_fastapi_request)
 
-    # Assert
-    assert response.status_code == 200
-    json_body = json.loads(response.body.decode())
-    assert json_body == {"server_uuid": test_server_uuid, "client_uuids": [test_client_1_uuid, test_client_2_uuid]}
+        # Assert
+        assert response.status_code == 200
+        json_body = json.loads(response.body.decode())
+        assert json_body == {"server_uuid": test_server_uuid, "client_uuids": [test_client_1_uuid, test_client_2_uuid]}
 
-    mock_job_collection.find_one.assert_called_with({"_id": test_job_id})
-    mock_set_status.assert_called_once_with(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database)
+        mock_job_collection.find_one.assert_called_with({"_id": test_job_id})
+        mock_set_status.assert_called_once_with(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database)
 
-    mock_launch_local_server.assert_called_once_with(
-        server_factory=Model.server_factory_for_model(Model(test_job["model"])),
-        server_config=test_server_config,
-        server_address=test_job["server_address"],
-        n_clients=len(test_job["clients_info"]),
-        redis_host=test_job["redis_host"],
-        redis_port=test_job["redis_port"],
-    )
-    mock_redis.Redis.assert_called_once_with(host=test_job["redis_host"], port=test_job["redis_port"])
-    mock_redis_connection.get.assert_called_once_with(test_server_uuid)
-    mock_server_log_file_path.assert_called_once_with(test_server_log_file_path, mock_fastapi_request.app.database)
+        mock_launch_local_server.assert_called_once_with(
+            server_factory=Model.server_factory_for_model(Model(test_job["model"])),
+            server_config=test_server_config,
+            server_address=test_job["server_address"],
+            n_clients=len(test_job["clients_info"]),
+            redis_host=test_job["redis_host"],
+            redis_port=test_job["redis_port"],
+        )
+        mock_redis.Redis.assert_called_once_with(host=test_job["redis_host"], port=test_job["redis_port"])
+        mock_redis_connection.get.assert_called_once_with(test_server_uuid)
+        mock_server_log_file_path.assert_called_once_with(test_server_log_file_path, mock_fastapi_request.app.database)
 
-    mock_requests.get.assert_any_call(
-        url=f"http://{test_job['clients_info'][0]['service_address']}/api/client/start",
-        params={
-            "server_address": test_job["server_address"],
-            "client": test_job["clients_info"][0]["client"],
-            "data_path": test_job["clients_info"][0]["data_path"],
-            "redis_host": test_job["clients_info"][0]["redis_host"],
-            "redis_port": test_job["clients_info"][0]["redis_port"],
-        },
-    )
-    mock_requests.get.assert_any_call(
-        url=f"http://{test_job['clients_info'][1]['service_address']}/api/client/start",
-        params={
-            "server_address": test_job["server_address"],
-            "client": test_job["clients_info"][1]["client"],
-            "data_path": test_job["clients_info"][1]["data_path"],
-            "redis_host": test_job["clients_info"][1]["redis_host"],
-            "redis_port": test_job["clients_info"][1]["redis_port"],
-        },
-    )
+        mock_requests.get.assert_any_call(
+            url=f"http://{test_job['clients_info'][0]['service_address']}/api/client/start",
+            params={
+                "server_address": test_job["server_address"],
+                "client": test_job["clients_info"][0]["client"],
+                "data_path": test_job["clients_info"][0]["data_path"],
+                "redis_host": test_job["clients_info"][0]["redis_host"],
+                "redis_port": test_job["clients_info"][0]["redis_port"],
+            },
+        )
+        mock_requests.get.assert_any_call(
+            url=f"http://{test_job['clients_info'][1]['service_address']}/api/client/start",
+            params={
+                "server_address": test_job["server_address"],
+                "client": test_job["clients_info"][1]["client"],
+                "data_path": test_job["clients_info"][1]["data_path"],
+                "redis_host": test_job["clients_info"][1]["redis_host"],
+                "redis_port": test_job["clients_info"][1]["redis_port"],
+            },
+        )
 
-    mock_set_uuids.assert_called_once_with(
-        test_server_uuid,
-        [test_client_1_uuid, test_client_2_uuid],
-        mock_fastapi_request.app.database,
-    )
-    mock_set_server_pid.assert_called_once_with(str(test_server_pid), mock_fastapi_request.app.database)
+        mock_set_uuids.assert_called_once_with(
+            test_server_uuid,
+            [test_client_1_uuid, test_client_2_uuid],
+            mock_fastapi_request.app.database,
+        )
+        mock_set_server_pid.assert_called_once_with(str(test_server_pid), mock_fastapi_request.app.database)
 
-    expected_job = Job(**test_job)
-    expected_job.id = ANY
-    expected_job.clients_info[0].id = ANY
-    expected_job.clients_info[1].id = ANY
+        expected_job = Job(**test_job)
+        expected_job.id = ANY
+        expected_job.clients_info[0].id = ANY
+        expected_job.clients_info[1].id = ANY
 
-    mock_server_training_listener.assert_called_with(expected_job)
-    mock_client_training_listener.assert_has_calls([
-        call(expected_job, expected_job.clients_info[0]),
-        call(expected_job, expected_job.clients_info[1]),
-    ])
+        mock_server_training_listener.assert_called_with(expected_job)
+        mock_client_training_listener.assert_has_calls([
+            call(expected_job, expected_job.clients_info[0]),
+            call(expected_job, expected_job.clients_info[1]),
+        ])
+
+        mock_set_server_pid.reset_mock()
+        mock_server_log_file_path.reset_mock()
+        mock_set_uuids.reset_mock()
+        mock_set_status.reset_mock()
+        mock_requests.reset_mock()
+        mock_redis.reset_mock()
+        mock_launch_local_server.reset_mock()
+        mock_server_training_listener.reset_mock()
+        mock_client_training_listener.reset_mock()
 
 
 async def test_start_fail_unsupported_server_model() -> None:
@@ -737,14 +752,11 @@ async def test_client_training_listener_fail_no_uuid() -> None:
 
 
 def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, Mock]:
-    test_server_config = {
-        "n_server_rounds": 2,
-        "batch_size": 8,
-        "local_epochs": 1,
-    }
+    test_model = Model.MNIST_FEDAVG
+    test_server_config = _get_test_server_config(test_model)
     test_job = {
         "status": "NOT_STARTED",
-        "model": Model.MNIST_FEDAVG.value,
+        "model": test_model.value,
         "server_address": "test-server-address",
         "server_config": json.dumps(test_server_config),
         "config_parser": "BASIC",
@@ -783,6 +795,31 @@ def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, M
     mock_fastapi_request.app.synchronous_database = {JOB_COLLECTION_NAME: mock_job_collection}
 
     return test_server_config, test_job, mock_job_collection, mock_fastapi_request
+
+
+def _get_test_server_config(model: Model) -> Dict[str, Any]:
+    if model == Model.MNIST_FEDAVG:
+        return {
+            "n_server_rounds": 2,
+            "batch_size": 8,
+            "local_epochs": 1,
+        }
+    if model == Model.MNIST_FEDPROX:
+        return {
+            "n_server_rounds": 123,
+            "batch_size": 456,
+            "local_epochs": 789,
+            "adapt_proximal_weight": True,
+            "initial_proximal_weight": 0.0,
+            "proximal_weight_delta": 0.1,
+            "proximal_weight_patience": 5,
+            "n_clients": 3,
+        }
+
+    raise ValueError(
+        f"Model {model.value} not yet supported in tests." +
+        "Please add the model's server config to _get_test_server_config function."
+    )
 
 
 def make_mock_db_client() -> Mock:

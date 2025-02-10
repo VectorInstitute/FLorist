@@ -134,7 +134,7 @@ class RedisMetricsReporter(BaseReporter):  # type: ignore
 
     def __eq__(self, other: Any) -> bool:
         """
-        Check if this instance has the same parameters to the other instance.
+        Check if this instance has the same attributes to the other instance.
 
         Will look for the other instance having the same host, port and run_id as the self instance.
 
