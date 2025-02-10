@@ -15,8 +15,9 @@ class BasicConfigParser:
     @classmethod
     def mandatory_fields(cls) -> List[str]:
         """
-        Define the mandatory fields for basic server configuration
-        namely `n_server_rounds`, `batch_size` and `local_epochs`.
+        Define the mandatory fields for basic server configuration.
+
+        Namely: `n_server_rounds`, `batch_size` and `local_epochs`.
 
         :return: (List[str]) the list of required fields for basic server configuration.
         """
@@ -54,9 +55,10 @@ class FedProxConfigParser(BasicConfigParser):
     @classmethod
     def mandatory_fields(cls) -> List[str]:
         """
-        Define the mandatory fields for FedProx configuration, namely
-        `n_server_rounds`, `adapt_proximal_weight`, `initial_proximal_weight`, `proximal_weight_delta`,
-        `proximal_weight_patience`,`n_clients`,`local_epochs` and `batch_size`.
+        Define the mandatory fields for FedProx configuration.
+
+        Namely: `n_server_rounds`, `adapt_proximal_weight`, `initial_proximal_weight`, `proximal_weight_delta`,
+        `proximal_weight_patience`, `n_clients`, `local_epochs` and `batch_size`.
 
         :return: (List[str]) the list of required fields for FedProx server configuration.
         """
