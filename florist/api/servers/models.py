@@ -2,7 +2,7 @@
 
 from enum import Enum
 from functools import partial
-from typing import Any, Callable, TypeAlias
+from typing import Any, Callable, TypeAlias, Union
 
 from fl4health.client_managers.base_sampling_manager import SimpleClientManager
 from fl4health.reporting.base_reporter import BaseReporter
@@ -20,9 +20,12 @@ from florist.api.servers.config_parsers import ConfigParser
 
 
 GetServerFunction: TypeAlias = Callable[[nn.Module, int, list[BaseReporter], dict[str, Any]], FlServer]
+FitConfigFn = Callable[[int], dict[str, Union[bool, bytes, float, int, str]]]
+
 
 class ServerFactory:
     """Factory class that will provide the server constructor."""
+
     def __init__(self, get_server_function: GetServerFunction):
         """
         Initialize a ServerFactory.
@@ -49,6 +52,20 @@ class ServerFactory:
         :return: (Callable[[Any], FlServer]) A callable function that will construct an FL server.
         """
         return partial(self.get_server_function, model, n_clients, reporters, server_config)
+
+    def __eq__(self, other: Any) -> bool:
+        """
+        Check if the self instance is equal to the given other instance.
+
+        :param other: (Any) The other instance to compare it to.
+        :return: (bool) True if the instances are the same, False otherwise.
+        """
+        if not isinstance(other, self.__class__):
+            return False
+        if self.get_server_function != other.get_server_function:  # noqa: SIM103
+            return False
+
+        return True
 
 
 class Model(Enum):
@@ -126,6 +143,7 @@ def fit_config_function(server_config: dict[str, Any], current_server_round: int
         "current_server_round": current_server_round,
     }
 
+
 def get_fedavg_server(
     model: nn.Module,
     n_clients: int,
@@ -133,7 +151,7 @@ def get_fedavg_server(
     server_config: dict[str, Any],
 ) -> FlServer:
     """
-    Returns a server with FedAvg strategy.
+    Return a server with FedAvg strategy.
 
     :param model: (nn.Module) The torch.nn.Module instance for the model.
     :param n_clients: (int) the number of clients participating in the FL training.
@@ -141,7 +159,7 @@ def get_fedavg_server(
     :param server_config: (dict[str, Any]) A dictionary with the server configuration values.
     :return: (FlServer) An FlServer instance configured with FedAvg strategy.
     """
-    fit_config_fn = partial(fit_config_function, server_config)  # type: ignore
+    fit_config_fn: FitConfigFn = partial(fit_config_function, server_config)  # type: ignore
     initial_model_parameters = ndarrays_to_parameters([val.cpu().numpy() for _, val in model.state_dict().items()])
     strategy = FedAvg(
         min_fit_clients=n_clients,
@@ -164,7 +182,7 @@ def get_fedprox_server(
     server_config: dict[str, Any],
 ) -> FlServer:
     """
-    Returns a server with FedProx strategy.
+    Return a server with FedProx strategy.
 
     :param model: (nn.Module) The torch.nn.Module instance for the model.
     :param n_clients: (int) the number of clients participating in the FL training.
@@ -172,7 +190,7 @@ def get_fedprox_server(
     :param server_config: (dict[str, Any]) A dictionary with the server configuration values.
     :return: (FlServer) An FlServer instance configured with FedProx strategy.
     """
-    fit_config_fn = partial(fit_config_function, server_config)  # type: ignore
+    fit_config_fn: FitConfigFn = partial(fit_config_function, server_config)  # type: ignore
     initial_model_parameters = ndarrays_to_parameters([val.cpu().numpy() for _, val in model.state_dict().items()])
     strategy = FedAvgWithAdaptiveConstraint(
         min_fit_clients=n_clients,
