@@ -69,18 +69,13 @@ async def test_start_success(
     mock_job_collection.find_one.assert_called_with({"_id": test_job_id})
     mock_set_status.assert_called_once_with(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database)
 
-    assert isinstance(
-        mock_launch_local_server.call_args_list[0][1]["model"],
-        Model.class_for_model(Model(test_job["model"])),
-    )
     mock_launch_local_server.assert_called_once_with(
-        model=ANY,
-        n_clients=len(test_job["clients_info"]),
+        server_factory=Model.server_factory_for_model(Model(test_job["model"])),
+        server_config=test_server_config,
         server_address=test_job["server_address"],
+        n_clients=len(test_job["clients_info"]),
         redis_host=test_job["redis_host"],
         redis_port=test_job["redis_port"],
-        server_config=test_server_config,
-        server_factory=Model.server_factory_for_model(Model(test_job["model"])),
     )
     mock_redis.Redis.assert_called_once_with(host=test_job["redis_host"], port=test_job["redis_port"])
     mock_redis_connection.get.assert_called_once_with(test_server_uuid)

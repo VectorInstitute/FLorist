@@ -1,15 +1,14 @@
 from unittest.mock import ANY, Mock, patch
 
-from florist.api.clients.mnist import MnistNet
 from florist.api.monitoring.metrics import RedisMetricsReporter
 from florist.api.servers.launch import launch_local_server
-from florist.api.servers.models import ServerFactory, get_fedavg_server
+from florist.api.servers.models import Model, ServerFactory, get_fedavg_server
 
 
 @patch("florist.api.servers.launch.launch_server")
 @patch("florist.api.servers.launch.uuid")
 def test_launch_local_server(mock_uuid: Mock, mock_launch_server: Mock) -> None:
-    test_model = MnistNet()
+    test_model = Model.MNIST_FEDAVG
     test_n_clients = 2
     test_server_address = "test-server-address"
     test_server_config = {
@@ -17,7 +16,7 @@ def test_launch_local_server(mock_uuid: Mock, mock_launch_server: Mock) -> None:
         "batch_size": 8,
         "local_epochs": 1,
     }
-    test_server_factory = ServerFactory(get_server_function=get_fedavg_server)
+    test_server_factory = ServerFactory(get_server_function=get_fedavg_server, model=test_model)
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
     test_server_process = "test-server-process"
@@ -26,13 +25,12 @@ def test_launch_local_server(mock_uuid: Mock, mock_launch_server: Mock) -> None:
     mock_uuid.uuid4.return_value = test_server_uuid
 
     server_uuid, server_process, log_file_path = launch_local_server(
-        test_model,
-        test_n_clients,
-        test_server_address,
-        test_redis_host,
-        test_redis_port,
         test_server_factory,
         test_server_config,
+        test_server_address,
+        test_n_clients,
+        test_redis_host,
+        test_redis_port,
     )
 
     assert server_uuid is not None
@@ -50,10 +48,16 @@ def test_launch_local_server(mock_uuid: Mock, mock_launch_server: Mock) -> None:
     assert call_kwargs == {"seconds_to_sleep": 0}
 
     expected_server_constructor = test_server_factory.get_server_constructor(
-        test_model,
         test_n_clients,
         [RedisMetricsReporter(host=test_redis_host, port=test_redis_port, run_id=test_server_uuid)],
         test_server_config,
     )
+
     assert call_args[0].func == expected_server_constructor.func
-    assert call_args[0].args == expected_server_constructor.args
+    assert call_args[0].args == (
+        ANY,  # model can't be compared with __eq__, so put ANY here and compare later
+        expected_server_constructor.args[1],
+        expected_server_constructor.args[2],
+        expected_server_constructor.args[3],
+    )
+    assert isinstance(call_args[0].args[0], expected_server_constructor.args[0].__class__)
