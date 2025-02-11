@@ -58,7 +58,7 @@ class FedProxConfigParser(BasicConfigParser):
         Define the mandatory fields for FedProx configuration.
 
         Namely: `n_server_rounds`, `adapt_proximal_weight`, `initial_proximal_weight`, `proximal_weight_delta`,
-        `proximal_weight_patience`, `n_clients`, `local_epochs` and `batch_size`.
+        `proximal_weight_patience`, `local_epochs` and `batch_size`.
 
         :return: (List[str]) the list of required fields for FedProx server configuration.
         """
@@ -68,7 +68,6 @@ class FedProxConfigParser(BasicConfigParser):
             "initial_proximal_weight",
             "proximal_weight_delta",
             "proximal_weight_patience",
-            "n_clients",
         ]
 
 

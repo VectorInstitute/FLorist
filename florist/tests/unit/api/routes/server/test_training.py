@@ -813,7 +813,6 @@ def _get_test_server_config(model: Model) -> Dict[str, Any]:
             "initial_proximal_weight": 0.0,
             "proximal_weight_delta": 0.1,
             "proximal_weight_patience": 5,
-            "n_clients": 3,
         }
 
     raise ValueError(
