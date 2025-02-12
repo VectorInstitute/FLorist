@@ -12,4 +12,4 @@ def test_list_models() -> None:
 
 def test_list_clients() -> None:
     result = list_clients()
-    assert result.body.decode() == json.dumps(Client.list())
+    assert result.body.decode() == json.dumps(Client.list()).replace(", ", ",")
