@@ -117,7 +117,7 @@ class ServerFactory:
         torch_model_class = Model.class_for_model(self.model)
         return partial(self.get_server_function, torch_model_class(), n_clients, reporters, server_config)
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         """
         Check if the self instance is equal to the given other instance.
 
@@ -125,7 +125,7 @@ class ServerFactory:
         :return: (bool) True if the instances are the same, False otherwise.
         """
         if not isinstance(other, self.__class__):
-            return False
+            return NotImplemented
         if self.get_server_function != other.get_server_function:  # noqa: SIM103
             return False
 

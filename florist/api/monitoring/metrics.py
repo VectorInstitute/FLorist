@@ -132,7 +132,7 @@ class RedisMetricsReporter(BaseReporter):  # type: ignore
         log(DEBUG, f"Notifying redis channel '{self.run_id}'")
         self.redis_connection.publish(self.run_id, "update")
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         """
         Check if this instance has the same attributes to the other instance.
 
@@ -142,7 +142,7 @@ class RedisMetricsReporter(BaseReporter):  # type: ignore
         :return: (bool) True if they are the same, False otherwise.
         """
         if not isinstance(other, self.__class__):
-            return False
+            return NotImplemented
 
         if self.host != other.host:
             return False
