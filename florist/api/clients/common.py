@@ -5,13 +5,14 @@ from typing import List
 
 from fl4health.clients.basic_client import BasicClient
 
-from florist.api.clients.mnist import MnistClient
+from florist.api.clients.mnist import MnistClient, MnistFedProxClient
 
 
 class Client(Enum):
     """Enumeration of supported clients."""
 
     MNIST = "MNIST"
+    MNIST_FEDPROX = "MNIST FedProx"
 
     @classmethod
     def class_for_client(cls, client: "Client") -> type[BasicClient]:
@@ -24,6 +25,8 @@ class Client(Enum):
         """
         if client == Client.MNIST:
             return MnistClient
+        if client == Client.MNIST_FEDPROX:
+            return MnistFedProxClient
 
         raise ValueError(f"Client {client.value} not supported.")
 

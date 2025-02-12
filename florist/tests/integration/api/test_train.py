@@ -12,6 +12,7 @@ from florist.api.monitoring.metrics import wait_for_metric
 from florist.api.routes.server.training import LOGGER
 from florist.api.routes.server.job import new_job, list_jobs_with_status
 from florist.api.server import DATABASE_NAME
+from florist.api.servers.models import Model
 from florist.tests.integration.api.utils import TestUvicornServer, MockRequest, MockApp
 
 
@@ -35,7 +36,7 @@ async def test_train():
 
                 job = await new_job(test_request, Job(
                     status=JobStatus.NOT_STARTED,
-                    model="MNIST",
+                    model=Model.MNIST_FEDAVG.value,
                     server_address="localhost:8080",
                     server_config=json.dumps({
                         "n_server_rounds": test_n_server_rounds,

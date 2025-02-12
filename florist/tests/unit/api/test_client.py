@@ -7,6 +7,7 @@ from unittest.mock import ANY, Mock, patch
 import pytest
 
 from florist.api import client
+from florist.api.clients.common import Client
 from florist.api.clients.mnist import MnistClient
 from florist.api.db.client_entities import ClientDAO
 from florist.api.monitoring.logs import get_client_log_file_path
@@ -41,7 +42,7 @@ def test_connect() -> None:
 @patch("florist.api.client.launch_client")
 def test_start_success(mock_launch_client: Mock) -> None:
     test_server_address = "test-server-address"
-    test_client = "MNIST"
+    test_client = Client.MNIST
     test_data_path = "test/data/path"
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
@@ -75,25 +76,10 @@ def test_start_success(mock_launch_client: Mock) -> None:
     assert client_dao.log_file_path == log_file_path
 
 
-def test_start_fail_unsupported_client() -> None:
-    test_server_address = "test-server-address"
-    test_client = "WRONG"
-    test_data_path = "test/data/path"
-    test_redis_host = "test-redis-host"
-    test_redis_port = "test-redis-port"
-
-    response = client.start(test_server_address, test_client, test_data_path, test_redis_host, test_redis_port)
-
-    assert response.status_code == 400
-    json_body = json.loads(response.body.decode())
-    assert json_body == {"error": ANY}
-    assert f"Client '{test_client}' not supported" in json_body["error"]
-
-
 @patch("florist.api.client.launch_client", side_effect=Exception("test exception"))
 def test_start_fail_exception(_: Mock) -> None:
     test_server_address = "test-server-address"
-    test_client = "MNIST"
+    test_client = Client.MNIST
     test_data_path = "test/data/path"
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"

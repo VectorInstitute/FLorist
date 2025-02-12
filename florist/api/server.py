@@ -12,7 +12,7 @@ from florist.api.db.config import DATABASE_NAME, MONGODB_URI
 from florist.api.routes.server.job import router as job_router
 from florist.api.routes.server.status import router as status_router
 from florist.api.routes.server.training import router as training_router
-from florist.api.servers.common import Model
+from florist.api.servers.models import Model
 
 
 @asynccontextmanager

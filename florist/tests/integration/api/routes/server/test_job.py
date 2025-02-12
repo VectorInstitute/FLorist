@@ -10,7 +10,7 @@ from florist.api.db.client_entities import ClientDAO
 from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.logs import get_server_log_file_path, get_client_log_file_path
 from florist.api.routes.server.job import list_jobs_with_status, new_job, get_server_log, get_client_log
-from florist.api.servers.common import Model
+from florist.api.servers.models import Model
 from florist.api.servers.config_parsers import ConfigParser
 from florist.tests.integration.api.utils import mock_request, TestUvicornServer
 
@@ -39,7 +39,7 @@ async def test_new_job(mock_request) -> None:
     test_job = Job(
         id="test-id",
         status=JobStatus.IN_PROGRESS,
-        model=Model.MNIST,
+        model=Model.MNIST_FEDAVG,
         server_address="test-server-address",
         server_config="{\"test-server-info\": 123}",
         config_parser=ConfigParser.BASIC,
@@ -115,7 +115,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
     test_job1 = Job(
         id="test-id1",
         status=JobStatus.NOT_STARTED,
-        model=Model.MNIST,
+        model=Model.MNIST_FEDAVG,
         server_address="test-server-address1",
         server_config="{\"test-server-info\": 123}",
         config_parser=ConfigParser.BASIC,
@@ -151,7 +151,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
     test_job2 = Job(
         id="test-id2",
         status=JobStatus.IN_PROGRESS,
-        model=Model.MNIST,
+        model=Model.MNIST_FEDAVG,
         server_address="test-server-address2",
         server_config="{\"test-server-info\": 123}",
         config_parser=ConfigParser.BASIC,
@@ -187,7 +187,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
     test_job3 = Job(
         id="test-id3",
         status=JobStatus.FINISHED_WITH_ERROR,
-        model=Model.MNIST,
+        model=Model.MNIST_FEDAVG,
         server_address="test-server-address3",
         server_config="{\"test-server-info\": 123}",
         config_parser=ConfigParser.BASIC,
@@ -223,7 +223,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
     test_job4 = Job(
         id="test-id4",
         status=JobStatus.FINISHED_SUCCESSFULLY,
-        model=Model.MNIST,
+        model=Model.MNIST_FEDAVG,
         server_address="test-server-address4",
         server_config="{\"test-server-info\": 123}",
         config_parser=ConfigParser.BASIC,
