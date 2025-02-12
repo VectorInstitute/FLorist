@@ -11,12 +11,14 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from florist.api.clients.common import Client
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
 from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
 from florist.api.servers.config_parsers import ConfigParser
 from florist.api.servers.launch import launch_local_server
 from florist.api.servers.models import Model
+from florist.api.servers.strategies import Strategy
 
 
 router = APIRouter()
@@ -54,23 +56,27 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         await job.set_status(JobStatus.IN_PROGRESS, request.app.database)
 
         assert job.model is not None, "Missing Job information: model"
+        assert job.strategy is not None, "Missing Job information: strategy"
         assert job.server_config is not None, "Missing Job information: server_config"
         assert job.clients_info is not None and len(job.clients_info) > 0, "Missing Job information: clients_info"
         assert job.server_address is not None, "Missing Job information: server_address"
         assert job.redis_host is not None, "Missing Job information: redis_host"
         assert job.redis_port is not None, "Missing Job information: redis_port"
 
-        job.config_parser = Model.config_parser_for_model(job.model)
-        server_factory = Model.server_factory_for_model(job.model)
+        model_class = Model.class_for_model(job.model)
+        config_parser = Strategy.config_parser_for_strategy(job.strategy)
+        server_factory = Strategy.server_factory_for_strategy(job.strategy)
+        client = Strategy.client_for_strategy(job.strategy)
 
         try:
-            config_parser = ConfigParser.class_for_parser(job.config_parser)
+            config_parser = ConfigParser.class_for_parser(config_parser)
             server_config = config_parser.parse(job.server_config)
         except JSONDecodeError as err:
             raise AssertionError("server_config is not a valid json string.") from err
 
         # Start the server
         server_uuid, server_process, server_log_file_path = launch_local_server(
+            model=model_class(),
             server_config=server_config,
             server_factory=server_factory,
             server_address=job.server_address,
@@ -87,7 +93,7 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         client_uuids: List[str] = []
         for i in range(len(job.clients_info)):
             client_info = job.clients_info[i]
-            uuid = _start_client(job.server_address, client_info)
+            uuid = _start_client(job.server_address, client, client_info)
             client_uuids.append(uuid)
 
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
@@ -223,7 +229,7 @@ async def server_training_listener(job: Job) -> None:
     db_client.close()
 
 
-def _start_client(server_address: str, client_info: ClientInfo) -> str:
+def _start_client(server_address: str, client: Client, client_info: ClientInfo) -> str:
     """
     Start a client.
 
@@ -233,7 +239,7 @@ def _start_client(server_address: str, client_info: ClientInfo) -> str:
     """
     parameters = {
         "server_address": server_address,
-        "client": client_info.client.value,
+        "client": client.value,
         "data_path": client_info.data_path,
         "redis_host": client_info.redis_host,
         "redis_port": client_info.redis_port,

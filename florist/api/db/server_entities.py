@@ -10,8 +10,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import BaseModel, Field
 from pymongo.results import UpdateResult
 
-from florist.api.clients.common import Client
-from florist.api.servers.config_parsers import ConfigParser
+from florist.api.servers.strategies import Strategy
 from florist.api.servers.models import Model
 
 
@@ -41,7 +40,6 @@ class ClientInfo(BaseModel):
     """Define the information of an FL client."""
 
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
-    client: Client = Field(...)
     service_address: str = Field(...)
     data_path: str = Field(...)
     redis_host: str = Field(...)
@@ -55,7 +53,6 @@ class ClientInfo(BaseModel):
         allow_population_by_field_name = True
         schema_extra = {
             "example": {
-                "client": "MNIST",
                 "service_address": "localhost:8001",
                 "data_path": "path/to/data",
                 "redis_host": "localhost",
@@ -72,9 +69,9 @@ class Job(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     status: JobStatus = Field(default=JobStatus.NOT_STARTED)
     model: Optional[Annotated[Model, Field(...)]]
+    strategy: Optional[Annotated[Strategy, Field(...)]]
     server_address: Optional[Annotated[str, Field(...)]]
     server_config: Optional[Annotated[str, Field(...)]]
-    config_parser: Optional[Annotated[ConfigParser, Field(...)]]
     server_uuid: Optional[Annotated[str, Field(...)]]
     server_metrics: Optional[Annotated[str, Field(...)]]
     server_log_file_path: Optional[Annotated[str, Field(...)]]
@@ -286,6 +283,7 @@ class Job(BaseModel):
                 "_id": "066de609-b04a-4b30-b46c-32537c7f1f6e",
                 "status": "NOT_STARTED",
                 "model": "MNIST",
+                "strategy": "FEDAVG",
                 "server_address": "localhost:8000",
                 "server_config": '{"n_server_rounds": 3, "batch_size": 8, "local_epochs": 1}',
                 "server_uuid": "d73243cf-8b89-473b-9607-8cd0253a101d",
@@ -296,7 +294,6 @@ class Job(BaseModel):
                 "redis_port": "6379",
                 "clients_info": [
                     {
-                        "client": "MNIST",
                         "service_address": "localhost:8001",
                         "data_path": "path/to/data",
                         "redis_host": "localhost",

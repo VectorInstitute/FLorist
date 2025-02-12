@@ -4,13 +4,16 @@ import uuid
 from multiprocessing import Process
 from typing import Any
 
+import torch
+
 from florist.api.launchers.local import launch_server
 from florist.api.monitoring.logs import get_server_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
-from florist.api.servers.models import ServerFactory
+from florist.api.servers.strategies import ServerFactory
 
 
 def launch_local_server(
+    model: torch.nn.Module,
     server_factory: ServerFactory,
     server_config: dict[str, Any],
     server_address: str,
@@ -21,6 +24,7 @@ def launch_local_server(
     """
     Launch a FL server locally.
 
+    :param model: (torch.nn.Model) The model object.
     :param server_factory: (ServerFactory) an instance of ServerFactory, which will be used to
         make a server for the model.
     :param server_config: (dict[str, Any]) a dictionary with the necessary server configurations for
@@ -38,6 +42,7 @@ def launch_local_server(
 
     metrics_reporter = RedisMetricsReporter(host=redis_host, port=redis_port, run_id=server_uuid)
     server_constructor = server_factory.get_server_constructor(
+        model=model,
         n_clients=n_clients,
         reporters=[metrics_reporter],
         server_config=server_config,

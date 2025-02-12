@@ -19,8 +19,8 @@ export function useGetModels() {
     return useSWR("/api/server/models", fetcher);
 }
 
-export function useGetClients() {
-    return useSWR("/api/server/clients", fetcher);
+export function useGetStrategies() {
+    return useSWR("/api/server/strategies", fetcher);
 }
 
 export function getServerLogsKey(jobId: string) {

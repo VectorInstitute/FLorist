@@ -9,10 +9,11 @@ import { produce } from "immer";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { useGetModels, useGetClients, usePost } from "../hooks";
+import { useGetModels, useGetStrategies, usePost } from "../hooks";
 
 interface Job {
     model: string;
+    strategy: string;
     server_address: string;
     redis_host: string;
     redis_port: string;
@@ -26,7 +27,6 @@ interface ServerConfig {
 }
 
 interface ClientInfo {
-    client: string;
     service_address: string;
     data_path: string;
     redis_host: string;
@@ -36,6 +36,7 @@ interface ClientInfo {
 export function makeEmptyJob() {
     return {
         model: "",
+        strategy: "",
         server_address: "",
         redis_host: "",
         redis_port: "",
@@ -53,7 +54,6 @@ export function makeEmptyServerConfig() {
 
 export function makeEmptyClientInfo() {
     return {
-        client: "",
         service_address: "",
         data_path: "",
         redis_host: "",
@@ -182,6 +182,27 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
+                <label className="form-label form-row" htmlFor="job-strategy">
+                    Strategy
+                </label>
+                <select
+                    className="form-control"
+                    id="job-strategy"
+                    value={state.job.strategy}
+                    onChange={(e) =>
+                        setState(
+                            produce((newState) => {
+                                newState.job.strategy = e.target.value;
+                            }),
+                        )
+                    }
+                >
+                    <option value="empty"></option>
+                    <EditJobStrategyOptions />
+                </select>
+            </div>
+
+            <div className="input-group input-group-outline gray-input-box mb-3">
                 <label className="form-label" htmlFor="job-server-address">
                     Server Address
                 </label>
@@ -243,6 +264,18 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
 
 export function EditJobModelOptions(): ReactElement {
     const { data, error, isLoading } = useGetModels();
+    if (!data) {
+        return null;
+    }
+    return data.map((d, i) => (
+        <option key={i} value={d}>
+            {d}
+        </option>
+    ));
+}
+
+export function EditJobStrategyOptions(): ReactElement {
+    const { data, error, isLoading } = useGetStrategies();
     if (!data) {
         return null;
     }
@@ -427,22 +460,6 @@ export function EditJobClientsInfoItem({ index, state, setState }): ReactElement
     });
     return (
         <div className="input-group-flex">
-            <div className="input-group-column">
-                <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label className="form-label" htmlFor={"job-client-info-client-" + index}>
-                        Client
-                    </label>
-                    <select
-                        className="form-control"
-                        id={"job-client-info-client-" + index}
-                        value={state.job.clients_info[index].client}
-                        onChange={(e) => setState(changeClientInfoAttribute(state, "client", e.target.value))}
-                    >
-                        <option value="empty"></option>
-                        <EditJobClientOptions />
-                    </select>
-                </div>
-            </div>
             <div className="input-group-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
                     <label className="form-label" htmlFor={"job-client-info-service-address-" + index}>

@@ -7,12 +7,12 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from florist.api.clients.common import Client
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
 from florist.api.routes.server.job import router as job_router
 from florist.api.routes.server.status import router as status_router
 from florist.api.routes.server.training import router as training_router
 from florist.api.servers.models import Model
+from florist.api.servers.strategies import Strategy
 
 
 @asynccontextmanager
@@ -44,11 +44,11 @@ def list_models() -> JSONResponse:
     return JSONResponse(Model.list())
 
 
-@app.get(path="/api/server/clients", response_description="Returns a list of all available clients")
-def list_clients() -> JSONResponse:
+@app.get(path="/api/server/strategies", response_description="Returns a list of all available strategies")
+def list_strategiues() -> JSONResponse:
     """
-    Return a list of all available clients.
+    Return a list of all available strategies.
 
-    :return: (JSONResponse) A JSON response with a list of all elements in the `api.clients.common.Client` enum.
+    :return: (JSONResponse) A JSON response with a list of all elements in the `api.servers.strategy.Strategies` enum.
     """
-    return JSONResponse(Client.list())
+    return JSONResponse(Strategy.list())

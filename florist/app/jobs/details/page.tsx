@@ -88,6 +88,14 @@ export function JobDetailsBody(): ReactElement {
             </div>
             <div className="row pb-2">
                 <div className="col-sm-2">
+                    <strong className="text-dark">Strategy:</strong>
+                </div>
+                <div className="col-sm" id="job-details-strategy">
+                    {job.strategy}
+                </div>
+            </div>
+            <div className="row pb-2">
+                <div className="col-sm-2">
                     <strong className="text-dark">Server Address:</strong>
                 </div>
                 <div className="col-sm" id="job-details-server-address">
@@ -693,11 +701,6 @@ export function JobDetailsClientsInfoTable({
                     let additionalClasses = clientInfo.metrics ? "" : "empty-cell";
                     return [
                         <tr className="job-client-details" key={`${i}-details`}>
-                            <td className="col-sm" id={`job-details-client-config-client-${i}`}>
-                                <div className="d-flex flex-column justify-content-center">
-                                    <span className="ps-3 text-secondary text-sm">{clientInfo.client}</span>
-                                </div>
-                            </td>
                             <td className="col-sm" id={`job-details-client-config-service-address-${i}`}>
                                 <div className="d-flex flex-column justify-content-center">
                                     <span className="ps-3 text-secondary text-sm">{clientInfo.service_address}</span>
