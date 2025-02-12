@@ -15,8 +15,7 @@ interface Job {
     model: string;
     strategy: string;
     server_address: string;
-    redis_host: string;
-    redis_port: string;
+    redis_address: string;
     server_config: Array<ServerConfig>;
     client_info: Array<ClientInfo>;
 }
@@ -29,8 +28,7 @@ interface ServerConfig {
 interface ClientInfo {
     service_address: string;
     data_path: string;
-    redis_host: string;
-    redis_port: string;
+    redis_address: string;
 }
 
 export function makeEmptyJob() {
@@ -38,8 +36,7 @@ export function makeEmptyJob() {
         model: "",
         strategy: "",
         server_address: "",
-        redis_host: "",
-        redis_port: "",
+        redis_address: "",
         server_config: [makeEmptyServerConfig()],
         clients_info: [makeEmptyClientInfo()],
     };
@@ -56,8 +53,7 @@ export function makeEmptyClientInfo() {
     return {
         service_address: "",
         data_path: "",
-        redis_host: "",
-        redis_port: "",
+        redis_address: "",
     };
 }
 
@@ -222,37 +218,18 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
-                <label className="form-label" htmlFor="job-redis-host">
-                    Redis Host
+                <label className="form-label" htmlFor="job-redis-address">
+                    Redis Address
                 </label>
                 <input
                     className="form-control"
                     type="text"
-                    id="job-redis-host"
-                    value={state.job.redis_host}
+                    id="job-redis-address"
+                    value={state.job.redis_address}
                     onChange={(e) =>
                         setState(
                             produce((newState) => {
-                                newState.job.redis_host = e.target.value;
-                            }),
-                        )
-                    }
-                />
-            </div>
-
-            <div className="input-group input-group-outline gray-input-box mb-3">
-                <label className="form-label" htmlFor="job-redis-port">
-                    Redis Port
-                </label>
-                <input
-                    className="form-control"
-                    type="text"
-                    id="job-redis-port"
-                    value={state.job.redis_port}
-                    onChange={(e) =>
-                        setState(
-                            produce((newState) => {
-                                newState.job.redis_port = e.target.value;
+                                newState.job.redis_address = e.target.value;
                             }),
                         )
                     }
@@ -490,29 +467,15 @@ export function EditJobClientsInfoItem({ index, state, setState }): ReactElement
             </div>
             <div className="input-group-column">
                 <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label className="form-label" htmlFor={"job-client-info-redis-host-" + index}>
-                        Redis Host
+                    <label className="form-label" htmlFor={"job-client-info-redis-address-" + index}>
+                        Redis Address
                     </label>
                     <input
                         className="form-control"
                         type="text"
-                        id={"job-client-info-redis-host-" + index}
-                        value={state.job.clients_info[index].redis_host}
-                        onChange={(e) => setState(changeClientInfoAttribute(state, "redis_host", e.target.value))}
-                    />
-                </div>
-            </div>
-            <div className="input-group-column">
-                <div className="input-group input-group-outline gray-input-box mb-3">
-                    <label className="form-label" htmlFor={"job-client-info-redis-port-" + index}>
-                        Redis Port
-                    </label>
-                    <input
-                        className="form-control"
-                        type="text"
-                        id={"job-client-info-redis-port-" + index}
-                        value={state.job.clients_info[index].redis_port}
-                        onChange={(e) => setState(changeClientInfoAttribute(state, "redis_port", e.target.value))}
+                        id={"job-client-info-redis-address-" + index}
+                        value={state.job.clients_info[index].redis_address}
+                        onChange={(e) => setState(changeClientInfoAttribute(state, "redis_address", e.target.value))}
                     />
                 </div>
             </div>

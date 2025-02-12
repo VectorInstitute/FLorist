@@ -60,8 +60,7 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         assert job.server_config is not None, "Missing Job information: server_config"
         assert job.clients_info is not None and len(job.clients_info) > 0, "Missing Job information: clients_info"
         assert job.server_address is not None, "Missing Job information: server_address"
-        assert job.redis_host is not None, "Missing Job information: redis_host"
-        assert job.redis_port is not None, "Missing Job information: redis_port"
+        assert job.redis_address is not None, "Missing Job information: redis_address"
 
         model_class = Model.class_for_model(job.model)
         config_parser = Strategy.config_parser_for_strategy(job.strategy)
@@ -81,13 +80,12 @@ async def start(job_id: str, request: Request) -> JSONResponse:
             server_factory=server_factory,
             server_address=job.server_address,
             n_clients=len(job.clients_info),
-            redis_host=job.redis_host,
-            redis_port=job.redis_port,
+            redis_address=job.redis_address,
         )
 
         await job.set_server_log_file_path(server_log_file_path, request.app.database)
 
-        wait_for_metric(server_uuid, "fit_start", job.redis_host, job.redis_port, logger=LOGGER)
+        wait_for_metric(server_uuid, "fit_start", job.redis_address, logger=LOGGER)
 
         # Start the clients
         client_uuids: List[str] = []
@@ -143,7 +141,7 @@ async def client_training_listener(job: Job, client_info: ClientInfo) -> None:
     database = db_client[DATABASE_NAME]
 
     # check if training has already finished before start listening
-    client_metrics = get_from_redis(client_info.uuid, client_info.redis_host, client_info.redis_port)
+    client_metrics = get_from_redis(client_info.uuid, client_info.redis_address)
     LOGGER.debug(f"Client listener: Current metrics for client {client_info.uuid}: {client_metrics}")
     if client_metrics is not None:
         LOGGER.info(f"Client listener: Updating client metrics for client {client_info.uuid} on job {job.id}")
@@ -153,12 +151,12 @@ async def client_training_listener(job: Job, client_info: ClientInfo) -> None:
             db_client.close()
             return
 
-    subscriber = get_subscriber(client_info.uuid, client_info.redis_host, client_info.redis_port)
+    subscriber = get_subscriber(client_info.uuid, client_info.redis_address)
     # TODO add a max retries mechanism, maybe?
     for message in subscriber.listen():  # type: ignore[no-untyped-call]
         if message["type"] == "message":
             # The contents of the message do not matter, we just use it to get notified
-            client_metrics = get_from_redis(client_info.uuid, client_info.redis_host, client_info.redis_port)
+            client_metrics = get_from_redis(client_info.uuid, client_info.redis_address)
             LOGGER.debug(f"Client listener: Current metrics for client {client_info.uuid}: {client_metrics}")
 
             if client_metrics is not None:
@@ -187,14 +185,13 @@ async def server_training_listener(job: Job) -> None:
     LOGGER.info(f"Starting listener for server messages from job {job.id} at channel {job.server_uuid}")
 
     assert job.server_uuid is not None, "job.server_uuid is None."
-    assert job.redis_host is not None, "job.redis_host is None."
-    assert job.redis_port is not None, "job.redis_port is None."
+    assert job.redis_address is not None, "job.redis_address is None."
 
     db_client: AsyncIOMotorClient[Any] = AsyncIOMotorClient(MONGODB_URI)
     database = db_client[DATABASE_NAME]
 
     # check if training has already finished before start listening
-    server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
+    server_metrics = get_from_redis(job.server_uuid, job.redis_address)
     LOGGER.debug(f"Server listener: Current metrics for job {job.id}: {server_metrics}")
     if server_metrics is not None:
         LOGGER.info(f"Server listener: Updating server metrics for job {job.id}")
@@ -207,12 +204,12 @@ async def server_training_listener(job: Job) -> None:
             db_client.close()
             return
 
-    subscriber = get_subscriber(job.server_uuid, job.redis_host, job.redis_port)
+    subscriber = get_subscriber(job.server_uuid, job.redis_address)
     # TODO add a max retries mechanism, maybe?
     for message in subscriber.listen():  # type: ignore[no-untyped-call]
         if message["type"] == "message":
             # The contents of the message do not matter, we just use it to get notified
-            server_metrics = get_from_redis(job.server_uuid, job.redis_host, job.redis_port)
+            server_metrics = get_from_redis(job.server_uuid, job.redis_address)
             LOGGER.debug(f"Server listener: Message received for job {job.id}. Metrics: {server_metrics}")
 
             if server_metrics is not None:
@@ -241,8 +238,7 @@ def _start_client(server_address: str, client: Client, client_info: ClientInfo) 
         "server_address": server_address,
         "client": client.value,
         "data_path": client_info.data_path,
-        "redis_host": client_info.redis_host,
-        "redis_port": client_info.redis_port,
+        "redis_address": client_info.redis_address,
     }
     response = requests.get(url=f"http://{client_info.service_address}/{START_CLIENT_API}", params=parameters)
     json_response = response.json()

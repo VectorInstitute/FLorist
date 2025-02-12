@@ -8,7 +8,7 @@ import torch
 
 from florist.api.launchers.local import launch_server
 from florist.api.monitoring.logs import get_server_log_file_path
-from florist.api.monitoring.metrics import RedisMetricsReporter
+from florist.api.monitoring.metrics import RedisMetricsReporter, get_host_and_port_from_address
 from florist.api.servers.strategies import ServerFactory
 
 
@@ -18,8 +18,7 @@ def launch_local_server(
     server_config: dict[str, Any],
     server_address: str,
     n_clients: int,
-    redis_host: str,
-    redis_port: str,
+    redis_address: str,
 ) -> tuple[str, Process, str]:
     """
     Launch a FL server locally.
@@ -31,8 +30,7 @@ def launch_local_server(
         the model.
     :param server_address: (str) The address the server should start at.
     :param n_clients: (int) The number of clients that will report to this server.
-    :param redis_host: (str) the host name for the Redis instance for metrics reporting.
-    :param redis_port: (str) the port for the Redis instance for metrics reporting.
+    :param redis_address: (str) the address for the Redis instance for metrics reporting.
     :return: (tuple[str, multiprocessing.Process, str]) a tuple with:
         - The UUID of the server, which can be used to pull metrics from Redis.
         - The server's local process object.
@@ -40,6 +38,7 @@ def launch_local_server(
     """
     server_uuid = str(uuid.uuid4())
 
+    redis_host, redis_port = get_host_and_port_from_address(redis_address)
     metrics_reporter = RedisMetricsReporter(host=redis_host, port=redis_port, run_id=server_uuid)
     server_constructor = server_factory.get_server_constructor(
         model=model,

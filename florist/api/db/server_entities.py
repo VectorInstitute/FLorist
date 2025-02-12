@@ -42,8 +42,7 @@ class ClientInfo(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     service_address: str = Field(...)
     data_path: str = Field(...)
-    redis_host: str = Field(...)
-    redis_port: str = Field(...)
+    redis_address: str = Field(...)
     uuid: Optional[Annotated[str, Field(...)]]
     metrics: Optional[Annotated[str, Field(...)]]
 
@@ -55,8 +54,7 @@ class ClientInfo(BaseModel):
             "example": {
                 "service_address": "localhost:8001",
                 "data_path": "path/to/data",
-                "redis_host": "localhost",
-                "redis_port": "6380",
+                "redis_address": "localhost:6380",
                 "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
                 "metrics": '{"host_type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
             },
@@ -76,8 +74,7 @@ class Job(BaseModel):
     server_metrics: Optional[Annotated[str, Field(...)]]
     server_log_file_path: Optional[Annotated[str, Field(...)]]
     server_pid: Optional[Annotated[str, Field(...)]]
-    redis_host: Optional[Annotated[str, Field(...)]]
-    redis_port: Optional[Annotated[str, Field(...)]]
+    redis_address: Optional[Annotated[str, Field(...)]]
     clients_info: Optional[Annotated[List[ClientInfo], Field(...)]]
     error_message: Optional[Annotated[str, Field(...)]]
 
@@ -290,14 +287,12 @@ class Job(BaseModel):
                 "server_metrics": '{"host_type": "server", "fit_start": "2024-04-23 15:33:12.865604", "rounds": {"1": {"fit_start": "2024-04-23 15:33:12.869001"}}}',
                 "server_log_file_path": "/Users/foo/server/logfile.log",
                 "server_pid": "123",
-                "redis_host": "localhost",
-                "redis_port": "6379",
+                "redis_addresst": "localhost:6379",
                 "clients_info": [
                     {
                         "service_address": "localhost:8001",
                         "data_path": "path/to/data",
-                        "redis_host": "localhost",
-                        "redis_port": "6380",
+                        "redis_address": "localhost:6380",
                         "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
                     },
                 ],
