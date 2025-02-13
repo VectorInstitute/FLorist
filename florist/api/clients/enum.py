@@ -1,21 +1,17 @@
-"""Common functions and definitions for clients."""
-
 from enum import Enum
-from typing import List
+from typing_extensions import Self
 
-from fl4health.clients.basic_client import BasicClient
-
-from florist.api.clients.mnist import MnistClient, MnistFedProxClient
+from florist.api.clients.clients import LocalStorageClient, LocalModelClient, LocalModelFedProxClient
 
 
 class Client(Enum):
     """Enumeration of supported clients."""
 
-    MNIST = "MNIST"
-    MNIST_FEDPROX = "MNIST FedProx"
+    FEDAVG = "FedAvg"
+    FEDPROX = "FedProx"
 
     @classmethod
-    def class_for_client(cls, client: "Client") -> type[BasicClient]:
+    def class_for_client(cls, client: Self) -> type[LocalStorageClient]:
         """
         Return the class for a given client.
 
@@ -23,18 +19,18 @@ class Client(Enum):
         :return: (type[BasicClient]) A subclass of BasicClient corresponding to the given client.
         :raises ValueError: if the client is not supported.
         """
-        if client == Client.MNIST:
-            return MnistClient
-        if client == Client.MNIST_FEDPROX:
-            return MnistFedProxClient
+        if client == Client.FEDAVG:
+            return LocalModelClient
+        if client == Client.FEDPROX:
+            return LocalModelFedProxClient
 
         raise ValueError(f"Client {client.value} not supported.")
 
     @classmethod
-    def list(cls) -> List[str]:
+    def list(cls) -> list[str]:
         """
         List all the supported clients.
 
-        :return: (List[str]) a list of supported clients.
+        :return: (list[str]) a list of supported clients.
         """
         return [client.value for client in Client]

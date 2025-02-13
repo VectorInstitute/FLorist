@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from pymongo.results import UpdateResult
 
 from florist.api.servers.strategies import Strategy
-from florist.api.servers.models import Model
+from florist.api.models.enum import Model
 
 
 JOB_COLLECTION_NAME = "job"

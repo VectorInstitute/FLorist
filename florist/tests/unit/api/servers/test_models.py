@@ -8,7 +8,7 @@ from fl4health.utils.metric_aggregation import evaluate_metrics_aggregation_fn, 
 from flwr.server.strategy import FedAvg
 from flwr.common.typing import Parameters
 
-from florist.api.models.mnist import MnistNet
+from florist.api.common.mnist import MnistNet
 from florist.api.monitoring.metrics import RedisMetricsReporter
 from florist.api.servers.config_parsers import ConfigParser
 from florist.api.servers.models import Model, ServerFactory, fit_config_function, get_fedprox_server, get_fedavg_server

@@ -1,5 +1,5 @@
 from florist.api.clients.common import Client
-from florist.api.clients.mnist import MnistClient, MnistFedProxClient
+from florist.api.clients.clients import MnistClient, MnistFedProxClient
 
 
 def test_class_for_client():

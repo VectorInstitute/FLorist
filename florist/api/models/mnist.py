@@ -1,11 +1,20 @@
 """Definitions for the MNIST model."""
 
+from pathlib import Path
+from typing import Optional
+
 import torch
 import torch.nn.functional as f
+from fl4health.utils.dataset import TensorDataset
+from fl4health.utils.load_data import load_mnist_data
+from fl4health.utils.sampler import LabelBasedSampler
 from torch import nn
+from torch.utils.data import DataLoader
+from torchvision.datasets import MNIST
 
+from florist.api.models.abstract import LocalStorageModel
 
-class MnistNet(nn.Module):
+class MnistNet(LocalStorageModel):
     """Implementation of the Mnist model."""
 
     def __init__(self) -> None:
@@ -29,3 +38,25 @@ class MnistNet(nn.Module):
         x = x.view(-1, 16 * 4 * 4)
         x = f.relu(self.fc1(x))
         return f.relu(self.fc2(x))
+
+    def get_data_loaders(
+        self,
+        data_path: Path,
+        batch_size: int,
+        sampler: Optional[LabelBasedSampler] = None,
+    ) -> tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]:
+        """
+        Return the data loader for MNIST data.
+
+        :param config: (Config) the Config object for this client.
+        :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader
+            and validation data loader respectively.
+        """
+        # Removing LeCun's website from the list of mirrors to pull MNIST dataset from
+        # as it is timing out and adding considerable time to our tests
+        mirror_url_to_remove = "http://yann.lecun.com/exdb/mnist/"
+        if mirror_url_to_remove in MNIST.mirrors:
+            MNIST.mirrors.remove(mirror_url_to_remove)
+
+        train_loader, val_loader, _ = load_mnist_data(data_path, batch_size, sampler)
+        return train_loader, val_loader

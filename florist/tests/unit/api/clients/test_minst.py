@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch, ANY
 
-from florist.api.models.mnist import MnistNet
-from florist.api.clients.mnist import MnistClient, MnistFedProxClient
+from florist.api.common.mnist import MnistNet
+from florist.api.clients.clients import MnistClient, MnistFedProxClient
 
 
 @patch("florist.api.clients.mnist.load_mnist_data")

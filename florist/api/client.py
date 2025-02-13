@@ -10,11 +10,12 @@ import torch
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from florist.api.clients.common import Client
+from florist.api.clients.enum import Client
 from florist.api.db.client_entities import ClientDAO
 from florist.api.launchers.local import launch_client
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter, get_from_redis, get_host_and_port_from_address
+from florist.api.models.enum import Model
 
 
 app = FastAPI()
@@ -34,7 +35,7 @@ def connect() -> JSONResponse:
 
 
 @app.get("/api/client/start")
-def start(server_address: str, client: Client, data_path: str, redis_address: str) -> JSONResponse:
+def start(server_address: str, client: Client, model: Model, data_path: str, redis_address: str) -> JSONResponse:
     """
     Start a client.
 
@@ -67,6 +68,9 @@ def start(server_address: str, client: Client, data_path: str, redis_address: st
             device=device,
             reporters=[metrics_reporter],
         )
+
+        model_class = Model.class_for_model(model)
+        client_obj.set_model(model_class())
 
         log_file_path = str(get_client_log_file_path(client_uuid))
         client_process = launch_client(client_obj, server_address, log_file_path)

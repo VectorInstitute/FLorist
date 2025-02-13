@@ -11,13 +11,13 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from florist.api.clients.common import Client
+from florist.api.clients.enum import Client
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
 from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
 from florist.api.servers.config_parsers import ConfigParser
 from florist.api.servers.launch import launch_local_server
-from florist.api.servers.models import Model
+from florist.api.models.enum import Model
 from florist.api.servers.strategies import Strategy
 
 
@@ -91,7 +91,7 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         client_uuids: List[str] = []
         for i in range(len(job.clients_info)):
             client_info = job.clients_info[i]
-            uuid = _start_client(job.server_address, client, client_info)
+            uuid = _start_client(job.server_address, client, job.model, client_info)
             client_uuids.append(uuid)
 
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
@@ -226,7 +226,7 @@ async def server_training_listener(job: Job) -> None:
     db_client.close()
 
 
-def _start_client(server_address: str, client: Client, client_info: ClientInfo) -> str:
+def _start_client(server_address: str, client: Client, model: Model, client_info: ClientInfo) -> str:
     """
     Start a client.
 
@@ -237,6 +237,7 @@ def _start_client(server_address: str, client: Client, client_info: ClientInfo) 
     parameters = {
         "server_address": server_address,
         "client": client.value,
+        "model": model.value,
         "data_path": client_info.data_path,
         "redis_address": client_info.redis_address,
     }

@@ -8,7 +8,7 @@ import pytest
 
 from florist.api import client
 from florist.api.clients.common import Client
-from florist.api.clients.mnist import MnistClient
+from florist.api.clients.clients import MnistClient
 from florist.api.db.client_entities import ClientDAO
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter

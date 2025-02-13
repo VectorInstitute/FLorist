@@ -1,28 +1,40 @@
 """Implementation of the MNIST client and model."""
 
-from typing import Tuple
+from abc import ABC
 
 import torch
 from fl4health.clients.basic_client import BasicClient
 from fl4health.clients.fed_prox_client import FedProxClient
 from fl4health.utils.config import narrow_dict_type
 from fl4health.utils.dataset import TensorDataset
-from fl4health.utils.load_data import load_mnist_data
 from fl4health.utils.sampler import DirichletLabelBasedSampler
 from flwr.common.typing import Config
-from torch import nn
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader
-from torchvision.datasets import MNIST
 
-from florist.api.models.mnist import MnistNet
+from florist.api.models.abstract import LocalStorageModel
 
 
-class MnistClient(BasicClient):  # type: ignore[misc]
+class LocalStorageClient(BasicClient, ABC):
+    def set_model(self, model: LocalStorageModel) -> None:
+        self.model = model
+
+    def get_model(self, config: Config) -> torch.nn.Module:
+        """
+        Return the model for MNIST data.
+
+        :param config: (Config) the Config object for this client.
+        :return: (torch.nn.Module) An instance of florist.api.clients.mnist.MnistNet.
+        """
+        assert isinstance(self.model, LocalStorageModel), f"Model {self.model} is not a subclass of LocalStorageModel."
+        return self.model
+
+
+class LocalModelClient(LocalStorageClient):  # type: ignore[misc]
     """Implementation of the MNIST client."""
 
-    def get_data_loaders(self, config: Config) -> Tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]:
+    def get_data_loaders(self, config: Config) -> tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]:
         """
         Return the data loader for MNIST data.
 
@@ -30,23 +42,8 @@ class MnistClient(BasicClient):  # type: ignore[misc]
         :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader
             and validation data loader respectively.
         """
-        # Removing LeCun's website from the list of mirrors to pull MNIST dataset from
-        # as it is timing out and adding considerable time to our tests
-        mirror_url_to_remove = "http://yann.lecun.com/exdb/mnist/"
-        if mirror_url_to_remove in MNIST.mirrors:
-            MNIST.mirrors.remove(mirror_url_to_remove)
-
-        train_loader, val_loader, _ = load_mnist_data(self.data_path, batch_size=int(config["batch_size"]))
-        return train_loader, val_loader
-
-    def get_model(self, config: Config) -> nn.Module:
-        """
-        Return the model for MNIST data.
-
-        :param config: (Config) the Config object for this client.
-        :return: (torch.nn.Module) An instance of florist.api.clients.mnist.MnistNet.
-        """
-        return MnistNet()
+        assert isinstance(self.model, LocalStorageModel), f"Model {self.model} is not a subclass of LocalStorageModel."
+        return self.model.get_data_loaders(self.data_path, int(config["batch_size"]))
 
     def get_optimizer(self, config: Config) -> Optimizer:
         """
@@ -68,10 +65,10 @@ class MnistClient(BasicClient):  # type: ignore[misc]
         return torch.nn.CrossEntropyLoss()
 
 
-class MnistFedProxClient(FedProxClient):  # type: ignore[misc]
+class LocalModelFedProxClient(FedProxClient, LocalStorageClient):  # type: ignore[misc]
     """Implementation of the FedProx client with the MNIST model."""
 
-    def get_data_loaders(self, config: Config) -> Tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]:
+    def get_data_loaders(self, config: Config) -> tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]:
         """
         Return the data loader for FedProx MNIST data.
 
@@ -79,25 +76,11 @@ class MnistFedProxClient(FedProxClient):  # type: ignore[misc]
         :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader
             and validation data loader respectively.
         """
-        # Removing LeCun's website from the list of mirrors to pull MNIST dataset from
-        # as it is timing out and adding considerable time to our tests
-        mirror_url_to_remove = "http://yann.lecun.com/exdb/mnist/"
-        if mirror_url_to_remove in MNIST.mirrors:
-            MNIST.mirrors.remove(mirror_url_to_remove)
-
         sampler = DirichletLabelBasedSampler(list(range(10)), sample_percentage=0.75, beta=1)
         batch_size = narrow_dict_type(config, "batch_size", int)
-        train_loader, val_loader, _ = load_mnist_data(self.data_path, batch_size, sampler)
-        return train_loader, val_loader
 
-    def get_model(self, config: Config) -> nn.Module:
-        """
-        Return the model for FedProx MNIST data.
-
-        :param config: (Config) the Config object for this client.
-        :return: (torch.nn.Module) An instance of florist.api.clients.mnist.MnistNet.
-        """
-        return MnistNet().to(self.device)
+        assert isinstance(self.model, LocalStorageModel), f"Model {self.model} is not a subclass of LocalStorageModel."
+        return self.model.get_data_loaders(self.data_path, batch_size, sampler)
 
     def get_optimizer(self, config: Config) -> Optimizer:
         """
