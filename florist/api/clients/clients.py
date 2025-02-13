@@ -13,11 +13,11 @@ from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader
 
-from florist.api.models.abstract import LocalStorageModel
+from florist.api.models.abstract import LocalModel
 
 
-class LocalStorageClient(BasicClient, ABC):
-    def set_model(self, model: LocalStorageModel) -> None:
+class LocalModelClient(BasicClient, ABC):
+    def set_model(self, model: LocalModel) -> None:
         self.model = model
 
     def get_model(self, config: Config) -> torch.nn.Module:
@@ -27,11 +27,11 @@ class LocalStorageClient(BasicClient, ABC):
         :param config: (Config) the Config object for this client.
         :return: (torch.nn.Module) An instance of florist.api.clients.mnist.MnistNet.
         """
-        assert isinstance(self.model, LocalStorageModel), f"Model {self.model} is not a subclass of LocalStorageModel."
+        assert isinstance(self.model, LocalModel), f"Model {self.model} is not a subclass of LocalStorageModel."
         return self.model
 
 
-class LocalModelClient(LocalStorageClient):  # type: ignore[misc]
+class BasicLocalModelClient(LocalModelClient):  # type: ignore[misc]
     """Implementation of the MNIST client."""
 
     def get_data_loaders(self, config: Config) -> tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]:
@@ -42,7 +42,7 @@ class LocalModelClient(LocalStorageClient):  # type: ignore[misc]
         :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader
             and validation data loader respectively.
         """
-        assert isinstance(self.model, LocalStorageModel), f"Model {self.model} is not a subclass of LocalStorageModel."
+        assert isinstance(self.model, LocalModel), f"Model {self.model} is not a subclass of LocalStorageModel."
         return self.model.get_data_loaders(self.data_path, int(config["batch_size"]))
 
     def get_optimizer(self, config: Config) -> Optimizer:
@@ -65,7 +65,7 @@ class LocalModelClient(LocalStorageClient):  # type: ignore[misc]
         return torch.nn.CrossEntropyLoss()
 
 
-class LocalModelFedProxClient(FedProxClient, LocalStorageClient):  # type: ignore[misc]
+class FedProxLocalModelClient(FedProxClient, LocalModelClient):  # type: ignore[misc]
     """Implementation of the FedProx client with the MNIST model."""
 
     def get_data_loaders(self, config: Config) -> tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]:
@@ -79,7 +79,7 @@ class LocalModelFedProxClient(FedProxClient, LocalStorageClient):  # type: ignor
         sampler = DirichletLabelBasedSampler(list(range(10)), sample_percentage=0.75, beta=1)
         batch_size = narrow_dict_type(config, "batch_size", int)
 
-        assert isinstance(self.model, LocalStorageModel), f"Model {self.model} is not a subclass of LocalStorageModel."
+        assert isinstance(self.model, LocalModel), f"Model {self.model} is not a subclass of LocalStorageModel."
         return self.model.get_data_loaders(self.data_path, batch_size, sampler)
 
     def get_optimizer(self, config: Config) -> Optimizer:

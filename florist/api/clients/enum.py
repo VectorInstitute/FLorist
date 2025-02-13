@@ -1,7 +1,7 @@
 from enum import Enum
 from typing_extensions import Self
 
-from florist.api.clients.clients import LocalStorageClient, LocalModelClient, LocalModelFedProxClient
+from florist.api.clients.clients import LocalModelClient, BasicLocalModelClient, FedProxLocalModelClient
 
 
 class Client(Enum):
@@ -11,7 +11,7 @@ class Client(Enum):
     FEDPROX = "FedProx"
 
     @classmethod
-    def class_for_client(cls, client: Self) -> type[LocalStorageClient]:
+    def class_for_client(cls, client: Self) -> type[LocalModelClient]:
         """
         Return the class for a given client.
 
@@ -20,9 +20,9 @@ class Client(Enum):
         :raises ValueError: if the client is not supported.
         """
         if client == Client.FEDAVG:
-            return LocalModelClient
+            return BasicLocalModelClient
         if client == Client.FEDPROX:
-            return LocalModelFedProxClient
+            return FedProxLocalModelClient
 
         raise ValueError(f"Client {client.value} not supported.")
 

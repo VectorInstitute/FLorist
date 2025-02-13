@@ -1,7 +1,7 @@
 from enum import Enum
 from typing_extensions import Self
 
-from florist.api.models.abstract import LocalStorageModel
+from florist.api.models.abstract import LocalModel
 from florist.api.models.mnist import MnistNet
 
 
@@ -11,7 +11,7 @@ class Model(Enum):
     MNIST = "MNIST"
 
     @classmethod
-    def class_for_model(cls, model: Self) -> type[LocalStorageModel]:
+    def class_for_model(cls, model: Self) -> type[LocalModel]:
         """
         Return the class for a given model.
 

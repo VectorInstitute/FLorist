@@ -10,7 +10,7 @@ from fl4health.utils.sampler import LabelBasedSampler
 from torch.utils.data import DataLoader
 
 
-class LocalStorageModel(torch.nn.Module, ABC):
+class LocalModel(torch.nn.Module, ABC):
     @abstractmethod
     def get_data_loaders(
         self,

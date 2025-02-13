@@ -12,9 +12,9 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 
-from florist.api.models.abstract import LocalStorageModel
+from florist.api.models.abstract import LocalModel
 
-class MnistNet(LocalStorageModel):
+class MnistNet(LocalModel):
     """Implementation of the Mnist model."""
 
     def __init__(self) -> None:
