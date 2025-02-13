@@ -1,8 +1,8 @@
 import json
 
-from florist.api.server import list_models, list_clients
-from florist.api.servers.models import Model
-from florist.api.clients.common import Client
+from florist.api.server import list_models, list_strategies
+from florist.api.models.enum import Model
+from florist.api.servers.strategies import Strategy
 
 
 def test_list_models() -> None:
@@ -10,6 +10,6 @@ def test_list_models() -> None:
     assert result.body.decode() == json.dumps(Model.list()).replace(", ", ",")
 
 
-def test_list_clients() -> None:
-    result = list_clients()
-    assert result.body.decode() == json.dumps(Client.list()).replace(", ", ",")
+def test_list_strategies() -> None:
+    result = list_strategies()
+    assert result.body.decode() == json.dumps(Strategy.list()).replace(", ", ",")

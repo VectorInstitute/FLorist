@@ -45,7 +45,7 @@ def list_models() -> JSONResponse:
 
 
 @app.get(path="/api/server/strategies", response_description="Returns a list of all available strategies")
-def list_strategiues() -> JSONResponse:
+def list_strategies() -> JSONResponse:
     """
     Return a list of all available strategies.
 

@@ -16,7 +16,7 @@ from florist.api.db.config import DATABASE_NAME, MONGODB_URI
 from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
 from florist.api.servers.config_parsers import ConfigParser
-from florist.api.servers.launch import launch_local_server
+from florist.api.launchers.local import launch_local_server
 from florist.api.models.enum import Model
 from florist.api.servers.strategies import Strategy
 
