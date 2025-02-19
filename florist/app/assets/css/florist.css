@@ -1,3 +1,10 @@
+.select-caret {
+    position: absolute;
+    direction: rtl;
+    margin-top: 10px;
+    right: 10px;
+}
+
 .input-group-flex {
     display: flex;
 }
@@ -92,6 +99,10 @@
 
 .job-round-details .col-sm-2 {
     width: 20%;
+}
+
+#job-client-field {
+    margin-top: 30px;
 }
 
 .job-client-details {

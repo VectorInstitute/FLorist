@@ -7,6 +7,8 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from florist.api.clients.enum import Client
+from florist.api.clients.optimizers import Optimizer
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
 from florist.api.routes.server.job import router as job_router
 from florist.api.routes.server.status import router as status_router
@@ -44,6 +46,21 @@ def list_models() -> JSONResponse:
     return JSONResponse(Model.list())
 
 
+@app.get(
+    path="/api/server/clients/{strategy}",
+    response_description="Returns a list of all available clients by strategy",
+)
+def list_clients(strategy: Strategy) -> JSONResponse:
+    """
+    Return a list of all available clients by strategy.
+
+    :param strategy: (Strategy) The strategy to find the compatible clientsa.
+    :return: (JSONResponse) A JSON response with a list of all elements in the `api.clients.common.Client` enum
+        that are compatible with the given strategy.
+    """
+    return JSONResponse(Client.list_by_strategy(strategy))
+
+
 @app.get(path="/api/server/strategies", response_description="Returns a list of all available strategies")
 def list_strategies() -> JSONResponse:
     """
@@ -52,3 +69,12 @@ def list_strategies() -> JSONResponse:
     :return: (JSONResponse) A JSON response with a list of all elements in the `api.servers.strategy.Strategies` enum.
     """
     return JSONResponse(Strategy.list())
+
+@app.get(path="/api/server/optimizers", response_description="Returns a list of all available optimizers")
+def list_optimizers() -> JSONResponse:
+    """
+    Return a list of all available optimizers.
+
+    :return: (JSONResponse) A JSON response with a list of all elements in the `api.clients.optimizers.Optimizer` enum.
+    """
+    return JSONResponse(Optimizer.list())

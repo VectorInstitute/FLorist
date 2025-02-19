@@ -10,6 +10,8 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import BaseModel, Field
 from pymongo.results import UpdateResult
 
+from florist.api.clients.enum import Client
+from florist.api.clients.optimizers import Optimizer
 from florist.api.servers.strategies import Strategy
 from florist.api.models.enum import Model
 
@@ -68,6 +70,7 @@ class Job(BaseModel):
     status: JobStatus = Field(default=JobStatus.NOT_STARTED)
     model: Optional[Annotated[Model, Field(...)]]
     strategy: Optional[Annotated[Strategy, Field(...)]]
+    optimizer: Optional[Annotated[Optimizer, Field(...)]]
     server_address: Optional[Annotated[str, Field(...)]]
     server_config: Optional[Annotated[str, Field(...)]]
     server_uuid: Optional[Annotated[str, Field(...)]]
@@ -75,6 +78,7 @@ class Job(BaseModel):
     server_log_file_path: Optional[Annotated[str, Field(...)]]
     server_pid: Optional[Annotated[str, Field(...)]]
     redis_address: Optional[Annotated[str, Field(...)]]
+    client: Optional[Annotated[Client, Field(...)]]
     clients_info: Optional[Annotated[List[ClientInfo], Field(...)]]
     error_message: Optional[Annotated[str, Field(...)]]
 
@@ -281,6 +285,7 @@ class Job(BaseModel):
                 "status": "NOT_STARTED",
                 "model": "MNIST",
                 "strategy": "FEDAVG",
+                "optimizer": "SGD",
                 "server_address": "localhost:8000",
                 "server_config": '{"n_server_rounds": 3, "batch_size": 8, "local_epochs": 1}',
                 "server_uuid": "d73243cf-8b89-473b-9607-8cd0253a101d",
@@ -288,6 +293,7 @@ class Job(BaseModel):
                 "server_log_file_path": "/Users/foo/server/logfile.log",
                 "server_pid": "123",
                 "redis_addresst": "localhost:6379",
+                "client": "FEDAVG",
                 "clients_info": [
                     {
                         "service_address": "localhost:8001",

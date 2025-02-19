@@ -9,14 +9,16 @@ import { produce } from "immer";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { useGetModels, useGetStrategies, usePost } from "../hooks";
+import { useGetModels, useGetClients,  useGetStrategies, useGetOptimizers, usePost } from "../hooks";
 
 interface Job {
     model: string;
     strategy: string;
+    optimizer: string;
     server_address: string;
     redis_address: string;
     server_config: Array<ServerConfig>;
+    client: string;
     client_info: Array<ClientInfo>;
 }
 
@@ -35,9 +37,11 @@ export function makeEmptyJob() {
     return {
         model: "",
         strategy: "",
+        optimizer: "",
         server_address: "",
         redis_address: "",
         server_config: [makeEmptyServerConfig()],
+        client: "",
         clients_info: [makeEmptyClientInfo()],
     };
 }
@@ -124,6 +128,29 @@ export function EditJobForm(): ReactElement {
 
             <EditJobServerConfig state={state} setState={setState} />
 
+            <div id="job-client-field" className="input-group input-group-outline gray-input-box mb-3">
+                <label className="form-label form-row" htmlFor="job-client">
+                    Client
+                </label>
+                <select
+                    className="form-control"
+                    id="job-client"
+                    value={state.job.client}
+                    onChange={(e) =>
+                        setState(
+                            produce((newState) => {
+                                newState.job.client = e.target.value;
+                            }),
+                        )
+                    }
+                    disabled={state.job.strategy ? false : true}
+                >
+                    <option value="empty"></option>
+                    <EditJobClientOptions strategy={state.job.strategy}/>
+                </select>
+                <label class="select-caret" for="job-client">&#9660;</label>
+            </div>
+
             <EditJobClientsInfo state={state} setState={setState} />
 
             <button id="job-post" className={buttonClasses}>
@@ -175,6 +202,7 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     <option value="empty"></option>
                     <EditJobModelOptions />
                 </select>
+                <label class="select-caret" for="job-model">&#9660;</label>
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
@@ -196,6 +224,29 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     <option value="empty"></option>
                     <EditJobStrategyOptions />
                 </select>
+                <label class="select-caret" for="job-strategy">&#9660;</label>
+            </div>
+
+            <div className="input-group input-group-outline gray-input-box mb-3">
+                <label className="form-label form-row" htmlFor="job-optimizer">
+                    Optimizer
+                </label>
+                <select
+                    className="form-control"
+                    id="job-optimizer"
+                    value={state.job.optimizer}
+                    onChange={(e) =>
+                        setState(
+                            produce((newState) => {
+                                newState.job.optimizer = e.target.value;
+                            }),
+                        )
+                    }
+                >
+                    <option value="empty"></option>
+                    <EditJobOptimizerOptions />
+                </select>
+                <label class="select-caret" for="job-optimizer">&#9660;</label>
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
@@ -256,6 +307,35 @@ export function EditJobStrategyOptions(): ReactElement {
     if (!data) {
         return null;
     }
+    return data.map((d, i) => (
+        <option key={i} value={d}>
+            {d}
+        </option>
+    ));
+}
+
+export function EditJobOptimizerOptions(): ReactElement {
+    const { data, error, isLoading } = useGetOptimizers();
+    if (!data) {
+        return null;
+    }
+    return data.map((d, i) => (
+        <option key={i} value={d}>
+            {d}
+        </option>
+    ));
+}
+
+export function EditJobClientOptions({ strategy }: { strategy: string }): ReactElement {
+    if (!strategy) {
+        return null;
+    }
+
+    const { data, error, isLoading } = useGetClients(strategy);
+    if (!data) {
+        return null;
+    }
+
     return data.map((d, i) => (
         <option key={i} value={d}>
             {d}
@@ -496,16 +576,4 @@ export function EditJobClientsInfoItem({ index, state, setState }): ReactElement
             </div>
         </div>
     );
-}
-
-export function EditJobClientOptions(): ReactElement {
-    const { data, error, isLoading } = useGetClients();
-    if (!data) {
-        return null;
-    }
-    return data.map((d, i) => (
-        <option key={i} value={d}>
-            {d}
-        </option>
-    ));
 }

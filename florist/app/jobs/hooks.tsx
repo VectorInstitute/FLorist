@@ -23,6 +23,14 @@ export function useGetStrategies() {
     return useSWR("/api/server/strategies", fetcher);
 }
 
+export function useGetOptimizers() {
+    return useSWR("/api/server/optimizers", fetcher);
+}
+
+export function useGetClients(strategy: string) {
+    return useSWR(`/api/server/clients/${strategy}`, fetcher);
+}
+
 export function getServerLogsKey(jobId: string) {
     return `/api/server/job/get_server_log/${jobId}`;
 }

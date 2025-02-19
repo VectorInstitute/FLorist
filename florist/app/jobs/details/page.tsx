@@ -96,6 +96,14 @@ export function JobDetailsBody(): ReactElement {
             </div>
             <div className="row pb-2">
                 <div className="col-sm-2">
+                    <strong className="text-dark">Optimizer:</strong>
+                </div>
+                <div className="col-sm" id="job-details-optimizer">
+                    {job.optimizer}
+                </div>
+            </div>
+            <div className="row pb-2">
+                <div className="col-sm-2">
                     <strong className="text-dark">Server Address:</strong>
                 </div>
                 <div className="col-sm" id="job-details-server-address">
@@ -134,6 +142,15 @@ export function JobDetailsBody(): ReactElement {
                 title="Server Configuration"
                 data={job.server_config}
             />
+
+            <div className="row pb-2">
+                <div className="col-sm-2">
+                    <strong className="text-dark">Client:</strong>
+                </div>
+                <div className="col-sm" id="job-details-client">
+                    {job.client}
+                </div>
+            </div>
 
             <JobDetailsTable
                 Component={JobDetailsClientsInfoTable}

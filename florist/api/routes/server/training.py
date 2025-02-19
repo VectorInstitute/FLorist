@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from florist.api.clients.enum import Client
+from florist.api.clients.optimizers import Optimizer
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
 from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
@@ -57,7 +58,9 @@ async def start(job_id: str, request: Request) -> JSONResponse:
 
         assert job.model is not None, "Missing Job information: model"
         assert job.strategy is not None, "Missing Job information: strategy"
+        assert job.optimizer is not None, "Missing Job information: optimizer"
         assert job.server_config is not None, "Missing Job information: server_config"
+        assert job.client is not None, "Missing Job information: client"
         assert job.clients_info is not None and len(job.clients_info) > 0, "Missing Job information: clients_info"
         assert job.server_address is not None, "Missing Job information: server_address"
         assert job.redis_address is not None, "Missing Job information: redis_address"
@@ -65,7 +68,6 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         model_class = Model.class_for_model(job.model)
         config_parser = Strategy.config_parser_for_strategy(job.strategy)
         server_factory = Strategy.server_factory_for_strategy(job.strategy)
-        client = Strategy.client_for_strategy(job.strategy)
 
         try:
             config_parser = ConfigParser.class_for_parser(config_parser)
@@ -91,7 +93,7 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         client_uuids: List[str] = []
         for i in range(len(job.clients_info)):
             client_info = job.clients_info[i]
-            uuid = _start_client(job.server_address, client, job.model, client_info)
+            uuid = _start_client(job.server_address, job.client, job.model, job.optimizer, client_info)
             client_uuids.append(uuid)
 
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
@@ -226,7 +228,13 @@ async def server_training_listener(job: Job) -> None:
     db_client.close()
 
 
-def _start_client(server_address: str, client: Client, model: Model, client_info: ClientInfo) -> str:
+def _start_client(
+    server_address: str,
+    client: Client,
+    model: Model,
+    optimizer: Optimizer,
+    client_info: ClientInfo,
+) -> str:
     """
     Start a client.
 
@@ -238,6 +246,7 @@ def _start_client(server_address: str, client: Client, model: Model, client_info
         "server_address": server_address,
         "client": client.value,
         "model": model.value,
+        "optimizer": optimizer.value,
         "data_path": client_info.data_path,
         "redis_address": client_info.redis_address,
     }

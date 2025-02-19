@@ -9,6 +9,7 @@ from fl4health.utils.dataset import TensorDataset
 from fl4health.utils.load_data import load_mnist_data
 from fl4health.utils.sampler import LabelBasedSampler
 from torch import nn
+from torch.nn.modules.loss import _Loss
 from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 
@@ -60,3 +61,11 @@ class MnistNet(LocalModel):
 
         train_loader, val_loader, _ = load_mnist_data(data_path, batch_size, sampler)
         return train_loader, val_loader
+
+    def get_criterion(self) -> _Loss:
+        """
+        Return the loss for MNIST data.
+
+        :return: (torch.nn.modules.loss._Loss) an instance of torch.nn.CrossEntropyLoss.
+        """
+        return torch.nn.CrossEntropyLoss()

@@ -13,7 +13,6 @@ from flwr.server.strategy import FedAvg
 from fl4health.reporting.base_reporter import BaseReporter
 from fl4health.server.base_server import FlServer
 
-from florist.api.clients.enum import Client
 from florist.api.servers.config_parsers import ConfigParser
 
 
@@ -56,15 +55,6 @@ class Strategy(Enum):
             return ServerFactory(get_server_function=get_fedavg_server)
         if strategy == Strategy.FEDPROX:
             return ServerFactory(get_server_function=get_fedprox_server)
-
-        raise ValueError(f"Strategy {strategy.value} not supported.")
-
-    @classmethod
-    def client_for_strategy(cls, strategy: Self) -> Client:
-        if strategy == Strategy.FEDAVG:
-            return Client.FEDAVG
-        if strategy == Strategy.FEDPROX:
-            return Client.FEDPROX
 
         raise ValueError(f"Strategy {strategy.value} not supported.")
 
