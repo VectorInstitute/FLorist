@@ -16,8 +16,8 @@ def test_report(mock_redis: Mock) -> None:
     mock_redis_connection = Mock()
     mock_redis.return_value = mock_redis_connection
 
-    test_host = "test host"
-    test_port = "test port"
+    test_host = "test-host"
+    test_port = "test-port"
     test_run_id = "123"
     test_data = {"test": "data", "date": datetime.datetime.now()}
 
@@ -130,12 +130,13 @@ def test_wait_for_metric_success(_: Mock, mock_redis: Mock) -> None:
     test_metric = "test-metric"
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
+    test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = b"{\"test-metric\": null}"
     mock_redis.Redis.return_value = mock_redis_connection
 
-    wait_for_metric(test_uuid, test_metric, test_redis_host, test_redis_port, logging.getLogger(__name__))
+    wait_for_metric(test_uuid, test_metric, test_redis_address, logging.getLogger(__name__))
 
     mock_redis.Redis.assert_called_once_with(host=test_redis_host, port=test_redis_port)
     mock_redis_connection.get.assert_called_once_with(test_uuid)
@@ -148,6 +149,7 @@ def test_wait_for_metric_success_with_retry(_: Mock, mock_redis: Mock) -> None:
     test_metric = "test-metric"
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
+    test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.side_effect = [
@@ -159,7 +161,7 @@ def test_wait_for_metric_success_with_retry(_: Mock, mock_redis: Mock) -> None:
     ]
     mock_redis.Redis.return_value = mock_redis_connection
 
-    wait_for_metric(test_uuid, test_metric, test_redis_host, test_redis_port, logging.getLogger(__name__))
+    wait_for_metric(test_uuid, test_metric, test_redis_address, logging.getLogger(__name__))
 
     mock_redis.Redis.assert_called_once_with(host=test_redis_host, port=test_redis_port)
     assert mock_redis_connection.get.call_count == 4
@@ -173,13 +175,14 @@ def test_wait_for_metric_fail_max_retries(_: Mock, mock_redis: Mock) -> None:
     test_metric = "test-metric"
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
+    test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = b"{\"foo\": \"bar\"}"
     mock_redis.Redis.return_value = mock_redis_connection
 
     with raises(Exception):
-        wait_for_metric(test_uuid, test_metric, test_redis_host, test_redis_port, logging.getLogger(__name__))
+        wait_for_metric(test_uuid, test_metric, test_redis_address, logging.getLogger(__name__))
 
 
 @patch("florist.api.monitoring.metrics.redis")
@@ -187,13 +190,14 @@ def test_get_subscriber(mock_redis: Mock) -> None:
     test_channel = "test-channel"
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
+    test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis_connection = Mock()
     mock_redis_pubsub = Mock()
     mock_redis_connection.pubsub.return_value = mock_redis_pubsub
     mock_redis.Redis.return_value = mock_redis_connection
 
-    result = get_subscriber(test_channel, test_redis_host, test_redis_port)
+    result = get_subscriber(test_channel, test_redis_address)
 
     assert result == mock_redis_pubsub
     mock_redis.Redis.assert_called_once_with(host=test_redis_host, port=test_redis_port)
@@ -206,13 +210,14 @@ def test_get_from_redis(mock_redis: Mock) -> None:
     test_name = "test-name"
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
+    test_redis_address = f"{test_redis_host}:{test_redis_port}"
     test_redis_result = b"{\"foo\": \"bar\"}"
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = test_redis_result
     mock_redis.Redis.return_value = mock_redis_connection
 
-    result = get_from_redis(test_name, test_redis_host, test_redis_port)
+    result = get_from_redis(test_name, test_redis_address)
 
     assert result == json.loads(test_redis_result)
     mock_redis.Redis.assert_called_once_with(host=test_redis_host, port=test_redis_port)
@@ -224,12 +229,13 @@ def test_get_from_redis_empty(mock_redis: Mock) -> None:
     test_name = "test-name"
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
+    test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis_connection = Mock()
     mock_redis_connection.get.return_value = None
     mock_redis.Redis.return_value = mock_redis_connection
 
-    result = get_from_redis(test_name, test_redis_host, test_redis_port)
+    result = get_from_redis(test_name, test_redis_address)
 
     assert result is None
     mock_redis.Redis.assert_called_once_with(host=test_redis_host, port=test_redis_port)
