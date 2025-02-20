@@ -5,6 +5,8 @@ from unittest.mock import ANY
 import uvicorn
 from fastapi.encoders import jsonable_encoder
 
+from florist.api.clients.enum import Client
+from florist.api.clients.optimizers import Optimizer
 from florist.api.db.client_entities import ClientDAO
 from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.logs import get_server_log_file_path, get_client_log_file_path
@@ -23,9 +25,11 @@ async def test_new_job(mock_request) -> None:
         "status": JobStatus.NOT_STARTED.value,
         "model": None,
         "strategy": None,
+        "optimizer": None,
         "server_address": None,
         "server_config": None,
         "redis_address": None,
+        "client": None,
         "clients_info": None,
         "server_metrics": None,
         "server_uuid": None,
@@ -39,6 +43,7 @@ async def test_new_job(mock_request) -> None:
         status=JobStatus.IN_PROGRESS,
         model=Model.MNIST,
         strategy=Strategy.FEDAVG,
+        optimizer=Optimizer.SGD,
         server_address="test-server-address",
         server_config="{\"test-server-info\": 123}",
         redis_address="test-redis-address",
@@ -47,6 +52,7 @@ async def test_new_job(mock_request) -> None:
         server_log_file_path="test-server-log-file-path",
         server_pid="test-server-pid",
         error_message="test-error-message",
+        client=Client.FEDAVG,
         clients_info=[
             ClientInfo(
                 service_address="test-addr-1",
@@ -71,6 +77,7 @@ async def test_new_job(mock_request) -> None:
         "status": test_job.status.value,
         "model": test_job.model.value,
         "strategy": test_job.strategy.value,
+        "optimizer": test_job.optimizer.value,
         "server_address": "test-server-address",
         "server_config": "{\"test-server-info\": 123}",
         "redis_address": test_job.redis_address,
@@ -79,6 +86,7 @@ async def test_new_job(mock_request) -> None:
         "server_log_file_path": test_job.server_log_file_path,
         "server_pid": test_job.server_pid,
         "error_message": test_job.error_message,
+        "client": test_job.client.value,
         "clients_info": [
             {
                 "_id": ANY,
@@ -105,6 +113,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         status=JobStatus.NOT_STARTED,
         model=Model.MNIST,
         strategy=Strategy.FEDAVG,
+        optimizer=Optimizer.SGD,
         server_address="test-server-address1",
         server_config="{\"test-server-info\": 123}",
         redis_address="test-redis-address1",
@@ -113,6 +122,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         server_log_file_path="test-server-log-file-path1",
         server_pid="test-server-pid1",
         error_message="test-error-message1",
+        client=Client.FEDAVG,
         clients_info=[
             ClientInfo(
                 service_address="test-addr-1-1",
@@ -136,6 +146,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         status=JobStatus.IN_PROGRESS,
         model=Model.MNIST,
         strategy=Strategy.FEDAVG,
+        optimizer=Optimizer.SGD,
         server_address="test-server-address2",
         server_config="{\"test-server-info\": 123}",
         redis_address="test-redis-address2",
@@ -144,6 +155,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         server_log_file_path="test-server-log-file-path2",
         server_pid="test-server-pid2",
         error_message="test-error-message2",
+        client=Client.FEDAVG,
         clients_info=[
             ClientInfo(
                 service_address="test-addr-1-2",
@@ -167,6 +179,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         status=JobStatus.FINISHED_WITH_ERROR,
         model=Model.MNIST,
         strategy=Strategy.FEDAVG,
+        optimizer=Optimizer.SGD,
         server_address="test-server-address3",
         server_config="{\"test-server-info\": 123}",
         redis_address="test-redis-address3",
@@ -175,6 +188,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         server_log_file_path="test-server-log-file-path3",
         server_pid="test-server-pid3",
         error_message="test-error-message3",
+        client=Client.FEDAVG,
         clients_info=[
             ClientInfo(
                 service_address="test-addr-1-3",
@@ -198,6 +212,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         status=JobStatus.FINISHED_SUCCESSFULLY,
         model=Model.MNIST,
         strategy=Strategy.FEDAVG,
+        optimizer=Optimizer.SGD,
         server_address="test-server-address4",
         server_config="{\"test-server-info\": 123}",
         redis_address="test-redis-address4",
@@ -206,6 +221,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         server_log_file_path="test-server-log-file-path4",
         server_pid="test-server-pid4",
         error_message="test-error-message4",
+        client=Client.FEDAVG,
         clients_info=[
             ClientInfo(
                 service_address="test-addr-1-4",
@@ -243,6 +259,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "status": test_job1.status.value,
         "model": test_job1.model.value,
         "strategy": test_job1.strategy.value,
+        "optimizer": test_job1.optimizer.value,
         "server_address": "test-server-address1",
         "server_config": "{\"test-server-info\": 123}",
         "redis_address": test_job1.redis_address,
@@ -251,6 +268,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "server_log_file_path": test_job1.server_log_file_path,
         "server_pid": test_job1.server_pid,
         "error_message": test_job1.error_message,
+        "client": test_job1.client.value,
         "clients_info": [
             {
                 "_id": ANY,
@@ -274,7 +292,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "_id": test_job2.id,
         "status": test_job2.status.value,
         "model": test_job2.model.value,
-        "strategy": test_job1.strategy.value,
+        "strategy": test_job2.strategy.value,
+        "optimizer": test_job2.optimizer.value,
         "server_address": "test-server-address2",
         "server_config": "{\"test-server-info\": 123}",
         "redis_address": test_job2.redis_address,
@@ -283,6 +302,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "server_log_file_path": test_job2.server_log_file_path,
         "server_pid": test_job2.server_pid,
         "error_message": test_job2.error_message,
+        "client": test_job2.client.value,
         "clients_info": [
             {
                 "_id": ANY,
@@ -306,7 +326,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "_id": test_job3.id,
         "status": test_job3.status.value,
         "model": test_job3.model.value,
-        "strategy": test_job1.strategy.value,
+        "strategy": test_job2.strategy.value,
+        "optimizer": test_job2.optimizer.value,
         "server_address": "test-server-address3",
         "server_config": "{\"test-server-info\": 123}",
         "redis_address": test_job3.redis_address,
@@ -315,6 +336,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "server_log_file_path": test_job3.server_log_file_path,
         "server_pid": test_job3.server_pid,
         "error_message": test_job3.error_message,
+        "client": test_job3.client.value,
         "clients_info": [
             {
                 "_id": ANY,
@@ -338,7 +360,8 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "_id": test_job4.id,
         "status": test_job4.status.value,
         "model": test_job4.model.value,
-        "strategy": test_job1.strategy.value,
+        "strategy": test_job4.strategy.value,
+        "optimizer": test_job4.optimizer.value,
         "server_address": "test-server-address4",
         "server_config": "{\"test-server-info\": 123}",
         "redis_address": test_job4.redis_address,
@@ -347,6 +370,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
         "server_log_file_path": test_job4.server_log_file_path,
         "server_pid": test_job4.server_pid,
         "error_message": test_job4.error_message,
+        "client": test_job4.client.value,
         "clients_info": [
             {
                 "_id": ANY,

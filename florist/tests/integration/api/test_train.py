@@ -6,6 +6,8 @@ from unittest.mock import ANY
 import redis
 import uvicorn
 
+from florist.api.clients.optimizers import Optimizer
+from florist.api.clients.enum import Client
 from florist.api.db.server_entities import Job, JobStatus, ClientInfo
 from florist.api.monitoring.metrics import wait_for_metric
 from florist.api.routes.server.training import LOGGER
@@ -39,6 +41,7 @@ async def test_train():
                     status=JobStatus.NOT_STARTED,
                     model=Model.MNIST.value,
                     strategy=Strategy.FEDAVG.value,
+                    optimizer=Optimizer.SGD.value,
                     server_address="localhost:8080",
                     server_config=json.dumps({
                         "n_server_rounds": test_n_server_rounds,
@@ -46,6 +49,7 @@ async def test_train():
                         "local_epochs": 1,
                     }),
                     redis_address=test_redis_address,
+                    client=Client.FEDAVG,
                     clients_info=[
                         ClientInfo(
                             service_address="localhost:8001",

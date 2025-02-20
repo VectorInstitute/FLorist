@@ -3,6 +3,8 @@ import re
 from unittest.mock import ANY
 from pytest import raises
 
+from florist.api.clients.enum import Client
+from florist.api.clients.optimizers import Optimizer
 from florist.api.db.server_entities import Job, JobStatus
 from florist.api.models.enum import Model
 from florist.api.servers.strategies import Strategy
@@ -273,7 +275,8 @@ def get_test_job() -> Job:
     return Job(**{
         "status": "NOT_STARTED",
         "model": Model.MNIST.value,
-        "strategy": Strategy.FEDAVG,
+        "strategy": Strategy.FEDAVG.value,
+        "optimizer": Optimizer.SGD.value,
         "server_address": "test-server-address",
         "server_config": json.dumps(test_server_config),
         "config_parser": "BASIC",
@@ -283,6 +286,7 @@ def get_test_job() -> Job:
         "server_metrics": "test-server-metrics",
         "server_pid": "test-server-pid-1",
         "error_message": "test-error-message",
+        "client": Client.FEDAVG.value,
         "clients_info": [
             {
                 "service_address": "test-service-address-1",

@@ -61,6 +61,7 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         assert job.optimizer is not None, "Missing Job information: optimizer"
         assert job.server_config is not None, "Missing Job information: server_config"
         assert job.client is not None, "Missing Job information: client"
+        assert job.client.value in Client.list_by_strategy(job.strategy), f"Client {job.client} not valid for strategy {job.strategy}."
         assert job.clients_info is not None and len(job.clients_info) > 0, "Missing Job information: clients_info"
         assert job.server_address is not None, "Missing Job information: server_address"
         assert job.redis_address is not None, "Missing Job information: redis_address"
