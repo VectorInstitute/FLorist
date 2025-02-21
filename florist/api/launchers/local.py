@@ -182,4 +182,3 @@ def launch_local_server(
     )
 
     return server_uuid, server_process, log_file_path
-

@@ -12,8 +12,8 @@ from pymongo.results import UpdateResult
 
 from florist.api.clients.enum import Client
 from florist.api.clients.optimizers import Optimizer
-from florist.api.servers.strategies import Strategy
 from florist.api.models.enum import Model
+from florist.api.servers.strategies import Strategy
 
 
 JOB_COLLECTION_NAME = "job"

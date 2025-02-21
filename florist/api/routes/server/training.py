@@ -15,10 +15,10 @@ from florist.api.clients.enum import Client
 from florist.api.clients.optimizers import Optimizer
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
 from florist.api.db.server_entities import ClientInfo, Job, JobStatus
-from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
-from florist.api.servers.config_parsers import ConfigParser
 from florist.api.launchers.local import launch_local_server
 from florist.api.models.enum import Model
+from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
+from florist.api.servers.config_parsers import ConfigParser
 from florist.api.servers.strategies import Strategy
 
 
@@ -61,7 +61,9 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         assert job.optimizer is not None, "Missing Job information: optimizer"
         assert job.server_config is not None, "Missing Job information: server_config"
         assert job.client is not None, "Missing Job information: client"
-        assert job.client.value in Client.list_by_strategy(job.strategy), f"Client {job.client} not valid for strategy {job.strategy}."
+        assert job.client.value in Client.list_by_strategy(job.strategy), (
+            f"Client {job.client} not valid for strategy {job.strategy}."
+        )
         assert job.clients_info is not None and len(job.clients_info) > 0, "Missing Job information: clients_info"
         assert job.server_address is not None, "Missing Job information: server_address"
         assert job.redis_address is not None, "Missing Job information: redis_address"
