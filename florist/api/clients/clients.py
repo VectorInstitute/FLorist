@@ -10,8 +10,8 @@ from flwr.common.typing import Config
 from torch.nn.modules.loss import _Loss
 from torch.utils.data import DataLoader
 
-from florist.api.models.abstract import LocalModel
 from florist.api.clients.optimizers import Optimizer
+from florist.api.models.abstract import LocalModel
 
 
 class LocalModelClient(BasicClient):  # type: ignore[misc]
@@ -42,7 +42,7 @@ class LocalModelClient(BasicClient):  # type: ignore[misc]
             rate of 0.001 and momentum of 0.9.
         """
         assert isinstance(self.model, LocalModel), f"Model {self.model} is not a subclass of LocalModel."
-        assert self.optimizer_type, f"self.optimizer_type is None."
+        assert self.optimizer_type, "self.optimizer_type is None."
         return Optimizer.get(self.optimizer_type, self.model.parameters())
 
     def get_data_loaders(self, config: Config) -> tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]:

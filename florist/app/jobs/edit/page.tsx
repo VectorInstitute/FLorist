@@ -9,7 +9,7 @@ import { produce } from "immer";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { useGetModels, useGetClients,  useGetStrategies, useGetOptimizers, usePost } from "../hooks";
+import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers, usePost } from "../hooks";
 
 interface Job {
     model: string;
@@ -149,9 +149,11 @@ export function EditJobForm(): ReactElement {
                     disabled={state.job.strategy ? false : true}
                 >
                     <option disabled="true" selected="true" value=""></option>
-                    <EditJobSelectOptions hook={useGetClients} params={{strategy: state.job.strategy}}/>
+                    <EditJobSelectOptions hook={useGetClients} params={{ strategy: state.job.strategy }} />
                 </select>
-                <label className="select-caret" htmlFor="job-client">&#9660;</label>
+                <label className="select-caret" htmlFor="job-client">
+                    &#9660;
+                </label>
             </div>
 
             <EditJobClientsInfo state={state} setState={setState} />
@@ -205,7 +207,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     <option disabled="true" selected="true" value=""></option>
                     <EditJobSelectOptions hook={useGetModels} />
                 </select>
-                <label className="select-caret" htmlFor="job-model">&#9660;</label>
+                <label className="select-caret" htmlFor="job-model">
+                    &#9660;
+                </label>
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
@@ -227,7 +231,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     <option disabled="true" selected="true" value=""></option>
                     <EditJobSelectOptions hook={useGetStrategies} />
                 </select>
-                <label className="select-caret" htmlFor="job-strategy">&#9660;</label>
+                <label className="select-caret" htmlFor="job-strategy">
+                    &#9660;
+                </label>
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
@@ -249,7 +255,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     <option disabled="true" selected="true" value=""></option>
                     <EditJobSelectOptions hook={useGetOptimizers} />
                 </select>
-                <label className="select-caret" htmlFor="job-optimizer">&#9660;</label>
+                <label className="select-caret" htmlFor="job-optimizer">
+                    &#9660;
+                </label>
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
@@ -293,7 +301,7 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
     );
 }
 
-export function EditJobSelectOptions({ hook, params }: { hook: Callable, params: object }): ReactElement {
+export function EditJobSelectOptions({ hook, params }: { hook: Callable; params: object }): ReactElement {
     const { data, error, isLoading } = hook(params);
 
     if (!data) {

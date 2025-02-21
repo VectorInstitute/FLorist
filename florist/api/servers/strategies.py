@@ -1,17 +1,17 @@
 from enum import Enum
 from functools import partial
 from typing import Any, Callable, TypeAlias, Union
-from typing_extensions import Self
 
 import torch
 from fl4health.client_managers.base_sampling_manager import SimpleClientManager
+from fl4health.reporting.base_reporter import BaseReporter
 from fl4health.server.adaptive_constraint_servers.fedprox_server import FedProxServer
+from fl4health.server.base_server import FlServer
 from fl4health.strategies.fedavg_with_adaptive_constraint import FedAvgWithAdaptiveConstraint
 from fl4health.utils.metric_aggregation import evaluate_metrics_aggregation_fn, fit_metrics_aggregation_fn
 from flwr.common.parameter import ndarrays_to_parameters
 from flwr.server.strategy import FedAvg
-from fl4health.reporting.base_reporter import BaseReporter
-from fl4health.server.base_server import FlServer
+from typing_extensions import Self
 
 from florist.api.servers.config_parsers import ConfigParser
 
@@ -21,7 +21,6 @@ FitConfigFn: TypeAlias = Callable[[int], dict[str, Union[bool, bytes, float, int
 
 
 class Strategy(Enum):
-
     FEDAVG = "FedAvg"
     FEDPROX = "FedProx"
 

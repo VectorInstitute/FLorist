@@ -12,11 +12,12 @@ function ClientImports(): null {
     return null;
 }
 
-const fetcher = (...args) => fetch(...args).then((res) => {
-    if (res.status != 200) {
-        throw new Error(res.status, { cause: res.json() });
-    }
-    return res.json();
-});
+const fetcher = (...args) =>
+    fetch(...args).then((res) => {
+        if (res.status != 200) {
+            throw new Error(res.status, { cause: res.json() });
+        }
+        return res.json();
+    });
 export { fetcher };
 export default ClientImports;

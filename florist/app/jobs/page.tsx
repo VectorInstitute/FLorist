@@ -117,9 +117,9 @@ export function JobDetailsButton({
     jobId,
     status,
 }: {
-    rowId: number,
-    jobId: string,
-    status: string,
+    rowId: number;
+    jobId: string;
+    status: string;
 }): ReactElement {
     return (
         <div>
@@ -270,13 +270,13 @@ export function TableRow({
     status,
     jobId,
 }: {
-    rowId: number,
-    model: string,
-    strategy: string,
-    serverAddress: string,
-    clientsInfo: Array<ClientInfo>,
-    status: StatusProp,
-    jobId: string,
+    rowId: number;
+    model: string;
+    strategy: string;
+    serverAddress: string;
+    clientsInfo: Array<ClientInfo>;
+    status: StatusProp;
+    jobId: string;
 }): ReactElement {
     if (clientsInfo === null) {
         return <td />;

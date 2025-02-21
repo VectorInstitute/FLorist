@@ -1,7 +1,8 @@
 from enum import Enum
+
 from typing_extensions import Self
 
-from florist.api.clients.clients import LocalModelClient, FedProxLocalModelClient
+from florist.api.clients.clients import FedProxLocalModelClient, LocalModelClient
 from florist.api.servers.strategies import Strategy
 
 

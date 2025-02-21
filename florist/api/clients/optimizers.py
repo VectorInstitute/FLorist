@@ -1,8 +1,9 @@
 from enum import Enum
 from typing import Iterator
-from typing_extensions import Self
 
 import torch
+from typing_extensions import Self
+
 
 class Optimizer(Enum):
     SGD = "SGD"
@@ -16,7 +17,6 @@ class Optimizer(Enum):
             return torch.optim.AdamW(model_parameters, lr=0.01)
 
         raise ValueError(f"Optimizer {optimizer} not supported.")
-
 
     @classmethod
     def list(cls) -> list[str]:

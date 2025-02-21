@@ -6,7 +6,13 @@ import { act } from "react-dom/test-utils";
 import yaml from "js-yaml";
 
 import EditJob, { makeEmptyJob } from "../../../../../app/jobs/edit/page";
-import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers, usePost } from "../../../../../app/jobs/hooks";
+import {
+    useGetModels,
+    useGetClients,
+    useGetStrategies,
+    useGetOptimizers,
+    usePost,
+} from "../../../../../app/jobs/hooks";
 
 jest.mock("../../../../../app/jobs/hooks");
 jest.mock("next/navigation", () => ({
@@ -26,7 +32,7 @@ function setupGetMocks(modelsData, clientsData, strategiesData, optimizersData) 
     useGetModels.mockImplementation(() => {
         return { data: modelsData, error: null, isLoading: false };
     });
-    useGetClients.mockImplementation(strategy => {
+    useGetClients.mockImplementation((strategy) => {
         return { data: clientsData, error: null, isLoading: false };
     });
     useGetStrategies.mockImplementation(() => {
@@ -389,7 +395,10 @@ describe("New Job Page", () => {
                     container.querySelector("input#job-server-address"),
                     makeTargetValue(testJob.server_address),
                 );
-                fireEvent.change(container.querySelector("input#job-redis-address"), makeTargetValue(testJob.redis_address));
+                fireEvent.change(
+                    container.querySelector("input#job-redis-address"),
+                    makeTargetValue(testJob.redis_address),
+                );
                 fireEvent.change(
                     container.querySelector("input#job-server-config-name-0"),
                     makeTargetValue(testJob.server_config[0].name),

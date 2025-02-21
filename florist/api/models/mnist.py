@@ -15,6 +15,7 @@ from torchvision.datasets import MNIST
 
 from florist.api.models.abstract import LocalModel
 
+
 class MnistNet(LocalModel):
     """Implementation of the Mnist model."""
 

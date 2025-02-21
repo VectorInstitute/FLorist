@@ -700,7 +700,9 @@ export function JobDetailsClientsInfoTable({
                 <tr>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Address</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Data Path</th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Redis Address</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                        Redis Address
+                    </th>
                 </tr>
             </thead>
             <tbody>
