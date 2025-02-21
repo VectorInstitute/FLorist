@@ -122,6 +122,9 @@ export function EditJobForm(): ReactElement {
         buttonClasses += "bg-gradient-primary";
     }
 
+    console.log(state.job.strategy);
+    console.log(state.job.strategy ? true : false);
+
     return (
         <form onSubmit={(e) => onSubmitJob()}>
             <EditJobServerAttributes state={state} setState={setState} />
@@ -145,10 +148,10 @@ export function EditJobForm(): ReactElement {
                     }
                     disabled={state.job.strategy ? false : true}
                 >
-                    <option value="empty"></option>
-                    <EditJobClientOptions strategy={state.job.strategy}/>
+                    <option disabled="true" selected="true" value=""></option>
+                    <EditJobSelectOptions hook={useGetClients} params={{strategy: state.job.strategy}}/>
                 </select>
-                <label class="select-caret" for="job-client">&#9660;</label>
+                <label className="select-caret" htmlFor="job-client">&#9660;</label>
             </div>
 
             <EditJobClientsInfo state={state} setState={setState} />
@@ -199,10 +202,10 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                         )
                     }
                 >
-                    <option value="empty"></option>
-                    <EditJobModelOptions />
+                    <option disabled="true" selected="true" value=""></option>
+                    <EditJobSelectOptions hook={useGetModels} />
                 </select>
-                <label class="select-caret" for="job-model">&#9660;</label>
+                <label className="select-caret" htmlFor="job-model">&#9660;</label>
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
@@ -221,10 +224,10 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                         )
                     }
                 >
-                    <option value="empty"></option>
-                    <EditJobStrategyOptions />
+                    <option disabled="true" selected="true" value=""></option>
+                    <EditJobSelectOptions hook={useGetStrategies} />
                 </select>
-                <label class="select-caret" for="job-strategy">&#9660;</label>
+                <label className="select-caret" htmlFor="job-strategy">&#9660;</label>
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
@@ -243,10 +246,10 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                         )
                     }
                 >
-                    <option value="empty"></option>
-                    <EditJobOptimizerOptions />
+                    <option disabled="true" selected="true" value=""></option>
+                    <EditJobSelectOptions hook={useGetOptimizers} />
                 </select>
-                <label class="select-caret" for="job-optimizer">&#9660;</label>
+                <label className="select-caret" htmlFor="job-optimizer">&#9660;</label>
             </div>
 
             <div className="input-group input-group-outline gray-input-box mb-3">
@@ -290,52 +293,12 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
     );
 }
 
-export function EditJobModelOptions(): ReactElement {
-    const { data, error, isLoading } = useGetModels();
+export function EditJobSelectOptions({ hook, params }: { hook: Callable, params: object }): ReactElement {
+    const { data, error, isLoading } = hook(params);
+
     if (!data) {
         return null;
     }
-    return data.map((d, i) => (
-        <option key={i} value={d}>
-            {d}
-        </option>
-    ));
-}
-
-export function EditJobStrategyOptions(): ReactElement {
-    const { data, error, isLoading } = useGetStrategies();
-    if (!data) {
-        return null;
-    }
-    return data.map((d, i) => (
-        <option key={i} value={d}>
-            {d}
-        </option>
-    ));
-}
-
-export function EditJobOptimizerOptions(): ReactElement {
-    const { data, error, isLoading } = useGetOptimizers();
-    if (!data) {
-        return null;
-    }
-    return data.map((d, i) => (
-        <option key={i} value={d}>
-            {d}
-        </option>
-    ));
-}
-
-export function EditJobClientOptions({ strategy }: { strategy: string }): ReactElement {
-    if (!strategy) {
-        return null;
-    }
-
-    const { data, error, isLoading } = useGetClients(strategy);
-    if (!data) {
-        return null;
-    }
-
     return data.map((d, i) => (
         <option key={i} value={d}>
             {d}

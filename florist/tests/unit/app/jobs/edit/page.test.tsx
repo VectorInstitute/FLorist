@@ -6,7 +6,7 @@ import { act } from "react-dom/test-utils";
 import yaml from "js-yaml";
 
 import EditJob, { makeEmptyJob } from "../../../../../app/jobs/edit/page";
-import { useGetModels, useGetClients, usePost } from "../../../../../app/jobs/hooks";
+import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers, usePost } from "../../../../../app/jobs/hooks";
 
 jest.mock("../../../../../app/jobs/hooks");
 jest.mock("next/navigation", () => ({
@@ -22,12 +22,18 @@ afterEach(() => {
     cleanup();
 });
 
-function setupGetMocks(modelsData, clientsData) {
+function setupGetMocks(modelsData, clientsData, strategiesData, optimizersData) {
     useGetModels.mockImplementation(() => {
         return { data: modelsData, error: null, isLoading: false };
     });
-    useGetClients.mockImplementation(() => {
+    useGetClients.mockImplementation(strategy => {
         return { data: clientsData, error: null, isLoading: false };
+    });
+    useGetStrategies.mockImplementation(() => {
+        return { data: strategiesData, error: null, isLoading: false };
+    });
+    useGetOptimizers.mockImplementation(() => {
+        return { data: optimizersData, error: null, isLoading: false };
     });
 }
 
@@ -57,31 +63,65 @@ describe("New Job Page", () => {
     describe("Server Attributes", () => {
         it("Render Correctly", () => {
             const testModelsData = ["TEST-MODEL-1", "TEST-MODEL-2"];
-            setupGetMocks(testModelsData, null);
+            const testClientsData = ["TEST-CLIENT-1", "TEST-CLIENT-2"];
+            const testOptimizersData = ["TEST-OPTIMIZER-1", "TEST-OPTIMIZER-2"];
+            const testStrategiesData = ["TEST-STRATEGY-1", "TEST-STRATEGY-2"];
+            setupGetMocks(testModelsData, testClientsData, testStrategiesData, testOptimizersData);
             setupPostMocks();
 
             const { container } = render(<EditJob />);
 
             const jobModel = container.querySelector("select#job-model");
             expect(jobModel).toBeInTheDocument();
-            const options = jobModel.querySelectorAll("option");
-            expect(options.length).toBe(3);
-            expect(options[0].value).toBe("empty");
+            const jobModelOptions = jobModel.querySelectorAll("option");
+            expect(jobModelOptions.length).toBe(3);
+            expect(jobModelOptions[0].value).toBe("");
+            expect(jobModelOptions[0].selected).toBe(true);
+            expect(jobModelOptions[0].disabled).toBe(true);
             for (let i = 0; i < testModelsData.length; i++) {
-                expect(options[i + 1].value).toBe(testModelsData[i]);
+                expect(jobModelOptions[i + 1].value).toBe(testModelsData[i]);
+            }
+
+            const jobClient = container.querySelector("select#job-client");
+            expect(jobClient).toBeInTheDocument();
+            const jobClientOptions = jobClient.querySelectorAll("option");
+            expect(jobClientOptions.length).toBe(3);
+            expect(jobClientOptions[0].value).toBe("");
+            expect(jobClientOptions[0].selected).toBe(true);
+            expect(jobClientOptions[0].disabled).toBe(true);
+            for (let i = 0; i < testModelsData.length; i++) {
+                expect(jobClientOptions[i + 1].value).toBe(testClientsData[i]);
+            }
+
+            const jobStrategy = container.querySelector("select#job-strategy");
+            expect(jobStrategy).toBeInTheDocument();
+            const jobStrategyOptions = jobStrategy.querySelectorAll("option");
+            expect(jobStrategyOptions.length).toBe(3);
+            expect(jobStrategyOptions[0].value).toBe("");
+            expect(jobStrategyOptions[0].selected).toBe(true);
+            expect(jobStrategyOptions[0].disabled).toBe(true);
+            for (let i = 0; i < testStrategiesData.length; i++) {
+                expect(jobStrategyOptions[i + 1].value).toBe(testStrategiesData[i]);
+            }
+
+            const jobOptimizer = container.querySelector("select#job-optimizer");
+            expect(jobOptimizer).toBeInTheDocument();
+            const jobOptimizerOptions = jobOptimizer.querySelectorAll("option");
+            expect(jobOptimizerOptions.length).toBe(3);
+            expect(jobOptimizerOptions[0].value).toBe("");
+            expect(jobOptimizerOptions[0].selected).toBe(true);
+            expect(jobOptimizerOptions[0].disabled).toBe(true);
+            for (let i = 0; i < testOptimizersData.length; i++) {
+                expect(jobOptimizerOptions[i + 1].value).toBe(testOptimizersData[i]);
             }
 
             const jobServerAddress = container.querySelector("input#job-server-address");
             expect(jobServerAddress).toBeInTheDocument();
             expect(jobServerAddress.value).toBe("");
 
-            const jobRedisHost = container.querySelector("input#job-redis-host");
-            expect(jobRedisHost).toBeInTheDocument();
-            expect(jobRedisHost.value).toBe("");
-
-            const jobRedisPort = container.querySelector("input#job-redis-port");
-            expect(jobRedisPort).toBeInTheDocument();
-            expect(jobRedisPort.value).toBe("");
+            const jobRedisAddress = container.querySelector("input#job-redis-address");
+            expect(jobRedisAddress).toBeInTheDocument();
+            expect(jobRedisAddress.value).toBe("");
         });
     });
 
@@ -220,8 +260,7 @@ describe("New Job Page", () => {
 
     describe("Client Info", () => {
         it("Render Correctly", () => {
-            const testClientsData = ["TEST-CLIENT-1", "TEST-CLIENT-2"];
-            setupGetMocks(null, testClientsData);
+            setupGetMocks();
             setupPostMocks();
 
             const { container } = render(<EditJob />);
@@ -234,15 +273,6 @@ describe("New Job Page", () => {
             expect(addButton).toBeInTheDocument();
             expect(addButton).toHaveTextContent("add");
 
-            const jobClientInfoClient = container.querySelector("select#job-client-info-client-0");
-            expect(jobClientInfoClient).toBeInTheDocument();
-            const options = jobClientInfoClient.querySelectorAll("option");
-            expect(options.length).toBe(3);
-            expect(options[0].value).toBe("empty");
-            for (let i = 0; i < testClientsData.length; i++) {
-                expect(options[i + 1].value).toBe(testClientsData[i]);
-            }
-
             const jobClientInfoServiceAddress = container.querySelector("input#job-client-info-service-address-0");
             expect(jobClientInfoServiceAddress).toBeInTheDocument();
             expect(jobClientInfoServiceAddress.value).toBe("");
@@ -251,17 +281,12 @@ describe("New Job Page", () => {
             expect(jobClientInfoDataPath).toBeInTheDocument();
             expect(jobClientInfoDataPath.value).toBe("");
 
-            const jobClientInfoRedisHost = container.querySelector("input#job-client-info-redis-host-0");
-            expect(jobClientInfoRedisHost).toBeInTheDocument();
-            expect(jobClientInfoRedisHost.value).toBe("");
-
-            const jobClientInfoRedisPort = container.querySelector("input#job-client-info-redis-port-0");
-            expect(jobClientInfoRedisPort).toBeInTheDocument();
-            expect(jobClientInfoRedisPort.value).toBe("");
+            const jobClientInfoRedisAddress = container.querySelector("input#job-client-info-redis-address-0");
+            expect(jobClientInfoRedisAddress).toBeInTheDocument();
+            expect(jobClientInfoRedisAddress.value).toBe("");
         });
         it("Add button click adds a new element", () => {
-            const testClientsData = ["TEST-CLIENT-1", "TEST-CLIENT-2"];
-            setupGetMocks(null, testClientsData);
+            setupGetMocks();
             setupPostMocks();
 
             const { container } = render(<EditJob />);
@@ -271,15 +296,6 @@ describe("New Job Page", () => {
 
             act(() => addButton.click());
 
-            const jobClientInfoClient = container.querySelector("select#job-client-info-client-1");
-            expect(jobClientInfoClient).toBeInTheDocument();
-            const options = jobClientInfoClient.querySelectorAll("option");
-            expect(options.length).toBe(3);
-            expect(options[0].value).toBe("empty");
-            for (let i = 0; i < testClientsData.length; i++) {
-                expect(options[i + 1].value).toBe(testClientsData[i]);
-            }
-
             const jobClientInfoServiceAddress = container.querySelector("input#job-client-info-service-address-1");
             expect(jobClientInfoServiceAddress).toBeInTheDocument();
             expect(jobClientInfoServiceAddress.value).toBe("");
@@ -288,13 +304,9 @@ describe("New Job Page", () => {
             expect(jobClientInfoDataPath).toBeInTheDocument();
             expect(jobClientInfoDataPath.value).toBe("");
 
-            const jobClientInfoRedisHost = container.querySelector("input#job-client-info-redis-host-1");
-            expect(jobClientInfoRedisHost).toBeInTheDocument();
-            expect(jobClientInfoRedisHost.value).toBe("");
-
-            const jobClientInfoRedisPort = container.querySelector("input#job-client-info-redis-port-1");
-            expect(jobClientInfoRedisPort).toBeInTheDocument();
-            expect(jobClientInfoRedisPort.value).toBe("");
+            const jobClientInfoRedisAddress = container.querySelector("input#job-client-info-redis-address-1");
+            expect(jobClientInfoRedisAddress).toBeInTheDocument();
+            expect(jobClientInfoRedisAddress.value).toBe("");
         });
         it("Remove button click removed the clicked element", () => {
             setupPostMocks();
@@ -322,7 +334,9 @@ describe("New Job Page", () => {
         it("Submits data correctly", async () => {
             const testModelsData = ["TEST-MODEL-1", "TEST-MODEL-2"];
             const testClientsData = ["TEST-CLIENT-1", "TEST-CLIENT-2"];
-            setupGetMocks(testModelsData, testClientsData);
+            const testOptimizersData = ["TEST-OPTIMIZER-1", "TEST-OPTIMIZER-2"];
+            const testStrategiesData = ["TEST-STRATEGY-1", "TEST-STRATEGY-2"];
+            setupGetMocks(testModelsData, testClientsData, testStrategiesData, testOptimizersData);
             postMock = setupPostMocks();
 
             const { container } = render(<EditJob />);
@@ -334,9 +348,10 @@ describe("New Job Page", () => {
 
             const testJob = {
                 model: "TEST-MODEL-2",
+                strategy: "TEST-STRATEGY-2",
+                optimizer: "TEST-OPTIMIZER-2",
                 server_address: "test server address",
-                redis_host: "test redis host",
-                redis_port: "test redis port",
+                redis_address: "test redis address",
                 server_config: [
                     {
                         name: "test server config name 1",
@@ -347,20 +362,17 @@ describe("New Job Page", () => {
                         value: "test server config value 2",
                     },
                 ],
+                client: "TEST-CLIENT-2",
                 clients_info: [
                     {
-                        client: "TEST-CLIENT-1",
                         service_address: "test service address 1",
                         data_path: "test data path 1",
-                        redis_host: "test redis host 1",
-                        redis_port: "test redis port 1",
+                        redis_address: "test redis address 1",
                     },
                     {
-                        client: "TEST-CLIENT-2",
                         service_address: "test service address 2",
                         data_path: "test data path 2",
-                        redis_host: "test redis host 2",
-                        redis_port: "test redis port 2",
+                        redis_address: "test redis address 2",
                     },
                 ],
             };
@@ -370,12 +382,14 @@ describe("New Job Page", () => {
             };
             act(() => {
                 fireEvent.change(container.querySelector("select#job-model"), makeTargetValue(testJob.model));
+                fireEvent.change(container.querySelector("select#job-optimizer"), makeTargetValue(testJob.optimizer));
+                fireEvent.change(container.querySelector("select#job-strategy"), makeTargetValue(testJob.strategy));
+                fireEvent.change(container.querySelector("select#job-client"), makeTargetValue(testJob.client));
                 fireEvent.change(
                     container.querySelector("input#job-server-address"),
                     makeTargetValue(testJob.server_address),
                 );
-                fireEvent.change(container.querySelector("input#job-redis-host"), makeTargetValue(testJob.redis_host));
-                fireEvent.change(container.querySelector("input#job-redis-port"), makeTargetValue(testJob.redis_port));
+                fireEvent.change(container.querySelector("input#job-redis-address"), makeTargetValue(testJob.redis_address));
                 fireEvent.change(
                     container.querySelector("input#job-server-config-name-0"),
                     makeTargetValue(testJob.server_config[0].name),
@@ -393,10 +407,6 @@ describe("New Job Page", () => {
                     makeTargetValue(testJob.server_config[1].value),
                 );
                 fireEvent.change(
-                    container.querySelector("select#job-client-info-client-0"),
-                    makeTargetValue(testJob.clients_info[0].client),
-                );
-                fireEvent.change(
                     container.querySelector("input#job-client-info-service-address-0"),
                     makeTargetValue(testJob.clients_info[0].service_address),
                 );
@@ -405,16 +415,8 @@ describe("New Job Page", () => {
                     makeTargetValue(testJob.clients_info[0].data_path),
                 );
                 fireEvent.change(
-                    container.querySelector("input#job-client-info-redis-host-0"),
-                    makeTargetValue(testJob.clients_info[0].redis_host),
-                );
-                fireEvent.change(
-                    container.querySelector("input#job-client-info-redis-port-0"),
-                    makeTargetValue(testJob.clients_info[0].redis_port),
-                );
-                fireEvent.change(
-                    container.querySelector("select#job-client-info-client-1"),
-                    makeTargetValue(testJob.clients_info[1].client),
+                    container.querySelector("input#job-client-info-redis-address-0"),
+                    makeTargetValue(testJob.clients_info[0].redis_address),
                 );
                 fireEvent.change(
                     container.querySelector("input#job-client-info-service-address-1"),
@@ -425,12 +427,8 @@ describe("New Job Page", () => {
                     makeTargetValue(testJob.clients_info[1].data_path),
                 );
                 fireEvent.change(
-                    container.querySelector("input#job-client-info-redis-host-1"),
-                    makeTargetValue(testJob.clients_info[1].redis_host),
-                );
-                fireEvent.change(
-                    container.querySelector("input#job-client-info-redis-port-1"),
-                    makeTargetValue(testJob.clients_info[1].redis_port),
+                    container.querySelector("input#job-client-info-redis-address-1"),
+                    makeTargetValue(testJob.clients_info[1].redis_address),
                 );
             });
 
