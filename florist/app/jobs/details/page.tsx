@@ -657,7 +657,7 @@ export function JobDetailsServerConfigTable({ data, properties }: { data: string
                         <td className="col-sm" id={`job-details-server-config-value-${i}`}>
                             <div className="d-flex flex-column justify-content-center">
                                 <span className="ps-3 text-secondary text-sm">
-                                    {serverConfigJson[serverConfigName]}
+                                    {serverConfigJson[serverConfigName].toString()}
                                 </span>
                             </div>
                         </td>

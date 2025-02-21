@@ -6,6 +6,8 @@ from contextlib import suppress
 from enum import Enum
 from typing import Any, Dict, List
 
+from typing_extensions import Self
+
 
 class BasicConfigParser:
     """Parser for basic server configurations."""
@@ -13,9 +15,11 @@ class BasicConfigParser:
     @classmethod
     def mandatory_fields(cls) -> List[str]:
         """
-        Define the mandatory fields for basic configuration, namely `n_server_rounds`, `batch_size` and `local_epochs`.
+        Define the mandatory fields for basic server configuration.
 
-        :return: (List[str]) the list of fields for basic server configuration.
+        Namely: `n_server_rounds`, `batch_size` and `local_epochs`.
+
+        :return: (List[str]) the list of required fields for basic server configuration.
         """
         return ["n_server_rounds", "batch_size", "local_epochs"]
 
@@ -45,13 +49,36 @@ class BasicConfigParser:
         return config
 
 
+class FedProxConfigParser(BasicConfigParser):
+    """Parser for FedProx server configurations."""
+
+    @classmethod
+    def mandatory_fields(cls) -> List[str]:
+        """
+        Define the mandatory fields for FedProx configuration.
+
+        Namely: `n_server_rounds`, `adapt_proximal_weight`, `initial_proximal_weight`, `proximal_weight_delta`,
+        `proximal_weight_patience`, `local_epochs` and `batch_size`.
+
+        :return: (List[str]) the list of required fields for FedProx server configuration.
+        """
+        basic_fields = super().mandatory_fields()
+        return basic_fields + [
+            "adapt_proximal_weight",
+            "initial_proximal_weight",
+            "proximal_weight_delta",
+            "proximal_weight_patience",
+        ]
+
+
 class ConfigParser(Enum):
     """Enum to define the types of server configuration parsers."""
 
     BASIC = "BASIC"
+    FEDPROX = "FEDPROX"
 
     @classmethod
-    def class_for_parser(cls, config_parser: "ConfigParser") -> type[BasicConfigParser]:
+    def class_for_parser(cls, config_parser: Self) -> type[BasicConfigParser]:
         """
         Return the class for a given config parser.
 
@@ -61,6 +88,8 @@ class ConfigParser(Enum):
         """
         if config_parser == ConfigParser.BASIC:
             return BasicConfigParser
+        if config_parser == ConfigParser.FEDPROX:
+            return FedProxConfigParser
 
         raise ValueError(f"Config parser {config_parser.value} not supported.")
 

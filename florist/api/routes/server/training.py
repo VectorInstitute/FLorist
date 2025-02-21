@@ -14,9 +14,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
 from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
-from florist.api.servers.common import Model
 from florist.api.servers.config_parsers import ConfigParser
 from florist.api.servers.launch import launch_local_server
+from florist.api.servers.models import Model
 
 
 router = APIRouter()
@@ -53,9 +53,6 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         assert job.status == JobStatus.NOT_STARTED, f"Job status ({job.status.value}) is not NOT_STARTED"
         await job.set_status(JobStatus.IN_PROGRESS, request.app.database)
 
-        if job.config_parser is None:
-            job.config_parser = ConfigParser.BASIC
-
         assert job.model is not None, "Missing Job information: model"
         assert job.server_config is not None, "Missing Job information: server_config"
         assert job.clients_info is not None and len(job.clients_info) > 0, "Missing Job information: clients_info"
@@ -63,22 +60,23 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         assert job.redis_host is not None, "Missing Job information: redis_host"
         assert job.redis_port is not None, "Missing Job information: redis_port"
 
+        job.config_parser = Model.config_parser_for_model(job.model)
+        server_factory = Model.server_factory_for_model(job.model)
+
         try:
             config_parser = ConfigParser.class_for_parser(job.config_parser)
             server_config = config_parser.parse(job.server_config)
         except JSONDecodeError as err:
             raise AssertionError("server_config is not a valid json string.") from err
 
-        model_class = Model.class_for_model(job.model)
-
         # Start the server
         server_uuid, server_process, server_log_file_path = launch_local_server(
-            model=model_class(),
-            n_clients=len(job.clients_info),
+            server_config=server_config,
+            server_factory=server_factory,
             server_address=job.server_address,
+            n_clients=len(job.clients_info),
             redis_host=job.redis_host,
             redis_port=job.redis_port,
-            **server_config,
         )
 
         await job.set_server_log_file_path(server_log_file_path, request.app.database)

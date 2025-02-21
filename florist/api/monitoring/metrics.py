@@ -132,6 +132,27 @@ class RedisMetricsReporter(BaseReporter):  # type: ignore
         log(DEBUG, f"Notifying redis channel '{self.run_id}'")
         self.redis_connection.publish(self.run_id, "update")
 
+    def __eq__(self, other: object) -> bool:
+        """
+        Check if this instance has the same attributes to the other instance.
+
+        Will look for the other instance having the same host, port and run_id as the self instance.
+
+        :param other: (Any) the other instance to compare against.
+        :return: (bool) True if they are the same, False otherwise.
+        """
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        if self.host != other.host:
+            return False
+        if self.port != other.port:
+            return False
+        if self.run_id != other.run_id:  # noqa SIM103
+            return False
+
+        return True
+
 
 def wait_for_metric(
     uuid: str,
