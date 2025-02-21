@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex.html" /><link rel="search" title="Search" href="../../../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>florist.tests.integration.api.db.test_client_entities - FLorist</title>
+        <title>florist.tests.unit.api.servers.test_models - FLorist</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
@@ -343,120 +343,152 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.tests.integration.api.db.test_client_entities</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">pytest</span>
+          <h1>Source code for florist.tests.unit.api.servers.test_models</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.db.client_entities</span> <span class="kn">import</span> <span class="n">ClientDAO</span>
+<span class="kn">from</span> <span class="nn">fl4health.client_managers.base_sampling_manager</span> <span class="kn">import</span> <span class="n">SimpleClientManager</span>
+<span class="kn">from</span> <span class="nn">fl4health.server.adaptive_constraint_servers.fedprox_server</span> <span class="kn">import</span> <span class="n">FedProxServer</span>
+<span class="kn">from</span> <span class="nn">fl4health.server.base_server</span> <span class="kn">import</span> <span class="n">FlServer</span>
+<span class="kn">from</span> <span class="nn">fl4health.strategies.fedavg_with_adaptive_constraint</span> <span class="kn">import</span> <span class="n">FedAvgWithAdaptiveConstraint</span>
+<span class="kn">from</span> <span class="nn">fl4health.utils.metric_aggregation</span> <span class="kn">import</span> <span class="n">evaluate_metrics_aggregation_fn</span><span class="p">,</span> <span class="n">fit_metrics_aggregation_fn</span>
+<span class="kn">from</span> <span class="nn">flwr.server.strategy</span> <span class="kn">import</span> <span class="n">FedAvg</span>
+<span class="kn">from</span> <span class="nn">flwr.common.typing</span> <span class="kn">import</span> <span class="n">Parameters</span>
 
-<span class="kn">from</span> <span class="nn">florist.tests.integration.api.utils</span> <span class="kn">import</span> <span class="n">mock_request</span>
+<span class="kn">from</span> <span class="nn">florist.api.models.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
+<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">RedisMetricsReporter</span>
+<span class="kn">from</span> <span class="nn">florist.api.servers.config_parsers</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+<span class="kn">from</span> <span class="nn">florist.api.servers.models</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">ServerFactory</span><span class="p">,</span> <span class="n">fit_config_function</span><span class="p">,</span> <span class="n">get_fedprox_server</span><span class="p">,</span> <span class="n">get_fedavg_server</span>
 
 
-<div class="viewcode-block" id="test_get_connection">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_get_connection">[docs]</a>
-<span class="k">def</span> <span class="nf">test_get_connection</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">db_connection</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
-    <span class="k">assert</span> <span class="n">db_connection</span></div>
-
-
-<div class="viewcode-block" id="test_eq">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_eq">[docs]</a>
-<span class="k">def</span> <span class="nf">test_eq</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">client_1</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid-1&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-1&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">client_2</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid-2&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-2&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">5678</span><span class="p">)</span>
-    <span class="n">client_3</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid-1&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-1&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">not_a_client</span> <span class="o">=</span> <span class="s2">&quot;I&#39;m not a client!&quot;</span>
-
-    <span class="k">assert</span> <span class="n">client_1</span> <span class="o">!=</span> <span class="n">client_2</span>
-    <span class="k">assert</span> <span class="n">client_1</span> <span class="o">==</span> <span class="n">client_3</span>
-    <span class="k">assert</span> <span class="n">client_1</span> <span class="o">!=</span> <span class="n">not_a_client</span></div>
+<div class="viewcode-block" id="test_class_for_model">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.servers.test_models.html#florist.tests.unit.api.servers.test_models.test_class_for_model">[docs]</a>
+<span class="k">def</span> <span class="nf">test_class_for_model</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">Model</span><span class="o">.</span><span class="n">class_for_model</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST_FEDAVG</span><span class="p">)</span> <span class="o">==</span> <span class="n">MnistNet</span>
+    <span class="k">assert</span> <span class="n">Model</span><span class="o">.</span><span class="n">class_for_model</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST_FEDPROX</span><span class="p">)</span> <span class="o">==</span> <span class="n">MnistNet</span></div>
 
 
 
-<div class="viewcode-block" id="test_save_and_find">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_save_and_find">[docs]</a>
-<span class="k">def</span> <span class="nf">test_save_and_find</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test-uuid&quot;</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">test_uuid</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-
-    <span class="k">assert</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">)</span> <span class="o">==</span> <span class="n">client</span></div>
-
-
-<div class="viewcode-block" id="test_saving_a_second_time_should_update">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_saving_a_second_time_should_update">[docs]</a>
-<span class="k">def</span> <span class="nf">test_saving_a_second_time_should_update</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test-uuid&quot;</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">test_uuid</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-
-    <span class="k">assert</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">)</span> <span class="o">==</span> <span class="n">client</span>
-
-    <span class="n">client</span><span class="o">.</span><span class="n">log_file_path</span> <span class="o">=</span> <span class="s2">&quot;test-log-file-path-2&quot;</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="s2">&quot;test-pid-2&quot;</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-
-    <span class="k">assert</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">)</span> <span class="o">==</span> <span class="n">client</span></div>
+<div class="viewcode-block" id="test_config_parser_for_model">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.servers.test_models.html#florist.tests.unit.api.servers.test_models.test_config_parser_for_model">[docs]</a>
+<span class="k">def</span> <span class="nf">test_config_parser_for_model</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">Model</span><span class="o">.</span><span class="n">config_parser_for_model</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST_FEDAVG</span><span class="p">)</span> <span class="o">==</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">BASIC</span>
+    <span class="k">assert</span> <span class="n">Model</span><span class="o">.</span><span class="n">config_parser_for_model</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST_FEDPROX</span><span class="p">)</span> <span class="o">==</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">FEDPROX</span></div>
 
 
 
-<div class="viewcode-block" id="test_find_not_found">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_find_not_found">[docs]</a>
-<span class="k">def</span> <span class="nf">test_find_not_found</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<div class="viewcode-block" id="test_server_factory_for_model">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.servers.test_models.html#florist.tests.unit.api.servers.test_models.test_server_factory_for_model">[docs]</a>
+<span class="k">def</span> <span class="nf">test_server_factory_for_model</span><span class="p">():</span>
+    <span class="n">test_server_factory</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">server_factory_for_model</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST_FEDAVG</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">test_server_factory</span><span class="o">.</span><span class="n">get_server_function</span> <span class="o">==</span> <span class="n">get_fedavg_server</span>
+    <span class="k">assert</span> <span class="n">test_server_factory</span><span class="o">.</span><span class="n">model</span> <span class="o">==</span> <span class="n">Model</span><span class="o">.</span><span class="n">MNIST_FEDAVG</span>
 
-    <span class="n">test_bad_uuid</span> <span class="o">=</span> <span class="s2">&quot;wrong-uuid&quot;</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-        <span class="n">ClientDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">test_bad_uuid</span><span class="p">)</span>
-
-    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;Client with uuid &#39;</span><span class="si">{</span><span class="n">test_bad_uuid</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span></div>
-
-
-<div class="viewcode-block" id="test_exists">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_exists">[docs]</a>
-<span class="k">def</span> <span class="nf">test_exists</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test-uuid&quot;</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">test_uuid</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-
-    <span class="k">assert</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">)</span></div>
+    <span class="n">test_server_factory</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">server_factory_for_model</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST_FEDPROX</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">test_server_factory</span><span class="o">.</span><span class="n">get_server_function</span> <span class="o">==</span> <span class="n">get_fedprox_server</span>
+    <span class="k">assert</span> <span class="n">test_server_factory</span><span class="o">.</span><span class="n">model</span> <span class="o">==</span> <span class="n">Model</span><span class="o">.</span><span class="n">MNIST_FEDPROX</span></div>
 
 
 
-<div class="viewcode-block" id="test_exists_not_found">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_exists_not_found">[docs]</a>
-<span class="k">def</span> <span class="nf">test_exists_not_found</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-
-    <span class="k">assert</span> <span class="ow">not</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;wrong-uuid&quot;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="test_list">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.servers.test_models.html#florist.tests.unit.api.servers.test_models.test_list">[docs]</a>
+<span class="k">def</span> <span class="nf">test_list</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">Model</span><span class="o">.</span><span class="n">list</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST_FEDAVG</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Model</span><span class="o">.</span><span class="n">MNIST_FEDPROX</span><span class="o">.</span><span class="n">value</span><span class="p">]</span></div>
 
 
 
-<div class="viewcode-block" id="test_from_json">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_from_json">[docs]</a>
-<span class="k">def</span> <span class="nf">test_from_json</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;test-uuid&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pid&quot;</span><span class="p">:</span> <span class="s2">&quot;test-pid&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="test_get_server_constructor">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.servers.test_models.html#florist.tests.unit.api.servers.test_models.test_get_server_constructor">[docs]</a>
+<span class="k">def</span> <span class="nf">test_get_server_constructor</span><span class="p">():</span>
+    <span class="n">test_n_clients</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">test_reporters</span> <span class="o">=</span> <span class="p">[</span><span class="n">RedisMetricsReporter</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="s2">&quot;8080&quot;</span><span class="p">)]</span>
+    <span class="n">test_server_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">}</span>
+    <span class="n">test_get_server_function</span> <span class="o">=</span> <span class="n">get_fedavg_server</span>
+    <span class="n">test_model</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">MNIST_FEDAVG</span>
+    <span class="n">test_server_factory</span> <span class="o">=</span> <span class="n">ServerFactory</span><span class="p">(</span><span class="n">get_server_function</span><span class="o">=</span><span class="n">test_get_server_function</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">test_model</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">test_server_factory</span><span class="o">.</span><span class="n">get_server_constructor</span><span class="p">(</span>
+        <span class="n">test_n_clients</span><span class="p">,</span>
+        <span class="n">test_reporters</span><span class="p">,</span>
+        <span class="n">test_server_config</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">func</span> <span class="o">==</span> <span class="n">test_get_server_function</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Model</span><span class="o">.</span><span class="n">class_for_model</span><span class="p">(</span><span class="n">test_model</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">args</span> <span class="o">==</span> <span class="p">(</span>
+        <span class="n">ANY</span><span class="p">,</span>
+        <span class="n">test_n_clients</span><span class="p">,</span>
+        <span class="n">test_reporters</span><span class="p">,</span>
+        <span class="n">test_server_config</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_fit_config_function">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.servers.test_models.html#florist.tests.unit.api.servers.test_models.test_fit_config_function">[docs]</a>
+<span class="k">def</span> <span class="nf">test_fit_config_function</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">fit_config_function</span><span class="p">({</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">},</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span> <span class="s2">&quot;current_server_round&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_fedavg_server">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.servers.test_models.html#florist.tests.unit.api.servers.test_models.test_get_fedavg_server">[docs]</a>
+<span class="k">def</span> <span class="nf">test_get_fedavg_server</span><span class="p">():</span>
+    <span class="n">test_n_clients</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">test_reporters</span> <span class="o">=</span> <span class="p">[</span><span class="n">RedisMetricsReporter</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="s2">&quot;8080&quot;</span><span class="p">)]</span>
+    <span class="n">test_server_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">}</span>
+    <span class="n">test_model</span> <span class="o">=</span> <span class="n">MnistNet</span><span class="p">()</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">get_fedavg_server</span><span class="p">(</span><span class="n">test_model</span><span class="p">,</span> <span class="n">test_n_clients</span><span class="p">,</span> <span class="n">test_reporters</span><span class="p">,</span> <span class="n">test_server_config</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">FlServer</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="p">,</span> <span class="n">FedAvg</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">min_fit_clients</span> <span class="o">==</span> <span class="n">test_n_clients</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">min_evaluate_clients</span> <span class="o">==</span> <span class="n">test_n_clients</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">on_fit_config_fn</span><span class="o">.</span><span class="n">func</span> <span class="o">==</span> <span class="n">fit_config_function</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">on_fit_config_fn</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">test_server_config</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">on_evaluate_config_fn</span><span class="o">.</span><span class="n">func</span> <span class="o">==</span> <span class="n">fit_config_function</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">on_evaluate_config_fn</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">test_server_config</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">fit_metrics_aggregation_fn</span> <span class="o">==</span> <span class="n">fit_metrics_aggregation_fn</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">evaluate_metrics_aggregation_fn</span> <span class="o">==</span> <span class="n">evaluate_metrics_aggregation_fn</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">initial_parameters</span><span class="p">,</span> <span class="n">Parameters</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">_client_manager</span><span class="p">,</span> <span class="n">SimpleClientManager</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">reports_manager</span><span class="o">.</span><span class="n">reporters</span> <span class="o">==</span> <span class="n">test_reporters</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_fedprox_server">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.servers.test_models.html#florist.tests.unit.api.servers.test_models.test_get_fedprox_server">[docs]</a>
+<span class="k">def</span> <span class="nf">test_get_fedprox_server</span><span class="p">():</span>
+    <span class="n">test_n_clients</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">test_reporters</span> <span class="o">=</span> <span class="p">[</span><span class="n">RedisMetricsReporter</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="s2">&quot;8080&quot;</span><span class="p">)]</span>
+    <span class="n">test_server_config</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;adapt_proximal_weight&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;initial_proximal_weight&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;proximal_weight_delta&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="s2">&quot;proximal_weight_patience&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
     <span class="p">}</span>
+    <span class="n">test_model</span> <span class="o">=</span> <span class="n">MnistNet</span><span class="p">()</span>
 
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">test_data</span><span class="p">))</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">get_fedprox_server</span><span class="p">(</span><span class="n">test_model</span><span class="p">,</span> <span class="n">test_n_clients</span><span class="p">,</span> <span class="n">test_reporters</span><span class="p">,</span> <span class="n">test_server_config</span><span class="p">)</span>
 
-    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">uuid</span> <span class="o">==</span> <span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">log_file_path</span> <span class="o">==</span> <span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;log_file_path&quot;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">pid</span> <span class="o">==</span> <span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">]</span></div>
-
-
-
-<div class="viewcode-block" id="test_to_json">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_to_json">[docs]</a>
-<span class="k">def</span> <span class="nf">test_to_json</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-
-    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="o">==</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="s1">&quot;uuid&quot;: &quot;</span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s1">&quot;, &quot;log_file_path&quot;: &quot;</span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">log_file_path</span><span class="si">}</span><span class="s1">&quot;, &quot;pid&quot;: </span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="se">}}</span><span class="s1">&#39;</span></div>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">FedProxServer</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="p">,</span> <span class="n">FedAvgWithAdaptiveConstraint</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">min_fit_clients</span> <span class="o">==</span> <span class="n">test_n_clients</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">min_evaluate_clients</span> <span class="o">==</span> <span class="n">test_n_clients</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">min_available_clients</span> <span class="o">==</span> <span class="n">test_n_clients</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">on_fit_config_fn</span><span class="o">.</span><span class="n">func</span> <span class="o">==</span> <span class="n">fit_config_function</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">on_fit_config_fn</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">test_server_config</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">on_evaluate_config_fn</span><span class="o">.</span><span class="n">func</span> <span class="o">==</span> <span class="n">fit_config_function</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">on_evaluate_config_fn</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">test_server_config</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">fit_metrics_aggregation_fn</span> <span class="o">==</span> <span class="n">fit_metrics_aggregation_fn</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">evaluate_metrics_aggregation_fn</span> <span class="o">==</span> <span class="n">evaluate_metrics_aggregation_fn</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">adapt_loss_weight</span> <span class="o">==</span> <span class="n">test_server_config</span><span class="p">[</span><span class="s2">&quot;adapt_proximal_weight&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">loss_weight</span> <span class="o">==</span> <span class="n">test_server_config</span><span class="p">[</span><span class="s2">&quot;initial_proximal_weight&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">loss_weight_delta</span> <span class="o">==</span> <span class="n">test_server_config</span><span class="p">[</span><span class="s2">&quot;proximal_weight_delta&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">loss_weight_patience</span> <span class="o">==</span> <span class="n">test_server_config</span><span class="p">[</span><span class="s2">&quot;proximal_weight_patience&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">initial_parameters</span><span class="p">,</span> <span class="n">Parameters</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">_client_manager</span><span class="p">,</span> <span class="n">SimpleClientManager</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">reports_manager</span><span class="o">.</span><span class="n">reporters</span> <span class="o">==</span> <span class="n">test_reporters</span></div>
 
 </pre></div>
         </article>

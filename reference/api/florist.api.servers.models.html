@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.servers.models module" href="florist.api.servers.models.html" /><link rel="prev" title="florist.api.servers.config_parsers module" href="florist.api.servers.config_parsers.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.client module" href="florist.api.client.html" /><link rel="prev" title="florist.api.servers.launch module" href="florist.api.servers.launch.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>florist.api.servers.launch module - FLorist</title>
+        <title>florist.api.servers.models module - FLorist</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -244,8 +244,8 @@
 </li>
 <li class="toctree-l4 current has-children"><a class="reference internal" href="florist.api.servers.html">florist.api.servers package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of florist.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="florist.api.servers.config_parsers.html">florist.api.servers.config_parsers module</a></li>
-<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">florist.api.servers.launch module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="florist.api.servers.models.html">florist.api.servers.models module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.servers.launch.html">florist.api.servers.launch module</a></li>
+<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">florist.api.servers.models module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="florist.api.client.html">florist.api.client module</a></li>
@@ -345,34 +345,201 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-florist.api.servers.launch">
-<span id="florist-api-servers-launch-module"></span><h1>florist.api.servers.launch module<a class="headerlink" href="#module-florist.api.servers.launch" title="Link to this heading">¶</a></h1>
-<p>Functions and definitions to launch local servers.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="florist.api.servers.launch.launch_local_server">
-<span class="sig-name descname"><span class="pre">launch_local_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_port</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/launch.html#launch_local_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.launch.launch_local_server" title="Link to this definition">¶</a></dt>
-<dd><p>Launch a FL server locally.</p>
+          <section id="module-florist.api.servers.models">
+<span id="florist-api-servers-models-module"></span><h1>florist.api.servers.models module<a class="headerlink" href="#module-florist.api.servers.models" title="Link to this heading">¶</a></h1>
+<p>Functions and definitions for server models.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="florist.api.servers.models.Model">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/models.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.models.Model" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/enum.html#enum.Enum" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Enumeration of supported models.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.servers.models.Model.MNIST_FEDAVG">
+<span class="sig-name descname"><span class="pre">MNIST_FEDAVG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MNIST</span> <span class="pre">with</span> <span class="pre">FedAvg'</span></em><a class="headerlink" href="#florist.api.servers.models.Model.MNIST_FEDAVG" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="florist.api.servers.models.Model.MNIST_FEDPROX">
+<span class="sig-name descname"><span class="pre">MNIST_FEDPROX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MNIST</span> <span class="pre">with</span> <span class="pre">FedProx'</span></em><a class="headerlink" href="#florist.api.servers.models.Model.MNIST_FEDPROX" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.servers.models.Model.class_for_model">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_for_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/models.html#Model.class_for_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.models.Model.class_for_model" title="Link to this definition">¶</a></dt>
+<dd><p>Return the class for a given model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span>) – (Model) The model enumeration object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#type" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(type[torch.nn.Module]) A torch.nn.Module class corresponding to the given model.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if the client is not supported.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.servers.models.Model.config_parser_for_model">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">config_parser_for_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/models.html#Model.config_parser_for_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.models.Model.config_parser_for_model" title="Link to this definition">¶</a></dt>
+<dd><p>Return the config parser for a given model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span>) – (Model) The model enumeration object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.ConfigParser" title="florist.api.servers.config_parsers.ConfigParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigParser</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(type[torch.nn.Module]) A torch.nn.Module class corresponding to the given model.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if the client is not supported.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.servers.models.Model.list">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/models.html#Model.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.models.Model.list" title="Link to this definition">¶</a></dt>
+<dd><p>List all the supported models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#florist.api.servers.models.Model.list" title="florist.api.servers.models.Model.list"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(list[str]) a list of supported models.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.servers.models.Model.server_factory_for_model">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">server_factory_for_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/models.html#Model.server_factory_for_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.models.Model.server_factory_for_model" title="Link to this definition">¶</a></dt>
+<dd><p>Return the server factory instance for a given model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span>) – (Model) The model enumeration object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#florist.api.servers.models.ServerFactory" title="florist.api.servers.models.ServerFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerFactory</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(type[AbstractServerFactory]) A ServerFactory instance that can be used to construct
+the FL server for the given model.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if the client is not supported.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="florist.api.servers.models.ServerFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ServerFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">get_server_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/models.html#ServerFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.models.ServerFactory" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Factory class that will provide the server constructor.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.servers.models.ServerFactory.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">get_server_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/models.html#ServerFactory.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.models.ServerFactory.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize a ServerFactory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>server_factory</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.ServerFactory" title="florist.api.servers.models.ServerFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerFactory</span></code></a></span>) – (ServerFactory) an instance of ServerFactory, which will be used to
-make a server for the model.</p></li>
-<li><p><strong>server_config</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – (dict[str, Any]) a dictionary with the necessary server configurations for
-the model.</p></li>
-<li><p><strong>server_address</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) The address the server should start at.</p></li>
-<li><p><strong>n_clients</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – (int) The number of clients that will report to this server.</p></li>
-<li><p><strong>redis_host</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the host name for the Redis instance for metrics reporting.</p></li>
-<li><p><strong>redis_port</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – (str) the port for the Redis instance for metrics reporting.</p></li>
+<li><p><strong>get_server_function</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Callable" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code>, <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseReporter</span></code>], <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">FlServer</span></code>]</span>) – (GetServerFunction) The function that will be used to produce
+the server constructor.</p></li>
+<li><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#florist.api.servers.models.Model" title="florist.api.servers.models.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></span>) – (Model) The model to call the server function with.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="florist.api.servers.models.ServerFactory.get_server_constructor">
+<span class="sig-name descname"><span class="pre">get_server_constructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reporters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/models.html#ServerFactory.get_server_constructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.models.ServerFactory.get_server_constructor" title="Link to this definition">¶</a></dt>
+<dd><p>Make the server constructor based on the self.get_server_function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_clients</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – (int) The number of clients participating in the FL training.</p></li>
+<li><p><strong>reporters</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseReporter</span></code>]</span>) – (list[BaseReporter]) A list of reporters to be passed to the FL server.</p></li>
+<li><p><strong>server_config</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – (dict[str, Any]) A dictionary with the server configuration values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code>, <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Callable" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>[[<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">FlServer</span></code>]</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(tuple[str, multiprocessing.Process, str]) a tuple with:
-- The UUID of the server, which can be used to pull metrics from Redis.
-- The server’s local process object.
-- The local path for the log file.</p>
+<dd class="field-odd"><p>(Callable[[Any], FlServer]) A callable function that will construct an FL server.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.servers.models.fit_config_function">
+<span class="sig-name descname"><span class="pre">fit_config_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_server_round</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/models.html#fit_config_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.models.fit_config_function" title="Link to this definition">¶</a></dt>
+<dd><p>Produce the fit config dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>server_config</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – (dict[str, Any]) A dictionary with the server configuration.</p></li>
+<li><p><strong>current_server_round</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – (int) The current server round.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.servers.models.get_fedavg_server">
+<span class="sig-name descname"><span class="pre">get_fedavg_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reporters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/models.html#get_fedavg_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.models.get_fedavg_server" title="Link to this definition">¶</a></dt>
+<dd><p>Return a server with FedAvg strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></span>) – (nn.Module) The torch.nn.Module instance for the model.</p></li>
+<li><p><strong>n_clients</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – (int) the number of clients participating in the FL training.</p></li>
+<li><p><strong>reporters</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseReporter</span></code>]</span>) – (list[BaseReporter]) A list of reporters to be passed to the FL server.</p></li>
+<li><p><strong>server_config</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – (dict[str, Any]) A dictionary with the server configuration values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlServer</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(FlServer) An FlServer instance configured with FedAvg strategy.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="florist.api.servers.models.get_fedprox_server">
+<span class="sig-name descname"><span class="pre">get_fedprox_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reporters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/servers/models.html#get_fedprox_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.servers.models.get_fedprox_server" title="Link to this definition">¶</a></dt>
+<dd><p>Return a server with FedProx strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></span>) – (nn.Module) The torch.nn.Module instance for the model.</p></li>
+<li><p><strong>n_clients</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – (int) the number of clients participating in the FL training.</p></li>
+<li><p><strong>reporters</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseReporter</span></code>]</span>) – (list[BaseReporter]) A list of reporters to be passed to the FL server.</p></li>
+<li><p><strong>server_config</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – (dict[str, Any]) A dictionary with the server configuration values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlServer</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(FlServer) An FlServer instance configured with FedProx strategy.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -384,23 +551,23 @@ the model.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="florist.api.servers.models.html">
+          <a class="next-page" href="florist.api.client.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">florist.api.servers.models module</div>
+                <div class="title">florist.api.client module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="florist.api.servers.config_parsers.html">
+          <a class="prev-page" href="florist.api.servers.launch.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">florist.api.servers.config_parsers module</div>
+                <div class="title">florist.api.servers.launch module</div>
                 
               </div>
             </a>
@@ -443,8 +610,24 @@ the model.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">florist.api.servers.launch module</a><ul>
-<li><a class="reference internal" href="#florist.api.servers.launch.launch_local_server"><code class="docutils literal notranslate"><span class="pre">launch_local_server()</span></code></a></li>
+<li><a class="reference internal" href="#">florist.api.servers.models module</a><ul>
+<li><a class="reference internal" href="#florist.api.servers.models.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li><a class="reference internal" href="#florist.api.servers.models.Model.MNIST_FEDAVG"><code class="docutils literal notranslate"><span class="pre">Model.MNIST_FEDAVG</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.servers.models.Model.MNIST_FEDPROX"><code class="docutils literal notranslate"><span class="pre">Model.MNIST_FEDPROX</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.servers.models.Model.class_for_model"><code class="docutils literal notranslate"><span class="pre">Model.class_for_model()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.servers.models.Model.config_parser_for_model"><code class="docutils literal notranslate"><span class="pre">Model.config_parser_for_model()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.servers.models.Model.list"><code class="docutils literal notranslate"><span class="pre">Model.list()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.servers.models.Model.server_factory_for_model"><code class="docutils literal notranslate"><span class="pre">Model.server_factory_for_model()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#florist.api.servers.models.ServerFactory"><code class="docutils literal notranslate"><span class="pre">ServerFactory</span></code></a><ul>
+<li><a class="reference internal" href="#florist.api.servers.models.ServerFactory.__init__"><code class="docutils literal notranslate"><span class="pre">ServerFactory.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.servers.models.ServerFactory.get_server_constructor"><code class="docutils literal notranslate"><span class="pre">ServerFactory.get_server_constructor()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#florist.api.servers.models.fit_config_function"><code class="docutils literal notranslate"><span class="pre">fit_config_function()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.servers.models.get_fedavg_server"><code class="docutils literal notranslate"><span class="pre">get_fedavg_server()</span></code></a></li>
+<li><a class="reference internal" href="#florist.api.servers.models.get_fedprox_server"><code class="docutils literal notranslate"><span class="pre">get_fedprox_server()</span></code></a></li>
 </ul>
 </li>
 </ul>

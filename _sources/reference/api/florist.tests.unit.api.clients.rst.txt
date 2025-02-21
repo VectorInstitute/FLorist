@@ -1,0 +1,13 @@
+florist.tests.unit.api.clients namespace
+========================================
+
+.. py:module:: florist.tests.unit.api.clients
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.tests.unit.api.clients.test_common
+   florist.tests.unit.api.clients.test_minst

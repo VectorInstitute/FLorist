@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.servers.common module" href="florist.api.servers.common.html" /><link rel="prev" title="florist.api.routes.server.training module" href="florist.api.routes.server.training.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="florist.api.servers.config_parsers module" href="florist.api.servers.config_parsers.html" /><link rel="prev" title="florist.api.routes.server.training module" href="florist.api.routes.server.training.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.api.servers package - FLorist</title>
@@ -243,10 +243,9 @@
 </ul>
 </li>
 <li class="toctree-l4 current has-children current-page"><a class="current reference internal" href="#">florist.api.servers package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of florist.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="florist.api.servers.common.html">florist.api.servers.common module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.servers.config_parsers.html">florist.api.servers.config_parsers module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="florist.api.servers.launch.html">florist.api.servers.launch module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="florist.api.servers.utils.html">florist.api.servers.utils module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="florist.api.servers.models.html">florist.api.servers.models module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="florist.api.client.html">florist.api.client module</a></li>
@@ -261,12 +260,8 @@
 <li class="toctree-l7"><a class="reference internal" href="florist.tests.integration.api.db.test_server_entities.html">florist.tests.integration.api.db.test_server_entities module</a></li>
 </ul>
 </li>
-<li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.integration.api.launchers.html">florist.tests.integration.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7"><a class="reference internal" href="florist.tests.integration.api.launchers.test_launch.html">florist.tests.integration.api.launchers.test_launch module</a></li>
-</ul>
-</li>
-<li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.integration.api.routes.html">florist.tests.integration.api.routes package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.routes package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7 has-children"><a class="reference internal" href="florist.tests.integration.api.routes.server.html">florist.tests.integration.api.routes.server package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.routes.server package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.integration.api.routes.html">florist.tests.integration.api.routes package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.routes package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7 has-children"><a class="reference internal" href="florist.tests.integration.api.routes.server.html">florist.tests.integration.api.routes.server package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of florist.tests.integration.api.routes.server package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l8"><a class="reference internal" href="florist.tests.integration.api.routes.server.test_job.html">florist.tests.integration.api.routes.server.test_job module</a></li>
 </ul>
 </li>
@@ -279,8 +274,13 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="florist.tests.unit.html">florist.tests.unit package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of florist.tests.unit package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="florist.tests.unit.api.html">florist.tests.unit.api package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="florist.tests.unit.html">florist.tests.unit package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of florist.tests.unit package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="florist.tests.unit.api.html">florist.tests.unit.api package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.unit.api.clients.html">florist.tests.unit.api.clients namespace</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.clients namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="florist.tests.unit.api.clients.test_common.html">florist.tests.unit.api.clients.test_common module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="florist.tests.unit.api.clients.test_minst.html">florist.tests.unit.api.clients.test_minst module</a></li>
+</ul>
+</li>
 <li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.unit.api.monitoring.html">florist.tests.unit.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="florist.tests.unit.api.monitoring.test_metrics.html">florist.tests.unit.api.monitoring.test_metrics module</a></li>
 </ul>
@@ -297,6 +297,7 @@
 <li class="toctree-l6 has-children"><a class="reference internal" href="florist.tests.unit.api.servers.html">florist.tests.unit.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="florist.tests.unit.api.servers.test_config_parsers.html">florist.tests.unit.api.servers.test_config_parsers module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="florist.tests.unit.api.servers.test_launch.html">florist.tests.unit.api.servers.test_launch module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="florist.tests.unit.api.servers.test_models.html">florist.tests.unit.api.servers.test_models module</a></li>
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="florist.tests.unit.api.test_client.html">florist.tests.unit.api.test_client module</a></li>
@@ -351,15 +352,6 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="florist.api.servers.common.html">florist.api.servers.common module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.servers.common.html#florist.api.servers.common.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.common.html#florist.api.servers.common.Model.MNIST"><code class="docutils literal notranslate"><span class="pre">Model.MNIST</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.common.html#florist.api.servers.common.Model.class_for_model"><code class="docutils literal notranslate"><span class="pre">Model.class_for_model()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.common.html#florist.api.servers.common.Model.list"><code class="docutils literal notranslate"><span class="pre">Model.list()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="florist.api.servers.config_parsers.html">florist.api.servers.config_parsers module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.BasicConfigParser"><code class="docutils literal notranslate"><span class="pre">BasicConfigParser</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.BasicConfigParser.mandatory_fields"><code class="docutils literal notranslate"><span class="pre">BasicConfigParser.mandatory_fields()</span></code></a></li>
@@ -368,8 +360,13 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.ConfigParser"><code class="docutils literal notranslate"><span class="pre">ConfigParser</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.ConfigParser.BASIC"><code class="docutils literal notranslate"><span class="pre">ConfigParser.BASIC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.ConfigParser.FEDPROX"><code class="docutils literal notranslate"><span class="pre">ConfigParser.FEDPROX</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.ConfigParser.class_for_parser"><code class="docutils literal notranslate"><span class="pre">ConfigParser.class_for_parser()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.ConfigParser.list"><code class="docutils literal notranslate"><span class="pre">ConfigParser.list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.FedProxConfigParser"><code class="docutils literal notranslate"><span class="pre">FedProxConfigParser</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.FedProxConfigParser.mandatory_fields"><code class="docutils literal notranslate"><span class="pre">FedProxConfigParser.mandatory_fields()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.IncompleteConfigError"><code class="docutils literal notranslate"><span class="pre">IncompleteConfigError</span></code></a></li>
@@ -379,9 +376,24 @@
 <li class="toctree-l2"><a class="reference internal" href="florist.api.servers.launch.html#florist.api.servers.launch.launch_local_server"><code class="docutils literal notranslate"><span class="pre">launch_local_server()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="florist.api.servers.utils.html">florist.api.servers.utils module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.servers.utils.html#florist.api.servers.utils.fit_config"><code class="docutils literal notranslate"><span class="pre">fit_config()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="florist.api.servers.utils.html#florist.api.servers.utils.get_server"><code class="docutils literal notranslate"><span class="pre">get_server()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="florist.api.servers.models.html">florist.api.servers.models module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.Model.MNIST_FEDAVG"><code class="docutils literal notranslate"><span class="pre">Model.MNIST_FEDAVG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.Model.MNIST_FEDPROX"><code class="docutils literal notranslate"><span class="pre">Model.MNIST_FEDPROX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.Model.class_for_model"><code class="docutils literal notranslate"><span class="pre">Model.class_for_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.Model.config_parser_for_model"><code class="docutils literal notranslate"><span class="pre">Model.config_parser_for_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.Model.list"><code class="docutils literal notranslate"><span class="pre">Model.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.Model.server_factory_for_model"><code class="docutils literal notranslate"><span class="pre">Model.server_factory_for_model()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.ServerFactory"><code class="docutils literal notranslate"><span class="pre">ServerFactory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.ServerFactory.__init__"><code class="docutils literal notranslate"><span class="pre">ServerFactory.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.ServerFactory.get_server_constructor"><code class="docutils literal notranslate"><span class="pre">ServerFactory.get_server_constructor()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.fit_config_function"><code class="docutils literal notranslate"><span class="pre">fit_config_function()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.get_fedavg_server"><code class="docutils literal notranslate"><span class="pre">get_fedavg_server()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="florist.api.servers.models.html#florist.api.servers.models.get_fedprox_server"><code class="docutils literal notranslate"><span class="pre">get_fedprox_server()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -394,12 +406,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="florist.api.servers.common.html">
+          <a class="next-page" href="florist.api.servers.config_parsers.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">florist.api.servers.common module</div>
+                <div class="title">florist.api.servers.config_parsers module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

@@ -12,7 +12,6 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   florist.api.servers.common
    florist.api.servers.config_parsers
    florist.api.servers.launch
-   florist.api.servers.utils
+   florist.api.servers.models

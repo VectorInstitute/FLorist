@@ -14,3 +14,4 @@ Submodules
 
    florist.tests.unit.api.servers.test_config_parsers
    florist.tests.unit.api.servers.test_launch
+   florist.tests.unit.api.servers.test_models

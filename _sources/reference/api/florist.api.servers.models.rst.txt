@@ -1,7 +1,7 @@
-florist.api.servers.common module
+florist.api.servers.models module
 =================================
 
-.. automodule:: florist.api.servers.common
+.. automodule:: florist.api.servers.models
    :members:
    :undoc-members:
    :show-inheritance:

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex.html" /><link rel="search" title="Search" href="../../../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>florist.tests.integration.api.db.test_client_entities - FLorist</title>
+        <title>florist.tests.unit.api.clients.test_minst - FLorist</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
@@ -343,120 +343,136 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.tests.integration.api.db.test_client_entities</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">pytest</span>
+          <h1>Source code for florist.tests.unit.api.clients.test_minst</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">ANY</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.db.client_entities</span> <span class="kn">import</span> <span class="n">ClientDAO</span>
-
-<span class="kn">from</span> <span class="nn">florist.tests.integration.api.utils</span> <span class="kn">import</span> <span class="n">mock_request</span>
+<span class="kn">from</span> <span class="nn">florist.api.models.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
+<span class="kn">from</span> <span class="nn">florist.api.clients.mnist</span> <span class="kn">import</span> <span class="n">MnistClient</span><span class="p">,</span> <span class="n">MnistFedProxClient</span>
 
 
-<div class="viewcode-block" id="test_get_connection">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_get_connection">[docs]</a>
-<span class="k">def</span> <span class="nf">test_get_connection</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">db_connection</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
-    <span class="k">assert</span> <span class="n">db_connection</span></div>
+<div class="viewcode-block" id="test_mnist_get_data_loaders">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_minst.html#florist.tests.unit.api.clients.test_minst.test_mnist_get_data_loaders">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.clients.mnist.load_mnist_data&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_mnist_get_data_loaders</span><span class="p">(</span><span class="n">mock_load_mnist_data</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+    <span class="n">test_data_path</span> <span class="o">=</span> <span class="s2">&quot;test-data-path&quot;</span>
+    <span class="n">test_device</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
+    <span class="n">test_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">}</span>
+    <span class="n">test_train_loader</span> <span class="o">=</span> <span class="s2">&quot;test-train-loader&quot;</span>
+    <span class="n">test_val_loader</span> <span class="o">=</span> <span class="s2">&quot;test-val-loader&quot;</span>
+    <span class="n">test_client</span> <span class="o">=</span> <span class="n">MnistClient</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="n">test_data_path</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[],</span> <span class="n">device</span><span class="o">=</span><span class="n">test_device</span><span class="p">)</span>
+    <span class="n">mock_load_mnist_data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">test_train_loader</span><span class="p">,</span> <span class="n">test_val_loader</span><span class="p">,</span> <span class="p">{})</span>
 
+    <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get_data_loaders</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">test_config</span><span class="p">)</span>
 
-<div class="viewcode-block" id="test_eq">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_eq">[docs]</a>
-<span class="k">def</span> <span class="nf">test_eq</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">client_1</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid-1&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-1&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">client_2</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid-2&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-2&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">5678</span><span class="p">)</span>
-    <span class="n">client_3</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid-1&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path-1&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">not_a_client</span> <span class="o">=</span> <span class="s2">&quot;I&#39;m not a client!&quot;</span>
-
-    <span class="k">assert</span> <span class="n">client_1</span> <span class="o">!=</span> <span class="n">client_2</span>
-    <span class="k">assert</span> <span class="n">client_1</span> <span class="o">==</span> <span class="n">client_3</span>
-    <span class="k">assert</span> <span class="n">client_1</span> <span class="o">!=</span> <span class="n">not_a_client</span></div>
+    <span class="k">assert</span> <span class="n">train_loader</span> <span class="o">==</span> <span class="n">test_train_loader</span>
+    <span class="k">assert</span> <span class="n">val_loader</span> <span class="o">==</span> <span class="n">test_val_loader</span>
+    <span class="n">mock_load_mnist_data</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">test_data_path</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">test_config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">])</span></div>
 
 
 
-<div class="viewcode-block" id="test_save_and_find">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_save_and_find">[docs]</a>
-<span class="k">def</span> <span class="nf">test_save_and_find</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test-uuid&quot;</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">test_uuid</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<div class="viewcode-block" id="test_mnist_get_model">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_minst.html#florist.tests.unit.api.clients.test_minst.test_mnist_get_model">[docs]</a>
+<span class="k">def</span> <span class="nf">test_mnist_get_model</span><span class="p">():</span>
+    <span class="n">test_client</span> <span class="o">=</span> <span class="n">MnistClient</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test-data-path&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[],</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
 
-    <span class="k">assert</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">)</span> <span class="o">==</span> <span class="n">client</span></div>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{})</span>
 
-
-<div class="viewcode-block" id="test_saving_a_second_time_should_update">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_saving_a_second_time_should_update">[docs]</a>
-<span class="k">def</span> <span class="nf">test_saving_a_second_time_should_update</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test-uuid&quot;</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">test_uuid</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-
-    <span class="k">assert</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">)</span> <span class="o">==</span> <span class="n">client</span>
-
-    <span class="n">client</span><span class="o">.</span><span class="n">log_file_path</span> <span class="o">=</span> <span class="s2">&quot;test-log-file-path-2&quot;</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="s2">&quot;test-pid-2&quot;</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-
-    <span class="k">assert</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">)</span> <span class="o">==</span> <span class="n">client</span></div>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">MnistNet</span><span class="p">)</span></div>
 
 
 
-<div class="viewcode-block" id="test_find_not_found">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_find_not_found">[docs]</a>
-<span class="k">def</span> <span class="nf">test_find_not_found</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<div class="viewcode-block" id="test_mnist_get_optimizer">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_minst.html#florist.tests.unit.api.clients.test_minst.test_mnist_get_optimizer">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.clients.mnist.torch&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_mnist_get_optimizer</span><span class="p">(</span><span class="n">mock_torch</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+    <span class="n">test_optimizer</span> <span class="o">=</span> <span class="s2">&quot;test-optimizer&quot;</span>
+    <span class="n">mock_torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">test_optimizer</span>
+    <span class="n">test_client</span> <span class="o">=</span> <span class="n">MnistClient</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test-data-path&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[],</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+    <span class="n">test_client</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
 
-    <span class="n">test_bad_uuid</span> <span class="o">=</span> <span class="s2">&quot;wrong-uuid&quot;</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-        <span class="n">ClientDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">test_bad_uuid</span><span class="p">)</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get_optimizer</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{})</span>
 
-    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;Client with uuid &#39;</span><span class="si">{</span><span class="n">test_bad_uuid</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span></div>
-
-
-<div class="viewcode-block" id="test_exists">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_exists">[docs]</a>
-<span class="k">def</span> <span class="nf">test_exists</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test-uuid&quot;</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">test_uuid</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-
-    <span class="k">assert</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_uuid</span><span class="p">)</span></div>
+    <span class="k">assert</span> <span class="n">optimizer</span> <span class="o">==</span> <span class="n">test_optimizer</span>
+    <span class="n">mock_torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">ANY</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+    <span class="n">test_client</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div>
 
 
 
-<div class="viewcode-block" id="test_exists_not_found">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_exists_not_found">[docs]</a>
-<span class="k">def</span> <span class="nf">test_exists_not_found</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<div class="viewcode-block" id="test_mnist_get_criterion">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_minst.html#florist.tests.unit.api.clients.test_minst.test_mnist_get_criterion">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.clients.mnist.torch&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_mnist_get_criterion</span><span class="p">(</span><span class="n">mock_torch</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+    <span class="n">test_criterion</span> <span class="o">=</span> <span class="s2">&quot;test-criterion&quot;</span>
+    <span class="n">mock_torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">test_criterion</span>
+    <span class="n">test_client</span> <span class="o">=</span> <span class="n">MnistClient</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test-data-path&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[],</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
 
-    <span class="k">assert</span> <span class="ow">not</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;wrong-uuid&quot;</span><span class="p">)</span></div>
+    <span class="n">criterion</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get_criterion</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{})</span>
 
-
-
-<div class="viewcode-block" id="test_from_json">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_from_json">[docs]</a>
-<span class="k">def</span> <span class="nf">test_from_json</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;test-uuid&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;log_file_path&quot;</span><span class="p">:</span> <span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pid&quot;</span><span class="p">:</span> <span class="s2">&quot;test-pid&quot;</span><span class="p">,</span>
-    <span class="p">}</span>
-
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">test_data</span><span class="p">))</span>
-
-    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">uuid</span> <span class="o">==</span> <span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">log_file_path</span> <span class="o">==</span> <span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;log_file_path&quot;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">pid</span> <span class="o">==</span> <span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">]</span></div>
+    <span class="k">assert</span> <span class="n">criterion</span> <span class="o">==</span> <span class="n">test_criterion</span></div>
 
 
 
-<div class="viewcode-block" id="test_to_json">
-<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.db.test_client_entities.html#florist.tests.integration.api.db.test_client_entities.test_to_json">[docs]</a>
-<span class="k">def</span> <span class="nf">test_to_json</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">ClientDAO</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-uuid&quot;</span><span class="p">,</span> <span class="n">log_file_path</span><span class="o">=</span><span class="s2">&quot;test-log-file-path&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+<div class="viewcode-block" id="test_mnist_fedprox_get_data_loaders">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_minst.html#florist.tests.unit.api.clients.test_minst.test_mnist_fedprox_get_data_loaders">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.clients.mnist.load_mnist_data&quot;</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.clients.mnist.DirichletLabelBasedSampler&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_mnist_fedprox_get_data_loaders</span><span class="p">(</span><span class="n">mock_sampler</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_load_mnist_data</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+    <span class="n">test_data_path</span> <span class="o">=</span> <span class="s2">&quot;test-data-path&quot;</span>
+    <span class="n">test_device</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
+    <span class="n">test_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">}</span>
+    <span class="n">test_train_loader</span> <span class="o">=</span> <span class="s2">&quot;test-train-loader&quot;</span>
+    <span class="n">test_val_loader</span> <span class="o">=</span> <span class="s2">&quot;test-val-loader&quot;</span>
+    <span class="n">test_client</span> <span class="o">=</span> <span class="n">MnistFedProxClient</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="n">test_data_path</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[],</span> <span class="n">device</span><span class="o">=</span><span class="n">test_device</span><span class="p">)</span>
+    <span class="n">mock_load_mnist_data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">test_train_loader</span><span class="p">,</span> <span class="n">test_val_loader</span><span class="p">,</span> <span class="p">{})</span>
 
-    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="o">==</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="s1">&quot;uuid&quot;: &quot;</span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s1">&quot;, &quot;log_file_path&quot;: &quot;</span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">log_file_path</span><span class="si">}</span><span class="s1">&quot;, &quot;pid&quot;: </span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="se">}}</span><span class="s1">&#39;</span></div>
+    <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get_data_loaders</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">test_config</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">train_loader</span> <span class="o">==</span> <span class="n">test_train_loader</span>
+    <span class="k">assert</span> <span class="n">val_loader</span> <span class="o">==</span> <span class="n">test_val_loader</span>
+    <span class="n">mock_load_mnist_data</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">test_data_path</span><span class="p">,</span> <span class="n">test_config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">],</span> <span class="n">ANY</span><span class="p">)</span>
+    <span class="n">mock_sampler</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)),</span> <span class="n">sample_percentage</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_mnist_fedprox_get_model">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_minst.html#florist.tests.unit.api.clients.test_minst.test_mnist_fedprox_get_model">[docs]</a>
+<span class="k">def</span> <span class="nf">test_mnist_fedprox_get_model</span><span class="p">():</span>
+    <span class="n">test_client</span> <span class="o">=</span> <span class="n">MnistFedProxClient</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test-data-path&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[],</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{})</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">MnistNet</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_mnist_fedprox_get_optimizer">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_minst.html#florist.tests.unit.api.clients.test_minst.test_mnist_fedprox_get_optimizer">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.clients.mnist.torch&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_mnist_fedprox_get_optimizer</span><span class="p">(</span><span class="n">mock_torch</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+    <span class="n">test_optimizer</span> <span class="o">=</span> <span class="s2">&quot;test-optimizer&quot;</span>
+    <span class="n">mock_torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">test_optimizer</span>
+    <span class="n">test_client</span> <span class="o">=</span> <span class="n">MnistFedProxClient</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test-data-path&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[],</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+    <span class="n">test_client</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get_optimizer</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{})</span>
+
+    <span class="k">assert</span> <span class="n">optimizer</span> <span class="o">==</span> <span class="n">test_optimizer</span>
+    <span class="n">mock_torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">ANY</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+    <span class="n">test_client</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_mnist_fedprox_get_criterion">
+<a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_minst.html#florist.tests.unit.api.clients.test_minst.test_mnist_fedprox_get_criterion">[docs]</a>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.clients.mnist.torch&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_mnist_fedprox_get_criterion</span><span class="p">(</span><span class="n">mock_torch</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+    <span class="n">test_criterion</span> <span class="o">=</span> <span class="s2">&quot;test-criterion&quot;</span>
+    <span class="n">mock_torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">test_criterion</span>
+    <span class="n">test_client</span> <span class="o">=</span> <span class="n">MnistFedProxClient</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test-data-path&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[],</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+    <span class="n">criterion</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get_criterion</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{})</span>
+
+    <span class="k">assert</span> <span class="n">criterion</span> <span class="o">==</span> <span class="n">test_criterion</span></div>
 
 </pre></div>
         </article>
