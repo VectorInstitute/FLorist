@@ -7,14 +7,14 @@ import redis
 import uvicorn
 
 from florist.api.clients.optimizers import Optimizer
-from florist.api.clients.enum import Client
+from florist.api.clients.clients import Client
 from florist.api.db.server_entities import Job, JobStatus, ClientInfo
 from florist.api.monitoring.metrics import wait_for_metric
 from florist.api.routes.server.training import LOGGER
 from florist.api.routes.server.job import new_job, list_jobs_with_status
 from florist.api.server import DATABASE_NAME
 from florist.api.servers.strategies import Strategy
-from florist.api.models.enum import Model
+from florist.api.models.models import Model
 from florist.tests.integration.api.utils import TestUvicornServer, MockRequest, MockApp
 
 

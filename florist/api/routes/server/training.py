@@ -11,12 +11,12 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from florist.api.clients.enum import Client
+from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
 from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.launchers.local import launch_local_server
-from florist.api.models.enum import Model
+from florist.api.models.models import Model
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
 from florist.api.servers.config_parsers import ConfigParser
 from florist.api.servers.strategies import Strategy
@@ -73,8 +73,8 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         server_factory = Strategy.server_factory_for_strategy(job.strategy)
 
         try:
-            config_parser = ConfigParser.class_for_parser(config_parser)
-            server_config = config_parser.parse(job.server_config)
+            config_parser_class = ConfigParser.class_for_parser(config_parser)
+            server_config = config_parser_class.parse(job.server_config)
         except JSONDecodeError as err:
             raise AssertionError("server_config is not a valid json string.") from err
 

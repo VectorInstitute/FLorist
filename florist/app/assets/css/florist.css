@@ -135,7 +135,7 @@
 }
 
 .job-client-progress .card .card-body {
-    padding: 0;
+    padding: 0 1.5rem 0 0;
 }
 
 .job-client-progress .card .card-header {

@@ -10,11 +10,11 @@ import torch
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from florist.api.clients.enum import Client
+from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
 from florist.api.db.client_entities import ClientDAO
 from florist.api.launchers.local import launch_client
-from florist.api.models.enum import Model
+from florist.api.models.models import Model
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter, get_from_redis, get_host_and_port_from_address
 

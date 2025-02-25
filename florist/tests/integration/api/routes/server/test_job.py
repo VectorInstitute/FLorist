@@ -5,13 +5,13 @@ from unittest.mock import ANY
 import uvicorn
 from fastapi.encoders import jsonable_encoder
 
-from florist.api.clients.enum import Client
+from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
 from florist.api.db.client_entities import ClientDAO
 from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.monitoring.logs import get_server_log_file_path, get_client_log_file_path
 from florist.api.routes.server.job import list_jobs_with_status, new_job, get_server_log, get_client_log
-from florist.api.models.enum import Model
+from florist.api.models.models import Model
 from florist.api.servers.strategies import Strategy
 from florist.tests.integration.api.utils import mock_request, TestUvicornServer
 

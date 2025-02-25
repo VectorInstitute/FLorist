@@ -7,14 +7,13 @@ from unittest.mock import ANY, Mock, patch
 import pytest
 
 from florist.api import client
-from florist.api.clients.enum import Client
-from florist.api.clients.clients import LocalModelClient
+from florist.api.clients.clients import Client
+from florist.api.clients.clients import LocalDataClient
 from florist.api.clients.optimizers import Optimizer
 from florist.api.db.client_entities import ClientDAO
-from florist.api.models.enum import Model
+from florist.api.models.models import Model
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
-from florist.tests.integration.api.test_server import test_list_optimizers
 
 
 @pytest.fixture(autouse=True)
@@ -75,7 +74,7 @@ def test_start_success(mock_launch_client: Mock) -> None:
     mock_launch_client.assert_called_once_with(ANY, test_server_address, log_file_path)
 
     client_obj = mock_launch_client.call_args_list[0][0][0]
-    assert isinstance(client_obj, LocalModelClient)
+    assert isinstance(client_obj, LocalDataClient)
     assert str(client_obj.data_path) == test_data_path
 
     metrics_reporter = client_obj.reports_manager.reporters[0]

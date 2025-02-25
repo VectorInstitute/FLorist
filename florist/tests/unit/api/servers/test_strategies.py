@@ -1,5 +1,3 @@
-from unittest.mock import ANY
-
 from fl4health.client_managers.base_sampling_manager import SimpleClientManager
 from fl4health.server.adaptive_constraint_servers.fedprox_server import FedProxServer
 from fl4health.server.base_server import FlServer
@@ -8,7 +6,6 @@ from fl4health.utils.metric_aggregation import evaluate_metrics_aggregation_fn, 
 from flwr.server.strategy import FedAvg
 from flwr.common.typing import Parameters
 
-from florist.api.models.enum import Model
 from florist.api.models.mnist import MnistNet
 from florist.api.monitoring.metrics import RedisMetricsReporter
 from florist.api.servers.config_parsers import ConfigParser

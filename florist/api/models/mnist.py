@@ -13,10 +13,10 @@ from torch.nn.modules.loss import _Loss
 from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 
-from florist.api.models.abstract import LocalModel
+from florist.api.models.abstract import LocalDataModel
 
 
-class MnistNet(LocalModel):
+class MnistNet(LocalDataModel):
     """Implementation of the Mnist model."""
 
     def __init__(self) -> None:
@@ -50,7 +50,9 @@ class MnistNet(LocalModel):
         """
         Return the data loader for MNIST data.
 
-        :param config: (Config) the Config object for this client.
+        :param data_path: (Path) the local path of the data.
+        :param batch_size: (int) the batch size for training.
+        :param sampler: (Optional[LabelBasedSampler]) the sampler to be used to sample data.
         :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader
             and validation data loader respectively.
         """
@@ -65,7 +67,7 @@ class MnistNet(LocalModel):
 
     def get_criterion(self) -> _Loss:
         """
-        Return the loss for MNIST data.
+        Return the loss for MNIST model.
 
         :return: (torch.nn.modules.loss._Loss) an instance of torch.nn.CrossEntropyLoss.
         """

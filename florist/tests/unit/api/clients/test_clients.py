@@ -1,8 +1,23 @@
 from unittest.mock import Mock, patch, ANY
 
-from florist.api.clients.optimizers import Optimizer
 from florist.api.models.mnist import MnistNet
-from florist.api.clients.clients import LocalModelClient, FedProxLocalModelClient
+from florist.api.clients.clients import Client, LocalDataClient, FedProxLocalDataClient
+from florist.api.clients.optimizers import Optimizer
+from florist.api.servers.strategies import Strategy
+
+
+def test_class_for_client():
+    assert Client.class_for_client(Client.FEDAVG) == LocalDataClient
+    assert Client.class_for_client(Client.FEDPROX) == FedProxLocalDataClient
+
+
+def test_list():
+    assert Client.list() == [Client.FEDAVG.value, Client.FEDPROX.value]
+
+
+def test_list_by_strategy():
+    assert Client.list_by_strategy(Strategy.FEDAVG) == [Client.FEDAVG.value]
+    assert Client.list_by_strategy(Strategy.FEDPROX) == [Client.FEDPROX.value]
 
 
 @patch("florist.api.models.mnist.load_mnist_data")
@@ -12,7 +27,7 @@ def test_local_model_get_data_loaders(mock_load_mnist_data: Mock):
     test_config = {"batch_size": 200}
     test_train_loader = "test-train-loader"
     test_val_loader = "test-val-loader"
-    test_client = LocalModelClient(data_path=test_data_path, metrics=[], device=test_device)
+    test_client = LocalDataClient(data_path=test_data_path, metrics=[], device=test_device)
     test_client.set_model(MnistNet())
 
     mock_load_mnist_data.return_value = (test_train_loader, test_val_loader, {})
@@ -28,7 +43,7 @@ def test_local_model_get_data_loaders(mock_load_mnist_data: Mock):
 def test_local_model_get_optimizer(mock_torch: Mock):
     test_optimizer = "test-optimizer"
     mock_torch.optim.SGD.return_value = test_optimizer
-    test_client = LocalModelClient(data_path="test-data-path", metrics=[], device="cpu")
+    test_client = LocalDataClient(data_path="test-data-path", metrics=[], device="cpu")
     test_client.set_optimizer_type(Optimizer.SGD)
 
     test_parameters = "test-parameters"
@@ -47,7 +62,7 @@ def test_local_model_get_optimizer(mock_torch: Mock):
 def test_local_model_get_criterion(mock_torch: Mock):
     test_criterion = "test-criterion"
     mock_torch.nn.CrossEntropyLoss.return_value = test_criterion
-    test_client = LocalModelClient(data_path="test-data-path", metrics=[], device="cpu")
+    test_client = LocalDataClient(data_path="test-data-path", metrics=[], device="cpu")
     test_client.set_model(MnistNet())
 
     criterion = test_client.get_criterion(config={})
@@ -63,7 +78,7 @@ def test_fedprox_local_model_get_data_loaders(mock_sampler: Mock, mock_load_mnis
     test_config = {"batch_size": 200}
     test_train_loader = "test-train-loader"
     test_val_loader = "test-val-loader"
-    test_client = FedProxLocalModelClient(data_path=test_data_path, metrics=[], device=test_device)
+    test_client = FedProxLocalDataClient(data_path=test_data_path, metrics=[], device=test_device)
     test_client.set_model(MnistNet())
 
     mock_load_mnist_data.return_value = (test_train_loader, test_val_loader, {})

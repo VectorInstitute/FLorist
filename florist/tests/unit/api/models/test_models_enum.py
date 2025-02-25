@@ -1,4 +1,4 @@
-from florist.api.models.enum import Model
+from florist.api.models.models import Model
 from florist.api.models.mnist import MnistNet
 
 

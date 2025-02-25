@@ -1,3 +1,5 @@
+"""Definitions for the strategies, strategy enumeration and server constructors."""
+
 from enum import Enum
 from functools import partial
 from typing import Any, Callable, TypeAlias, Union
@@ -21,6 +23,8 @@ FitConfigFn: TypeAlias = Callable[[int], dict[str, Union[bool, bytes, float, int
 
 
 class Strategy(Enum):
+    """The strategies that can be picked for training."""
+
     FEDAVG = "FedAvg"
     FEDPROX = "FedProx"
 

@@ -155,6 +155,12 @@ class RedisMetricsReporter(BaseReporter):  # type: ignore
 
 
 def get_host_and_port_from_address(address: str) -> tuple[str, str]:
+    """
+    Split an address into host and port. The address must be in the format `<host>:<port>`.
+
+    :param address: (str) the address in the format `<host>:<port>`.
+    :return: (tuple[str, str]) the host and the port from the address.
+    """
     if address.count(":") != 1:
         raise ValueError(f"Address '{address}' is not valid: must be in the format '<host>:<port>'.")
 

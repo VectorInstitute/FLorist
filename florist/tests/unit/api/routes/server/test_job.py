@@ -6,7 +6,6 @@ from unittest.mock import patch, Mock, AsyncMock, call
 from fastapi.responses import JSONResponse
 from freezegun import freeze_time
 
-from florist.api.clients.enum import Client
 from florist.api.routes.server.job import change_job_status, get_job, stop_job
 from florist.api.db.server_entities import JobStatus, ClientInfo
 
