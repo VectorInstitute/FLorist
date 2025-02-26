@@ -144,7 +144,9 @@ describe("New Job Page", () => {
 
             const { container } = render(<EditJob />);
 
-            fireEvent.change(container.querySelector("select#job-strategy"), { target: { value: testStrategiesData[1] } });
+            fireEvent.change(container.querySelector("select#job-strategy"), {
+                target: { value: testStrategiesData[1] },
+            });
 
             expect(useGetClients).toBeCalledWith({ strategy: testStrategiesData[1] });
         });
