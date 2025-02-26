@@ -7,7 +7,13 @@ from unittest.mock import Mock, call, patch
 from florist.api.monitoring.metrics import DateTimeEncoder
 from freezegun import freeze_time
 
-from florist.api.monitoring.metrics import RedisMetricsReporter, wait_for_metric, get_subscriber, get_from_redis
+from florist.api.monitoring.metrics import (
+    get_from_redis,
+    get_host_and_port_from_address,
+    get_subscriber,
+    RedisMetricsReporter,
+    wait_for_metric,
+)
 
 
 @freeze_time("2012-12-11 10:09:08")
@@ -240,3 +246,23 @@ def test_get_from_redis_empty(mock_redis: Mock) -> None:
     assert result is None
     mock_redis.Redis.assert_called_once_with(host=test_redis_host, port=test_redis_port)
     mock_redis_connection.get.assert_called_once_with(test_name)
+
+
+def test_get_host_and_port_from_address_success():
+    test_host = "test-host"
+    test_port = "test-port"
+    test_address = f"{test_host}:{test_port}"
+
+    host, port = get_host_and_port_from_address(test_address)
+
+    assert host == test_host
+    assert port == test_port
+
+
+def test_get_host_and_port_from_address_failure():
+    test_host = "test-host"
+    test_port = "test-port"
+    test_address = f"{test_host}_{test_port}"
+
+    with raises(ValueError, match=f"Address '{test_address}' is not valid: must be in the format '<host>:<port>'."):
+        get_host_and_port_from_address(test_address)

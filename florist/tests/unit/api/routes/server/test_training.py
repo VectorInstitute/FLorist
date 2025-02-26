@@ -180,7 +180,9 @@ async def test_start_fail_unsupported_client() -> None:
 
 
 async def test_start_fail_missing_info() -> None:
-    fields_to_be_removed = ["model", "server_config", "clients_info", "server_address", "redis_address"]
+    fields_to_be_removed = [
+        "model", "strategy", "optimizer", "client", "server_config", "clients_info", "server_address", "redis_address",
+    ]
 
     for field_to_be_removed in fields_to_be_removed:
         with patch("florist.api.db.server_entities.Job.set_status") as mock_set_status:
@@ -224,6 +226,31 @@ async def test_start_fail_invalid_server_config(mock_set_error_message: Mock, mo
     json_body = json.loads(response.body.decode())
     assert json_body == {"error": ANY}
     error_message = f"server_config is not a valid json string."
+    assert error_message in json_body["error"]
+
+    mock_set_status.assert_has_calls([
+        call(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database),
+        call(JobStatus.FINISHED_WITH_ERROR, mock_fastapi_request.app.database),
+    ])
+    mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
+
+
+@patch("florist.api.db.server_entities.Job.set_status")
+@patch("florist.api.db.server_entities.Job.set_error_message")
+async def test_start_fail_invalid_client_for_strategy(mock_set_error_message: Mock, mock_set_status: Mock) -> None:
+    # Arrange
+    test_job_id = "test-job-id"
+    _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
+    test_job["client"] = Client.FEDPROX.value
+
+    # Act
+    response = await start(test_job_id, mock_fastapi_request)
+
+    # Assert
+    assert response.status_code == 400
+    json_body = json.loads(response.body.decode())
+    assert json_body == {"error": ANY}
+    error_message = f"Client {Client.FEDPROX} not valid for strategy {Strategy.FEDAVG}."
     assert error_message in json_body["error"]
 
     mock_set_status.assert_has_calls([

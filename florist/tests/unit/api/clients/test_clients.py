@@ -21,7 +21,7 @@ def test_list_by_strategy():
 
 
 @patch("florist.api.models.mnist.load_mnist_data")
-def test_local_model_get_data_loaders(mock_load_mnist_data: Mock):
+def test_local_data_model_get_data_loaders(mock_load_mnist_data: Mock):
     test_data_path = "test-data-path"
     test_device = "cpu"
     test_config = {"batch_size": 200}
@@ -40,7 +40,7 @@ def test_local_model_get_data_loaders(mock_load_mnist_data: Mock):
 
 
 @patch("florist.api.clients.optimizers.torch")
-def test_local_model_get_optimizer(mock_torch: Mock):
+def test_local_data_model_get_optimizer_type(mock_torch: Mock):
     test_optimizer = "test-optimizer"
     mock_torch.optim.SGD.return_value = test_optimizer
     test_client = LocalDataClient(data_path="test-data-path", metrics=[], device="cpu")
@@ -59,7 +59,7 @@ def test_local_model_get_optimizer(mock_torch: Mock):
 
 
 @patch("florist.api.models.mnist.torch")
-def test_local_model_get_criterion(mock_torch: Mock):
+def test_local_data_model_get_criterion(mock_torch: Mock):
     test_criterion = "test-criterion"
     mock_torch.nn.CrossEntropyLoss.return_value = test_criterion
     test_client = LocalDataClient(data_path="test-data-path", metrics=[], device="cpu")
@@ -72,7 +72,7 @@ def test_local_model_get_criterion(mock_torch: Mock):
 
 @patch("florist.api.models.mnist.load_mnist_data")
 @patch("florist.api.clients.clients.DirichletLabelBasedSampler")
-def test_fedprox_local_model_get_data_loaders(mock_sampler: Mock, mock_load_mnist_data: Mock):
+def test_fedprox_local_data_model_get_data_loaders(mock_sampler: Mock, mock_load_mnist_data: Mock):
     test_data_path = "test-data-path"
     test_device = "cpu"
     test_config = {"batch_size": 200}
