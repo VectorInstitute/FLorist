@@ -87,6 +87,7 @@ describe("New Job Page", () => {
             for (let i = 0; i < testModelsData.length; i++) {
                 expect(jobModelOptions[i + 1].value).toBe(testModelsData[i]);
             }
+            expect(useGetModels).toBeCalled();
 
             const jobClient = container.querySelector("select#job-client");
             expect(jobClient).toBeInTheDocument();
@@ -98,6 +99,7 @@ describe("New Job Page", () => {
             for (let i = 0; i < testModelsData.length; i++) {
                 expect(jobClientOptions[i + 1].value).toBe(testClientsData[i]);
             }
+            expect(useGetClients).toBeCalledWith({ strategy: "" });
 
             const jobStrategy = container.querySelector("select#job-strategy");
             expect(jobStrategy).toBeInTheDocument();
@@ -109,6 +111,7 @@ describe("New Job Page", () => {
             for (let i = 0; i < testStrategiesData.length; i++) {
                 expect(jobStrategyOptions[i + 1].value).toBe(testStrategiesData[i]);
             }
+            expect(useGetStrategies).toBeCalled();
 
             const jobOptimizer = container.querySelector("select#job-optimizer");
             expect(jobOptimizer).toBeInTheDocument();
@@ -120,6 +123,7 @@ describe("New Job Page", () => {
             for (let i = 0; i < testOptimizersData.length; i++) {
                 expect(jobOptimizerOptions[i + 1].value).toBe(testOptimizersData[i]);
             }
+            expect(useGetOptimizers).toBeCalled();
 
             const jobServerAddress = container.querySelector("input#job-server-address");
             expect(jobServerAddress).toBeInTheDocument();
@@ -128,6 +132,21 @@ describe("New Job Page", () => {
             const jobRedisAddress = container.querySelector("input#job-redis-address");
             expect(jobRedisAddress).toBeInTheDocument();
             expect(jobRedisAddress.value).toBe("");
+        });
+    });
+
+    describe("Client select", () => {
+        it("Fetches clients based on the selected strategy", () => {
+            const testClientsData = ["TEST-CLIENT-1", "TEST-CLIENT-2"];
+            const testStrategiesData = ["TEST-STRATEGY-1", "TEST-STRATEGY-2"];
+            setupGetMocks(null, testClientsData, testStrategiesData, null);
+            setupPostMocks();
+
+            const { container } = render(<EditJob />);
+
+            fireEvent.change(container.querySelector("select#job-strategy"), { target: { value: testStrategiesData[1] } });
+
+            expect(useGetClients).toBeCalledWith({ strategy: testStrategiesData[1] });
         });
     });
 

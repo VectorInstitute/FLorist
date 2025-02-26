@@ -122,39 +122,13 @@ export function EditJobForm(): ReactElement {
         buttonClasses += "bg-gradient-primary";
     }
 
-    console.log(state.job.strategy);
-    console.log(state.job.strategy ? true : false);
-
     return (
         <form onSubmit={(e) => onSubmitJob()}>
             <EditJobServerAttributes state={state} setState={setState} />
 
             <EditJobServerConfig state={state} setState={setState} />
 
-            <div id="job-client-field" className="input-group input-group-outline gray-input-box mb-3">
-                <label className="form-label form-row" htmlFor="job-client">
-                    Client
-                </label>
-                <select
-                    className="form-control"
-                    id="job-client"
-                    value={state.job.client}
-                    onChange={(e) =>
-                        setState(
-                            produce((newState) => {
-                                newState.job.client = e.target.value;
-                            }),
-                        )
-                    }
-                    disabled={state.job.strategy ? false : true}
-                >
-                    <option disabled="true" selected="true" value=""></option>
-                    <EditJobSelectOptions hook={useGetClients} params={{ strategy: state.job.strategy }} />
-                </select>
-                <label className="select-caret" htmlFor="job-client">
-                    &#9660;
-                </label>
-            </div>
+            <EditJobSelectClient state={state} setState={setState} />
 
             <EditJobClientsInfo state={state} setState={setState} />
 
@@ -297,6 +271,35 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     }
                 />
             </div>
+        </div>
+    );
+}
+
+export function EditJobSelectClient({ state, setState }): ReactElement {
+    return (
+        <div id="job-client-field" className="input-group input-group-outline gray-input-box mb-3">
+            <label className="form-label form-row" htmlFor="job-client">
+                Client
+            </label>
+            <select
+                className="form-control"
+                id="job-client"
+                value={state.job.client}
+                onChange={(e) =>
+                    setState(
+                        produce((newState) => {
+                            newState.job.client = e.target.value;
+                        }),
+                    )
+                }
+                disabled={state.job.strategy ? false : true}
+            >
+                <option disabled="true" selected="true" value=""></option>
+                <EditJobSelectOptions hook={useGetClients} params={{ strategy: state.job.strategy }} />
+            </select>
+            <label className="select-caret" htmlFor="job-client">
+                &#9660;
+            </label>
         </div>
     );
 }
