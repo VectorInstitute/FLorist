@@ -7,8 +7,8 @@ from typing import Any, Callable, TypeAlias, Union
 import torch
 from fl4health.client_managers.base_sampling_manager import SimpleClientManager
 from fl4health.reporting.base_reporter import BaseReporter
-from fl4health.server.adaptive_constraint_servers.fedprox_server import FedProxServer
-from fl4health.server.base_server import FlServer
+from fl4health.servers.adaptive_constraint_servers.fedprox_server import FedProxServer
+from fl4health.servers.base_server import FlServer
 from fl4health.strategies.fedavg_with_adaptive_constraint import FedAvgWithAdaptiveConstraint
 from fl4health.utils.metric_aggregation import evaluate_metrics_aggregation_fn, fit_metrics_aggregation_fn
 from flwr.common.parameter import ndarrays_to_parameters
@@ -157,7 +157,7 @@ def get_fedavg_server(
         initial_parameters=initial_model_parameters,
     )
     client_manager = SimpleClientManager()
-    return FlServer(strategy=strategy, client_manager=client_manager, reporters=reporters)
+    return FlServer(strategy=strategy, client_manager=client_manager, reporters=reporters, fl_config=server_config)
 
 
 def get_fedprox_server(
@@ -194,4 +194,6 @@ def get_fedprox_server(
         loss_weight_patience=server_config["proximal_weight_patience"],
     )
     client_manager = SimpleClientManager()
-    return FedProxServer(client_manager=client_manager, strategy=strategy, model=None, reporters=reporters)
+    return FedProxServer(
+        client_manager=client_manager, strategy=strategy, reporters=reporters, fl_config=server_config
+    )
