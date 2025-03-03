@@ -7,9 +7,11 @@ from unittest.mock import ANY, Mock, patch
 import pytest
 
 from florist.api import client
-from florist.api.clients.common import Client
-from florist.api.clients.mnist import MnistClient
+from florist.api.clients.clients import Client
+from florist.api.clients.clients import LocalDataClient
+from florist.api.clients.optimizers import Optimizer
 from florist.api.db.client_entities import ClientDAO
+from florist.api.models.models import Model
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter
 
@@ -42,17 +44,27 @@ def test_connect() -> None:
 @patch("florist.api.client.launch_client")
 def test_start_success(mock_launch_client: Mock) -> None:
     test_server_address = "test-server-address"
-    test_client = Client.MNIST
+    test_client = Client.FEDAVG
+    test_model = Model.MNIST
+    test_optimizer = Optimizer.SGD
     test_data_path = "test/data/path"
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
+    test_redis_address = f"{test_redis_host}:{test_redis_port}"
     test_client_pid = 1234
 
     mock_client_process = Mock()
     mock_client_process.pid = test_client_pid
     mock_launch_client.return_value = mock_client_process
 
-    response = client.start(test_server_address, test_client, test_data_path, test_redis_host, test_redis_port)
+    response = client.start(
+        test_server_address,
+        test_client,
+        test_model,
+        test_optimizer,
+        test_data_path,
+        test_redis_address,
+    )
 
     assert response.status_code == 200
     json_body = json.loads(response.body.decode())
@@ -62,8 +74,10 @@ def test_start_success(mock_launch_client: Mock) -> None:
     mock_launch_client.assert_called_once_with(ANY, test_server_address, log_file_path)
 
     client_obj = mock_launch_client.call_args_list[0][0][0]
-    assert isinstance(client_obj, MnistClient)
+    assert isinstance(client_obj, LocalDataClient)
     assert str(client_obj.data_path) == test_data_path
+    assert isinstance(client_obj.model, Model.class_for_model(test_model))
+    assert client_obj.optimizer_type == test_optimizer
 
     metrics_reporter = client_obj.reports_manager.reporters[0]
     assert isinstance(metrics_reporter, RedisMetricsReporter)
@@ -79,12 +93,22 @@ def test_start_success(mock_launch_client: Mock) -> None:
 @patch("florist.api.client.launch_client", side_effect=Exception("test exception"))
 def test_start_fail_exception(_: Mock) -> None:
     test_server_address = "test-server-address"
-    test_client = Client.MNIST
+    test_client = Client.FEDAVG
+    test_model = Model.MNIST
+    test_optimizer = Optimizer.SGD
     test_data_path = "test/data/path"
     test_redis_host = "test-redis-host"
     test_redis_port = "test-redis-port"
+    test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
-    response = client.start(test_server_address, test_client, test_data_path, test_redis_host, test_redis_port)
+    response = client.start(
+        test_server_address,
+        test_client,
+        test_model,
+        test_optimizer,
+        test_data_path,
+        test_redis_address,
+    )
 
     assert response.status_code == 500
     json_body = json.loads(response.body.decode())
@@ -99,10 +123,11 @@ def test_check_status(mock_redis: Mock) -> None:
     test_uuid = "test_uuid"
     test_redis_host = "localhost"
     test_redis_port = "testport"
+    test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis.Redis.return_value = mock_redis_connection
 
-    response = client.check_status(test_uuid, test_redis_host, test_redis_port)
+    response = client.check_status(test_uuid, test_redis_address)
 
     mock_redis.Redis.assert_called_with(host=test_redis_host, port=test_redis_port)
     assert json.loads(response.body.decode()) == {"info": "test"}
@@ -116,10 +141,11 @@ def test_check_status_not_found(mock_redis: Mock) -> None:
     test_uuid = "test_uuid"
     test_redis_host = "localhost"
     test_redis_port = "testport"
+    test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis.Redis.return_value = mock_redis_connection
 
-    response = client.check_status(test_uuid, test_redis_host, test_redis_port)
+    response = client.check_status(test_uuid, test_redis_address)
 
     mock_redis.Redis.assert_called_with(host=test_redis_host, port=test_redis_port)
     assert response.status_code == 404
@@ -132,8 +158,9 @@ def test_check_status_fail_exception(_: Mock) -> None:
     test_uuid = "test_uuid"
     test_redis_host = "localhost"
     test_redis_port = "testport"
+    test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
-    response = client.check_status(test_uuid, test_redis_host, test_redis_port)
+    response = client.check_status(test_uuid, test_redis_address)
 
     assert response.status_code == 500
     assert json.loads(response.body.decode()) == {"error": "test exception"}

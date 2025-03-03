@@ -1,9 +1,10 @@
-"""Functions and definitions for server models."""
+"""Definitions for the strategies, strategy enumeration and server constructors."""
 
 from enum import Enum
 from functools import partial
 from typing import Any, Callable, TypeAlias, Union
 
+import torch
 from fl4health.client_managers.base_sampling_manager import SimpleClientManager
 from fl4health.reporting.base_reporter import BaseReporter
 from fl4health.server.adaptive_constraint_servers.fedprox_server import FedProxServer
@@ -12,96 +13,79 @@ from fl4health.strategies.fedavg_with_adaptive_constraint import FedAvgWithAdapt
 from fl4health.utils.metric_aggregation import evaluate_metrics_aggregation_fn, fit_metrics_aggregation_fn
 from flwr.common.parameter import ndarrays_to_parameters
 from flwr.server.strategy import FedAvg
-from torch import nn
 from typing_extensions import Self
 
-from florist.api.models.mnist import MnistNet
 from florist.api.servers.config_parsers import ConfigParser
 
 
-GetServerFunction: TypeAlias = Callable[[nn.Module, int, list[BaseReporter], dict[str, Any]], FlServer]
+GetServerFunction: TypeAlias = Callable[[torch.nn.Module, int, list[BaseReporter], dict[str, Any]], FlServer]
 FitConfigFn: TypeAlias = Callable[[int], dict[str, Union[bool, bytes, float, int, str]]]
 
 
-class Model(Enum):
-    """Enumeration of supported models."""
+class Strategy(Enum):
+    """The strategies that can be picked for training."""
 
-    MNIST_FEDAVG = "MNIST with FedAvg"
-    MNIST_FEDPROX = "MNIST with FedProx"
-
-    @classmethod
-    def class_for_model(cls, model: Self) -> type[nn.Module]:
-        """
-        Return the class for a given model.
-
-        :param model: (Model) The model enumeration object.
-        :return: (type[torch.nn.Module]) A torch.nn.Module class corresponding to the given model.
-        :raises ValueError: if the client is not supported.
-        """
-        if model in [Model.MNIST_FEDAVG, Model.MNIST_FEDPROX]:
-            return MnistNet
-
-        raise ValueError(f"Model {model.value} not supported.")
+    FEDAVG = "FedAvg"
+    FEDPROX = "FedProx"
 
     @classmethod
-    def config_parser_for_model(cls, model: Self) -> ConfigParser:
+    def config_parser_for_strategy(cls, strategy: Self) -> ConfigParser:
         """
-        Return the config parser for a given model.
+        Return the config parser for a given strategy.
 
-        :param model: (Model) The model enumeration object.
-        :return: (type[torch.nn.Module]) A torch.nn.Module class corresponding to the given model.
-        :raises ValueError: if the client is not supported.
+        :param strategy: (Strategy) The strategy enumeration object.
+        :return: (ConfigParser) An instance of ConfigParser for the corresponding strategy.
+        :raises ValueError: if the strategy is not supported.
         """
-        if model == Model.MNIST_FEDAVG:
+        if strategy == Strategy.FEDAVG:
             return ConfigParser.BASIC
-        if model == Model.MNIST_FEDPROX:
+        if strategy == Strategy.FEDPROX:
             return ConfigParser.FEDPROX
 
-        raise ValueError(f"Model {model.value} not supported.")
+        raise ValueError(f"Strategy {strategy.value} not supported.")
 
     @classmethod
-    def server_factory_for_model(cls, model: Self) -> "ServerFactory":
+    def server_factory_for_strategy(cls, strategy: Self) -> "ServerFactory":
         """
-        Return the server factory instance for a given model.
+        Return the server factory instance for a given strategy.
 
-        :param model: (Model) The model enumeration object.
+        :param strategy: (Strategy) The strategy enumeration object.
         :return: (type[AbstractServerFactory]) A ServerFactory instance that can be used to construct
-            the FL server for the given model.
+            the FL server for the given strategy.
         :raises ValueError: if the client is not supported.
         """
-        if model == Model.MNIST_FEDAVG:
-            return ServerFactory(get_server_function=get_fedavg_server, model=model)
-        if model == Model.MNIST_FEDPROX:
-            return ServerFactory(get_server_function=get_fedprox_server, model=model)
+        if strategy == Strategy.FEDAVG:
+            return ServerFactory(get_server_function=get_fedavg_server)
+        if strategy == Strategy.FEDPROX:
+            return ServerFactory(get_server_function=get_fedprox_server)
 
-        raise ValueError(f"Model {model.value} not supported.")
+        raise ValueError(f"Strategy {strategy.value} not supported.")
 
     @classmethod
     def list(cls) -> list[str]:
         """
-        List all the supported models.
+        List all the supported strategies.
 
-        :return: (list[str]) a list of supported models.
+        :return: (list[str]) a list of supported strategies.
         """
-        return [model.value for model in Model]
+        return [strategy.value for strategy in Strategy]
 
 
 class ServerFactory:
     """Factory class that will provide the server constructor."""
 
-    def __init__(self, get_server_function: GetServerFunction, model: Model):
+    def __init__(self, get_server_function: GetServerFunction):
         """
         Initialize a ServerFactory.
 
         :param get_server_function: (GetServerFunction) The function that will be used to produce
             the server constructor.
-        :param model: (Model) The model to call the server function with.
         """
         self.get_server_function = get_server_function
-        self.model = model
 
     def get_server_constructor(
         self,
+        model: torch.nn.Module,
         n_clients: int,
         reporters: list[BaseReporter],
         server_config: dict[str, Any],
@@ -109,13 +93,13 @@ class ServerFactory:
         """
         Make the server constructor based on the self.get_server_function.
 
+        :param model: (torch.nn.Model) The model object.
         :param n_clients: (int) The number of clients participating in the FL training.
         :param reporters: (list[BaseReporter]) A list of reporters to be passed to the FL server.
         :param server_config: (dict[str, Any]) A dictionary with the server configuration values.
         :return: (Callable[[Any], FlServer]) A callable function that will construct an FL server.
         """
-        torch_model_class = Model.class_for_model(self.model)
-        return partial(self.get_server_function, torch_model_class(), n_clients, reporters, server_config)
+        return partial(self.get_server_function, model, n_clients, reporters, server_config)
 
     def __eq__(self, other: object) -> bool:
         """
@@ -146,7 +130,7 @@ def fit_config_function(server_config: dict[str, Any], current_server_round: int
 
 
 def get_fedavg_server(
-    model: nn.Module,
+    model: torch.nn.Module,
     n_clients: int,
     reporters: list[BaseReporter],
     server_config: dict[str, Any],
@@ -154,7 +138,7 @@ def get_fedavg_server(
     """
     Return a server with FedAvg strategy.
 
-    :param model: (nn.Module) The torch.nn.Module instance for the model.
+    :param model: (torch.nn.Module) The torch.nn.Module instance for the model.
     :param n_clients: (int) the number of clients participating in the FL training.
     :param reporters: (list[BaseReporter]) A list of reporters to be passed to the FL server.
     :param server_config: (dict[str, Any]) A dictionary with the server configuration values.
@@ -177,7 +161,7 @@ def get_fedavg_server(
 
 
 def get_fedprox_server(
-    model: nn.Module,
+    model: torch.nn.Module,
     n_clients: int,
     reporters: list[BaseReporter],
     server_config: dict[str, Any],

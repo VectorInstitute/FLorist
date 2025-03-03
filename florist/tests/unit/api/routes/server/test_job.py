@@ -6,7 +6,6 @@ from unittest.mock import patch, Mock, AsyncMock, call
 from fastapi.responses import JSONResponse
 from freezegun import freeze_time
 
-from florist.api.clients.common import Client
 from florist.api.routes.server.job import change_job_status, get_job, stop_job
 from florist.api.db.server_entities import JobStatus, ClientInfo
 
@@ -120,8 +119,8 @@ async def test_stop_job_success(mock_kill: Mock, mock_requests: Mock, mock_find_
     test_job_id = "test-job-id"
     test_server_pid = 1234
     test_clients = [
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
-        ClientInfo(uuid="test-client-uuid-2", service_address="test-service-address-2", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address=""),
+        ClientInfo(uuid="test-client-uuid-2", service_address="test-service-address-2", data_path="", redis_address=""),
     ]
 
     mock_job = Mock()
@@ -163,8 +162,8 @@ async def test_stop_job_fail_stop_client(mock_kill: Mock, mock_requests: Mock, m
     test_job_id = "test-job-id"
     test_server_pid = 1234
     test_clients = [
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-2", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-2", data_path="", redis_address=""),
     ]
     test_error = "test-error"
 
@@ -211,8 +210,8 @@ async def test_stop_job_fail_stop_server(_: Mock, mock_requests: Mock, mock_find
     test_server_uuid = "test-server-uuid"
     test_server_pid = "incorrect-pid"
     test_clients = [
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-2", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-2", data_path="", redis_address=""),
     ]
 
     mock_job = Mock()
@@ -255,8 +254,8 @@ async def test_stop_job_fail_no_server_pid(_: Mock, mock_requests: Mock, mock_fi
     test_job_id = "test-job-id"
     test_server_uuid = "test-server-uuid"
     test_clients = [
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-2", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-2", data_path="", redis_address=""),
     ]
 
     mock_job = Mock()
@@ -299,8 +298,8 @@ async def test_stop_job_exception(mock_requests: Mock, mock_find_by_id: Mock) ->
     test_job_id = "test-job-id"
     test_server_pid = 1234
     test_clients = [
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
-        ClientInfo(uuid="test-client-uuid-2", service_address="test-service-address-2", client=Client.MNIST, data_path="", redis_host="", redis_port=""),
+        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address=""),
+        ClientInfo(uuid="test-client-uuid-2", service_address="test-service-address-2", data_path="", redis_address=""),
     ]
 
     mock_job = Mock()
