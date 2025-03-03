@@ -351,6 +351,7 @@
 <span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 
 <span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">fl4health.utils.metrics</span> <span class="kn">import</span> <span class="n">Accuracy</span>
 
 <span class="kn">from</span> <span class="nn">florist.api</span> <span class="kn">import</span> <span class="n">client</span>
 <span class="kn">from</span> <span class="nn">florist.api.clients.common</span> <span class="kn">import</span> <span class="n">Client</span>
@@ -418,6 +419,8 @@
     <span class="n">client_obj</span> <span class="o">=</span> <span class="n">mock_launch_client</span><span class="o">.</span><span class="n">call_args_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">client_obj</span><span class="p">,</span> <span class="n">MnistClient</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">client_obj</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span> <span class="o">==</span> <span class="n">test_data_path</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">client_obj</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">client_obj</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Accuracy</span><span class="p">)</span>
 
     <span class="n">metrics_reporter</span> <span class="o">=</span> <span class="n">client_obj</span><span class="o">.</span><span class="n">reports_manager</span><span class="o">.</span><span class="n">reporters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics_reporter</span><span class="p">,</span> <span class="n">RedisMetricsReporter</span><span class="p">)</span>
