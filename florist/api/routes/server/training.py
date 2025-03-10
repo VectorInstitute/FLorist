@@ -19,7 +19,6 @@ from florist.api.launchers.local import launch_local_server
 from florist.api.models.models import Model
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
 from florist.api.servers.config_parsers import ConfigParser
-from florist.api.servers.strategies import Strategy
 
 
 router = APIRouter()
@@ -69,8 +68,8 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         assert job.redis_address is not None, "Missing Job information: redis_address"
 
         model_class = Model.class_for_model(job.model)
-        config_parser = Strategy.config_parser_for_strategy(job.strategy)
-        server_factory = Strategy.server_factory_for_strategy(job.strategy)
+        config_parser = job.strategy.get_config_parser()
+        server_factory = job.strategy.get_server_factory()
 
         try:
             config_parser_class = ConfigParser.class_for_parser(config_parser)
