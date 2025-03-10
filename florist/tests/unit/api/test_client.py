@@ -5,6 +5,7 @@ import signal
 from unittest.mock import ANY, Mock, patch
 
 import pytest
+from fl4health.utils.metrics import Accuracy
 
 from florist.api import client
 from florist.api.clients.clients import Client
@@ -78,6 +79,8 @@ def test_start_success(mock_launch_client: Mock) -> None:
     assert str(client_obj.data_path) == test_data_path
     assert isinstance(client_obj.model, Model.class_for_model(test_model))
     assert client_obj.optimizer_type == test_optimizer
+    assert len(client_obj.metrics) == 1
+    assert isinstance(client_obj.metrics[0], Accuracy)
 
     metrics_reporter = client_obj.reports_manager.reporters[0]
     assert isinstance(metrics_reporter, RedisMetricsReporter)
