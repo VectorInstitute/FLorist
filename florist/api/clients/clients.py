@@ -44,7 +44,7 @@ class LocalDataClient(BasicClient):  # type: ignore[misc]
         Return the model for training with local data.
 
         :param config: (Config) the Config object for this client.
-        :return: (torch.nn.Module) An instance of the model.
+        :return: (torch.nn.Module) An instance of florist.api.clients.mnist.MnistNet.
         """
         assert isinstance(self.model, LocalDataModel), f"Model {self.model} is not a subclass of LocalModel."
         return self.model
@@ -66,7 +66,7 @@ class LocalDataClient(BasicClient):  # type: ignore[misc]
         Return the data loader for the model with local data.
 
         :param config: (Config) the Config object for this client.
-        :return: (Tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]) a tuple with the train data loader
+        :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader
             and validation data loader respectively.
         """
         assert isinstance(self.model, LocalDataModel), f"Model {self.model} is not a subclass of LocalModel."
@@ -93,7 +93,7 @@ class FedProxLocalDataClient(FedProxClient, LocalDataClient):  # type: ignore[mi
         Return the data loader for FedProx on model with data stored locally.
 
         :param config: (Config) the Config object for this client.
-        :return: (Tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]) a tuple with the train data loader
+        :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader
             and validation data loader respectively.
         """
         sampler = DirichletLabelBasedSampler(list(range(10)), sample_percentage=0.75, beta=1)

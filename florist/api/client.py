@@ -65,7 +65,7 @@ def start(
     try:
         client_uuid = str(uuid4())
         redis_host, redis_port = get_host_and_port_from_address(redis_address)
-        metrics_reporter = RedisMetricsReporter(host=redis_host, port=str(redis_port), run_id=client_uuid)
+        metrics_reporter = RedisMetricsReporter(host=redis_host, port=redis_port, run_id=client_uuid)
 
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

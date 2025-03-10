@@ -22,16 +22,16 @@ def test_list():
     assert Strategy.list() == [Strategy.FEDAVG.value, Strategy.FEDPROX.value]
 
 
-def test_get_config_parser():
-    assert Strategy.FEDAVG.get_config_parser() == ConfigParser.BASIC
-    assert Strategy.FEDPROX.get_config_parser() == ConfigParser.FEDPROX
+def test_config_parser_for_strategy():
+    assert Strategy.config_parser_for_strategy(Strategy.FEDAVG) == ConfigParser.BASIC
+    assert Strategy.config_parser_for_strategy(Strategy.FEDPROX) == ConfigParser.FEDPROX
 
 
-def test_get_server_factory():
-    test_server_factory = Strategy.FEDAVG.get_server_factory()
+def test_server_factory_for_strategy():
+    test_server_factory = Strategy.server_factory_for_strategy(Strategy.FEDAVG)
     assert test_server_factory.get_server_function == get_fedavg_server
 
-    test_server_factory = Strategy.FEDPROX.get_server_factory()
+    test_server_factory = Strategy.server_factory_for_strategy(Strategy.FEDPROX)
     assert test_server_factory.get_server_function == get_fedprox_server
 
 

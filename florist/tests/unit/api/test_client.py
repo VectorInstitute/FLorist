@@ -49,7 +49,7 @@ def test_start_success(mock_launch_client: Mock) -> None:
     test_optimizer = Optimizer.SGD
     test_data_path = "test/data/path"
     test_redis_host = "test-redis-host"
-    test_redis_port = 1234
+    test_redis_port = "test-redis-port"
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
     test_client_pid = 1234
 
@@ -82,7 +82,7 @@ def test_start_success(mock_launch_client: Mock) -> None:
     metrics_reporter = client_obj.reports_manager.reporters[0]
     assert isinstance(metrics_reporter, RedisMetricsReporter)
     assert metrics_reporter.host == test_redis_host
-    assert metrics_reporter.port == str(test_redis_port)
+    assert metrics_reporter.port == test_redis_port
     assert metrics_reporter.run_id == json_body["uuid"]
 
     client_dao = ClientDAO.find(uuid=json_body["uuid"])
@@ -98,7 +98,7 @@ def test_start_fail_exception(_: Mock) -> None:
     test_optimizer = Optimizer.SGD
     test_data_path = "test/data/path"
     test_redis_host = "test-redis-host"
-    test_redis_port = 1234
+    test_redis_port = "test-redis-port"
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     response = client.start(
@@ -122,7 +122,7 @@ def test_check_status(mock_redis: Mock) -> None:
 
     test_uuid = "test_uuid"
     test_redis_host = "localhost"
-    test_redis_port = 1234
+    test_redis_port = "testport"
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis.Redis.return_value = mock_redis_connection
@@ -140,7 +140,7 @@ def test_check_status_not_found(mock_redis: Mock) -> None:
 
     test_uuid = "test_uuid"
     test_redis_host = "localhost"
-    test_redis_port = 1234
+    test_redis_port = "testport"
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis.Redis.return_value = mock_redis_connection
@@ -157,7 +157,7 @@ def test_check_status_fail_exception(_: Mock) -> None:
 
     test_uuid = "test_uuid"
     test_redis_host = "localhost"
-    test_redis_port = 1234
+    test_redis_port = "testport"
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     response = client.check_status(test_uuid, test_redis_address)

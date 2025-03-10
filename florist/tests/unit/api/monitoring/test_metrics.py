@@ -135,7 +135,7 @@ def test_wait_for_metric_success(_: Mock, mock_redis: Mock) -> None:
     test_uuid = "uuid"
     test_metric = "test-metric"
     test_redis_host = "test-redis-host"
-    test_redis_port = 1234
+    test_redis_port = "test-redis-port"
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis_connection = Mock()
@@ -154,7 +154,7 @@ def test_wait_for_metric_success_with_retry(_: Mock, mock_redis: Mock) -> None:
     test_uuid = "uuid"
     test_metric = "test-metric"
     test_redis_host = "test-redis-host"
-    test_redis_port = 1234
+    test_redis_port = "test-redis-port"
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis_connection = Mock()
@@ -180,7 +180,7 @@ def test_wait_for_metric_fail_max_retries(_: Mock, mock_redis: Mock) -> None:
     test_uuid = "uuid"
     test_metric = "test-metric"
     test_redis_host = "test-redis-host"
-    test_redis_port = 1234
+    test_redis_port = "test-redis-port"
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis_connection = Mock()
@@ -195,7 +195,7 @@ def test_wait_for_metric_fail_max_retries(_: Mock, mock_redis: Mock) -> None:
 def test_get_subscriber(mock_redis: Mock) -> None:
     test_channel = "test-channel"
     test_redis_host = "test-redis-host"
-    test_redis_port = 1234
+    test_redis_port = "test-redis-port"
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis_connection = Mock()
@@ -215,7 +215,7 @@ def test_get_subscriber(mock_redis: Mock) -> None:
 def test_get_from_redis(mock_redis: Mock) -> None:
     test_name = "test-name"
     test_redis_host = "test-redis-host"
-    test_redis_port = 1234
+    test_redis_port = "test-redis-port"
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
     test_redis_result = b"{\"foo\": \"bar\"}"
 
@@ -234,7 +234,7 @@ def test_get_from_redis(mock_redis: Mock) -> None:
 def test_get_from_redis_empty(mock_redis: Mock) -> None:
     test_name = "test-name"
     test_redis_host = "test-redis-host"
-    test_redis_port = 1234
+    test_redis_port = "test-redis-port"
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
     mock_redis_connection = Mock()
@@ -250,7 +250,7 @@ def test_get_from_redis_empty(mock_redis: Mock) -> None:
 
 def test_get_host_and_port_from_address_success():
     test_host = "test-host"
-    test_port = 1234
+    test_port = "test-port"
     test_address = f"{test_host}:{test_port}"
 
     host, port = get_host_and_port_from_address(test_address)
@@ -261,7 +261,7 @@ def test_get_host_and_port_from_address_success():
 
 def test_get_host_and_port_from_address_failure():
     test_host = "test-host"
-    test_port = 1234
+    test_port = "test-port"
     test_address = f"{test_host}_{test_port}"
 
     with raises(ValueError, match=f"Address '{test_address}' is not valid: must be in the format '<host>:<port>'."):

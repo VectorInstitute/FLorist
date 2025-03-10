@@ -3,7 +3,6 @@
 import datetime
 import json
 import time
-import urllib
 import uuid
 from logging import DEBUG, Logger
 from typing import Any, Dict, Optional
@@ -155,19 +154,18 @@ class RedisMetricsReporter(BaseReporter):  # type: ignore
         return True
 
 
-def get_host_and_port_from_address(address: str) -> tuple[str, int]:
+def get_host_and_port_from_address(address: str) -> tuple[str, str]:
     """
     Split an address into host and port. The address must be in the format `<host>:<port>`.
 
     :param address: (str) the address in the format `<host>:<port>`.
-    :return: (tuple[str, int]) the host and the port from the address.
+    :return: (tuple[str, str]) the host and the port from the address.
     """
-    result = urllib.parse.urlparse("//" + address)
-
-    if result.hostname is None or result.port is None:
+    if address.count(":") != 1:
         raise ValueError(f"Address '{address}' is not valid: must be in the format '<host>:<port>'.")
 
-    return result.hostname, result.port
+    split_address = address.split(":")
+    return split_address[0], split_address[1]
 
 
 def wait_for_metric(

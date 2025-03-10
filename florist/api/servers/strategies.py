@@ -2,7 +2,7 @@
 
 from enum import Enum
 from functools import partial
-from typing import Any, Callable, TypeAlias
+from typing import Any, Callable, TypeAlias, Union
 
 import torch
 from fl4health.client_managers.base_sampling_manager import SimpleClientManager
@@ -11,15 +11,15 @@ from fl4health.servers.adaptive_constraint_servers.fedprox_server import FedProx
 from fl4health.servers.base_server import FlServer
 from fl4health.strategies.fedavg_with_adaptive_constraint import FedAvgWithAdaptiveConstraint
 from fl4health.utils.metric_aggregation import evaluate_metrics_aggregation_fn, fit_metrics_aggregation_fn
-from flwr.common import Scalar
 from flwr.common.parameter import ndarrays_to_parameters
 from flwr.server.strategy import FedAvg
+from typing_extensions import Self
 
 from florist.api.servers.config_parsers import ConfigParser
 
 
 GetServerFunction: TypeAlias = Callable[[torch.nn.Module, int, list[BaseReporter], dict[str, Any]], FlServer]
-FitConfigFn: TypeAlias = Callable[[int], dict[str, Scalar]]
+FitConfigFn: TypeAlias = Callable[[int], dict[str, Union[bool, bytes, float, int, str]]]
 
 
 class Strategy(Enum):
@@ -28,34 +28,38 @@ class Strategy(Enum):
     FEDAVG = "FedAvg"
     FEDPROX = "FedProx"
 
-    def get_config_parser(self) -> ConfigParser:
+    @classmethod
+    def config_parser_for_strategy(cls, strategy: Self) -> ConfigParser:
         """
-        Return the config parser for a this strategy.
+        Return the config parser for a given strategy.
 
+        :param strategy: (Strategy) The strategy enumeration object.
         :return: (ConfigParser) An instance of ConfigParser for the corresponding strategy.
         :raises ValueError: if the strategy is not supported.
         """
-        if self == Strategy.FEDAVG:
+        if strategy == Strategy.FEDAVG:
             return ConfigParser.BASIC
-        if self == Strategy.FEDPROX:
+        if strategy == Strategy.FEDPROX:
             return ConfigParser.FEDPROX
 
-        raise ValueError(f"Strategy {self.value} not supported.")
+        raise ValueError(f"Strategy {strategy.value} not supported.")
 
-    def get_server_factory(self) -> "ServerFactory":
+    @classmethod
+    def server_factory_for_strategy(cls, strategy: Self) -> "ServerFactory":
         """
-        Return the server factory instance for this strategy.
+        Return the server factory instance for a given strategy.
 
+        :param strategy: (Strategy) The strategy enumeration object.
         :return: (type[AbstractServerFactory]) A ServerFactory instance that can be used to construct
             the FL server for the given strategy.
         :raises ValueError: if the client is not supported.
         """
-        if self == Strategy.FEDAVG:
+        if strategy == Strategy.FEDAVG:
             return ServerFactory(get_server_function=get_fedavg_server)
-        if self == Strategy.FEDPROX:
+        if strategy == Strategy.FEDPROX:
             return ServerFactory(get_server_function=get_fedprox_server)
 
-        raise ValueError(f"Strategy {self.value} not supported.")
+        raise ValueError(f"Strategy {strategy.value} not supported.")
 
     @classmethod
     def list(cls) -> list[str]:
@@ -84,7 +88,7 @@ class ServerFactory:
         model: torch.nn.Module,
         n_clients: int,
         reporters: list[BaseReporter],
-        server_config: dict[str, Scalar],
+        server_config: dict[str, Any],
     ) -> Callable[[Any], FlServer]:
         """
         Make the server constructor based on the self.get_server_function.
@@ -112,7 +116,7 @@ class ServerFactory:
         return True
 
 
-def fit_config_function(server_config: dict[str, Scalar], current_server_round: int) -> dict[str, Scalar]:
+def fit_config_function(server_config: dict[str, Any], current_server_round: int) -> dict[str, int]:
     """
     Produce the fit config dictionary.
 
@@ -129,7 +133,7 @@ def get_fedavg_server(
     model: torch.nn.Module,
     n_clients: int,
     reporters: list[BaseReporter],
-    server_config: dict[str, Scalar],
+    server_config: dict[str, Any],
 ) -> FlServer:
     """
     Return a server with FedAvg strategy.
@@ -140,7 +144,7 @@ def get_fedavg_server(
     :param server_config: (dict[str, Any]) A dictionary with the server configuration values.
     :return: (FlServer) An FlServer instance configured with FedAvg strategy.
     """
-    fit_config_fn: FitConfigFn = partial(fit_config_function, server_config)
+    fit_config_fn: FitConfigFn = partial(fit_config_function, server_config)  # type: ignore
     initial_model_parameters = ndarrays_to_parameters([val.cpu().numpy() for _, val in model.state_dict().items()])
     strategy = FedAvg(
         min_fit_clients=n_clients,
@@ -160,7 +164,7 @@ def get_fedprox_server(
     model: torch.nn.Module,
     n_clients: int,
     reporters: list[BaseReporter],
-    server_config: dict[str, Scalar],
+    server_config: dict[str, Any],
 ) -> FlServer:
     """
     Return a server with FedProx strategy.
@@ -171,7 +175,7 @@ def get_fedprox_server(
     :param server_config: (dict[str, Any]) A dictionary with the server configuration values.
     :return: (FlServer) An FlServer instance configured with FedProx strategy.
     """
-    fit_config_fn: FitConfigFn = partial(fit_config_function, server_config)
+    fit_config_fn: FitConfigFn = partial(fit_config_function, server_config)  # type: ignore
     initial_model_parameters = ndarrays_to_parameters([val.cpu().numpy() for _, val in model.state_dict().items()])
     strategy = FedAvgWithAdaptiveConstraint(
         min_fit_clients=n_clients,

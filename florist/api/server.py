@@ -54,7 +54,7 @@ def list_clients(strategy: Strategy) -> JSONResponse:
     """
     Return a list of all available clients by strategy.
 
-    :param strategy: (Strategy) The strategy to find the compatible clients.
+    :param strategy: (Strategy) The strategy to find the compatible clientsa.
     :return: (JSONResponse) A JSON response with a list of all elements in the `api.clients.common.Client` enum
         that are compatible with the given strategy.
     """

@@ -18,7 +18,7 @@ def test_launch_local_server(mock_uuid: Mock, mock_launch_server: Mock) -> None:
     }
     test_server_factory = ServerFactory(get_server_function=get_fedavg_server)
     test_redis_host = "test-redis-host"
-    test_redis_port = 1234
+    test_redis_port = "test-redis-port"
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
     test_server_process = "test-server-process"
     mock_launch_server.return_value = test_server_process
@@ -52,7 +52,7 @@ def test_launch_local_server(mock_uuid: Mock, mock_launch_server: Mock) -> None:
     expected_server_constructor = test_server_factory.get_server_constructor(
         test_model,
         test_n_clients,
-        [RedisMetricsReporter(host=test_redis_host, port=str(test_redis_port), run_id=test_server_uuid)],
+        [RedisMetricsReporter(host=test_redis_host, port=test_redis_port, run_id=test_server_uuid)],
         test_server_config,
     )
 

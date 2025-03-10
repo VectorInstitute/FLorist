@@ -27,7 +27,7 @@ class LocalDataModel(torch.nn.Module, ABC):
         :param data_path: (Path) the local path of the data.
         :param batch_size: (int) the batch size for training.
         :param sampler: (Optional[LabelBasedSampler]) the sampler to be used to sample data.
-        :return: (Tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]) a tuple with the train data loader
+        :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader
             and validation data loader respectively.
         """
         pass

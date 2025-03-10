@@ -45,7 +45,7 @@ async def test_start_success(
         _, test_job, mock_job_collection, mock_fastapi_request = _setup_test_job_and_mocks()
         test_job["strategy"] = test_strategy.value
         test_job["server_config"] = json.dumps(test_server_config)
-        test_job["config_parser"] = test_strategy.get_config_parser().value
+        test_job["config_parser"] = Strategy.config_parser_for_strategy(test_strategy).value
         test_job["client"] = Client.list_by_strategy(test_strategy)[0]
 
         test_server_uuid = "test-server-uuid"
@@ -82,7 +82,7 @@ async def test_start_success(
 
         mock_launch_local_server.assert_called_once_with(
             model=ANY,
-            server_factory=Strategy(test_job["strategy"]).get_server_factory(),
+            server_factory=Strategy.server_factory_for_strategy(Strategy(test_job["strategy"])),
             server_config=test_server_config,
             server_address=test_job["server_address"],
             n_clients=len(test_job["clients_info"]),
@@ -556,12 +556,12 @@ async def test_server_training_listener(
     # Setup
     test_job = Job(**{
         "server_uuid": "test-server-uuid",
-        "redis_address": "test-redis-host:1234",
+        "redis_address": "test-redis-host:test-redis-port",
         "clients_info": [
             {
                 "service_address": "test-service-address",
                 "uuid": "test-uuid",
-                "redis_address": "test-client-redis-host:1234",
+                "redis_address": "test-client-redis-host:test-client-redis-port",
                 "data_path": "test-data-path",
             }
         ]
@@ -610,12 +610,12 @@ async def test_server_training_listener_already_finished(mock_get_from_redis: Mo
     # Setup
     test_job = Job(**{
         "server_uuid": "test-server-uuid",
-        "redis_address": "test-redis-host:1234",
+        "redis_address": "test-redis-host:test-redis-port",
         "clients_info": [
             {
                 "service_address": "test-service-address",
                 "uuid": "test-uuid",
-                "redis_address": "test-client-redis-host:1234",
+                "redis_address": "test-client-redis-host:test-client-redis-port",
                 "data_path": "test-data-path",
             }
         ]
@@ -640,7 +640,7 @@ async def test_server_training_listener_already_finished(mock_get_from_redis: Mo
 
 async def test_server_training_listener_fail_no_server_uuid() -> None:
     test_job = Job(**{
-        "redis_address": "test-redis-host:1234",
+        "redis_address": "test-redis-host:test-redis-port",
     })
 
     with raises(AssertionError, match="job.server_uuid is None."):
@@ -671,7 +671,7 @@ async def test_client_training_listener(
             {
                 "service_address": "test-service-address",
                 "uuid": test_client_uuid,
-                "redis_address": "test-client-redis-host:1234",
+                "redis_address": "test-client-redis-host:test-client-redis-port",
                 "data_path": "test-data-path",
             }
         ]
@@ -724,7 +724,7 @@ async def test_client_training_listener_already_finished(mock_get_from_redis: Mo
             {
                 "service_address": "test-service-address",
                 "uuid": test_client_uuid,
-                "redis_address": "test-client-redis-host:1234",
+                "redis_address": "test-client-redis-host:test-client-redis-port",
                 "data_path": "test-data-path",
             }
         ]
@@ -753,7 +753,7 @@ async def test_client_training_listener_fail_no_uuid() -> None:
     test_job = Job(**{
         "clients_info": [
             {
-                "redis_address": "test-client-redis-host:1234",
+                "redis_address": "test-client-redis-host:test-client-redis-port",
                 "service_address": "test-service-address",
                 "data_path": "test-data-path",
             },
@@ -775,7 +775,7 @@ def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, M
         "server_address": "test-server-address",
         "server_config": json.dumps(test_server_config),
         "config_parser": "BASIC",
-        "redis_address": "test-redis-host:1234",
+        "redis_address": "test-redis-host:test-redis-port",
         "server_uuid": "test-server-uuid",
         "server_metrics": "test-server-metrics",
         "client": Client.FEDAVG.value,
@@ -783,14 +783,14 @@ def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, M
             {
                 "service_address": "test-service-address-1",
                 "data_path": "test-data-path-1",
-                "redis_address": "test-redis-host-1:12341",
+                "redis_address": "test-redis-host-1:test-redis-port-1",
                 "uuid": "test-client-uuids-1",
                 "metrics": "test-client-metrics-1",
             },
             {
                 "service_address": "test-service-address-2",
                 "data_path": "test-data-path-2",
-                "redis_address": "test-redis-host-2:12342",
+                "redis_address": "test-redis-host-2:test-redis-port-2",
                 "uuid": "test-client-uuids-2",
                 "metrics": "test-client-metrics-2",
             },
