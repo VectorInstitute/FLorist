@@ -281,7 +281,7 @@ def get_test_job() -> Job:
         "server_config": json.dumps(test_server_config),
         "config_parser": "BASIC",
         "redis_host": "test-redis-host",
-        "redis_port": "test-redis-port",
+        "redis_port": "1234",
         "server_uuid": "test-server-uuid",
         "server_metrics": "test-server-metrics",
         "server_pid": "test-server-pid-1",

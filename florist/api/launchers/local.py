@@ -5,12 +5,13 @@ import sys
 import time
 import uuid
 from multiprocessing import Process
-from typing import Any, Callable
+from typing import Callable
 
 import flwr as fl
 import torch
 from fl4health.clients.basic_client import BasicClient
 from fl4health.servers.base_server import FlServer
+from flwr.common import Scalar
 from flwr.server import ServerConfig
 
 from florist.api.monitoring.logs import get_server_log_file_path
@@ -140,7 +141,7 @@ def launch_client(client: BasicClient, server_address: str, client_log_file_name
 def launch_local_server(
     model: torch.nn.Module,
     server_factory: ServerFactory,
-    server_config: dict[str, Any],
+    server_config: dict[str, Scalar],
     server_address: str,
     n_clients: int,
     redis_address: str,
@@ -164,13 +165,15 @@ def launch_local_server(
     server_uuid = str(uuid.uuid4())
 
     redis_host, redis_port = get_host_and_port_from_address(redis_address)
-    metrics_reporter = RedisMetricsReporter(host=redis_host, port=redis_port, run_id=server_uuid)
+    metrics_reporter = RedisMetricsReporter(host=redis_host, port=str(redis_port), run_id=server_uuid)
     server_constructor = server_factory.get_server_constructor(
         model=model,
         n_clients=n_clients,
         reporters=[metrics_reporter],
         server_config=server_config,
     )
+
+    assert isinstance(server_config["n_server_rounds"], int), "n_server_rounds must be an integer"
 
     log_file_path = str(get_server_log_file_path(server_uuid))
     server_process = launch_server(
