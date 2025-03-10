@@ -30,7 +30,7 @@ class Strategy(Enum):
 
     def get_config_parser(self) -> ConfigParser:
         """
-        Return the config parser for a this strategy.
+        Return the config parser for this strategy.
 
         :return: (ConfigParser) An instance of ConfigParser for the corresponding strategy.
         :raises ValueError: if the strategy is not supported.
