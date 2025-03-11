@@ -88,6 +88,22 @@ export function JobDetailsBody(): ReactElement {
             </div>
             <div className="row pb-2">
                 <div className="col-sm-2">
+                    <strong className="text-dark">Strategy:</strong>
+                </div>
+                <div className="col-sm" id="job-details-strategy">
+                    {job.strategy}
+                </div>
+            </div>
+            <div className="row pb-2">
+                <div className="col-sm-2">
+                    <strong className="text-dark">Optimizer:</strong>
+                </div>
+                <div className="col-sm" id="job-details-optimizer">
+                    {job.optimizer}
+                </div>
+            </div>
+            <div className="row pb-2">
+                <div className="col-sm-2">
                     <strong className="text-dark">Server Address:</strong>
                 </div>
                 <div className="col-sm" id="job-details-server-address">
@@ -96,18 +112,10 @@ export function JobDetailsBody(): ReactElement {
             </div>
             <div className="row pb-2">
                 <div className="col-sm-2">
-                    <strong className="text-dark">Redis Host:</strong>
+                    <strong className="text-dark">Redis Address:</strong>
                 </div>
-                <div className="col-sm" id="job-details-redis-host">
-                    {job.redis_host}
-                </div>
-            </div>
-            <div className="row pb-2 mb-2">
-                <div className="col-sm-2">
-                    <strong className="text-dark">Redis Port:</strong>
-                </div>
-                <div className="col-sm" id="job-details-redis-port">
-                    {job.redis_port}
+                <div className="col-sm" id="job-details-redis-address">
+                    {job.redis_address}
                 </div>
             </div>
             {job.error_message ? (
@@ -134,6 +142,15 @@ export function JobDetailsBody(): ReactElement {
                 title="Server Configuration"
                 data={job.server_config}
             />
+
+            <div className="row pb-2">
+                <div className="col-sm-2">
+                    <strong className="text-dark">Client:</strong>
+                </div>
+                <div className="col-sm" id="job-details-client">
+                    {job.client}
+                </div>
+            </div>
 
             <JobDetailsTable
                 Component={JobDetailsClientsInfoTable}
@@ -681,11 +698,11 @@ export function JobDetailsClientsInfoTable({
         <table className="table align-items-center mb-0">
             <thead>
                 <tr>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Client</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Address</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Data Path</th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Redis Host</th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Redis Port</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                        Redis Address
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -693,11 +710,6 @@ export function JobDetailsClientsInfoTable({
                     let additionalClasses = clientInfo.metrics ? "" : "empty-cell";
                     return [
                         <tr className="job-client-details" key={`${i}-details`}>
-                            <td className="col-sm" id={`job-details-client-config-client-${i}`}>
-                                <div className="d-flex flex-column justify-content-center">
-                                    <span className="ps-3 text-secondary text-sm">{clientInfo.client}</span>
-                                </div>
-                            </td>
                             <td className="col-sm" id={`job-details-client-config-service-address-${i}`}>
                                 <div className="d-flex flex-column justify-content-center">
                                     <span className="ps-3 text-secondary text-sm">{clientInfo.service_address}</span>
@@ -708,14 +720,9 @@ export function JobDetailsClientsInfoTable({
                                     <span className="ps-3 text-secondary text-sm">{clientInfo.data_path}</span>
                                 </div>
                             </td>
-                            <td className="col-sm" id={`job-details-client-config-redis-host-${i}`}>
+                            <td className="col-sm" id={`job-details-client-config-redis-address-${i}`}>
                                 <div className="d-flex flex-column justify-content-center">
-                                    <span className="ps-3 text-secondary text-sm">{clientInfo.redis_host}</span>
-                                </div>
-                            </td>
-                            <td className="col-sm" id={`job-details-client-config-redis-port-${i}`}>
-                                <div className="d-flex flex-column justify-content-center">
-                                    <span className="ps-3 text-secondary text-sm">{clientInfo.redis_port}</span>
+                                    <span className="ps-3 text-secondary text-sm">{clientInfo.redis_address}</span>
                                 </div>
                             </td>
                         </tr>,

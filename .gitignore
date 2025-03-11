@@ -173,3 +173,4 @@ next-env.d.ts
 /florist/api/client.db
 /florist/tests/integration/api/client.db
 /florist/tests/unit/api/client.db
+FLorist.code-workspace

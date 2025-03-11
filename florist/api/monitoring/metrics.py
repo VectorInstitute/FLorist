@@ -3,6 +3,7 @@
 import datetime
 import json
 import time
+import urllib
 import uuid
 from logging import DEBUG, Logger
 from typing import Any, Dict, Optional
@@ -154,11 +155,25 @@ class RedisMetricsReporter(BaseReporter):  # type: ignore
         return True
 
 
+def get_host_and_port_from_address(address: str) -> tuple[str, int]:
+    """
+    Split an address into host and port. The address must be in the format `<host>:<port>`.
+
+    :param address: (str) the address in the format `<host>:<port>`.
+    :return: (tuple[str, int]) the host and the port from the address.
+    """
+    result = urllib.parse.urlparse("//" + address)
+
+    if result.hostname is None or result.port is None:
+        raise ValueError(f"Address '{address}' is not valid: must be in the format '<host>:<port>'.")
+
+    return result.hostname, result.port
+
+
 def wait_for_metric(
     uuid: str,
     metric: str,
-    redis_host: str,
-    redis_port: str,
+    redis_address: str,
     logger: Logger,
     max_retries: int = 20,
     seconds_to_sleep_between_retries: int = 1,
@@ -171,14 +186,14 @@ def wait_for_metric(
 
     :param uuid: (str) The UUID to pull the metrics from Redis.
     :param metric: (str) The metric to look for.
-    :param redis_host: (str) The hostname of the Redis instance the metrics are being reported to.
-    :param redis_port: (str) The port of the Redis instance the metrics are being reported to.
+    :param redis_address: (str) The address of the Redis instance the metrics are being reported to.
     :param logger: (logging.Logger) A logger instance to write logs to.
     :param max_retries: (int) The maximum number of retries. Optional, default is 20.
     :param seconds_to_sleep_between_retries: (int) The amount of seconds to sleep between retries.
         Optional, default is 1.
     :raises Exception: If it retries `max_retries` times and the right metrics have not been found.
     """
+    redis_host, redis_port = get_host_and_port_from_address(redis_address)
     redis_connection = redis.Redis(host=redis_host, port=redis_port)
 
     retry = 0
@@ -207,30 +222,30 @@ def wait_for_metric(
     raise Exception(f"Metric '{metric}' not been found after {max_retries} retries.")
 
 
-def get_subscriber(channel: str, redis_host: str, redis_port: str) -> PubSub:
+def get_subscriber(channel: str, redis_address: str) -> PubSub:
     """
     Return a PubSub instance with a subscription to the given channel.
 
     :param channel: (str) The name of the channel to add a subscriber to.
-    :param redis_host: (str) the hostname of the redis instance.
-    :param redis_port: (str) the port of the redis instance.
+    :param redis_address: (str) the address of the redis instance.
     :return: (redis.client.PubSub) The PubSub instance subscribed to the given channel.
     """
+    redis_host, redis_port = get_host_and_port_from_address(redis_address)
     redis_connection = redis.Redis(host=redis_host, port=redis_port)
     pubsub: PubSub = redis_connection.pubsub()  # type: ignore[no-untyped-call]
     pubsub.subscribe(channel)  # type: ignore[no-untyped-call]
     return pubsub
 
 
-def get_from_redis(name: str, redis_host: str, redis_port: str) -> Optional[Dict[str, Any]]:
+def get_from_redis(name: str, redis_address: str) -> Optional[Dict[str, Any]]:
     """
     Get the contents of what's saved on Redis under the name.
 
     :param name: (str) the name to look into Redis.
-    :param redis_host: (str) the hostname of the redis instance.
-    :param redis_port: (str) the port of the redis instance.
+    :param redis_address: (str) the address of the redis instance.
     :return: (Optional[Dict[str, Any]]) the contents under the name.
     """
+    redis_host, redis_port = get_host_and_port_from_address(redis_address)
     redis_connection = redis.Redis(host=redis_host, port=redis_port)
 
     result = redis_connection.get(name)

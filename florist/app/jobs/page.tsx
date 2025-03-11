@@ -215,6 +215,9 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
                                     Model
                                 </th>
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Strategy
+                                </th>
+                                <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                     Server Address
                                 </th>
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
@@ -247,6 +250,7 @@ export function TableRows({ data, status }: { data: Array<JobData>; status: Stat
             key={i}
             rowId={i}
             model={d.model}
+            strategy={d.strategy}
             serverAddress={d.server_address}
             clientsInfo={d.clients_info}
             status={status}
@@ -260,6 +264,7 @@ export function TableRows({ data, status }: { data: Array<JobData>; status: Stat
 export function TableRow({
     rowId,
     model,
+    strategy,
     serverAddress,
     clientsInfo,
     status,
@@ -267,6 +272,7 @@ export function TableRow({
 }: {
     rowId: number;
     model: string;
+    strategy: string;
     serverAddress: string;
     clientsInfo: Array<ClientInfo>;
     status: StatusProp;
@@ -286,6 +292,11 @@ export function TableRow({
             <td>
                 <div className="d-flex flex-column justify-content-center">
                     <span className="ps-3 text-secondary text-xs font-weight-bold">{model}</span>
+                </div>
+            </td>
+            <td>
+                <div className="d-flex flex-column justify-content-center">
+                    <span className="ps-3 text-secondary text-xs font-weight-bold">{strategy}</span>
                 </div>
             </td>
             <td>

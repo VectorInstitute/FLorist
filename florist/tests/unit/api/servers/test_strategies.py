@@ -1,5 +1,3 @@
-from unittest.mock import ANY
-
 from fl4health.client_managers.base_sampling_manager import SimpleClientManager
 from fl4health.server.adaptive_constraint_servers.fedprox_server import FedProxServer
 from fl4health.server.base_server import FlServer
@@ -11,31 +9,30 @@ from flwr.common.typing import Parameters
 from florist.api.models.mnist import MnistNet
 from florist.api.monitoring.metrics import RedisMetricsReporter
 from florist.api.servers.config_parsers import ConfigParser
-from florist.api.servers.models import Model, ServerFactory, fit_config_function, get_fedprox_server, get_fedavg_server
-
-
-def test_class_for_model():
-    assert Model.class_for_model(Model.MNIST_FEDAVG) == MnistNet
-    assert Model.class_for_model(Model.MNIST_FEDPROX) == MnistNet
-
-
-def test_config_parser_for_model():
-    assert Model.config_parser_for_model(Model.MNIST_FEDAVG) == ConfigParser.BASIC
-    assert Model.config_parser_for_model(Model.MNIST_FEDPROX) == ConfigParser.FEDPROX
-
-
-def test_server_factory_for_model():
-    test_server_factory = Model.server_factory_for_model(Model.MNIST_FEDAVG)
-    assert test_server_factory.get_server_function == get_fedavg_server
-    assert test_server_factory.model == Model.MNIST_FEDAVG
-
-    test_server_factory = Model.server_factory_for_model(Model.MNIST_FEDPROX)
-    assert test_server_factory.get_server_function == get_fedprox_server
-    assert test_server_factory.model == Model.MNIST_FEDPROX
+from florist.api.servers.strategies import (
+    Strategy,
+    ServerFactory,
+    fit_config_function,
+    get_fedprox_server,
+    get_fedavg_server,
+)
 
 
 def test_list():
-    assert Model.list() == [Model.MNIST_FEDAVG.value, Model.MNIST_FEDPROX.value]
+    assert Strategy.list() == [Strategy.FEDAVG.value, Strategy.FEDPROX.value]
+
+
+def test_get_config_parser():
+    assert Strategy.FEDAVG.get_config_parser() == ConfigParser.BASIC
+    assert Strategy.FEDPROX.get_config_parser() == ConfigParser.FEDPROX
+
+
+def test_get_server_factory():
+    test_server_factory = Strategy.FEDAVG.get_server_factory()
+    assert test_server_factory.get_server_function == get_fedavg_server
+
+    test_server_factory = Strategy.FEDPROX.get_server_factory()
+    assert test_server_factory.get_server_function == get_fedprox_server
 
 
 def test_get_server_constructor():
@@ -43,19 +40,19 @@ def test_get_server_constructor():
     test_reporters = [RedisMetricsReporter(host="localhost", port="8080")]
     test_server_config = {"test": 123}
     test_get_server_function = get_fedavg_server
-    test_model = Model.MNIST_FEDAVG
-    test_server_factory = ServerFactory(get_server_function=test_get_server_function, model=test_model)
+    test_model = MnistNet()
+    test_server_factory = ServerFactory(get_server_function=test_get_server_function)
 
     result = test_server_factory.get_server_constructor(
+        test_model,
         test_n_clients,
         test_reporters,
         test_server_config,
     )
 
     assert result.func == test_get_server_function
-    assert isinstance(result.args[0], Model.class_for_model(test_model))
     assert result.args == (
-        ANY,
+        test_model,
         test_n_clients,
         test_reporters,
         test_server_config,
