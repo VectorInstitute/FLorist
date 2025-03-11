@@ -76,7 +76,7 @@ def test_start_success(mock_launch_client: Mock) -> None:
     client_obj = mock_launch_client.call_args_list[0][0][0]
     assert isinstance(client_obj, LocalDataClient)
     assert str(client_obj.data_path) == test_data_path
-    assert isinstance(client_obj.model, Model.class_for_model(test_model))
+    assert isinstance(client_obj.model, test_model.get_model_class())
     assert client_obj.optimizer_type == test_optimizer
 
     metrics_reporter = client_obj.reports_manager.reporters[0]

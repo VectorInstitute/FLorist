@@ -2,8 +2,6 @@
 
 from enum import Enum
 
-from typing_extensions import Self
-
 from florist.api.models.abstract import LocalDataModel
 from florist.api.models.mnist import MnistNet
 
@@ -13,19 +11,17 @@ class Model(Enum):
 
     MNIST = "MNIST"
 
-    @classmethod
-    def class_for_model(cls, model: Self) -> type[LocalDataModel]:
+    def get_model_class(self) -> type[LocalDataModel]:
         """
-        Return the class for a given model.
+        Return the class for this model.
 
-        :param model: (Model) The model enumeration object.
-        :return: (type[LocalDataModel]) A LocalDataModel class corresponding to the given model.
-        :raises ValueError: if the client is not supported.
+        :return: (type[LocalDataModel]) A LocalDataModel class corresponding to the model.
+        :raises ValueError: if the model is not supported.
         """
-        if model == Model.MNIST:
+        if self == Model.MNIST:
             return MnistNet
 
-        raise ValueError(f"Model {model.value} not supported.")
+        raise ValueError(f"Model {self.value} not supported.")
 
     @classmethod
     def list(cls) -> list[str]:
