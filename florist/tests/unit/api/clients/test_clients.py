@@ -6,9 +6,9 @@ from florist.api.clients.optimizers import Optimizer
 from florist.api.servers.strategies import Strategy
 
 
-def test_get_client_class():
-    assert Client.FEDAVG.get_client_class() == LocalDataClient
-    assert Client.FEDPROX.get_client_class() == FedProxLocalDataClient
+def test_class_for_client():
+    assert Client.class_for_client(Client.FEDAVG) == LocalDataClient
+    assert Client.class_for_client(Client.FEDPROX) == FedProxLocalDataClient
 
 
 def test_list():

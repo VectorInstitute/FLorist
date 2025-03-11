@@ -12,6 +12,7 @@ from fl4health.utils.sampler import DirichletLabelBasedSampler
 from flwr.common.typing import Config
 from torch.nn.modules.loss import _Loss
 from torch.utils.data import DataLoader
+from typing_extensions import Self
 
 from florist.api.clients.optimizers import Optimizer
 from florist.api.models.abstract import LocalDataModel
@@ -109,19 +110,21 @@ class Client(Enum):
     FEDAVG = "FedAvg"
     FEDPROX = "FedProx"
 
-    def get_client_class(self) -> type[LocalDataClient]:
+    @classmethod
+    def class_for_client(cls, client: Self) -> type[LocalDataClient]:
         """
-        Return the class for this client.
+        Return the class for a given client.
 
-        :return: (type[LocalDataClient]) A subclass of LocalDataClient corresponding to the this client.
+        :param client: (Client) The client enumeration object.
+        :return: (type[LocalDataClient]) A subclass of LocalDataClient corresponding to the given client.
         :raises ValueError: if the client is not supported.
         """
-        if self == Client.FEDAVG:
+        if client == Client.FEDAVG:
             return LocalDataClient
-        if self == Client.FEDPROX:
+        if client == Client.FEDPROX:
             return FedProxLocalDataClient
 
-        raise ValueError(f"Client {self.value} not supported.")
+        raise ValueError(f"Client {client.value} not supported.")
 
     @classmethod
     def list(cls) -> list[str]:
