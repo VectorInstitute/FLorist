@@ -2,8 +2,8 @@ from florist.api.models.models import Model
 from florist.api.models.mnist import MnistNet
 
 
-def test_class_for_model():
-    assert Model.class_for_model(Model.MNIST) == MnistNet
+def test_get_model_class():
+    assert Model.MNIST.get_model_class() == MnistNet
 
 
 def test_list():

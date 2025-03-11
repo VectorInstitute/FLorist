@@ -69,7 +69,7 @@ def start(
 
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-        client_class = Client.class_for_client(client)
+        client_class = client.get_client_class()
         client_obj = client_class(
             data_path=Path(data_path),
             metrics=[],
@@ -77,7 +77,7 @@ def start(
             reporters=[metrics_reporter],
         )
 
-        model_class = Model.class_for_model(model)
+        model_class = model.get_model_class()
         client_obj.set_model(model_class())
         client_obj.set_optimizer_type(optimizer)
 

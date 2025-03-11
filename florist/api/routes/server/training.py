@@ -67,7 +67,7 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         assert job.server_address is not None, "Missing Job information: server_address"
         assert job.redis_address is not None, "Missing Job information: redis_address"
 
-        model_class = Model.class_for_model(job.model)
+        model_class = job.model.get_model_class()
         config_parser = job.strategy.get_config_parser()
         server_factory = job.strategy.get_server_factory()
 
