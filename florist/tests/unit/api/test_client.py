@@ -3,6 +3,7 @@ import json
 import os
 import signal
 from unittest.mock import ANY, Mock, patch
+from typing import Any, AsyncGenerator
 
 import pytest
 from fl4health.utils.metrics import Accuracy
@@ -18,7 +19,7 @@ from florist.api.monitoring.metrics import RedisMetricsReporter
 
 
 @pytest.fixture(autouse=True)
-async def mock_client_db() -> None:
+async def mock_client_db() -> AsyncGenerator[Any, Any]:
     test_sqlite_db_path = "florist/tests/unit/api/client.db"
     print(f"Creating test detabase '{test_sqlite_db_path}'")
     real_db_path = ClientDAO.db_path
