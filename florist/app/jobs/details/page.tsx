@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 
 import { useState } from "react";
-import { ReactElement } from "react/React";
+import type { ReactElement } from "react";
 
 import { useGetJob, getServerLogsKey, getClientLogsKey, useSWRWithKey } from "../hooks";
 import { validStatuses, ClientInfo } from "../definitions";
@@ -32,6 +32,16 @@ export function JobDetailsBody(): ReactElement {
     const jobId = searchParams.get("id");
 
     const { data: job, error, isLoading } = useGetJob(jobId);
+
+    if (!jobId) {
+        return (
+            <div className="container pt-3 p-0">
+                <div className="alert alert-danger text-white">
+                    Missing job ID.
+                </div>
+            </div>
+        );
+    }
 
     if (isLoading) {
         return (
@@ -134,13 +144,13 @@ export function JobDetailsBody(): ReactElement {
                 totalEpochs={totalEpochs}
                 jobStatus={job.status}
                 jobId={job._id}
-                clientIndex={null}
             />
 
             <JobDetailsTable
                 Component={JobDetailsServerConfigTable}
                 title="Server Configuration"
                 data={job.server_config}
+                properties={{}}
             />
 
             <div className="row pb-2">
@@ -166,26 +176,27 @@ export function JobDetailsStatus({ status }: { status: string }): ReactElement {
     let pillClasses = "status-pill text-sm ";
     let iconName;
     let statusDescription;
-    switch (String(validStatuses[status])) {
+    const statusKey = status as keyof typeof validStatuses;
+    switch (validStatuses[statusKey]) {
         case validStatuses.NOT_STARTED:
             pillClasses += "alert-info";
             iconName = "radio_button_checked";
-            statusDescription = validStatuses[status];
+            statusDescription = validStatuses[statusKey];
             break;
         case validStatuses.IN_PROGRESS:
             pillClasses += "alert-warning";
             iconName = "sync";
-            statusDescription = validStatuses[status];
+            statusDescription = validStatuses[statusKey];
             break;
         case validStatuses.FINISHED_SUCCESSFULLY:
             pillClasses += "alert-success";
             iconName = "check_circle";
-            statusDescription = validStatuses[status];
+            statusDescription = validStatuses[statusKey];
             break;
         case validStatuses.FINISHED_WITH_ERROR:
             pillClasses += "alert-danger";
             iconName = "error";
-            statusDescription = validStatuses[status];
+            statusDescription = validStatuses[statusKey];
             break;
         default:
             pillClasses += "alert-secondary";
@@ -213,9 +224,9 @@ export function JobProgressBar({
 }: {
     metrics: string;
     totalEpochs: number;
-    jobStatus: status;
+    jobStatus: keyof typeof validStatuses;
     jobId: string;
-    clientIndex: number;
+    clientIndex?: number;
 }): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
@@ -243,7 +254,7 @@ export function JobProgressBar({
 
     // Clients will not have a status, so we need to set one based on
     // the server status and progress percent
-    let status = jobStatus;
+    let status = jobStatus as keyof typeof validStatuses;
     if (metricsJson.host_type === "client") {
         if (
             validStatuses[status] !== validStatuses.FINISHED_SUCCESSFULLY &&
@@ -258,7 +269,7 @@ export function JobProgressBar({
     }
 
     let progressBarClasses = "progress-bar progress-bar-striped";
-    switch (String(validStatuses[status])) {
+    switch (validStatuses[status]) {
         case validStatuses.IN_PROGRESS:
             progressBarClasses += " bg-warning";
             break;
@@ -331,13 +342,13 @@ export function JobProgressBar({
 export function JobProgressDetails({
     metrics,
     jobId,
-    clientIndex,
     status,
+    clientIndex,
 }: {
     metrics: Object;
     jobId: string;
-    clientIndex: number;
     status: string;
+    clientIndex?: number;
 }): ReactElement {
     const [showLogs, setShowLogs] = useState(false);
 
@@ -357,11 +368,12 @@ export function JobProgressDetails({
     }
 
     let elapsedTime = "";
+    let statusKey = status as keyof typeof validStatuses
     if (fitStartKey in metrics) {
         const startDate = Date.parse(metrics[fitStartKey]);
         if (fitEndKey in metrics) {
             elapsedTime = getTimeString(Date.parse(metrics[fitEndKey]) - startDate);
-        } else if (validStatuses[status] === validStatuses.IN_PROGRESS) {
+        } else if (validStatuses[statusKey] === validStatuses.IN_PROGRESS) {
             // only estimate elapsed time if the job is in progress
             elapsedTime = getTimeString(Date.now() - startDate);
         }
@@ -482,7 +494,7 @@ export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object
     );
 }
 
-export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics: Object; index: str }): ReactElement {
+export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics: Object; index: string }): ReactElement {
     if (!roundMetrics) {
         return null;
     }
@@ -606,7 +618,17 @@ export function JobProgressProperty({ name, value }: { name: string; value: stri
     );
 }
 
-export function JobDetailsTable({ Component, title, data, properties }): ReactElement {
+export function JobDetailsTable({
+    Component,
+    title,
+    data,
+    properties,
+}: {
+    Component: React.ComponentType<{ data: any; properties: Object }>;
+    title: string;
+    data: any;
+    properties: Object,
+ }): ReactElement {
     return (
         <div className="row">
             <div className="col-12">
@@ -628,7 +650,7 @@ export function JobDetailsTable({ Component, title, data, properties }): ReactEl
     );
 }
 
-export function JobDetailsServerConfigTable({ data, properties }: { data: string; properties: Object }): ReactElement {
+export function JobDetailsServerConfigTable({ data, properties }: { data: string; properties?: Object }): ReactElement {
     const emptyResponse = (
         <div className="container" id="job-details-server-config-empty">
             Empty.
@@ -685,13 +707,7 @@ export function JobDetailsServerConfigTable({ data, properties }: { data: string
     );
 }
 
-export function JobDetailsClientsInfoTable({
-    data,
-    properties,
-}: {
-    data: Array<ClientInfo>;
-    properties: Object;
-}): ReactElement {
+export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<ClientInfo>; properties: Object; }): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
     return (

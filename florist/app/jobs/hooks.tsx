@@ -11,8 +11,8 @@ export function useGetJobsByJobStatus(status: string) {
     return { data, error, isLoading };
 }
 
-export function useGetJob(jobId: string) {
-    return useSWR(`/api/server/job/${jobId}`, fetcher);
+export function useGetJob(jobId: string | null) {
+    return useSWR(jobId ? `/api/server/job/${jobId}` : null, fetcher);
 }
 
 export function useGetModels() {
