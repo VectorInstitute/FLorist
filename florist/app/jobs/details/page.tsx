@@ -790,7 +790,7 @@ export function JobLogsModal({
 }: {
     hostType: string,
     jobId: string,
-    setShowLogs: React.Dispatch<React.SetStateAction<boolean>>,
+    setShowLogs: (showLogs: boolean) => void,
     clientIndex?: number,
 }): ReactElement {
     let apiKey: string = "";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { ReactElement } from "react/React";
+import { ReactElement } from "react";
 
 import { refreshJobsByJobStatus, useGetJobsByJobStatus, usePost } from "./hooks";
 import { validStatuses, JobData, ClientInfo } from "./definitions";
@@ -69,7 +69,7 @@ export function NewJobButton(): ReactElement {
 export function StartJobButton({ rowId, jobId }: { rowId: number; jobId: string }): ReactElement {
     const { post, response, isLoading, error } = usePost();
 
-    const handleClickStartJobButton = async () => {
+    const handleClickStartJobButton = async (event: React.MouseEvent) => {
         event.preventDefault();
 
         if (isLoading) {

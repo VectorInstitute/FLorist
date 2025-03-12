@@ -18,11 +18,10 @@ export interface JobData {
 }
 
 export interface ClientInfo {
-    client: string;
     service_address: string;
     data_path: string;
     redis_address: string;
-    metrics: string;
+    metrics?: string;
 }
 
 export interface Metrics {
@@ -47,4 +46,24 @@ export interface JobDetailsProperties {
     jobId?: string;
     jobStatus?: keyof typeof validStatuses;
     totalEpochs?: number;
+}
+
+export interface Job {
+    model: string;
+    strategy: string;
+    optimizer: string;
+    server_address: string;
+    redis_address: string;
+    server_config: Array<ServerConfig>;
+    client: string;
+    clients_info: Array<ClientInfo>;
+}
+
+export interface ServerConfig {
+    name: string;
+    value: string;
+}
+
+export interface ServerConfigDict {
+    [key: string]: any;
 }
