@@ -6,7 +6,7 @@ import { fetcher } from "../client_imports";
 export function useGetJobsByJobStatus(status: string) {
     const endpoint = `/api/server/job/status/${status}`;
     const { data, error, isLoading } = useSWR(endpoint, fetcher, {
-        refresh_interval: 1000,
+        refreshInterval: 1000,
     });
     return { data, error, isLoading };
 }
@@ -44,11 +44,11 @@ export function useSWRWithKey(key: string) {
 }
 
 export const usePost = () => {
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(null);
-    const [response, setResponse] = useState(null);
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [response, setResponse] = useState<any | null>(null);
 
-    const post = async (path, body) => {
+    const post = async (path: string, body: any) => {
         setIsLoading(true);
         setResponse(null);
         setError(null);
@@ -64,7 +64,7 @@ export const usePost = () => {
         if (response.ok) {
             setResponse(json);
         } else {
-            setError(json.error || true);
+            setError(json.error || "An error occurred");
         }
         setIsLoading(false);
     };

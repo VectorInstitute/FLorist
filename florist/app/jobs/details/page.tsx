@@ -765,7 +765,7 @@ export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<C
                                 <div className="d-flex flex-column justify-content-center">
                                     <span className="ps-3 text-secondary text-sm">
                                         <JobProgressBar
-                                            metrics={clientInfo.metrics}
+                                            metrics={clientInfo.metrics ?? ""}
                                             totalEpochs={properties.totalEpochs ?? 0}
                                             jobId={properties.jobId ?? "unknown"}
                                             jobStatus={properties.jobStatus ?? "NOT_STARTED"}

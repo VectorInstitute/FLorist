@@ -15,6 +15,7 @@ export interface JobData {
     redis_host: string;
     redis_port: string;
     clients_info: Array<ClientInfo>;
+    strategy: string;
 }
 
 export interface ClientInfo {
