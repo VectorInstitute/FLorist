@@ -178,7 +178,7 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                         )
                     }
                 >
-                    <option disabled="true" selected="true" value=""></option>
+                    <option disabled={true} selected={true} value={""}></option>
                     <EditJobSelectOptions hook={useGetModels} />
                 </select>
                 <label className="select-caret" htmlFor="job-model">
@@ -202,7 +202,7 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                         )
                     }
                 >
-                    <option disabled="true" selected="true" value=""></option>
+                    <option disabled={true} selected={true} value={""}></option>
                     <EditJobSelectOptions hook={useGetStrategies} />
                 </select>
                 <label className="select-caret" htmlFor="job-strategy">
@@ -226,7 +226,7 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                         )
                     }
                 >
-                    <option disabled="true" selected="true" value=""></option>
+                    <option disabled={true} selected={true} value={""}></option>
                     <EditJobSelectOptions hook={useGetOptimizers} />
                 </select>
                 <label className="select-caret" htmlFor="job-optimizer">
@@ -294,7 +294,7 @@ export function EditJobSelectClient({ state, setState }): ReactElement {
                 }
                 disabled={state.job.strategy ? false : true}
             >
-                <option disabled="true" selected="true" value=""></option>
+                <option disabled={true} selected={true} value={""}></option>
                 <EditJobSelectOptions hook={useGetClients} params={{ strategy: state.job.strategy }} />
             </select>
             <label className="select-caret" htmlFor="job-client">

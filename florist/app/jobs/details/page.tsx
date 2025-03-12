@@ -7,7 +7,7 @@ import { useState } from "react";
 import type { ReactElement } from "react";
 
 import { useGetJob, getServerLogsKey, getClientLogsKey, useSWRWithKey } from "../hooks";
-import { validStatuses, ClientInfo } from "../definitions";
+import { validStatuses, ClientInfo, Metrics, RoundMetrics, JobDetailsProperties } from "../definitions";
 import loading_gif from "../../assets/img/loading.gif";
 
 export default function JobDetails(): ReactElement {
@@ -231,7 +231,7 @@ export function JobProgressBar({
     const [collapsed, setCollapsed] = useState(true);
 
     if (!metrics || !totalEpochs) {
-        return null;
+        return <></>;
     }
 
     const metricsJson = JSON.parse(metrics);
@@ -240,13 +240,17 @@ export function JobProgressBar({
     if (metricsJson.host_type === "server") {
         endRoundKey = "eval_round_end";
     }
-    if (metricsJson.host_type === "client") {
+    else if (metricsJson.host_type === "client") {
         endRoundKey = "round_end";
+    }
+    else {
+        console.error(`JobProgressBar: Host type '${metricsJson.host_type}' not supported.`);
+        return <></>;
     }
 
     let progressPercent = 0;
     if ("rounds" in metricsJson && Object.keys(metricsJson.rounds).length > 0) {
-        const lastRound = Math.max(...Object.keys(metricsJson.rounds));
+        const lastRound = Math.max(...Object.keys(metricsJson.rounds).map(Number));
         const lastCompletedRound = endRoundKey in metricsJson.rounds[lastRound] ? lastRound : lastRound - 1;
         progressPercent = (lastCompletedRound * 100) / totalEpochs;
     }
@@ -301,8 +305,8 @@ export function JobProgressBar({
                                 role="progressbar"
                                 style={{ width: progressWidth }}
                                 aria-valuenow={progressPercent}
-                                aria-valuemin="0"
-                                aria-valuemax="100"
+                                aria-valuemin={0}
+                                aria-valuemax={100}
                             >
                                 <strong>{Math.floor(progressPercent)}%</strong>
                             </div>
@@ -345,7 +349,7 @@ export function JobProgressDetails({
     status,
     clientIndex,
 }: {
-    metrics: Object;
+    metrics: Metrics;
     jobId: string;
     status: string;
     clientIndex?: number;
@@ -353,7 +357,7 @@ export function JobProgressDetails({
     const [showLogs, setShowLogs] = useState(false);
 
     if (!metrics) {
-        return null;
+        return <></>;
     }
 
     let fitStartKey;
@@ -362,9 +366,13 @@ export function JobProgressDetails({
         fitStartKey = "fit_start";
         fitEndKey = "fit_end";
     }
-    if (metrics.host_type === "client") {
+    else if (metrics.host_type === "client") {
         fitStartKey = "initialized";
         fitEndKey = "shutdown";
+    }
+    else {
+        console.error(`JobProgressDetails: Host type '${metrics.host_type}' not supported.`);
+        return <></>;
     }
 
     let elapsedTime = "";
@@ -389,7 +397,7 @@ export function JobProgressDetails({
 
     const metricsFileName =
         metrics.host_type === "server" ? "server-metrics.json" : `client-metrics-${clientIndex}.json`;
-    let metricsFileURL = null;
+    let metricsFileURL = "";
     if (window.URL.createObjectURL) {
         // adding this check here to avoid overly complicated mocking in tests
         metricsFileURL = window.URL.createObjectURL(new Blob([JSON.stringify(metrics, null, 4)]));
@@ -460,11 +468,11 @@ export function JobProgressDetails({
     );
 }
 
-export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object; index: int }): ReactElement {
+export function JobProgressRound({ roundMetrics, index }: { roundMetrics: RoundMetrics, index: number }): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
     if (!roundMetrics) {
-        return null;
+        return <></>;
     }
 
     return (
@@ -494,13 +502,13 @@ export function JobProgressRound({ roundMetrics, index }: { roundMetrics: Object
     );
 }
 
-export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics: Object; index: string }): ReactElement {
+export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics: RoundMetrics, index: number }): ReactElement {
     if (!roundMetrics) {
-        return null;
+        return <></>;
     }
 
-    let fitStart = null;
-    let fitEnd = null;
+    let fitStart = "";
+    let fitEnd = "";
     if ("fit_start" in roundMetrics) {
         fitStart = roundMetrics.fit_start;
         fitEnd = roundMetrics.fit_end;
@@ -580,24 +588,23 @@ export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics:
     );
 }
 
-export function JobProgressProperty({ name, value }: { name: string; value: string }): ReactElement {
-    if (
-        [
-            "fit_start",
-            "fit_end",
-            "fit_round_start",
-            "fit_round_end",
-            "eval_start",
-            "eval_end",
-            "eval_round_start",
-            "eval_round_end",
-            "rounds",
-            "host_type",
-            "initialized",
-            "shutdown",
-        ].includes(name)
-    ) {
-        return null;
+export function JobProgressProperty({ name, value }: { name: string; value: any }): ReactElement {
+    const excludedProperties = [
+        "fit_start",
+        "fit_end",
+        "fit_round_start",
+        "fit_round_end",
+        "eval_start",
+        "eval_end",
+        "eval_round_start",
+        "eval_round_end",
+        "rounds",
+        "host_type",
+        "initialized",
+        "shutdown",
+    ];
+    if (excludedProperties.includes(name)) {
+        return <></>;
     }
     let renderedValue = value;
     if (value.constructor === Array) {
@@ -624,10 +631,10 @@ export function JobDetailsTable({
     data,
     properties,
 }: {
-    Component: React.ComponentType<{ data: any; properties: Object }>;
+    Component: React.ComponentType<{ data: any; properties: JobDetailsProperties }>;
     title: string;
     data: any;
-    properties: Object,
+    properties: JobDetailsProperties,
  }): ReactElement {
     return (
         <div className="row">
@@ -650,7 +657,7 @@ export function JobDetailsTable({
     );
 }
 
-export function JobDetailsServerConfigTable({ data, properties }: { data: string; properties?: Object }): ReactElement {
+export function JobDetailsServerConfigTable({ data, properties }: { data: string; properties: JobDetailsProperties }): ReactElement {
     const emptyResponse = (
         <div className="container" id="job-details-server-config-empty">
             Empty.
@@ -707,7 +714,7 @@ export function JobDetailsServerConfigTable({ data, properties }: { data: string
     );
 }
 
-export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<ClientInfo>; properties: Object; }): ReactElement {
+export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<ClientInfo>; properties: JobDetailsProperties; }): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
     return (
@@ -753,14 +760,15 @@ export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<C
                             <td
                                 className={`job-client-progress col-sm ${additionalClasses}`}
                                 id={`job-details-client-config-progress-${i}`}
-                                colSpan="3"
+                                colSpan={3}
                             >
                                 <div className="d-flex flex-column justify-content-center">
                                     <span className="ps-3 text-secondary text-sm">
                                         <JobProgressBar
                                             metrics={clientInfo.metrics}
-                                            totalEpochs={properties.totalEpochs}
-                                            jobId={properties.jobId}
+                                            totalEpochs={properties.totalEpochs ?? 0}
+                                            jobId={properties.jobId ?? "unknown"}
+                                            jobStatus={properties.jobStatus ?? "NOT_STARTED"}
                                             clientIndex={i}
                                         />
                                     </span>
@@ -777,34 +785,34 @@ export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<C
 export function JobLogsModal({
     hostType,
     jobId,
-    clientIndex,
-    showLogs,
     setShowLogs,
+    clientIndex,
 }: {
-    type: string;
-    jobId: string;
-    clientIndex: number;
-    setShowLogs: Callable;
+    hostType: string,
+    jobId: string,
+    setShowLogs: React.Dispatch<React.SetStateAction<boolean>>,
+    clientIndex?: number,
 }): ReactElement {
-    let apiKey, fileName;
+    let apiKey: string = "";
+    let fileName: string = "";
+
     if (hostType === "server") {
         apiKey = getServerLogsKey(jobId);
         fileName = "server.log";
-    }
-    if (hostType === "client") {
-        apiKey = getClientLogsKey(jobId, clientIndex);
+    } else if (hostType === "client") {
+        apiKey = getClientLogsKey(jobId, clientIndex ?? -1);
         fileName = `client-${clientIndex}.log`;
     }
 
     const { data, error, isLoading, isValidating, mutate } = useSWRWithKey(apiKey);
 
-    let dataURL = null;
+    let dataURL = "";
     if (data) {
         dataURL = window.URL.createObjectURL(new Blob([data]));
     }
 
     return (
-        <div className="log-viewer modal show" tabIndex="-1">
+        <div className="log-viewer modal show" tabIndex={-1}>
             <div className="modal-dialog modal-dialog-scrollable">
                 <div className="modal-content">
                     <div className="modal-header">

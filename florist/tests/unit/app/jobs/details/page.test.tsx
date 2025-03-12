@@ -284,7 +284,7 @@ describe("Job Details Page", () => {
         });
         it("Display progress bar at 0% when there are no information about rounds", () => {
             const testJob = makeTestJob();
-            testJob.server_metrics = JSON.stringify({});
+            testJob.server_metrics = JSON.stringify({ host_type: "server" });
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
             const progressBar = container.querySelector("div.progress-bar");
@@ -294,7 +294,7 @@ describe("Job Details Page", () => {
         });
         it("Display progress bar at 0% when rounds list is empty", () => {
             const testJob = makeTestJob();
-            testJob.server_metrics = JSON.stringify({ rounds: {} });
+            testJob.server_metrics = JSON.stringify({ host_type: "server", rounds: {} });
             setupGetJobMock(testJob);
             const { container } = render(<JobDetails />);
             const progressBar = container.querySelector("div.progress-bar");
