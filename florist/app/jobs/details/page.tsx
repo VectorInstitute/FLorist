@@ -36,9 +36,7 @@ export function JobDetailsBody(): ReactElement {
     if (!jobId) {
         return (
             <div className="container pt-3 p-0">
-                <div className="alert alert-danger text-white">
-                    Missing job ID.
-                </div>
+                <div className="alert alert-danger text-white">Missing job ID.</div>
             </div>
         );
     }
@@ -239,11 +237,9 @@ export function JobProgressBar({
     let endRoundKey;
     if (metricsJson.host_type === "server") {
         endRoundKey = "eval_round_end";
-    }
-    else if (metricsJson.host_type === "client") {
+    } else if (metricsJson.host_type === "client") {
         endRoundKey = "round_end";
-    }
-    else {
+    } else {
         console.error(`JobProgressBar: Host type '${metricsJson.host_type}' not supported.`);
         return <></>;
     }
@@ -365,18 +361,16 @@ export function JobProgressDetails({
     if (metrics.host_type === "server") {
         fitStartKey = "fit_start";
         fitEndKey = "fit_end";
-    }
-    else if (metrics.host_type === "client") {
+    } else if (metrics.host_type === "client") {
         fitStartKey = "initialized";
         fitEndKey = "shutdown";
-    }
-    else {
+    } else {
         console.error(`JobProgressDetails: Host type '${metrics.host_type}' not supported.`);
         return <></>;
     }
 
     let elapsedTime = "";
-    let statusKey = status as keyof typeof validStatuses
+    let statusKey = status as keyof typeof validStatuses;
     if (fitStartKey in metrics) {
         const startDate = Date.parse(metrics[fitStartKey]);
         if (fitEndKey in metrics) {
@@ -468,7 +462,7 @@ export function JobProgressDetails({
     );
 }
 
-export function JobProgressRound({ roundMetrics, index }: { roundMetrics: RoundMetrics, index: number }): ReactElement {
+export function JobProgressRound({ roundMetrics, index }: { roundMetrics: RoundMetrics; index: number }): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
     if (!roundMetrics) {
@@ -502,7 +496,13 @@ export function JobProgressRound({ roundMetrics, index }: { roundMetrics: RoundM
     );
 }
 
-export function JobProgressRoundDetails({ roundMetrics, index }: { roundMetrics: RoundMetrics, index: number }): ReactElement {
+export function JobProgressRoundDetails({
+    roundMetrics,
+    index,
+}: {
+    roundMetrics: RoundMetrics;
+    index: number;
+}): ReactElement {
     if (!roundMetrics) {
         return <></>;
     }
@@ -634,8 +634,8 @@ export function JobDetailsTable({
     Component: React.ComponentType<{ data: any; properties: JobDetailsProperties }>;
     title: string;
     data: any;
-    properties: JobDetailsProperties,
- }): ReactElement {
+    properties: JobDetailsProperties;
+}): ReactElement {
     return (
         <div className="row">
             <div className="col-12">
@@ -657,7 +657,13 @@ export function JobDetailsTable({
     );
 }
 
-export function JobDetailsServerConfigTable({ data, properties }: { data: string; properties: JobDetailsProperties }): ReactElement {
+export function JobDetailsServerConfigTable({
+    data,
+    properties,
+}: {
+    data: string;
+    properties: JobDetailsProperties;
+}): ReactElement {
     const emptyResponse = (
         <div className="container" id="job-details-server-config-empty">
             Empty.
@@ -714,7 +720,13 @@ export function JobDetailsServerConfigTable({ data, properties }: { data: string
     );
 }
 
-export function JobDetailsClientsInfoTable({ data, properties }: { data: Array<ClientInfo>; properties: JobDetailsProperties; }): ReactElement {
+export function JobDetailsClientsInfoTable({
+    data,
+    properties,
+}: {
+    data: Array<ClientInfo>;
+    properties: JobDetailsProperties;
+}): ReactElement {
     const [collapsed, setCollapsed] = useState(true);
 
     return (
@@ -788,10 +800,10 @@ export function JobLogsModal({
     setShowLogs,
     clientIndex,
 }: {
-    hostType: string,
-    jobId: string,
-    setShowLogs: (showLogs: boolean) => void,
-    clientIndex?: number,
+    hostType: string;
+    jobId: string;
+    setShowLogs: (showLogs: boolean) => void;
+    clientIndex?: number;
 }): ReactElement {
     let apiKey: string = "";
     let fileName: string = "";
