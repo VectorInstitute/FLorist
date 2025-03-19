@@ -43,7 +43,7 @@ interface EditJobState {
     job: Job;
 }
 
-type SetState = (recipe: (draft: Draft<EditJobState>) => void) => void
+type SetState = (recipe: (draft: Draft<EditJobState>) => void) => void;
 type Hook = (...args: any[]) => { data: string[] };
 
 function formatServerConfig(serverConfig: Array<ServerConfig>): string {
@@ -89,7 +89,7 @@ export function EditJobForm(): ReactElement {
         const job = {
             ...state.job,
             // Server config is a json string, so changing it here before sending the data over
-            server_config: formatServerConfig(state.job.server_config)
+            server_config: formatServerConfig(state.job.server_config),
         };
         await post("/api/server/job", JSON.stringify(job));
     }
@@ -152,7 +152,13 @@ export function EditJobForm(): ReactElement {
     );
 }
 
-export function EditJobServerAttributes({ state, setState }: { state: EditJobState; setState: SetState }): ReactElement {
+export function EditJobServerAttributes({
+    state,
+    setState,
+}: {
+    state: EditJobState;
+    setState: SetState;
+}): ReactElement {
     return (
         <div>
             <div className="input-group input-group-outline gray-input-box mb-3">
@@ -328,7 +334,13 @@ export function EditJobServerConfig({ state, setState }: { state: EditJobState; 
     );
 }
 
-export function EditJobServerConfigUploader({ state, setState }: { state: EditJobState; setState: SetState }): ReactElement {
+export function EditJobServerConfigUploader({
+    state,
+    setState,
+}: {
+    state: EditJobState;
+    setState: SetState;
+}): ReactElement {
     const buttonRef = useRef<HTMLInputElement>(null);
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -383,7 +395,15 @@ export function EditJobServerConfigUploader({ state, setState }: { state: EditJo
     );
 }
 
-export function EditJobServerConfigItem({ index, state, setState }: { index: number; state: EditJobState; setState: SetState }): ReactElement {
+export function EditJobServerConfigItem({
+    index,
+    state,
+    setState,
+}: {
+    index: number;
+    state: EditJobState;
+    setState: SetState;
+}): ReactElement {
     const changeServerConfigAttribute = produce((newState, attribute, value) => {
         newState.job.server_config[index][attribute] = value;
     });
@@ -473,11 +493,11 @@ export function EditJobClientsInfo({ state, setState }: { state: EditJobState; s
 export function EditJobClientsInfoItem({
     index,
     state,
-    setState
+    setState,
 }: {
-    index: number,
-    state: EditJobState,
-    setState: SetState,
+    index: number;
+    state: EditJobState;
+    setState: SetState;
 }): ReactElement {
     const changeClientInfoAttribute = produce((newState, attribute, value) => {
         newState.job.clients_info[index][attribute] = value;
