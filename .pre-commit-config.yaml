@@ -65,7 +65,7 @@ repos:
     hooks:
     - id: doctest
       name: doctest
-      entry: ./venv/bin/python -m doctest -o NORMALIZE_WHITESPACE
+      entry: python -m doctest -o NORMALIZE_WHITESPACE
       files: "(^florist/api/|florist/tests/api/)"
       language: python
 
