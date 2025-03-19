@@ -583,6 +583,9 @@ export function JobProgressProperty({ name, value }: { name: string; value: stri
             "host_type",
             "initialized",
             "shutdown",
+            "fit_elapsed_time",
+            "fit_round_time_elapsed",
+            "eval_round_time_elapsed",
         ].includes(name)
     ) {
         return null;
