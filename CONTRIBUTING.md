@@ -5,23 +5,19 @@ Thanks for your interest in contributing!
 To submit PRs, please fill out the PR template along with the PR. If the PR
 fixes an issue, don't forget to link the PR to the issue!
 
-## Pre-commit hooks
+## Virtual Environment
 
-Once the python virtual environment is setup, you can run pre-commit hooks using:
+To install development dependencies, first you need to create a virtual environment.
+It's important to create it with the name `venv`, and you can do so with the commands below.
+If you wish to use a different virtual environment name, you should also update the
+[`.pre-commit-config.yaml`](./.pre-commit-config.yaml) file.
 
-```bash
-pre-commit run --all-files
+```shell
+python -m venv venv
+source venv/bin/activate
 ```
 
 ## Development dependencies
-
-To install development dependencies, first you need to create a virtual environment.
-The easiest way is by using the [virtualenv](https://pypi.org/project/virtualenv/) package:
-
-```shell
-virtualenv venv
-source venv/bin/activate
-```
 
 We use [Poetry](https://python-poetry.org/) to manage back-end dependencies:
 
@@ -52,6 +48,27 @@ To start the server in development mode, run:
 ```shell
 yarn dev
 ```
+
+## Pre-commit hooks
+
+Once the python virtual environment is setup, you can run pre-commit hooks.
+First, you should install the `pre-commit` tool using pip:
+
+```bash
+pip install pre-commit
+```
+
+Then, you should install the project's pre-commit hooks into your environment:
+```bash
+pre-commit install
+```
+
+Now you can run the pre-commit hooks in the project:
+```bash
+pre-commit run --all-files
+```
+
+It will also automatically run whenever you commit a file into the git repository.
 
 ## Running the tests
 
