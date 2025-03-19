@@ -28,8 +28,8 @@ repos:
     rev: v1.15.0
     hooks:
     - id: mypy
-      entry: python3 -m mypy --config-file pyproject.toml
-      language: system
+      entry: ./venv/bin/python -m mypy --config-file pyproject.toml
+      language: python
       types: [python]
       exclude: "florist/tests/"
 
@@ -65,16 +65,16 @@ repos:
     hooks:
     - id: doctest
       name: doctest
-      entry: python3 -m doctest -o NORMALIZE_WHITESPACE
+      entry: ./venv/bin/python -m doctest -o NORMALIZE_WHITESPACE
       files: "(^florist/api/|florist/tests/api/)"
-      language: system
+      language: python
 
   - repo: local
     hooks:
     - id: pytest-unit
       name: pytest-unit
-      entry: python -m pytest florist/tests/unit
-      language: system
+      entry: ./venv/bin/python -m pytest florist/tests/unit
+      language: python
       pass_filenames: false
       always_run: true
 
