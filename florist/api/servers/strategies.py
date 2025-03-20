@@ -1,5 +1,7 @@
 """Definitions for the strategies, strategy enumeration and server constructors."""
 
+from __future__ import annotations
+
 from enum import Enum
 from functools import partial
 from typing import Any, Callable, TypeAlias
@@ -19,7 +21,7 @@ from florist.api.servers.config_parsers import ConfigParser
 
 
 GetServerFunction: TypeAlias = Callable[[torch.nn.Module, int, list[BaseReporter], dict[str, Any]], FlServer]
-FitConfigFn: TypeAlias = Callable[[int], dict[str, Scalar]]
+ConfigFn: TypeAlias = Callable[[int], dict[str, Scalar]]
 
 
 class Strategy(Enum):
@@ -140,14 +142,14 @@ def get_fedavg_server(
     :param server_config: (dict[str, Any]) A dictionary with the server configuration values.
     :return: (FlServer) An FlServer instance configured with FedAvg strategy.
     """
-    fit_config_fn: FitConfigFn = partial(fit_config_function, server_config)
+    config_fn: ConfigFn = partial(fit_config_function, server_config)
     initial_model_parameters = ndarrays_to_parameters([val.cpu().numpy() for _, val in model.state_dict().items()])
     strategy = FedAvg(
         min_fit_clients=n_clients,
         min_evaluate_clients=n_clients,
         min_available_clients=n_clients,
-        on_fit_config_fn=fit_config_fn,
-        on_evaluate_config_fn=fit_config_fn,
+        on_fit_config_fn=config_fn,
+        on_evaluate_config_fn=config_fn,
         fit_metrics_aggregation_fn=fit_metrics_aggregation_fn,
         evaluate_metrics_aggregation_fn=evaluate_metrics_aggregation_fn,
         initial_parameters=initial_model_parameters,
@@ -171,16 +173,16 @@ def get_fedprox_server(
     :param server_config: (dict[str, Any]) A dictionary with the server configuration values.
     :return: (FlServer) An FlServer instance configured with FedProx strategy.
     """
-    fit_config_fn: FitConfigFn = partial(fit_config_function, server_config)
+    config_fn: ConfigFn = partial(fit_config_function, server_config)
     initial_model_parameters = ndarrays_to_parameters([val.cpu().numpy() for _, val in model.state_dict().items()])
     strategy = FedAvgWithAdaptiveConstraint(
         min_fit_clients=n_clients,
         min_evaluate_clients=n_clients,
         # Server waits for min_available_clients before starting FL rounds
         min_available_clients=n_clients,
-        on_fit_config_fn=fit_config_fn,
+        on_fit_config_fn=config_fn,
         # We use the same fit config function, as nothing changes for eval
-        on_evaluate_config_fn=fit_config_fn,
+        on_evaluate_config_fn=config_fn,
         fit_metrics_aggregation_fn=fit_metrics_aggregation_fn,
         evaluate_metrics_aggregation_fn=evaluate_metrics_aggregation_fn,
         initial_parameters=initial_model_parameters,

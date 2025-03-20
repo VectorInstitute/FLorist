@@ -3,8 +3,10 @@ import json
 import os
 import signal
 from unittest.mock import ANY, Mock, patch
+from typing import Any, AsyncGenerator
 
 import pytest
+from fl4health.utils.metrics import Accuracy
 
 from florist.api import client
 from florist.api.clients.clients import Client
@@ -17,7 +19,7 @@ from florist.api.monitoring.metrics import RedisMetricsReporter
 
 
 @pytest.fixture(autouse=True)
-async def mock_client_db() -> None:
+async def mock_client_db() -> AsyncGenerator[Any, Any]:
     test_sqlite_db_path = "florist/tests/unit/api/client.db"
     print(f"Creating test detabase '{test_sqlite_db_path}'")
     real_db_path = ClientDAO.db_path
@@ -76,8 +78,10 @@ def test_start_success(mock_launch_client: Mock) -> None:
     client_obj = mock_launch_client.call_args_list[0][0][0]
     assert isinstance(client_obj, LocalDataClient)
     assert str(client_obj.data_path) == test_data_path
-    assert isinstance(client_obj.model, Model.class_for_model(test_model))
+    assert isinstance(client_obj.model, test_model.get_model_class())
     assert client_obj.optimizer_type == test_optimizer
+    assert len(client_obj.metrics) == 1
+    assert isinstance(client_obj.metrics[0], Accuracy)
 
     metrics_reporter = client_obj.reports_manager.reporters[0]
     assert isinstance(metrics_reporter, RedisMetricsReporter)
