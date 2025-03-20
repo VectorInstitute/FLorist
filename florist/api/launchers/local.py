@@ -10,7 +10,7 @@ from typing import Callable
 import flwr as fl
 import torch
 from fl4health.clients.basic_client import BasicClient
-from fl4health.server.base_server import FlServer
+from fl4health.servers.base_server import FlServer
 from flwr.common import Scalar
 from flwr.server import ServerConfig
 
