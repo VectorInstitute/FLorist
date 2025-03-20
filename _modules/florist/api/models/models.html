@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>florist.api.servers.launch - FLorist</title>
+        <title>florist.api.models.models - FLorist</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -209,8 +209,8 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/api/florist.html">florist package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of florist package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.html">florist.api package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of florist.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.clients.html">florist.api.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of florist.api.clients package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.clients.common.html">florist.api.clients.common module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.clients.mnist.html">florist.api.clients.mnist module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.clients.clients.html">florist.api.clients.clients module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.clients.optimizers.html">florist.api.clients.optimizers module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.db.html">florist.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -224,7 +224,9 @@
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.models.html">florist.api.models package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of florist.api.models package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.models.abstract.html">florist.api.models.abstract module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.models.mnist.html">florist.api.models.mnist module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.models.models.html">florist.api.models.models module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.monitoring.html">florist.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -243,8 +245,7 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.servers.html">florist.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of florist.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.servers.config_parsers.html">florist.api.servers.config_parsers module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.servers.launch.html">florist.api.servers.launch module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.servers.models.html">florist.api.servers.models module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.servers.strategies.html">florist.api.servers.strategies module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../reference/api/florist.api.client.html">florist.api.client module</a></li>
@@ -275,17 +276,26 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.html">florist.tests.unit package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of florist.tests.unit package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.html">florist.tests.unit.api package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.clients.html">florist.tests.unit.api.clients namespace</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.clients namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.clients.test_common.html">florist.tests.unit.api.clients.test_common module</a></li>
-<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.clients.test_minst.html">florist.tests.unit.api.clients.test_minst module</a></li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.clients.html">florist.tests.unit.api.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.clients package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.clients.test_clients.html">florist.tests.unit.api.clients.test_clients module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.clients.test_optimizers.html">florist.tests.unit.api.clients.test_optimizers module</a></li>
 </ul>
 </li>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.monitoring.html">florist.tests.unit.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.launchers.html">florist.tests.unit.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.launchers.test_local.html">florist.tests.unit.api.launchers.test_local module</a></li>
+</ul>
+</li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.models.html">florist.tests.unit.api.models package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.models package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.models.test_mnist.html">florist.tests.unit.api.models.test_mnist module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.models.test_models.html">florist.tests.unit.api.models.test_models module</a></li>
+</ul>
+</li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.monitoring.html">florist.tests.unit.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html">florist.tests.unit.api.monitoring.test_metrics module</a></li>
 </ul>
 </li>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.html">florist.tests.unit.api.routes package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.routes package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.server.html">florist.tests.unit.api.routes.server package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.routes.server package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.html">florist.tests.unit.api.routes package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.routes package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.server.html">florist.tests.unit.api.routes.server package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.routes.server package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l8"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.server.test_job.html">florist.tests.unit.api.routes.server.test_job module</a></li>
 <li class="toctree-l8"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.server.test_status.html">florist.tests.unit.api.routes.server.test_status module</a></li>
 <li class="toctree-l8"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html">florist.tests.unit.api.routes.server.test_training module</a></li>
@@ -293,10 +303,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.servers.html">florist.tests.unit.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.servers.html">florist.tests.unit.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.servers.test_config_parsers.html">florist.tests.unit.api.servers.test_config_parsers module</a></li>
-<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.servers.test_launch.html">florist.tests.unit.api.servers.test_launch module</a></li>
-<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.servers.test_models.html">florist.tests.unit.api.servers.test_models module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.servers.test_strategies.html">florist.tests.unit.api.servers.test_strategies module</a></li>
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.test_client.html">florist.tests.unit.api.test_client module</a></li>
@@ -343,64 +352,48 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.api.servers.launch</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Functions and definitions to launch local servers.&quot;&quot;&quot;</span>
+          <h1>Source code for florist.api.models.models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions and definitions for models and the Model enumeration.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.launchers.local</span> <span class="kn">import</span> <span class="n">launch_server</span>
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.logs</span> <span class="kn">import</span> <span class="n">get_server_log_file_path</span>
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">RedisMetricsReporter</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.models</span> <span class="kn">import</span> <span class="n">ServerFactory</span>
+<span class="kn">from</span> <span class="nn">florist.api.models.abstract</span> <span class="kn">import</span> <span class="n">LocalDataModel</span>
+<span class="kn">from</span> <span class="nn">florist.api.models.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
 
 
-<div class="viewcode-block" id="launch_local_server">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.servers.launch.html#florist.api.servers.launch.launch_local_server">[docs]</a>
-<span class="k">def</span> <span class="nf">launch_local_server</span><span class="p">(</span>
-    <span class="n">server_factory</span><span class="p">:</span> <span class="n">ServerFactory</span><span class="p">,</span>
-    <span class="n">server_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-    <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">n_clients</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">redis_host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">redis_port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Process</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Launch a FL server locally.</span>
+<div class="viewcode-block" id="Model">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.models.models.html#florist.api.models.models.Model">[docs]</a>
+<span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enumeration of supported models.&quot;&quot;&quot;</span>
 
-<span class="sd">    :param server_factory: (ServerFactory) an instance of ServerFactory, which will be used to</span>
-<span class="sd">        make a server for the model.</span>
-<span class="sd">    :param server_config: (dict[str, Any]) a dictionary with the necessary server configurations for</span>
-<span class="sd">        the model.</span>
-<span class="sd">    :param server_address: (str) The address the server should start at.</span>
-<span class="sd">    :param n_clients: (int) The number of clients that will report to this server.</span>
-<span class="sd">    :param redis_host: (str) the host name for the Redis instance for metrics reporting.</span>
-<span class="sd">    :param redis_port: (str) the port for the Redis instance for metrics reporting.</span>
-<span class="sd">    :return: (tuple[str, multiprocessing.Process, str]) a tuple with:</span>
-<span class="sd">        - The UUID of the server, which can be used to pull metrics from Redis.</span>
-<span class="sd">        - The server&#39;s local process object.</span>
-<span class="sd">        - The local path for the log file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">server_uuid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+    <span class="n">MNIST</span> <span class="o">=</span> <span class="s2">&quot;MNIST&quot;</span>
 
-    <span class="n">metrics_reporter</span> <span class="o">=</span> <span class="n">RedisMetricsReporter</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">redis_port</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="n">server_uuid</span><span class="p">)</span>
-    <span class="n">server_constructor</span> <span class="o">=</span> <span class="n">server_factory</span><span class="o">.</span><span class="n">get_server_constructor</span><span class="p">(</span>
-        <span class="n">n_clients</span><span class="o">=</span><span class="n">n_clients</span><span class="p">,</span>
-        <span class="n">reporters</span><span class="o">=</span><span class="p">[</span><span class="n">metrics_reporter</span><span class="p">],</span>
-        <span class="n">server_config</span><span class="o">=</span><span class="n">server_config</span><span class="p">,</span>
-    <span class="p">)</span>
+<div class="viewcode-block" id="Model.get_model_class">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.models.models.html#florist.api.models.models.Model.get_model_class">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_model_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">LocalDataModel</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the class for this model.</span>
 
-    <span class="n">log_file_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_server_log_file_path</span><span class="p">(</span><span class="n">server_uuid</span><span class="p">))</span>
-    <span class="n">server_process</span> <span class="o">=</span> <span class="n">launch_server</span><span class="p">(</span>
-        <span class="n">server_constructor</span><span class="p">,</span>
-        <span class="n">server_address</span><span class="p">,</span>
-        <span class="n">server_config</span><span class="p">[</span><span class="s2">&quot;n_server_rounds&quot;</span><span class="p">],</span>
-        <span class="n">log_file_path</span><span class="p">,</span>
-        <span class="n">seconds_to_sleep</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="p">)</span>
+<span class="sd">        :return: (type[LocalDataModel]) A LocalDataModel class corresponding to the model.</span>
+<span class="sd">        :raises ValueError: if the model is not supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">Model</span><span class="o">.</span><span class="n">MNIST</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">MnistNet</span>
 
-    <span class="k">return</span> <span class="n">server_uuid</span><span class="p">,</span> <span class="n">server_process</span><span class="p">,</span> <span class="n">log_file_path</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Model.list">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.models.models.html#florist.api.models.models.Model.list">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List all the supported models.</span>
+
+<span class="sd">        :return: (list[str]) a list of supported models.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">Model</span><span class="p">]</span></div>
+</div>
 
 </pre></div>
         </article>

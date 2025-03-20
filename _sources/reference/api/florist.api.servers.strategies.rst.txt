@@ -1,0 +1,7 @@
+florist.api.servers.strategies module
+=====================================
+
+.. automodule:: florist.api.servers.strategies
+   :members:
+   :undoc-members:
+   :show-inheritance:

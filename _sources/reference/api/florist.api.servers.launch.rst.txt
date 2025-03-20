@@ -1,7 +1,0 @@
-florist.api.servers.launch module
-=================================
-
-.. automodule:: florist.api.servers.launch
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,0 +1,16 @@
+florist.tests.unit.api.models package
+=====================================
+
+.. automodule:: florist.tests.unit.api.models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.tests.unit.api.models.test_mnist
+   florist.tests.unit.api.models.test_models

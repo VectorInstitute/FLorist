@@ -1,0 +1,7 @@
+florist.api.clients.optimizers module
+=====================================
+
+.. automodule:: florist.api.clients.optimizers
+   :members:
+   :undoc-members:
+   :show-inheritance:

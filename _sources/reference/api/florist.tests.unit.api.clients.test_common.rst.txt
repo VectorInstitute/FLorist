@@ -1,7 +1,0 @@
-florist.tests.unit.api.clients.test\_common module
-==================================================
-
-.. automodule:: florist.tests.unit.api.clients.test_common
-   :members:
-   :undoc-members:
-   :show-inheritance:

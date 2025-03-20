@@ -1,0 +1,7 @@
+florist.tests.unit.api.servers.test\_strategies module
+======================================================
+
+.. automodule:: florist.tests.unit.api.servers.test_strategies
+   :members:
+   :undoc-members:
+   :show-inheritance:

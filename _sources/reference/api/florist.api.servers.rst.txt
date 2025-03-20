@@ -13,5 +13,4 @@ Submodules
    :maxdepth: 4
 
    florist.api.servers.config_parsers
-   florist.api.servers.launch
-   florist.api.servers.models
+   florist.api.servers.strategies

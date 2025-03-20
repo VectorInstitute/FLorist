@@ -13,6 +13,8 @@ Subpackages
    :maxdepth: 4
 
    florist.tests.unit.api.clients
+   florist.tests.unit.api.launchers
+   florist.tests.unit.api.models
    florist.tests.unit.api.monitoring
    florist.tests.unit.api.routes
    florist.tests.unit.api.servers

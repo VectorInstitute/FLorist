@@ -1,0 +1,7 @@
+florist.tests.unit.api.models.test\_mnist module
+================================================
+
+.. automodule:: florist.tests.unit.api.models.test_mnist
+   :members:
+   :undoc-members:
+   :show-inheritance:

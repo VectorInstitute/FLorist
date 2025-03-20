@@ -12,5 +12,5 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   florist.api.clients.common
-   florist.api.clients.mnist
+   florist.api.clients.clients
+   florist.api.clients.optimizers

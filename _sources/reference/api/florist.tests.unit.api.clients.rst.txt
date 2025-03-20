@@ -1,7 +1,10 @@
-florist.tests.unit.api.clients namespace
-========================================
+florist.tests.unit.api.clients package
+======================================
 
-.. py:module:: florist.tests.unit.api.clients
+.. automodule:: florist.tests.unit.api.clients
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------
@@ -9,5 +12,5 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   florist.tests.unit.api.clients.test_common
-   florist.tests.unit.api.clients.test_minst
+   florist.tests.unit.api.clients.test_clients
+   florist.tests.unit.api.clients.test_optimizers

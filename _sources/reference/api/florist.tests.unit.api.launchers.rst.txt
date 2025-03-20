@@ -1,0 +1,15 @@
+florist.tests.unit.api.launchers package
+========================================
+
+.. automodule:: florist.tests.unit.api.launchers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   florist.tests.unit.api.launchers.test_local

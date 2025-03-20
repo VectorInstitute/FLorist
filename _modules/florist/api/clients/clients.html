@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>florist.api.clients.mnist - FLorist</title>
+        <title>florist.api.clients.clients - FLorist</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -209,8 +209,8 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/api/florist.html">florist package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of florist package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.html">florist.api package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of florist.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.clients.html">florist.api.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of florist.api.clients package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.clients.common.html">florist.api.clients.common module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.clients.mnist.html">florist.api.clients.mnist module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.clients.clients.html">florist.api.clients.clients module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.clients.optimizers.html">florist.api.clients.optimizers module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.db.html">florist.api.db package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of florist.api.db package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -224,7 +224,9 @@
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.models.html">florist.api.models package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of florist.api.models package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.models.abstract.html">florist.api.models.abstract module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.models.mnist.html">florist.api.models.mnist module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.models.models.html">florist.api.models.models module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.monitoring.html">florist.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of florist.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -243,8 +245,7 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.api.servers.html">florist.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of florist.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.servers.config_parsers.html">florist.api.servers.config_parsers module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.servers.launch.html">florist.api.servers.launch module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.servers.models.html">florist.api.servers.models module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../reference/api/florist.api.servers.strategies.html">florist.api.servers.strategies module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../reference/api/florist.api.client.html">florist.api.client module</a></li>
@@ -275,17 +276,26 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.html">florist.tests.unit package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of florist.tests.unit package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.html">florist.tests.unit.api package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.clients.html">florist.tests.unit.api.clients namespace</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.clients namespace</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.clients.test_common.html">florist.tests.unit.api.clients.test_common module</a></li>
-<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.clients.test_minst.html">florist.tests.unit.api.clients.test_minst module</a></li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.clients.html">florist.tests.unit.api.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.clients package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.clients.test_clients.html">florist.tests.unit.api.clients.test_clients module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.clients.test_optimizers.html">florist.tests.unit.api.clients.test_optimizers module</a></li>
 </ul>
 </li>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.monitoring.html">florist.tests.unit.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.launchers.html">florist.tests.unit.api.launchers package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.launchers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.launchers.test_local.html">florist.tests.unit.api.launchers.test_local module</a></li>
+</ul>
+</li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.models.html">florist.tests.unit.api.models package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.models package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.models.test_mnist.html">florist.tests.unit.api.models.test_mnist module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.models.test_models.html">florist.tests.unit.api.models.test_models module</a></li>
+</ul>
+</li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.monitoring.html">florist.tests.unit.api.monitoring package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.monitoring package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html">florist.tests.unit.api.monitoring.test_metrics module</a></li>
 </ul>
 </li>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.html">florist.tests.unit.api.routes package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.routes package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.server.html">florist.tests.unit.api.routes.server package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.routes.server package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.html">florist.tests.unit.api.routes package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.routes package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.server.html">florist.tests.unit.api.routes.server package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.routes.server package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l8"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.server.test_job.html">florist.tests.unit.api.routes.server.test_job module</a></li>
 <li class="toctree-l8"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.server.test_status.html">florist.tests.unit.api.routes.server.test_status module</a></li>
 <li class="toctree-l8"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html">florist.tests.unit.api.routes.server.test_training module</a></li>
@@ -293,10 +303,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.servers.html">florist.tests.unit.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.servers.html">florist.tests.unit.api.servers package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle navigation of florist.tests.unit.api.servers package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.servers.test_config_parsers.html">florist.tests.unit.api.servers.test_config_parsers module</a></li>
-<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.servers.test_launch.html">florist.tests.unit.api.servers.test_launch module</a></li>
-<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.servers.test_models.html">florist.tests.unit.api.servers.test_models module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.servers.test_strategies.html">florist.tests.unit.api.servers.test_strategies module</a></li>
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../reference/api/florist.tests.unit.api.test_client.html">florist.tests.unit.api.test_client module</a></li>
@@ -343,154 +352,192 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for florist.api.clients.mnist</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Implementation of the MNIST client and model.&quot;&quot;&quot;</span>
+          <h1>Source code for florist.api.clients.clients</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Implementation of the clients and the Client enumeration.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">fl4health.clients.basic_client</span> <span class="kn">import</span> <span class="n">BasicClient</span>
 <span class="kn">from</span> <span class="nn">fl4health.clients.fed_prox_client</span> <span class="kn">import</span> <span class="n">FedProxClient</span>
 <span class="kn">from</span> <span class="nn">fl4health.utils.config</span> <span class="kn">import</span> <span class="n">narrow_dict_type</span>
 <span class="kn">from</span> <span class="nn">fl4health.utils.dataset</span> <span class="kn">import</span> <span class="n">TensorDataset</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.load_data</span> <span class="kn">import</span> <span class="n">load_mnist_data</span>
 <span class="kn">from</span> <span class="nn">fl4health.utils.sampler</span> <span class="kn">import</span> <span class="n">DirichletLabelBasedSampler</span>
 <span class="kn">from</span> <span class="nn">flwr.common.typing</span> <span class="kn">import</span> <span class="n">Config</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">torch.nn.modules.loss</span> <span class="kn">import</span> <span class="n">_Loss</span>
-<span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">Optimizer</span>
 <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
-<span class="kn">from</span> <span class="nn">torchvision.datasets</span> <span class="kn">import</span> <span class="n">MNIST</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.models.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
+<span class="kn">from</span> <span class="nn">florist.api.clients.optimizers</span> <span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span> <span class="nn">florist.api.models.abstract</span> <span class="kn">import</span> <span class="n">LocalDataModel</span>
+<span class="kn">from</span> <span class="nn">florist.api.servers.strategies</span> <span class="kn">import</span> <span class="n">Strategy</span>
 
 
-<div class="viewcode-block" id="MnistClient">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient">[docs]</a>
-<span class="k">class</span> <span class="nc">MnistClient</span><span class="p">(</span><span class="n">BasicClient</span><span class="p">):</span>  <span class="c1"># type: ignore[misc]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of the MNIST client.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="LocalDataClient">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient">[docs]</a>
+<span class="k">class</span> <span class="nc">LocalDataClient</span><span class="p">(</span><span class="n">BasicClient</span><span class="p">):</span>  <span class="c1"># type: ignore[misc]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of a client that uses a model with data stored locally.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MnistClient.get_data_loaders">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient.get_data_loaders">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">],</span> <span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">]]:</span>
+<div class="viewcode-block" id="LocalDataClient.set_model">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient.set_model">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LocalDataModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the data loader for MNIST data.</span>
+<span class="sd">        Set the model to be used for training with local data.</span>
+
+<span class="sd">        :param model: (LocalModel) An instance of the model to be used for training.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span></div>
+
+
+<div class="viewcode-block" id="LocalDataClient.set_optimizer_type">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient.set_optimizer_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_optimizer_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimizer_type</span><span class="p">:</span> <span class="n">Optimizer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the type of the optimizer to be used for training.</span>
+
+<span class="sd">        :param optimizer_type: (Optimizer) A value of the Optimizer enumeration with the type of</span>
+<span class="sd">            the optimizer to be used for training.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_type</span> <span class="o">=</span> <span class="n">optimizer_type</span></div>
+
+
+<div class="viewcode-block" id="LocalDataClient.get_model">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient.get_model">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the model for training with local data.</span>
 
 <span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader</span>
+<span class="sd">        :return: (torch.nn.Module) An instance of the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">LocalDataModel</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Model </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2"> is not a subclass of LocalModel.&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span></div>
+
+
+<div class="viewcode-block" id="LocalDataClient.get_optimizer">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient.get_optimizer">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the optimizer for the model.</span>
+
+<span class="sd">        :param config: (Config) the Config object for this client.</span>
+<span class="sd">        :return: (torch.optim.Optimizer) An instance of torch.optim.Optimizer with the configurations defined</span>
+<span class="sd">            by self.optimizer_type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">LocalDataModel</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Model </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2"> is not a subclass of LocalModel.&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_type</span><span class="p">,</span> <span class="s2">&quot;self.optimizer_type is None.&quot;</span>
+        <span class="k">return</span> <span class="n">Optimizer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="LocalDataClient.get_data_loaders">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient.get_data_loaders">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">],</span> <span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the data loader for the model with local data.</span>
+
+<span class="sd">        :param config: (Config) the Config object for this client.</span>
+<span class="sd">        :return: (Tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]) a tuple with the train data loader</span>
 <span class="sd">            and validation data loader respectively.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Removing LeCun&#39;s website from the list of mirrors to pull MNIST dataset from</span>
-        <span class="c1"># as it is timing out and adding considerable time to our tests</span>
-        <span class="n">mirror_url_to_remove</span> <span class="o">=</span> <span class="s2">&quot;http://yann.lecun.com/exdb/mnist/&quot;</span>
-        <span class="k">if</span> <span class="n">mirror_url_to_remove</span> <span class="ow">in</span> <span class="n">MNIST</span><span class="o">.</span><span class="n">mirrors</span><span class="p">:</span>
-            <span class="n">MNIST</span><span class="o">.</span><span class="n">mirrors</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">mirror_url_to_remove</span><span class="p">)</span>
-
-        <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_mnist_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">]))</span>
-        <span class="k">return</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span></div>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">LocalDataModel</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Model </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2"> is not a subclass of LocalModel.&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;self.data_path is empty None.&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">]))</span></div>
 
 
-<div class="viewcode-block" id="MnistClient.get_model">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient.get_model">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the model for MNIST data.</span>
-
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (torch.nn.Module) An instance of florist.api.clients.mnist.MnistNet.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">MnistNet</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="MnistClient.get_optimizer">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient.get_optimizer">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optimizer</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the optimizer for MNIST data.</span>
-
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (torch.optim.Optimizer) An instance of torch.optim.SGD with learning</span>
-<span class="sd">            rate of 0.001 and momentum of 0.9.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="MnistClient.get_criterion">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistClient.get_criterion">[docs]</a>
+<div class="viewcode-block" id="LocalDataClient.get_criterion">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient.get_criterion">[docs]</a>
     <span class="k">def</span> <span class="nf">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Loss</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the loss for MNIST data.</span>
+<span class="sd">        Return the loss for the model.</span>
 
 <span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (torch.nn.modules.loss._Loss) an instance of torch.nn.CrossEntropyLoss.</span>
+<span class="sd">        :return: (torch.nn.modules.loss._Loss) an instance of torch.nn.modules.loss._Loss that has been</span>
+<span class="sd">            defined by the local model.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span></div>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">LocalDataModel</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Model </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2"> is not a subclass of LocalModel.&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_criterion</span><span class="p">()</span></div>
 </div>
 
 
 
-<div class="viewcode-block" id="MnistFedProxClient">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistFedProxClient">[docs]</a>
-<span class="k">class</span> <span class="nc">MnistFedProxClient</span><span class="p">(</span><span class="n">FedProxClient</span><span class="p">):</span>  <span class="c1"># type: ignore[misc]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of the FedProx client with the MNIST model.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="FedProxLocalDataClient">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.FedProxLocalDataClient">[docs]</a>
+<span class="k">class</span> <span class="nc">FedProxLocalDataClient</span><span class="p">(</span><span class="n">FedProxClient</span><span class="p">,</span> <span class="n">LocalDataClient</span><span class="p">):</span>  <span class="c1"># type: ignore[misc]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of the FedProx client that uses a model with data stored locally.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MnistFedProxClient.get_data_loaders">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistFedProxClient.get_data_loaders">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">],</span> <span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">]]:</span>
+<div class="viewcode-block" id="FedProxLocalDataClient.get_data_loaders">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.FedProxLocalDataClient.get_data_loaders">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">],</span> <span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the data loader for FedProx MNIST data.</span>
+<span class="sd">        Return the data loader for FedProx on model with data stored locally.</span>
 
 <span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (Tuple[DataLoader[MnistDataset], DataLoader[MnistDataset]]) a tuple with the train data loader</span>
+<span class="sd">        :return: (Tuple[DataLoader[TensorDataset], DataLoader[TensorDataset]]) a tuple with the train data loader</span>
 <span class="sd">            and validation data loader respectively.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Removing LeCun&#39;s website from the list of mirrors to pull MNIST dataset from</span>
-        <span class="c1"># as it is timing out and adding considerable time to our tests</span>
-        <span class="n">mirror_url_to_remove</span> <span class="o">=</span> <span class="s2">&quot;http://yann.lecun.com/exdb/mnist/&quot;</span>
-        <span class="k">if</span> <span class="n">mirror_url_to_remove</span> <span class="ow">in</span> <span class="n">MNIST</span><span class="o">.</span><span class="n">mirrors</span><span class="p">:</span>
-            <span class="n">MNIST</span><span class="o">.</span><span class="n">mirrors</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">mirror_url_to_remove</span><span class="p">)</span>
-
         <span class="n">sampler</span> <span class="o">=</span> <span class="n">DirichletLabelBasedSampler</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)),</span> <span class="n">sample_percentage</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">batch_size</span> <span class="o">=</span> <span class="n">narrow_dict_type</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;batch_size&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-        <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_mnist_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">sampler</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span></div>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">LocalDataModel</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Model </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2"> is not a subclass of LocalModel.&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;self.data_path is None.&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">sampler</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="MnistFedProxClient.get_model">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistFedProxClient.get_model">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
+
+<div class="viewcode-block" id="Client">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.Client">[docs]</a>
+<span class="k">class</span> <span class="nc">Client</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enumeration of supported clients.&quot;&quot;&quot;</span>
+
+    <span class="n">FEDAVG</span> <span class="o">=</span> <span class="s2">&quot;FedAvg&quot;</span>
+    <span class="n">FEDPROX</span> <span class="o">=</span> <span class="s2">&quot;FedProx&quot;</span>
+
+<div class="viewcode-block" id="Client.get_client_class">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.Client.get_client_class">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_client_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">LocalDataClient</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the model for FedProx MNIST data.</span>
+<span class="sd">        Return the class for this client.</span>
 
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (torch.nn.Module) An instance of florist.api.clients.mnist.MnistNet.</span>
+<span class="sd">        :return: (type[LocalDataClient]) A subclass of LocalDataClient corresponding to the this client.</span>
+<span class="sd">        :raises ValueError: if the client is not supported.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">MnistNet</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">Client</span><span class="o">.</span><span class="n">FEDAVG</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">LocalDataClient</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">Client</span><span class="o">.</span><span class="n">FEDPROX</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FedProxLocalDataClient</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MnistFedProxClient.get_optimizer">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistFedProxClient.get_optimizer">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optimizer</span><span class="p">:</span>
+<div class="viewcode-block" id="Client.list">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.Client.list">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the optimizer for FedProx MNIST data.</span>
+<span class="sd">        List all the supported clients.</span>
 
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (torch.optim.Optimizer) An instance of torch.optim.SGD with learning</span>
-<span class="sd">            rate of 0.001 and momentum of 0.9.</span>
+<span class="sd">        :return: (list[str]) a list of supported clients.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">client</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">client</span> <span class="ow">in</span> <span class="n">Client</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="MnistFedProxClient.get_criterion">
-<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.mnist.html#florist.api.clients.mnist.MnistFedProxClient.get_criterion">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Loss</span><span class="p">:</span>
+<div class="viewcode-block" id="Client.list_by_strategy">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.Client.list_by_strategy">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">list_by_strategy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">strategy</span><span class="p">:</span> <span class="n">Strategy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the loss for FedProx MNIST data.</span>
+<span class="sd">        List all the supported clients given a strategy.</span>
 
-<span class="sd">        :param config: (Config) the Config object for this client.</span>
-<span class="sd">        :return: (torch.nn.modules.loss._Loss) an instance of torch.nn.CrossEntropyLoss.</span>
+<span class="sd">        :param strategy: (Strategy) the strategy to find the supported clients.</span>
+<span class="sd">        :return: (list[str]) a list of supported clients for the given strategy.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="n">strategy</span> <span class="o">==</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">FEDAVG</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">Client</span><span class="o">.</span><span class="n">FEDAVG</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">strategy</span> <span class="o">==</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">FEDPROX</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">Client</span><span class="o">.</span><span class="n">FEDPROX</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Strategy </span><span class="si">{</span><span class="n">strategy</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

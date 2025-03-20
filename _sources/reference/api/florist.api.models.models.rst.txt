@@ -1,7 +1,7 @@
-florist.api.clients.mnist module
+florist.api.models.models module
 ================================
 
-.. automodule:: florist.api.clients.mnist
+.. automodule:: florist.api.models.models
    :members:
    :undoc-members:
    :show-inheritance:

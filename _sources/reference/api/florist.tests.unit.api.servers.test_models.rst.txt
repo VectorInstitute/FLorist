@@ -1,7 +1,0 @@
-florist.tests.unit.api.servers.test\_models module
-==================================================
-
-.. automodule:: florist.tests.unit.api.servers.test_models
-   :members:
-   :undoc-members:
-   :show-inheritance:

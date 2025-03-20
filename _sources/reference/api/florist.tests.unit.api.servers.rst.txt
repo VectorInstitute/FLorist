@@ -13,5 +13,4 @@ Submodules
    :maxdepth: 4
 
    florist.tests.unit.api.servers.test_config_parsers
-   florist.tests.unit.api.servers.test_launch
-   florist.tests.unit.api.servers.test_models
+   florist.tests.unit.api.servers.test_strategies

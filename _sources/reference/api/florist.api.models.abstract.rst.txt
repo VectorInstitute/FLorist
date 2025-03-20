@@ -1,0 +1,7 @@
+florist.api.models.abstract module
+==================================
+
+.. automodule:: florist.api.models.abstract
+   :members:
+   :undoc-members:
+   :show-inheritance:
