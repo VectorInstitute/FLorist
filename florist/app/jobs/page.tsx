@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { ReactElement } from "react/React";
+import { ReactElement } from "react";
 
 import { refreshJobsByJobStatus, useGetJobsByJobStatus, usePost } from "./hooks";
 import { validStatuses, JobData, ClientInfo } from "./definitions";
@@ -11,9 +11,7 @@ import Image from "next/image";
 
 import loading_gif from "../assets/img/loading.gif";
 
-interface StatusProp {
-    status: string;
-}
+type StatusProp = keyof typeof validStatuses;
 
 export function useGetJobsFromEachJobStatus() {
     // Must be in the same order as the validStatuses object.
@@ -38,7 +36,7 @@ export default function Page(): ReactElement {
     }
 
     const statusComponents = statusDataFetches.map(({ data }, i) => (
-        <Status key={i} status={statusKeys[i]} data={data} />
+        <Status key={i} status={statusKeys[i] as StatusProp} data={data} />
     ));
     return (
         <div>
@@ -69,7 +67,7 @@ export function NewJobButton(): ReactElement {
 export function StartJobButton({ rowId, jobId }: { rowId: number; jobId: string }): ReactElement {
     const { post, response, isLoading, error } = usePost();
 
-    const handleClickStartJobButton = async () => {
+    const handleClickStartJobButton = async (event: React.MouseEvent) => {
         event.preventDefault();
 
         if (isLoading) {
@@ -141,7 +139,7 @@ export function JobDetailsButton({
 export function StopJobButton({ rowId, jobId }: { rowId: number; jobId: string }): ReactElement {
     const { post, response, isLoading, error } = usePost();
 
-    const handleClickStopJobButton = async () => {
+    const handleClickStopJobButton = async (event: React.MouseEvent) => {
         event.preventDefault();
 
         if (isLoading) {
@@ -181,7 +179,7 @@ export function StopJobButton({ rowId, jobId }: { rowId: number; jobId: string }
     );
 }
 
-export function Status({ status, data }: { status: StatusProp; data: Object }): ReactElement {
+export function Status({ status, data }: { status: StatusProp; data: Array<JobData> }): ReactElement {
     return (
         <div className="row">
             <div className="col-12">
@@ -200,7 +198,7 @@ export function Status({ status, data }: { status: StatusProp; data: Object }): 
     );
 }
 
-export function StatusTable({ data, status }: { data: Array<JobData>; status: StatusProp }): ReactElement {
+export function StatusTable({ status, data }: { status: StatusProp; data: Array<JobData> }): ReactElement {
     if (data.length > 0) {
         return (
             <div className="card-body px-0 pb-2">
@@ -223,9 +221,9 @@ export function StatusTable({ data, status }: { data: Array<JobData>; status: St
                                 <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                     Client Service Addresses
                                 </th>
-                                <th width="50"></th>
-                                <th width="50"></th>
-                                <th width="100"></th>
+                                <th style={{ width: "50px" }}></th>
+                                <th style={{ width: "50px" }}></th>
+                                <th style={{ width: "100px" }}></th>
                             </tr>
                         </thead>
                         <TableRows data={data} status={status} />

@@ -5,7 +5,7 @@ import logo_ct from "./assets/img/logo-ct.png";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { ReactElement } from "react/React";
+import { ReactElement } from "react";
 
 export default function Sidebar(): ReactElement {
     const pathname = usePathname();

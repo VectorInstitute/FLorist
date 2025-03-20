@@ -4,7 +4,7 @@ import "./assets/css/material-dashboard.css?v=3.0.0";
 import "./assets/css/florist.css";
 
 import { Metadata } from "next";
-import { ReactElement } from "react/React";
+import { ReactElement } from "react";
 import Script from "next/script";
 import { useEffect } from "react";
 
