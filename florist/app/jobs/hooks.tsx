@@ -22,7 +22,7 @@ export function useGetJob(jobId: string | null) {
         },
     });
 
-    // Adding a timestamp to the request to force re-rendering of the components
+    // Adding a timestamp to the request to force re-rendering of the components on refetch
     // Only for in-progress jobs because other jobs don't refetch
     const [timestamp, setTimestamp] = useState(0);
     useEffect(() => {
