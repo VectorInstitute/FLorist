@@ -6,16 +6,22 @@ export const validStatuses = {
     FINISHED_WITH_ERROR: "Finished with Error",
 };
 
-export interface JobData {
-    _id: string;
-    status: string;
+export interface Job {
+    _id?: string;
+    status?: string;
     model: string;
-    server_address: string;
-    server_info: string;
-    redis_host: string;
-    redis_port: string;
-    clients_info: Array<ClientInfo>;
     strategy: string;
+    optimizer: string;
+    server_address: string;
+    server_config: Array<ServerConfig>;
+    redis_address: string;
+    client: string;
+    clients_info: Array<ClientInfo>;
+}
+
+export interface ServerConfig {
+    name: string;
+    value: string;
 }
 
 export interface ClientInfo {
@@ -47,22 +53,6 @@ export interface JobDetailsProperties {
     jobId?: string;
     jobStatus?: keyof typeof validStatuses;
     totalEpochs?: number;
-}
-
-export interface Job {
-    model: string;
-    strategy: string;
-    optimizer: string;
-    server_address: string;
-    redis_address: string;
-    server_config: Array<ServerConfig>;
-    client: string;
-    clients_info: Array<ClientInfo>;
-}
-
-export interface ServerConfig {
-    name: string;
-    value: string;
 }
 
 export interface ServerConfigDict {

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { ReactElement } from "react";
 
 import { refreshJobsByJobStatus, useGetJobsByJobStatus, usePost } from "./hooks";
-import { validStatuses, JobData, ClientInfo } from "./definitions";
+import { validStatuses, Job, ClientInfo } from "./definitions";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -179,7 +179,7 @@ export function StopJobButton({ rowId, jobId }: { rowId: number; jobId: string }
     );
 }
 
-export function Status({ status, data }: { status: StatusProp; data: Array<JobData> }): ReactElement {
+export function Status({ status, data }: { status: StatusProp; data: Array<Job> }): ReactElement {
     return (
         <div className="row">
             <div className="col-12">
@@ -198,7 +198,7 @@ export function Status({ status, data }: { status: StatusProp; data: Array<JobDa
     );
 }
 
-export function StatusTable({ status, data }: { status: StatusProp; data: Array<JobData> }): ReactElement {
+export function StatusTable({ status, data }: { status: StatusProp; data: Array<Job> }): ReactElement {
     if (data.length > 0) {
         return (
             <div className="card-body px-0 pb-2">
@@ -242,7 +242,7 @@ export function StatusTable({ status, data }: { status: StatusProp; data: Array<
     }
 }
 
-export function TableRows({ data, status }: { data: Array<JobData>; status: StatusProp }): ReactElement {
+export function TableRows({ data, status }: { data: Array<Job>; status: StatusProp }): ReactElement {
     const tableRows = data.map((d, i) => (
         <TableRow
             key={i}
@@ -252,7 +252,7 @@ export function TableRows({ data, status }: { data: Array<JobData>; status: Stat
             serverAddress={d.server_address}
             clientsInfo={d.clients_info}
             status={status}
-            jobId={d._id}
+            jobId={d._id ?? ""}
         />
     ));
 

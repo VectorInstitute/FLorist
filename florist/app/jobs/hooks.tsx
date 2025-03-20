@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSWR, { mutate } from "swr";
 
 import { fetcher } from "../client_imports";
@@ -12,7 +12,27 @@ export function useGetJobsByJobStatus(status: string) {
 }
 
 export function useGetJob(jobId: string | null) {
-    return useSWR(jobId ? `/api/server/job/${jobId}` : null, fetcher);
+    const { data, error, isLoading } = useSWR(jobId ? `/api/server/job/${jobId}` : null, fetcher, {
+        refreshInterval: (data) => {
+            if (data?.status === "IN_PROGRESS") {
+                // Force refetching every second for in-progress jobs
+                return 1000;
+            }
+            return 0;
+        },
+    });
+
+    // Adding a timestamp to the request to force re-rendering of the components on refetch
+    // Only for in-progress jobs because other jobs don't refetch
+    const [timestamp, setTimestamp] = useState(0);
+    useEffect(() => {
+        if (data?.status === "IN_PROGRESS") {
+            const interval = setInterval(() => setTimestamp(Date.now()), 1000);
+            return () => clearInterval(interval);
+        }
+    }, [data?.status]);
+
+    return { data, error, isLoading, timestamp };
 }
 
 export function useGetModels() {
