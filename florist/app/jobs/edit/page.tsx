@@ -1,39 +1,17 @@
 "use client";
 import yaml from "js-yaml";
 
-import { FormEvent, useRef } from "react";
-import { ReactElement } from "react/React";
+import { useRef } from "react";
+import { ReactElement } from "react";
 import { useImmer } from "use-immer";
-import { produce } from "immer";
+import { Draft, produce } from "immer";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers, usePost } from "../hooks";
+import { Job, ServerConfig, ServerConfigDict, ClientInfo } from "../definitions";
 
-interface Job {
-    model: string;
-    strategy: string;
-    optimizer: string;
-    server_address: string;
-    redis_address: string;
-    server_config: Array<ServerConfig>;
-    client: string;
-    client_info: Array<ClientInfo>;
-}
-
-interface ServerConfig {
-    name: string;
-    value: string;
-}
-
-interface ClientInfo {
-    service_address: string;
-    data_path: string;
-    redis_address: string;
-}
-
-export function makeEmptyJob() {
+export function makeEmptyJob(): Job {
     return {
         model: "",
         strategy: "",
@@ -46,14 +24,14 @@ export function makeEmptyJob() {
     };
 }
 
-export function makeEmptyServerConfig() {
+export function makeEmptyServerConfig(): ServerConfig {
     return {
         name: "",
         value: "",
     };
 }
 
-export function makeEmptyClientInfo() {
+export function makeEmptyClientInfo(): ClientInfo {
     return {
         service_address: "",
         data_path: "",
@@ -61,8 +39,15 @@ export function makeEmptyClientInfo() {
     };
 }
 
+interface EditJobState {
+    job: Job;
+}
+
+type SetState = (recipe: (draft: Draft<EditJobState>) => void) => void;
+type Hook = (...args: any[]) => { data: string[] };
+
 function formatServerConfig(serverConfig: Array<ServerConfig>): string {
-    const serverConfigDict = {};
+    const serverConfigDict: ServerConfigDict = {};
     for (let sc of serverConfig) {
         serverConfigDict[sc.name] = sc.value;
     }
@@ -90,20 +75,22 @@ export function EditJobHeader(): ReactElement {
 }
 
 export function EditJobForm(): ReactElement {
-    const [state, setState] = useImmer({ job: makeEmptyJob() });
+    const [state, setState] = useImmer<EditJobState>({ job: makeEmptyJob() });
     const router = useRouter();
     const { post, response, isLoading, error } = usePost();
 
-    async function onSubmitJob() {
+    async function onSubmitJob(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         if (isLoading) {
             // Preventing double submit if already in progress
             return;
         }
 
-        const job = { ...state.job };
-        // Server config is a json string, so changing it here before sending the data over
-        job.server_config = formatServerConfig(job.server_config);
+        const job = {
+            ...state.job,
+            // Server config is a json string, so changing it here before sending the data over
+            server_config: formatServerConfig(state.job.server_config),
+        };
         await post("/api/server/job", JSON.stringify(job));
     }
 
@@ -123,7 +110,7 @@ export function EditJobForm(): ReactElement {
     }
 
     return (
-        <form onSubmit={(e) => onSubmitJob()}>
+        <form onSubmit={(e) => onSubmitJob(e)}>
             <EditJobServerAttributes state={state} setState={setState} />
 
             <EditJobServerConfig state={state} setState={setState} />
@@ -149,7 +136,13 @@ export function EditJobForm(): ReactElement {
                         type="button"
                         className="btn-close text-lg py-3 opacity-10"
                         aria-label="Close"
-                        onClick={(e) => (e.target.parentElement.parentElement.style.display = "none")}
+                        onClick={(e) => {
+                            const target = e.target as HTMLElement;
+                            const parentElement = target.parentElement;
+                            if (parentElement && parentElement.parentElement) {
+                                parentElement.parentElement.style.display = "none";
+                            }
+                        }}
                     >
                         <span aria-hidden="true">×</span>
                     </button>
@@ -159,7 +152,13 @@ export function EditJobForm(): ReactElement {
     );
 }
 
-export function EditJobServerAttributes({ state, setState }): ReactElement {
+export function EditJobServerAttributes({
+    state,
+    setState,
+}: {
+    state: EditJobState;
+    setState: SetState;
+}): ReactElement {
     return (
         <div>
             <div className="input-group input-group-outline gray-input-box mb-3">
@@ -171,14 +170,12 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     id="job-model"
                     value={state.job.model}
                     onChange={(e) =>
-                        setState(
-                            produce((newState) => {
-                                newState.job.model = e.target.value;
-                            }),
-                        )
+                        setState((draft: Draft<EditJobState>) => {
+                            draft.job.model = e.target.value;
+                        })
                     }
                 >
-                    <option disabled="true" selected="true" value=""></option>
+                    <option disabled={true} selected={true} value={""}></option>
                     <EditJobSelectOptions hook={useGetModels} />
                 </select>
                 <label className="select-caret" htmlFor="job-model">
@@ -195,14 +192,12 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     id="job-strategy"
                     value={state.job.strategy}
                     onChange={(e) =>
-                        setState(
-                            produce((newState) => {
-                                newState.job.strategy = e.target.value;
-                            }),
-                        )
+                        setState((draft: Draft<EditJobState>) => {
+                            draft.job.strategy = e.target.value;
+                        })
                     }
                 >
-                    <option disabled="true" selected="true" value=""></option>
+                    <option disabled={true} selected={true} value={""}></option>
                     <EditJobSelectOptions hook={useGetStrategies} />
                 </select>
                 <label className="select-caret" htmlFor="job-strategy">
@@ -219,14 +214,12 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     id="job-optimizer"
                     value={state.job.optimizer}
                     onChange={(e) =>
-                        setState(
-                            produce((newState) => {
-                                newState.job.optimizer = e.target.value;
-                            }),
-                        )
+                        setState((draft: Draft<EditJobState>) => {
+                            draft.job.optimizer = e.target.value;
+                        })
                     }
                 >
-                    <option disabled="true" selected="true" value=""></option>
+                    <option disabled={true} selected={true} value={""}></option>
                     <EditJobSelectOptions hook={useGetOptimizers} />
                 </select>
                 <label className="select-caret" htmlFor="job-optimizer">
@@ -244,11 +237,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     id="job-server-address"
                     value={state.job.server_address}
                     onChange={(e) =>
-                        setState(
-                            produce((newState) => {
-                                newState.job.server_address = e.target.value;
-                            }),
-                        )
+                        setState((draft: Draft<EditJobState>) => {
+                            draft.job.server_address = e.target.value;
+                        })
                     }
                 />
             </div>
@@ -263,11 +254,9 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
                     id="job-redis-address"
                     value={state.job.redis_address}
                     onChange={(e) =>
-                        setState(
-                            produce((newState) => {
-                                newState.job.redis_address = e.target.value;
-                            }),
-                        )
+                        setState((draft: Draft<EditJobState>) => {
+                            draft.job.redis_address = e.target.value;
+                        })
                     }
                 />
             </div>
@@ -275,7 +264,7 @@ export function EditJobServerAttributes({ state, setState }): ReactElement {
     );
 }
 
-export function EditJobSelectClient({ state, setState }): ReactElement {
+export function EditJobSelectClient({ state, setState }: { state: EditJobState; setState: SetState }): ReactElement {
     return (
         <div id="job-client-field" className="input-group input-group-outline gray-input-box mb-3">
             <label className="form-label form-row" htmlFor="job-client">
@@ -286,15 +275,13 @@ export function EditJobSelectClient({ state, setState }): ReactElement {
                 id="job-client"
                 value={state.job.client}
                 onChange={(e) =>
-                    setState(
-                        produce((newState) => {
-                            newState.job.client = e.target.value;
-                        }),
-                    )
+                    setState((draft: Draft<EditJobState>) => {
+                        draft.job.client = e.target.value;
+                    })
                 }
                 disabled={state.job.strategy ? false : true}
             >
-                <option disabled="true" selected="true" value=""></option>
+                <option disabled={true} selected={true} value={""}></option>
                 <EditJobSelectOptions hook={useGetClients} params={{ strategy: state.job.strategy }} />
             </select>
             <label className="select-caret" htmlFor="job-client">
@@ -304,20 +291,24 @@ export function EditJobSelectClient({ state, setState }): ReactElement {
     );
 }
 
-export function EditJobSelectOptions({ hook, params }: { hook: Callable; params: object }): ReactElement {
-    const { data, error, isLoading } = hook(params);
+export function EditJobSelectOptions({ hook, params }: { hook: Hook; params?: object }): ReactElement {
+    const { data } = hook(params);
 
     if (!data) {
-        return null;
+        return <></>;
     }
-    return data.map((d, i) => (
-        <option key={i} value={d}>
-            {d}
-        </option>
-    ));
+    return (
+        <>
+            {data.map((d, i) => (
+                <option key={i} value={d}>
+                    {d}
+                </option>
+            ))}
+        </>
+    );
 }
 
-export function EditJobServerConfig({ state, setState }): ReactElement {
+export function EditJobServerConfig({ state, setState }: { state: EditJobState; setState: SetState }): ReactElement {
     const addServerConfigItem = produce((newState) => {
         newState.job.server_config.push(makeEmptyServerConfig());
     });
@@ -343,10 +334,16 @@ export function EditJobServerConfig({ state, setState }): ReactElement {
     );
 }
 
-export function EditJobServerConfigUploader({ state, setState }): ReactElement {
-    const buttonRef = useRef(null);
+export function EditJobServerConfigUploader({
+    state,
+    setState,
+}: {
+    state: EditJobState;
+    setState: SetState;
+}): ReactElement {
+    const buttonRef = useRef<HTMLInputElement>(null);
 
-    const handleFileUpload = async (event) => {
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
             const fileText = await file.text();
@@ -382,7 +379,7 @@ export function EditJobServerConfigUploader({ state, setState }): ReactElement {
                 id="job-server-config-import"
                 className="btn btn-link"
                 title="Import Server Config as JSON or YAML"
-                onClick={() => buttonRef.current.click()}
+                onClick={() => buttonRef.current?.click()}
             >
                 <i className="material-icons">upload</i>
                 Import JSON or YAML
@@ -398,7 +395,15 @@ export function EditJobServerConfigUploader({ state, setState }): ReactElement {
     );
 }
 
-export function EditJobServerConfigItem({ index, state, setState }): ReactElement {
+export function EditJobServerConfigItem({
+    index,
+    state,
+    setState,
+}: {
+    index: number;
+    state: EditJobState;
+    setState: SetState;
+}): ReactElement {
     const changeServerConfigAttribute = produce((newState, attribute, value) => {
         newState.job.server_config[index][attribute] = value;
     });
@@ -462,7 +467,7 @@ export function EditJobServerConfigItem({ index, state, setState }): ReactElemen
     );
 }
 
-export function EditJobClientsInfo({ state, setState }): ReactElement {
+export function EditJobClientsInfo({ state, setState }: { state: EditJobState; setState: SetState }): ReactElement {
     const addServerConfigItem = produce((newState) => {
         newState.job.clients_info.push(makeEmptyClientInfo());
     });
@@ -485,7 +490,15 @@ export function EditJobClientsInfo({ state, setState }): ReactElement {
     );
 }
 
-export function EditJobClientsInfoItem({ index, state, setState }): ReactElement {
+export function EditJobClientsInfoItem({
+    index,
+    state,
+    setState,
+}: {
+    index: number;
+    state: EditJobState;
+    setState: SetState;
+}): ReactElement {
     const changeClientInfoAttribute = produce((newState, attribute, value) => {
         newState.job.clients_info[index][attribute] = value;
     });
