@@ -602,6 +602,9 @@ export function JobProgressProperty({ name, value }: { name: string; value: any 
         "host_type",
         "initialized",
         "shutdown",
+        "fit_elapsed_time",
+        "fit_round_time_elapsed",
+        "eval_round_time_elapsed",
     ];
     if (excludedProperties.includes(name)) {
         return <></>;
