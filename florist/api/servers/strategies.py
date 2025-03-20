@@ -1,5 +1,7 @@
 """Definitions for the strategies, strategy enumeration and server constructors."""
 
+from __future__ import annotations
+
 from enum import Enum
 from functools import partial
 from typing import Any, Callable, TypeAlias
@@ -42,7 +44,7 @@ class Strategy(Enum):
 
         raise ValueError(f"Strategy {self.value} not supported.")
 
-    def get_server_factory(self) -> "ServerFactory":
+    def get_server_factory(self) -> ServerFactory:
         """
         Return the server factory instance for this strategy.
 
