@@ -354,8 +354,8 @@
         <article role="main">
           <h1>Source code for florist.tests.unit.api.servers.test_strategies</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">fl4health.client_managers.base_sampling_manager</span> <span class="kn">import</span> <span class="n">SimpleClientManager</span>
-<span class="kn">from</span> <span class="nn">fl4health.server.adaptive_constraint_servers.fedprox_server</span> <span class="kn">import</span> <span class="n">FedProxServer</span>
-<span class="kn">from</span> <span class="nn">fl4health.server.base_server</span> <span class="kn">import</span> <span class="n">FlServer</span>
+<span class="kn">from</span> <span class="nn">fl4health.servers.adaptive_constraint_servers.fedprox_server</span> <span class="kn">import</span> <span class="n">FedProxServer</span>
+<span class="kn">from</span> <span class="nn">fl4health.servers.base_server</span> <span class="kn">import</span> <span class="n">FlServer</span>
 <span class="kn">from</span> <span class="nn">fl4health.strategies.fedavg_with_adaptive_constraint</span> <span class="kn">import</span> <span class="n">FedAvgWithAdaptiveConstraint</span>
 <span class="kn">from</span> <span class="nn">fl4health.utils.metric_aggregation</span> <span class="kn">import</span> <span class="n">evaluate_metrics_aggregation_fn</span><span class="p">,</span> <span class="n">fit_metrics_aggregation_fn</span>
 <span class="kn">from</span> <span class="nn">flwr.server.strategy</span> <span class="kn">import</span> <span class="n">FedAvg</span>
