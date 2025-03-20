@@ -1,3 +1,10 @@
+.select-caret {
+    position: absolute;
+    direction: rtl;
+    margin-top: 10px;
+    right: 10px;
+}
+
 .input-group-flex {
     display: flex;
 }
@@ -94,6 +101,10 @@
     width: 20%;
 }
 
+#job-client-field {
+    margin-top: 30px;
+}
+
 .job-client-details {
     border-bottom-style: hidden;
 }
@@ -124,7 +135,7 @@
 }
 
 .job-client-progress .card .card-body {
-    padding: 0;
+    padding: 0 1.5rem 0 0;
 }
 
 .job-client-progress .card .card-header {

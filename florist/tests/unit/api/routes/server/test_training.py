@@ -4,14 +4,19 @@ from pytest import raises
 from typing import Dict, Any, Tuple
 from unittest.mock import Mock, AsyncMock, patch, ANY, call
 
+from florist.api.clients.clients import Client
+from florist.api.clients.optimizers import Optimizer
 from florist.api.db.config import DATABASE_NAME
 from florist.api.db.server_entities import Job, JobStatus, JOB_COLLECTION_NAME
-from florist.api.servers.models import Model
+from florist.api.monitoring.metrics import get_host_and_port_from_address
+from florist.api.models.models import Model
+from florist.api.models.mnist import MnistNet
 from florist.api.routes.server.training import (
     client_training_listener,
     start,
     server_training_listener
 )
+from florist.api.servers.strategies import Strategy
 
 @patch("florist.api.routes.server.training.client_training_listener")
 @patch("florist.api.routes.server.training.server_training_listener")
@@ -33,14 +38,15 @@ async def test_start_success(
     mock_server_training_listener: Mock,
     mock_client_training_listener: Mock,
 ) -> None:
-    for test_model in Model:
+    for test_strategy in Strategy:
         # Arrange
         test_job_id = "test-job-id"
-        test_server_config = _get_test_server_config(test_model)
+        test_server_config = _get_test_server_config(test_strategy)
         _, test_job, mock_job_collection, mock_fastapi_request = _setup_test_job_and_mocks()
-        test_job["model"] = test_model.value
+        test_job["strategy"] = test_strategy.value
         test_job["server_config"] = json.dumps(test_server_config)
-        test_job["config_parser"] = Model.config_parser_for_model(test_model).value
+        test_job["config_parser"] = test_strategy.get_config_parser().value
+        test_job["client"] = Client.list_by_strategy(test_strategy)[0]
 
         test_server_uuid = "test-server-uuid"
         test_server_log_file_path = "test-log-file-path"
@@ -75,14 +81,17 @@ async def test_start_success(
         mock_set_status.assert_called_once_with(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database)
 
         mock_launch_local_server.assert_called_once_with(
-            server_factory=Model.server_factory_for_model(Model(test_job["model"])),
+            model=ANY,
+            server_factory=Strategy(test_job["strategy"]).get_server_factory(),
             server_config=test_server_config,
             server_address=test_job["server_address"],
             n_clients=len(test_job["clients_info"]),
-            redis_host=test_job["redis_host"],
-            redis_port=test_job["redis_port"],
+            redis_address=test_job["redis_address"],
         )
-        mock_redis.Redis.assert_called_once_with(host=test_job["redis_host"], port=test_job["redis_port"])
+        assert isinstance(mock_launch_local_server.call_args_list[0][1]["model"], MnistNet)
+
+        test_redis_host, test_redis_port = get_host_and_port_from_address(test_job["redis_address"])
+        mock_redis.Redis.assert_called_once_with(host=test_redis_host, port=test_redis_port)
         mock_redis_connection.get.assert_called_once_with(test_server_uuid)
         mock_server_log_file_path.assert_called_once_with(test_server_log_file_path, mock_fastapi_request.app.database)
 
@@ -90,20 +99,22 @@ async def test_start_success(
             url=f"http://{test_job['clients_info'][0]['service_address']}/api/client/start",
             params={
                 "server_address": test_job["server_address"],
-                "client": test_job["clients_info"][0]["client"],
+                "client": test_job["client"],
+                "model": test_job["model"],
+                "optimizer": test_job["optimizer"],
                 "data_path": test_job["clients_info"][0]["data_path"],
-                "redis_host": test_job["clients_info"][0]["redis_host"],
-                "redis_port": test_job["clients_info"][0]["redis_port"],
+                "redis_address": test_job["clients_info"][0]["redis_address"],
             },
         )
         mock_requests.get.assert_any_call(
             url=f"http://{test_job['clients_info'][1]['service_address']}/api/client/start",
             params={
                 "server_address": test_job["server_address"],
-                "client": test_job["clients_info"][1]["client"],
+                "client": test_job["client"],
+                "model": test_job["model"],
+                "optimizer": test_job["optimizer"],
                 "data_path": test_job["clients_info"][1]["data_path"],
-                "redis_host": test_job["clients_info"][1]["redis_host"],
-                "redis_port": test_job["clients_info"][1]["redis_port"],
+                "redis_address": test_job["clients_info"][1]["redis_address"],
             },
         )
 
@@ -156,7 +167,7 @@ async def test_start_fail_unsupported_client() -> None:
     # Arrange
     test_job_id = "test-job-id"
     _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
-    test_job["clients_info"][1]["client"] = "WRONG CLIENT"
+    test_job["client"] = "WRONG CLIENT"
 
     # Act
     response = await start(test_job_id, mock_fastapi_request)
@@ -169,7 +180,9 @@ async def test_start_fail_unsupported_client() -> None:
 
 
 async def test_start_fail_missing_info() -> None:
-    fields_to_be_removed = ["model", "server_config", "clients_info", "server_address", "redis_host", "redis_port"]
+    fields_to_be_removed = [
+        "model", "strategy", "optimizer", "client", "server_config", "clients_info", "server_address", "redis_address",
+    ]
 
     for field_to_be_removed in fields_to_be_removed:
         with patch("florist.api.db.server_entities.Job.set_status") as mock_set_status:
@@ -213,6 +226,31 @@ async def test_start_fail_invalid_server_config(mock_set_error_message: Mock, mo
     json_body = json.loads(response.body.decode())
     assert json_body == {"error": ANY}
     error_message = f"server_config is not a valid json string."
+    assert error_message in json_body["error"]
+
+    mock_set_status.assert_has_calls([
+        call(JobStatus.IN_PROGRESS, mock_fastapi_request.app.database),
+        call(JobStatus.FINISHED_WITH_ERROR, mock_fastapi_request.app.database),
+    ])
+    mock_set_error_message.assert_called_once_with(error_message, mock_fastapi_request.app.database)
+
+
+@patch("florist.api.db.server_entities.Job.set_status")
+@patch("florist.api.db.server_entities.Job.set_error_message")
+async def test_start_fail_invalid_client_for_strategy(mock_set_error_message: Mock, mock_set_status: Mock) -> None:
+    # Arrange
+    test_job_id = "test-job-id"
+    _, test_job, _, mock_fastapi_request = _setup_test_job_and_mocks()
+    test_job["client"] = Client.FEDPROX.value
+
+    # Act
+    response = await start(test_job_id, mock_fastapi_request)
+
+    # Assert
+    assert response.status_code == 400
+    json_body = json.loads(response.body.decode())
+    assert json_body == {"error": ANY}
+    error_message = f"Client {Client.FEDPROX} not valid for strategy {Strategy.FEDAVG}."
     assert error_message in json_body["error"]
 
     mock_set_status.assert_has_calls([
@@ -518,15 +556,12 @@ async def test_server_training_listener(
     # Setup
     test_job = Job(**{
         "server_uuid": "test-server-uuid",
-        "redis_host": "test-redis-host",
-        "redis_port": "test-redis-port",
+        "redis_address": "test-redis-host:1234",
         "clients_info": [
             {
                 "service_address": "test-service-address",
                 "uuid": "test-uuid",
-                "redis_host": "test-client-redis-host",
-                "redis_port": "test-client-redis-port",
-                "client": "MNIST",
+                "redis_address": "test-client-redis-host:1234",
                 "data_path": "test-data-path",
             }
         ]
@@ -565,7 +600,7 @@ async def test_server_training_listener(
             ])
 
     assert mock_get_from_redis.call_count == 3
-    mock_get_subscriber.assert_called_once_with(test_job.server_uuid, test_job.redis_host, test_job.redis_port)
+    mock_get_subscriber.assert_called_once_with(test_job.server_uuid, test_job.redis_address)
     mock_db_client.close.assert_called()
 
 
@@ -575,15 +610,12 @@ async def test_server_training_listener_already_finished(mock_get_from_redis: Mo
     # Setup
     test_job = Job(**{
         "server_uuid": "test-server-uuid",
-        "redis_host": "test-redis-host",
-        "redis_port": "test-redis-port",
+        "redis_address": "test-redis-host:1234",
         "clients_info": [
             {
                 "service_address": "test-service-address",
                 "uuid": "test-uuid",
-                "redis_host": "test-client-redis-host",
-                "redis_port": "test-client-redis-port",
-                "client": "MNIST",
+                "redis_address": "test-client-redis-host:1234",
                 "data_path": "test-data-path",
             }
         ]
@@ -608,31 +640,19 @@ async def test_server_training_listener_already_finished(mock_get_from_redis: Mo
 
 async def test_server_training_listener_fail_no_server_uuid() -> None:
     test_job = Job(**{
-        "redis_host": "test-redis-host",
-        "redis_port": "test-redis-port",
+        "redis_address": "test-redis-host:1234",
     })
 
     with raises(AssertionError, match="job.server_uuid is None."):
         await server_training_listener(test_job)
 
 
-async def test_server_training_listener_fail_no_redis_host() -> None:
+async def test_server_training_listener_fail_no_redis_address() -> None:
     test_job = Job(**{
         "server_uuid": "test-server-uuid",
-        "redis_port": "test-redis-port",
     })
 
-    with raises(AssertionError, match="job.redis_host is None."):
-        await server_training_listener(test_job)
-
-
-async def test_server_training_listener_fail_no_redis_port() -> None:
-    test_job = Job(**{
-        "server_uuid": "test-server-uuid",
-        "redis_host": "test-redis-host",
-    })
-
-    with raises(AssertionError, match="job.redis_port is None."):
+    with raises(AssertionError, match="job.redis_address is None."):
         await server_training_listener(test_job)
 
 
@@ -651,9 +671,7 @@ async def test_client_training_listener(
             {
                 "service_address": "test-service-address",
                 "uuid": test_client_uuid,
-                "redis_host": "test-client-redis-host",
-                "redis_port": "test-client-redis-port",
-                "client": "MNIST",
+                "redis_address": "test-client-redis-host:1234",
                 "data_path": "test-data-path",
             }
         ]
@@ -691,8 +709,7 @@ async def test_client_training_listener(
     assert mock_get_from_redis.call_count == 3
     mock_get_subscriber.assert_called_once_with(
         test_job.clients_info[0].uuid,
-        test_job.clients_info[0].redis_host,
-        test_job.clients_info[0].redis_port,
+        test_job.clients_info[0].redis_address,
     )
     mock_db_client.close.assert_called()
 
@@ -707,9 +724,7 @@ async def test_client_training_listener_already_finished(mock_get_from_redis: Mo
             {
                 "service_address": "test-service-address",
                 "uuid": test_client_uuid,
-                "redis_host": "test-client-redis-host",
-                "redis_port": "test-client-redis-port",
-                "client": "MNIST",
+                "redis_address": "test-client-redis-host:1234",
                 "data_path": "test-data-path",
             }
         ]
@@ -738,10 +753,8 @@ async def test_client_training_listener_fail_no_uuid() -> None:
     test_job = Job(**{
         "clients_info": [
             {
-                "redis_host": "test-redis-host",
-                "redis_port": "test-redis-port",
+                "redis_address": "test-client-redis-host:1234",
                 "service_address": "test-service-address",
-                "client": "MNIST",
                 "data_path": "test-data-path",
             },
         ],
@@ -752,34 +765,32 @@ async def test_client_training_listener_fail_no_uuid() -> None:
 
 
 def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, Mock]:
-    test_model = Model.MNIST_FEDAVG
-    test_server_config = _get_test_server_config(test_model)
+    test_strategy = Strategy.FEDAVG
+    test_server_config = _get_test_server_config(test_strategy)
     test_job = {
         "status": "NOT_STARTED",
-        "model": test_model.value,
+        "model": Model.MNIST.value,
+        "strategy": test_strategy.value,
+        "optimizer": Optimizer.SGD.value,
         "server_address": "test-server-address",
         "server_config": json.dumps(test_server_config),
         "config_parser": "BASIC",
-        "redis_host": "test-redis-host",
-        "redis_port": "test-redis-port",
+        "redis_address": "test-redis-host:1234",
         "server_uuid": "test-server-uuid",
         "server_metrics": "test-server-metrics",
+        "client": Client.FEDAVG.value,
         "clients_info": [
             {
-                "client": "MNIST",
                 "service_address": "test-service-address-1",
                 "data_path": "test-data-path-1",
-                "redis_host": "test-redis-host-1",
-                "redis_port": "test-redis-port-1",
+                "redis_address": "test-redis-host-1:12341",
                 "uuid": "test-client-uuids-1",
                 "metrics": "test-client-metrics-1",
             },
             {
-                "client": "MNIST",
                 "service_address": "test-service-address-2",
                 "data_path": "test-data-path-2",
-                "redis_host": "test-redis-host-2",
-                "redis_port": "test-redis-port-2",
+                "redis_address": "test-redis-host-2:12342",
                 "uuid": "test-client-uuids-2",
                 "metrics": "test-client-metrics-2",
             },
@@ -797,14 +808,14 @@ def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, M
     return test_server_config, test_job, mock_job_collection, mock_fastapi_request
 
 
-def _get_test_server_config(model: Model) -> Dict[str, Any]:
-    if model == Model.MNIST_FEDAVG:
+def _get_test_server_config(strategy: Strategy) -> Dict[str, Any]:
+    if strategy == Strategy.FEDAVG:
         return {
             "n_server_rounds": 2,
             "batch_size": 8,
             "local_epochs": 1,
         }
-    if model == Model.MNIST_FEDPROX:
+    if strategy == Strategy.FEDPROX:
         return {
             "n_server_rounds": 123,
             "batch_size": 456,
@@ -816,7 +827,7 @@ def _get_test_server_config(model: Model) -> Dict[str, Any]:
         }
 
     raise ValueError(
-        f"Model {model.value} not yet supported in tests." +
+        f"Strategy {strategy.value} not yet supported in tests." +
         "Please add the model's server config to _get_test_server_config function."
     )
 

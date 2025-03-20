@@ -10,9 +10,10 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import BaseModel, Field
 from pymongo.results import UpdateResult
 
-from florist.api.clients.common import Client
-from florist.api.servers.config_parsers import ConfigParser
-from florist.api.servers.models import Model
+from florist.api.clients.clients import Client
+from florist.api.clients.optimizers import Optimizer
+from florist.api.models.models import Model
+from florist.api.servers.strategies import Strategy
 
 
 JOB_COLLECTION_NAME = "job"
@@ -41,11 +42,9 @@ class ClientInfo(BaseModel):
     """Define the information of an FL client."""
 
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
-    client: Client = Field(...)
     service_address: str = Field(...)
     data_path: str = Field(...)
-    redis_host: str = Field(...)
-    redis_port: str = Field(...)
+    redis_address: str = Field(...)
     uuid: Optional[Annotated[str, Field(...)]]
     metrics: Optional[Annotated[str, Field(...)]]
 
@@ -55,11 +54,9 @@ class ClientInfo(BaseModel):
         allow_population_by_field_name = True
         schema_extra = {
             "example": {
-                "client": "MNIST",
                 "service_address": "localhost:8001",
                 "data_path": "path/to/data",
-                "redis_host": "localhost",
-                "redis_port": "6380",
+                "redis_address": "localhost:6380",
                 "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
                 "metrics": '{"host_type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
             },
@@ -72,15 +69,16 @@ class Job(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     status: JobStatus = Field(default=JobStatus.NOT_STARTED)
     model: Optional[Annotated[Model, Field(...)]]
+    strategy: Optional[Annotated[Strategy, Field(...)]]
+    optimizer: Optional[Annotated[Optimizer, Field(...)]]
     server_address: Optional[Annotated[str, Field(...)]]
     server_config: Optional[Annotated[str, Field(...)]]
-    config_parser: Optional[Annotated[ConfigParser, Field(...)]]
     server_uuid: Optional[Annotated[str, Field(...)]]
     server_metrics: Optional[Annotated[str, Field(...)]]
     server_log_file_path: Optional[Annotated[str, Field(...)]]
     server_pid: Optional[Annotated[str, Field(...)]]
-    redis_host: Optional[Annotated[str, Field(...)]]
-    redis_port: Optional[Annotated[str, Field(...)]]
+    redis_address: Optional[Annotated[str, Field(...)]]
+    client: Optional[Annotated[Client, Field(...)]]
     clients_info: Optional[Annotated[List[ClientInfo], Field(...)]]
     error_message: Optional[Annotated[str, Field(...)]]
 
@@ -286,21 +284,21 @@ class Job(BaseModel):
                 "_id": "066de609-b04a-4b30-b46c-32537c7f1f6e",
                 "status": "NOT_STARTED",
                 "model": "MNIST",
+                "strategy": "FEDAVG",
+                "optimizer": "SGD",
                 "server_address": "localhost:8000",
                 "server_config": '{"n_server_rounds": 3, "batch_size": 8, "local_epochs": 1}',
                 "server_uuid": "d73243cf-8b89-473b-9607-8cd0253a101d",
                 "server_metrics": '{"host_type": "server", "fit_start": "2024-04-23 15:33:12.865604", "rounds": {"1": {"fit_start": "2024-04-23 15:33:12.869001"}}}',
                 "server_log_file_path": "/Users/foo/server/logfile.log",
                 "server_pid": "123",
-                "redis_host": "localhost",
-                "redis_port": "6379",
+                "redis_addresst": "localhost:6379",
+                "client": "FEDAVG",
                 "clients_info": [
                     {
-                        "client": "MNIST",
                         "service_address": "localhost:8001",
                         "data_path": "path/to/data",
-                        "redis_host": "localhost",
-                        "redis_port": "6380",
+                        "redis_address": "localhost:6380",
                         "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
                     },
                 ],

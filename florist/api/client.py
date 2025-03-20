@@ -11,11 +11,13 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fl4health.utils.metrics import Accuracy
 
-from florist.api.clients.common import Client
+from florist.api.clients.clients import Client
+from florist.api.clients.optimizers import Optimizer
 from florist.api.db.client_entities import ClientDAO
 from florist.api.launchers.local import launch_client
+from florist.api.models.models import Model
 from florist.api.monitoring.logs import get_client_log_file_path
-from florist.api.monitoring.metrics import RedisMetricsReporter, get_from_redis
+from florist.api.monitoring.metrics import RedisMetricsReporter, get_from_redis, get_host_and_port_from_address
 
 
 app = FastAPI()
@@ -35,7 +37,14 @@ def connect() -> JSONResponse:
 
 
 @app.get("/api/client/start")
-def start(server_address: str, client: Client, data_path: str, redis_host: str, redis_port: str) -> JSONResponse:
+def start(
+    server_address: str,
+    client: Client,
+    model: Model,
+    optimizer: Optimizer,
+    data_path: str,
+    redis_address: str,
+) -> JSONResponse:
     """
     Start a client.
 
@@ -43,8 +52,7 @@ def start(server_address: str, client: Client, data_path: str, redis_host: str, 
         It should be comprised of the host name and port separated by colon (e.g. "localhost:8080").
     :param client: (Client) the client to be used for training.
     :param data_path: (str) the path where the training data is located.
-    :param redis_host: (str) the host name for the Redis instance for metrics reporting.
-    :param redis_port: (str) the port for the Redis instance for metrics reporting.
+    :param redis_address: (str) the address for the Redis instance for metrics reporting.
     :return: (JSONResponse) If successful, returns 200 with a JSON containing the UUID for the client in the
         format below, which can be used to pull metrics from Redis.
             {
@@ -57,17 +65,22 @@ def start(server_address: str, client: Client, data_path: str, redis_host: str, 
     """
     try:
         client_uuid = str(uuid4())
-        metrics_reporter = RedisMetricsReporter(host=redis_host, port=redis_port, run_id=client_uuid)
+        redis_host, redis_port = get_host_and_port_from_address(redis_address)
+        metrics_reporter = RedisMetricsReporter(host=redis_host, port=str(redis_port), run_id=client_uuid)
 
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-        client_class = Client.class_for_client(client)
+        client_class = client.get_client_class()
         client_obj = client_class(
             data_path=Path(data_path),
             metrics=[Accuracy()],
             device=device,
             reporters=[metrics_reporter],
         )
+
+        model_class = model.get_model_class()
+        client_obj.set_model(model_class())
+        client_obj.set_optimizer_type(optimizer)
 
         log_file_path = str(get_client_log_file_path(client_uuid))
         client_process = launch_client(client_obj, server_address, log_file_path)
@@ -83,20 +96,19 @@ def start(server_address: str, client: Client, data_path: str, redis_host: str, 
 
 
 @app.get("/api/client/check_status/{client_uuid}")
-def check_status(client_uuid: str, redis_host: str, redis_port: str) -> JSONResponse:
+def check_status(client_uuid: str, redis_address: str) -> JSONResponse:
     """
     Retrieve value at key client_uuid in redis if it exists.
 
     :param client_uuid: (str) the uuid of the client to fetch from redis.
-    :param redis_host: (str) the host name for the Redis instance for metrics reporting.
-    :param redis_port: (str) the port for the Redis instance for metrics reporting.
+    :param redis_address: (str) the address for the Redis instance for metrics reporting.
 
     :return: (JSONResponse) If successful, returns 200 with JSON containing the val at `client_uuid`.
         If not successful, returns the appropriate error code with a JSON with the format below:
             {"error": <error message>}
     """
     try:
-        client_metrics = get_from_redis(client_uuid, redis_host, redis_port)
+        client_metrics = get_from_redis(client_uuid, redis_address)
 
         if client_metrics is not None:
             return JSONResponse(client_metrics)

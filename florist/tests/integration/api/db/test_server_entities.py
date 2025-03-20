@@ -3,8 +3,11 @@ import re
 from unittest.mock import ANY
 from pytest import raises
 
+from florist.api.clients.clients import Client
+from florist.api.clients.optimizers import Optimizer
 from florist.api.db.server_entities import Job, JobStatus
-from florist.api.servers.models import Model
+from florist.api.models.models import Model
+from florist.api.servers.strategies import Strategy
 from florist.tests.integration.api.utils import mock_request
 
 
@@ -271,33 +274,32 @@ def get_test_job() -> Job:
     }
     return Job(**{
         "status": "NOT_STARTED",
-        "model": Model.MNIST_FEDAVG.value,
+        "model": Model.MNIST.value,
+        "strategy": Strategy.FEDAVG.value,
+        "optimizer": Optimizer.SGD.value,
         "server_address": "test-server-address",
         "server_config": json.dumps(test_server_config),
         "config_parser": "BASIC",
         "redis_host": "test-redis-host",
-        "redis_port": "test-redis-port",
+        "redis_port": "1234",
         "server_uuid": "test-server-uuid",
         "server_metrics": "test-server-metrics",
         "server_pid": "test-server-pid-1",
         "error_message": "test-error-message",
+        "client": Client.FEDAVG.value,
         "clients_info": [
             {
-                "client": "MNIST",
                 "service_address": "test-service-address-1",
                 "data_path": "test-data-path-1",
-                "redis_host": "test-redis-host-1",
-                "redis_port": "test-redis-port-1",
+                "redis_address": "test-redis-address-1",
                 "uuid": "test-client-uuids-1",
                 "metrics": "test-client-metrics-1",
                 "pid": "test-client-pid-1",
             },
             {
-                "client": "MNIST",
                 "service_address": "test-service-address-2",
                 "data_path": "test-data-path-2",
-                "redis_host": "test-redis-host-2",
-                "redis_port": "test-redis-port-2",
+                "redis_address": "test-redis-address-2",
                 "uuid": "test-client-uuids-2",
                 "metrics": "test-client-metrics-2",
                 "pid": "test-client-pid-2",

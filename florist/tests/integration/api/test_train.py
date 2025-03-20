@@ -6,13 +6,15 @@ from unittest.mock import ANY
 import redis
 import uvicorn
 
-from florist.api.clients.common import Client
+from florist.api.clients.optimizers import Optimizer
+from florist.api.clients.clients import Client
 from florist.api.db.server_entities import Job, JobStatus, ClientInfo
 from florist.api.monitoring.metrics import wait_for_metric
 from florist.api.routes.server.training import LOGGER
 from florist.api.routes.server.job import new_job, list_jobs_with_status
 from florist.api.server import DATABASE_NAME
-from florist.api.servers.models import Model
+from florist.api.servers.strategies import Strategy
+from florist.api.models.models import Model
 from florist.tests.integration.api.utils import TestUvicornServer, MockRequest, MockApp
 
 
@@ -32,26 +34,27 @@ async def test_train():
             with tempfile.TemporaryDirectory() as temp_dir:
                 test_redis_host = "localhost"
                 test_redis_port = "6379"
+                test_redis_address = f"{test_redis_host}:{test_redis_port}"
                 test_n_server_rounds = 2
 
                 job = await new_job(test_request, Job(
                     status=JobStatus.NOT_STARTED,
-                    model=Model.MNIST_FEDAVG.value,
+                    model=Model.MNIST.value,
+                    strategy=Strategy.FEDAVG.value,
+                    optimizer=Optimizer.SGD.value,
                     server_address="localhost:8080",
                     server_config=json.dumps({
                         "n_server_rounds": test_n_server_rounds,
                         "batch_size": 8,
                         "local_epochs": 1,
                     }),
-                    redis_host=test_redis_host,
-                    redis_port=test_redis_port,
+                    redis_address=test_redis_address,
+                    client=Client.FEDAVG,
                     clients_info=[
                         ClientInfo(
-                            client=Client.MNIST,
                             service_address="localhost:8001",
                             data_path=f"{temp_dir}/data",
-                            redis_host=test_redis_host,
-                            redis_port=test_redis_port,
+                            redis_address=test_redis_address,
                         )
                     ]
                 ))
@@ -75,7 +78,7 @@ async def test_train():
                 client_uuid = response.json()["client_uuids"][0]
 
                 # Wait for training to finish
-                wait_for_metric(server_uuid, "fit_end", test_redis_host, test_redis_port, LOGGER, max_retries=80)
+                wait_for_metric(server_uuid, "fit_end", test_redis_address, LOGGER, max_retries=80)
 
                 # Check server metrics
                 server_metrics_result = redis_conn.get(server_uuid)

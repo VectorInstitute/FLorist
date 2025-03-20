@@ -49,9 +49,11 @@ function makeTestJob(): JobData {
         _id: testJobId,
         status: "NOT_STARTED",
         model: "test-model",
+        strategy: "test-strategy",
+        optimizer: "test-optimizer",
+        client: "test-client",
         server_address: "test-server-address",
-        redis_host: "test-redis-host",
-        redis_port: "test-redis-port",
+        redis_address: "test-redis-address",
         error_message: "test-error-message",
         server_config: JSON.stringify({
             test_attribute_1: "test-value-1",
@@ -91,11 +93,9 @@ function makeTestJob(): JobData {
         }),
         clients_info: [
             {
-                client: "test-client-1",
                 service_address: "test-service-address-1",
                 data_path: "test-data-path-1",
-                redis_host: "test-redis-host-1",
-                redis_port: "test-redis-port-1",
+                redis_address: "test-redis-address-1",
                 metrics: JSON.stringify({
                     host_type: "client",
                     initialized: "2024-10-10 15:05:59.025693",
@@ -133,11 +133,9 @@ function makeTestJob(): JobData {
                 }),
             },
             {
-                client: "test-client-2",
                 service_address: "test-service-address-2",
                 data_path: "test-data-path-2",
-                redis_host: "test-redis-host-2",
-                redis_port: "test-redis-port-2",
+                redis_address: "test-redis-address-2",
                 metrics: JSON.stringify({
                     host_type: "client",
                     initialized: "2024-10-10 15:05:59.025693",
@@ -171,8 +169,12 @@ describe("Job Details Page", () => {
         expect(container.querySelector("#job-details-id")).toHaveTextContent(testJob._id);
         expect(container.querySelector("#job-details-status")).toHaveTextContent(validStatuses[testJob.status]);
         expect(container.querySelector("#job-details-status")).toHaveClass("status-pill");
+        expect(container.querySelector("#job-details-model")).toHaveTextContent(testJob.model);
+        expect(container.querySelector("#job-details-strategy")).toHaveTextContent(testJob.strategy);
+        expect(container.querySelector("#job-details-optimizer")).toHaveTextContent(testJob.optimizer);
+        expect(container.querySelector("#job-details-client")).toHaveTextContent(testJob.client);
         expect(container.querySelector("#job-details-server-address")).toHaveTextContent(testJob.server_address);
-        expect(container.querySelector("#job-details-redis-host")).toHaveTextContent(testJob.redis_host);
+        expect(container.querySelector("#job-details-redis-address")).toHaveTextContent(testJob.redis_address);
         const testServerConfig = JSON.parse(testJob.server_config);
         const serverConfigNames = Object.keys(testServerConfig);
         for (let i = 0; i < serverConfigNames.length; i++) {
@@ -184,20 +186,14 @@ describe("Job Details Page", () => {
             );
         }
         for (let i = 0; i < testJob.clients_info.length; i++) {
-            expect(container.querySelector(`#job-details-client-config-client-${i}`)).toHaveTextContent(
-                testJob.clients_info[i].client,
-            );
             expect(container.querySelector(`#job-details-client-config-service-address-${i}`)).toHaveTextContent(
                 testJob.clients_info[i].service_address,
             );
             expect(container.querySelector(`#job-details-client-config-data-path-${i}`)).toHaveTextContent(
                 testJob.clients_info[i].data_path,
             );
-            expect(container.querySelector(`#job-details-client-config-redis-host-${i}`)).toHaveTextContent(
-                testJob.clients_info[i].redis_host,
-            );
-            expect(container.querySelector(`#job-details-client-config-redis-port-${i}`)).toHaveTextContent(
-                testJob.clients_info[i].redis_port,
+            expect(container.querySelector(`#job-details-client-config-redis-address-${i}`)).toHaveTextContent(
+                testJob.clients_info[i].redis_address,
             );
         }
     });

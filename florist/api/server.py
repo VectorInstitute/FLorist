@@ -7,12 +7,14 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from florist.api.clients.common import Client
+from florist.api.clients.clients import Client
+from florist.api.clients.optimizers import Optimizer
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
+from florist.api.models.models import Model
 from florist.api.routes.server.job import router as job_router
 from florist.api.routes.server.status import router as status_router
 from florist.api.routes.server.training import router as training_router
-from florist.api.servers.models import Model
+from florist.api.servers.strategies import Strategy
 
 
 @asynccontextmanager
@@ -44,11 +46,36 @@ def list_models() -> JSONResponse:
     return JSONResponse(Model.list())
 
 
-@app.get(path="/api/server/clients", response_description="Returns a list of all available clients")
-def list_clients() -> JSONResponse:
+@app.get(
+    path="/api/server/clients/{strategy}",
+    response_description="Returns a list of all available clients by strategy",
+)
+def list_clients(strategy: Strategy) -> JSONResponse:
     """
-    Return a list of all available clients.
+    Return a list of all available clients by strategy.
 
-    :return: (JSONResponse) A JSON response with a list of all elements in the `api.clients.common.Client` enum.
+    :param strategy: (Strategy) The strategy to find the compatible clients.
+    :return: (JSONResponse) A JSON response with a list of all elements in the `api.clients.common.Client` enum
+        that are compatible with the given strategy.
     """
-    return JSONResponse(Client.list())
+    return JSONResponse(Client.list_by_strategy(strategy))
+
+
+@app.get(path="/api/server/strategies", response_description="Returns a list of all available strategies")
+def list_strategies() -> JSONResponse:
+    """
+    Return a list of all available strategies.
+
+    :return: (JSONResponse) A JSON response with a list of all elements in the `api.servers.strategy.Strategies` enum.
+    """
+    return JSONResponse(Strategy.list())
+
+
+@app.get(path="/api/server/optimizers", response_description="Returns a list of all available optimizers")
+def list_optimizers() -> JSONResponse:
+    """
+    Return a list of all available optimizers.
+
+    :return: (JSONResponse) A JSON response with a list of all elements in the `api.clients.optimizers.Optimizer` enum.
+    """
+    return JSONResponse(Optimizer.list())
