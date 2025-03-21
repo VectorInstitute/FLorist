@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { getByText, render, cleanup, fireEvent } from "@testing-library/react";
+import { render, cleanup, fireEvent } from "@testing-library/react";
 import { describe, afterEach, it, expect } from "@jest/globals";
 import { act } from "react-dom/test-utils";
 
