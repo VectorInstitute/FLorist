@@ -1,12 +1,11 @@
 import "@testing-library/jest-dom";
-import { getByText, render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+import { getByText, render, cleanup } from "@testing-library/react";
 import { describe, it, expect, afterEach } from "@jest/globals";
 import { act } from "react-dom/test-utils";
 
 import Page from "../../../../app/jobs/page";
 import { validStatuses } from "../../../../app/jobs/definitions";
 import { useGetJobsByJobStatus, usePost } from "../../../../app/jobs/hooks";
-import { after } from "node:test";
 
 jest.mock("../../../../app/jobs/hooks");
 

@@ -4,7 +4,7 @@ import { describe, it, expect, afterEach } from "@jest/globals";
 import { act } from "react-dom/test-utils";
 
 import { useGetJob, useSWRWithKey, getServerLogsKey, getClientLogsKey } from "../../../../../app/jobs/hooks";
-import { validStatuses, JobData } from "../../../../../app/jobs/definitions";
+import { validStatuses, Job } from "../../../../../app/jobs/definitions";
 import JobDetails, { getTimeString } from "../../../../../app/jobs/details/page";
 
 const testJobId = "test-job-id";
@@ -21,7 +21,7 @@ afterEach(() => {
     cleanup();
 });
 
-function setupGetJobMock(data: JobData, isLoading: boolean = false, error = null) {
+function setupGetJobMock(data: Job, isLoading: boolean = false, error = null) {
     useGetJob.mockImplementation((jobId: string) => {
         return { data, error, isLoading };
     });
@@ -44,7 +44,7 @@ function setupURLSpyMock(urlSpy, testURL: string = "foo") {
     return urlSpy;
 }
 
-function makeTestJob(): JobData {
+function makeTestJob(): Job {
     return {
         _id: testJobId,
         status: "NOT_STARTED",
