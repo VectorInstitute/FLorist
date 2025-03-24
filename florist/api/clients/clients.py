@@ -48,7 +48,7 @@ class LocalDataClient(BasicClient):  # type: ignore[misc]
         assert isinstance(self.model, LocalDataModel), f"Model {self.model} is not a subclass of LocalModel."
         return self.model
 
-    def get_optimizer(self, config: Config) -> torch.optim.Optimizer:
+    def get_optimizer(self, config: Config) -> torch.optim.Optimizer:  # type: ignore
         """
         Return the optimizer for the model.
 
