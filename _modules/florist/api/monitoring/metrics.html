@@ -497,9 +497,9 @@
             <span class="n">previous_metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">previous_metrics_blob</span><span class="p">)</span>
             <span class="n">current_metrics</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">encoded_metrics</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">current_metrics</span> <span class="o">==</span> <span class="n">previous_metrics</span><span class="p">:</span>
-                <span class="n">log</span><span class="p">(</span>
-                    <span class="n">DEBUG</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Skipping dumping: previous metrics are the same as current metrics at key &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-                <span class="p">)</span>
+                <span class="c1"># Skipping dumping here because previous metrics are the same as current metrics.</span>
+                <span class="c1"># This is necessary in this class because we are calling dump within the report method,</span>
+                <span class="c1"># which is called for every input of the model. Also not logging here to avoid spamming the logs.</span>
                 <span class="k">return</span>
 
         <span class="n">log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Dumping metrics to redis at key &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">encoded_metrics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
