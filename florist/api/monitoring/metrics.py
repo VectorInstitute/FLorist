@@ -123,9 +123,9 @@ class RedisMetricsReporter(BaseReporter):  # type: ignore
             previous_metrics = json.loads(previous_metrics_blob)
             current_metrics = json.loads(encoded_metrics)
             if current_metrics == previous_metrics:
-                log(
-                    DEBUG, f"Skipping dumping: previous metrics are the same as current metrics at key '{self.run_id}'"
-                )
+                # Skipping dumping here because previous metrics are the same as current metrics.
+                # This is necessary in this class because we are calling dump within the report method,
+                # which is called for every input of the model. Also not logging here to avoid spamming the logs.
                 return
 
         log(DEBUG, f"Dumping metrics to redis at key '{self.run_id}': {encoded_metrics}")
