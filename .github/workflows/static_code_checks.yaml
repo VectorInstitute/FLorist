@@ -66,6 +66,10 @@ jobs:
         with:
           virtual-environment: .venv/
           # Skipping 2 cryptography issues that can't be patched because of Flower
+          # Skipping 3 pytorch issues that don't have a fix yet
           ignore-vulns: |
             GHSA-h4gh-qq45-vh27
             GHSA-79v4-65xg-pq4g
+            GHSA-3749-ghw9-m3mg
+            GHSA-887c-mr87-cxwp
+            GHSA-53q9-r3pm-6pq6
