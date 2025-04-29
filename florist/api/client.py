@@ -3,27 +3,41 @@
 import logging
 import os
 import signal
+from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Annotated, Any, AsyncGenerator
 from uuid import uuid4
 
 import torch
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordRequestForm
 from fl4health.utils.metrics import Accuracy
 
+from florist.api.auth.token import DEFAULT_USERNAME, Token, create_access_token, make_default_client_user
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
-from florist.api.db.client_entities import ClientDAO
+from florist.api.db.client_entities import ClientDAO, UserDAO
 from florist.api.launchers.local import launch_client
 from florist.api.models.models import Model
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter, get_from_redis, get_host_and_port_from_address
 
 
-app = FastAPI()
-
-
 LOGGER = logging.getLogger("uvicorn.error")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
+    """Set up function for app startup and shutdown."""
+    # Create default user if it does not exist
+    if not UserDAO.exists(DEFAULT_USERNAME):
+        make_default_client_user()
+
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/api/client/connect")
@@ -171,3 +185,33 @@ def stop(uuid: str) -> JSONResponse:
     except Exception as ex:
         LOGGER.exception(ex)
         return JSONResponse({"error": str(ex)}, status_code=500)
+
+
+@app.post("/api/client/auth/token")
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
+    """
+    Make a login request to get an access token.
+
+    :param form_data: (OAuth2PasswordRequestForm) The form data from the login request.
+    :return: (Token) The access token.
+    :raise: (HTTPException) If the user does not exist or the password is incorrect.
+    """
+    try:
+        user = UserDAO.find(DEFAULT_USERNAME)
+
+        if form_data.password != user.password:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect password.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        access_token = create_access_token(data={"sub": user.username}, secret_key=user.secret_key)
+        return Token(access_token=access_token, token_type="bearer")
+
+    except ValueError as err:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(err),
+            headers={"WWW-Authenticate": "Bearer"},
+        ) from err
