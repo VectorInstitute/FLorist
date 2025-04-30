@@ -28,7 +28,7 @@ class User(BaseModel):
 
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     username: str = Field(...)
-    password: str = Field(...)
+    hashed_password: str = Field(...)
     secret_key: str = Field(default_factory=lambda: secrets.token_hex(32))
 
     @classmethod
@@ -64,15 +64,17 @@ class User(BaseModel):
         assert isinstance(result.inserted_id, str)
         return result.inserted_id
 
-    async def change_password(self, new_password: str, database: AsyncIOMotorDatabase[Any]) -> None:
+    async def change_password(self, new_hashed_password: str, database: AsyncIOMotorDatabase[Any]) -> None:
         """
         Change the password of this user.
 
-        :param new_password: (str) the new password for the user.
+        :param new_hashed_password: (str) the new hashed password for the user.
         :param database: (AsyncIOMotorDatabase) the database to save the user in.
         """
         user_collection = database[USER_COLLECTION_NAME]
-        await user_collection.update_one({"username": self.username}, {"$set": {"password": new_password}})
+        await user_collection.update_one(
+            {"username": self.username}, {"$set": {"hashed_password": new_hashed_password}}
+        )
 
     class Config:
         """MongoDB config for the User DB entity."""
@@ -81,7 +83,7 @@ class User(BaseModel):
         schema_extra = {
             "example": {
                 "username": "some_user",
-                "password": "LQv3c1yqBWVHxkd0LHAkCOYz6T",
+                "hashed_password": "LQv3c1yqBWVHxkd0LHAkCOYz6T",
                 "secret_key": "a0dL1LXMIgZ2xGxQOQtxMQJqhN8",
             },
         }

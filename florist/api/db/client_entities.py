@@ -176,19 +176,19 @@ class UserDAO(EntityDAO):
 
     table_name = "User"
 
-    def __init__(self, username: str, password: str):
+    def __init__(self, username: str, hashed_password: str):
         """
         Initialize a User entity.
 
         :param uuid: (str) the UUID of the user.
         :param username: (str) the username of the user.
-        :param password: (str) the password of the user.
+        :param hashed_password: (str) the hashed password of the user.
         """
         # The UUID for the user is the username
         super().__init__(uuid=username)
 
         self.username = username
-        self.password = password
+        self.hashed_password = hashed_password
 
         # always create a new random secret key
         self.secret_key = secrets.token_hex(32)
@@ -202,7 +202,7 @@ class UserDAO(EntityDAO):
         :return: (Self) and instancxe of UserDAO populated with the JSON data.
         """
         data = json.loads(json_data)
-        user = cls(data["username"], data["password"])
+        user = cls(data["username"], data["hashed_password"])
         user.uuid = data["uuid"]
         user.secret_key = data["secret_key"]
         return user
@@ -217,7 +217,7 @@ class UserDAO(EntityDAO):
             {
                 "uuid": self.uuid,
                 "username": self.username,
-                "password": self.password,
+                "hashed_password": self.hashed_password,
                 "secret_key": self.secret_key,
             }
         )

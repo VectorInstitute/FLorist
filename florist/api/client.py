@@ -22,6 +22,7 @@ from florist.api.auth.token import (
     Token,
     create_access_token,
     make_default_client_user,
+    verify_password,
 )
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
@@ -206,15 +207,8 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     :raise: (HTTPException) If the user does not exist or the password is incorrect.
     """
     try:
-        print("here 1")
-
         user = UserDAO.find(DEFAULT_USERNAME)
-
-        print(user)
-        print(form_data.password)
-        print(user.password)
-
-        if form_data.password != user.password:
+        if not verify_password(form_data.password, user.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect password.",

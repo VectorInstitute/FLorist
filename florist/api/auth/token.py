@@ -1,5 +1,6 @@
 """Module for handling token and user creation."""
 
+import hashlib
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -24,7 +25,17 @@ class Token(BaseModel):
     token_type: str
 
 
-def _hash(password: str) -> str:
+def _simple_hash(word: str) -> str:
+    """
+    Hash a word with sha256.
+
+    :param word: (str) the word to hash.
+    :return: (str) the word hashed as a sha256 hexadecimal string.
+    """
+    return hashlib.sha256(word.encode("utf-8")).hexdigest()
+
+
+def _password_hash(password: str) -> str:
     """
     Hash a password.
 
@@ -37,6 +48,17 @@ def _hash(password: str) -> str:
     return hashed_password.decode("utf-8")
 
 
+def verify_password(password: str, hashed_password: str) -> bool:
+    """
+    Verify if a password matches a hashed password.
+
+    :param password: (str) the password to verify.
+    :param hashed_password: (str) the hashed password to verify against.
+    :return: (bool) True if the password matches the hashed password, False otherwise.
+    """
+    return bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
+
+
 async def make_default_server_user(database: AsyncIOMotorDatabase[Any]) -> User:
     """
     Make a default server user.
@@ -44,7 +66,8 @@ async def make_default_server_user(database: AsyncIOMotorDatabase[Any]) -> User:
     :param database: (AsyncIOMotorDatabase[Any]) the database to create the user in.
     :return: (User) the default server user.
     """
-    user = User(username=DEFAULT_PASSWORD, password=_hash(DEFAULT_PASSWORD))
+    hashed_password = _password_hash(_simple_hash(DEFAULT_PASSWORD))
+    user = User(username=DEFAULT_PASSWORD, hashed_password=hashed_password)
     await user.create(database)
     return user
 
@@ -55,7 +78,8 @@ def make_default_client_user() -> UserDAO:
 
     :return: (User) the default client user.
     """
-    user = UserDAO(username=DEFAULT_PASSWORD, password=_hash(DEFAULT_PASSWORD))
+    hashed_password = _password_hash(_simple_hash(DEFAULT_PASSWORD))
+    user = UserDAO(username=DEFAULT_PASSWORD, hashed_password=hashed_password)
     user.save()
     return user
 
