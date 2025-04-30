@@ -6,7 +6,6 @@ import sqlite3
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from pydantic import BaseModel
 from typing_extensions import Self
 
 from florist.api.db.config import SQLITE_DB_PATH
@@ -221,10 +220,3 @@ class UserDAO(EntityDAO):
                 "secret_key": self.secret_key,
             }
         )
-
-
-class User(BaseModel):
-    """Define the User model to be returned by the API."""
-
-    uuid: str
-    username: str

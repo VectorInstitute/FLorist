@@ -24,6 +24,35 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+    class Config:
+        """Config for the Token model."""
+
+        allow_population_by_field_name = True
+        schema_extra = {
+            "example": {
+                "access_token": "LQv3c1yqBWVHxkd0LHAkCOYz6T",
+                "token_type": "bearer",
+            },
+        }
+
+
+class AuthUser(BaseModel):
+    """Define the User model to be returned by the API."""
+
+    uuid: str
+    username: str
+
+    class Config:
+        """Config for the AuthUser model."""
+
+        allow_population_by_field_name = True
+        schema_extra = {
+            "example": {
+                "uuid": "LQv3c1yqBWVHxkd0LHAkCOYz6T",
+                "username": "admin",
+            },
+        }
+
 
 def _simple_hash(word: str) -> str:
     """

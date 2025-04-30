@@ -13,6 +13,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from florist.api.auth.token import (
     DEFAULT_USERNAME,
     ENCRYPTION_ALGORITHM,
+    AuthUser,
     Token,
     create_access_token,
     make_default_server_user,
@@ -132,8 +133,8 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
-@app.get("api/server/auth/me", response_model=User)
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], request: Request) -> User:
+@app.get("/api/server/auth/me", response_model=AuthUser)
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], request: Request) -> AuthUser:
     """
     Validate the default user against the token.
 
@@ -159,4 +160,4 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], reques
             raise credentials_exception
     except InvalidTokenError as err:
         raise credentials_exception from err
-    return user
+    return AuthUser(uuid=user.id, username=user.username)

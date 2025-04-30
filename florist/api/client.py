@@ -19,6 +19,7 @@ from jwt.exceptions import InvalidTokenError
 from florist.api.auth.token import (
     DEFAULT_USERNAME,
     ENCRYPTION_ALGORITHM,
+    AuthUser,
     Token,
     create_access_token,
     make_default_client_user,
@@ -26,7 +27,7 @@ from florist.api.auth.token import (
 )
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
-from florist.api.db.client_entities import ClientDAO, User, UserDAO
+from florist.api.db.client_entities import ClientDAO, UserDAO
 from florist.api.launchers.local import launch_client
 from florist.api.models.models import Model
 from florist.api.monitoring.logs import get_client_log_file_path
@@ -229,8 +230,8 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
         ) from err
 
 
-@app.get("/api/client/auth/me", response_model=User)
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
+@app.get("/api/client/auth/me", response_model=AuthUser)
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> AuthUser:
     """
     Validate the default user against the token.
 
@@ -253,4 +254,4 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Use
         raise credentials_exception from err
     except ValueError as err:
         raise credentials_exception from err
-    return User(uuid=user.uuid, username=user.username)
+    return AuthUser(uuid=user.uuid, username=user.username)
