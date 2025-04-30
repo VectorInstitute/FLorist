@@ -8,16 +8,24 @@ from pathlib import Path
 from typing import Annotated, Any, AsyncGenerator
 from uuid import uuid4
 
+import jwt
 import torch
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fl4health.utils.metrics import Accuracy
+from jwt.exceptions import InvalidTokenError
 
-from florist.api.auth.token import DEFAULT_USERNAME, Token, create_access_token, make_default_client_user
+from florist.api.auth.token import (
+    DEFAULT_USERNAME,
+    ENCRYPTION_ALGORITHM,
+    Token,
+    create_access_token,
+    make_default_client_user,
+)
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
-from florist.api.db.client_entities import ClientDAO, UserDAO
+from florist.api.db.client_entities import ClientDAO, User, UserDAO
 from florist.api.launchers.local import launch_client
 from florist.api.models.models import Model
 from florist.api.monitoring.logs import get_client_log_file_path
@@ -25,6 +33,7 @@ from florist.api.monitoring.metrics import RedisMetricsReporter, get_from_redis,
 
 
 LOGGER = logging.getLogger("uvicorn.error")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/client/auth/token")
 
 
 @asynccontextmanager
@@ -197,7 +206,13 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     :raise: (HTTPException) If the user does not exist or the password is incorrect.
     """
     try:
+        print("here 1")
+
         user = UserDAO.find(DEFAULT_USERNAME)
+
+        print(user)
+        print(form_data.password)
+        print(user.password)
 
         if form_data.password != user.password:
             raise HTTPException(
@@ -207,6 +222,9 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
             )
 
         access_token = create_access_token(data={"sub": user.username}, secret_key=user.secret_key)
+
+        print(access_token)
+
         return Token(access_token=access_token, token_type="bearer")
 
     except ValueError as err:
@@ -215,3 +233,30 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
             detail=str(err),
             headers={"WWW-Authenticate": "Bearer"},
         ) from err
+
+
+@app.get("/api/client/auth/me", response_model=User)
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
+    """
+    Validate the default user against the token.
+
+    :param token: (str) The token to validate the current user.
+    :return: (User) The current user.
+    :raise: (HTTPException) If the token is invalid.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        user = UserDAO.find(DEFAULT_USERNAME)
+        payload = jwt.decode(token, user.secret_key, algorithms=[ENCRYPTION_ALGORITHM])
+        username = payload.get("sub")
+        if username is None or username != user.username:
+            raise credentials_exception
+    except InvalidTokenError as err:
+        raise credentials_exception from err
+    except ValueError as err:
+        raise credentials_exception from err
+    return User(uuid=user.uuid, username=user.username)

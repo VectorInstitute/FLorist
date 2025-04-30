@@ -50,7 +50,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(training_router, tags=["training"], prefix="/api/server/training")
 app.include_router(job_router, tags=["job"], prefix="/api/server/job")
 app.include_router(status_router, tags=["status"], prefix="/api/server/check_status")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/server/auth/token")
 
 
 @app.get(path="/api/server/models", response_description="Returns a list of all available models")
@@ -98,7 +98,7 @@ def list_optimizers() -> JSONResponse:
     return JSONResponse(Optimizer.list())
 
 
-@app.post("/token")
+@app.post("/api/server/auth/token")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     request: Request,
@@ -111,6 +111,7 @@ async def login_for_access_token(
     :return: (Token) The access token.
     :raise: (HTTPException) If the user does not exist or the password is incorrect.
     """
+    print("here 1")
     user = await User.find_by_username(DEFAULT_USERNAME, request.app.database)
     if user is None:
         raise HTTPException(
@@ -130,6 +131,7 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
+@app.get("api/server/auth/me", response_model=User)
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], request: Request) -> User:
     """
     Validate the default user against the token.
@@ -139,6 +141,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], reques
     :return: (User) The current user.
     :raise: (HTTPException) If the token is invalid.
     """
+    print("here 2")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
