@@ -16,6 +16,7 @@ from florist.api.db.server_entities import User
 ENCRYPTION_ALGORITHM = "HS256"
 DEFAULT_USERNAME = "admin"
 DEFAULT_PASSWORD = "admin"
+TOKEN_EXPIRATION_TIMEDELTA = timedelta(days=7)
 
 
 class Token(BaseModel):
@@ -113,7 +114,9 @@ def make_default_client_user() -> UserDAO:
     return user
 
 
-def create_access_token(data: dict[str, Any], secret_key: str, expiration_delta: timedelta = timedelta(days=7)) -> str:
+def create_access_token(
+    data: dict[str, Any], secret_key: str, expiration_delta: timedelta = TOKEN_EXPIRATION_TIMEDELTA
+) -> str:
     """
     Create an access token.
 

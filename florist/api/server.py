@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from florist.api.auth.token import DEFAULT_USERNAME, make_default_server_user
+from florist.api.auth.token import DEFAULT_USERNAME, Token, make_default_server_user
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
 from florist.api.db.config import DATABASE_NAME, MONGODB_URI
@@ -31,6 +31,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
     user = await User.find_by_username(DEFAULT_USERNAME, app.database)  # type: ignore[attr-defined]
     if user is None:
         await make_default_server_user(app.database)  # type: ignore[attr-defined]
+
+    # Make a dictionary of all the clients currently connected and their auth tokens
+    app.clients_auth_tokens: dict[str, Token] = {}  # type: ignore[attr-defined, misc]
 
     yield
 

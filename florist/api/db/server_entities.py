@@ -114,6 +114,7 @@ class ClientInfo(BaseModel):
     service_address: str = Field(...)
     data_path: str = Field(...)
     redis_address: str = Field(...)
+    hashed_password: str = Field(...)
     uuid: Optional[Annotated[str, Field(...)]]
     metrics: Optional[Annotated[str, Field(...)]]
 
@@ -126,6 +127,7 @@ class ClientInfo(BaseModel):
                 "service_address": "localhost:8001",
                 "data_path": "path/to/data",
                 "redis_address": "localhost:6380",
+                "hashed_password": "LQv3c1yqBWVHxkd0LHAkCOYz6T",
                 "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
                 "metrics": '{"host_type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
             },

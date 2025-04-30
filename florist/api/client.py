@@ -8,23 +8,12 @@ from pathlib import Path
 from typing import Annotated, Any, AsyncGenerator
 from uuid import uuid4
 
-import jwt
 import torch
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fl4health.utils.metrics import Accuracy
-from jwt.exceptions import InvalidTokenError
 
-from florist.api.auth.token import (
-    DEFAULT_USERNAME,
-    ENCRYPTION_ALGORITHM,
-    AuthUser,
-    Token,
-    create_access_token,
-    make_default_client_user,
-    verify_password,
-)
+from florist.api.auth.token import DEFAULT_USERNAME, AuthUser, make_default_client_user
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
 from florist.api.db.client_entities import ClientDAO, UserDAO
@@ -32,10 +21,11 @@ from florist.api.launchers.local import launch_client
 from florist.api.models.models import Model
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter, get_from_redis, get_host_and_port_from_address
+from florist.api.routes.client.auth import get_current_user
+from florist.api.routes.client.auth import router as auth_router
 
 
 LOGGER = logging.getLogger("uvicorn.error")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/client/auth/token")
 
 
 @asynccontextmanager
@@ -49,13 +39,15 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
 
 
 app = FastAPI(lifespan=lifespan)
+app.include_router(auth_router, tags=["auth"], prefix="/api/client/auth")
 
 
 @app.get("/api/client/connect")
-def connect() -> JSONResponse:
+def connect(current_user: Annotated[AuthUser, Depends(get_current_user)]) -> JSONResponse:
     """
     Confirm the client is up and ready to accept instructions.
 
+    :param current_user: (AuthUser) the current authenticated user.
     :return: JSON `{"status": "ok"}`
     """
     return JSONResponse({"status": "ok"})
@@ -69,6 +61,7 @@ def start(
     optimizer: Optimizer,
     data_path: str,
     redis_address: str,
+    current_user: Annotated[AuthUser, Depends(get_current_user)],
 ) -> JSONResponse:
     """
     Start a client.
@@ -78,6 +71,8 @@ def start(
     :param client: (Client) the client to be used for training.
     :param data_path: (str) the path where the training data is located.
     :param redis_address: (str) the address for the Redis instance for metrics reporting.
+    :param current_user: (AuthUser) the current authenticated user.
+
     :return: (JSONResponse) If successful, returns 200 with a JSON containing the UUID for the client in the
         format below, which can be used to pull metrics from Redis.
             {
@@ -121,12 +116,17 @@ def start(
 
 
 @app.get("/api/client/check_status/{client_uuid}")
-def check_status(client_uuid: str, redis_address: str) -> JSONResponse:
+def check_status(
+    client_uuid: str,
+    redis_address: str,
+    current_user: Annotated[AuthUser, Depends(get_current_user)],
+) -> JSONResponse:
     """
     Retrieve value at key client_uuid in redis if it exists.
 
     :param client_uuid: (str) the uuid of the client to fetch from redis.
     :param redis_address: (str) the address for the Redis instance for metrics reporting.
+    :param current_user: (AuthUser) the current authenticated user.
 
     :return: (JSONResponse) If successful, returns 200 with JSON containing the val at `client_uuid`.
         If not successful, returns the appropriate error code with a JSON with the format below:
@@ -146,11 +146,15 @@ def check_status(client_uuid: str, redis_address: str) -> JSONResponse:
 
 
 @app.get("/api/client/get_log/{uuid}")
-def get_log(uuid: str) -> JSONResponse:
+def get_log(
+    uuid: str,
+    current_user: Annotated[AuthUser, Depends(get_current_user)],
+) -> JSONResponse:
     """
     Return the contents of the logs for the given client uuid.
 
     :param uuid: (str) the uuid of the client.
+    :param current_user: (AuthUser) the current authenticated user.
 
     :return: (JSONResponse) If successful, returns the contents of the file as a string.
         If not successful, returns the appropriate error code with a JSON with the format below:
@@ -173,11 +177,16 @@ def get_log(uuid: str) -> JSONResponse:
 
 
 @app.get("/api/client/stop/{uuid}")
-def stop(uuid: str) -> JSONResponse:
+def stop(
+    uuid: str,
+    current_user: Annotated[AuthUser, Depends(get_current_user)],
+) -> JSONResponse:
     """
     Stop the client with given UUID.
 
     :param uuid: (str) the UUID of the client to be stopped.
+    :param current_user: (AuthUser) the current authenticated user.
+
     :return: (JSONResponse) If successful, returns 200. If not successful, returns the appropriate
         error code with a JSON with the format below:
             {"error": <error message>}
@@ -196,62 +205,3 @@ def stop(uuid: str) -> JSONResponse:
     except Exception as ex:
         LOGGER.exception(ex)
         return JSONResponse({"error": str(ex)}, status_code=500)
-
-
-@app.post("/api/client/auth/token")
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
-    """
-    Make a login request to get an access token.
-
-    :param form_data: (OAuth2PasswordRequestForm) The form data from the login request.
-    :return: (Token) The access token.
-    :raise: (HTTPException) If the user does not exist or the password is incorrect.
-    """
-    try:
-        user = UserDAO.find(DEFAULT_USERNAME)
-        if not verify_password(form_data.password, user.hashed_password):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect password.",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        access_token = create_access_token(data={"sub": user.username}, secret_key=user.secret_key)
-
-        print(access_token)
-
-        return Token(access_token=access_token, token_type="bearer")
-
-    except ValueError as err:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(err),
-            headers={"WWW-Authenticate": "Bearer"},
-        ) from err
-
-
-@app.get("/api/client/auth/me", response_model=AuthUser)
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> AuthUser:
-    """
-    Validate the default user against the token.
-
-    :param token: (str) The token to validate the current user.
-    :return: (User) The current user.
-    :raise: (HTTPException) If the token is invalid.
-    """
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        user = UserDAO.find(DEFAULT_USERNAME)
-        payload = jwt.decode(token, user.secret_key, algorithms=[ENCRYPTION_ALGORITHM])
-        username = payload.get("sub")
-        if username is None or username != user.username:
-            raise credentials_exception
-    except InvalidTokenError as err:
-        raise credentials_exception from err
-    except ValueError as err:
-        raise credentials_exception from err
-    return AuthUser(uuid=user.uuid, username=user.username)
