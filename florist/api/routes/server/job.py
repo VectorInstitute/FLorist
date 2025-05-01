@@ -11,6 +11,7 @@ from fastapi import APIRouter, Body, Request, status
 from fastapi.responses import JSONResponse
 
 from florist.api.db.server_entities import MAX_RECORDS_TO_FETCH, Job, JobStatus
+from florist.api.routes.server.auth import get_client_token
 
 
 router = APIRouter()
@@ -127,7 +128,11 @@ async def stop_job(job_id: str, request: Request) -> JSONResponse:
 
         user_error_message = ""
         for client_info in job.clients_info:
-            response = requests.get(url=f"http://{client_info.service_address}/api/client/stop/{client_info.uuid}")
+            token = get_client_token(client_info, request)
+            response = requests.get(
+                url=f"http://{client_info.service_address}/api/client/stop/{client_info.uuid}",
+                headers={"Authorization": f"Bearer {token.access_token}"},
+            )
             status_code = response.status_code
             if status_code != 200:
                 response_data = response.json()
@@ -211,7 +216,11 @@ async def get_client_log(job_id: str, client_index: int, request: Request) -> JS
 
         client_info = job.clients_info[client_index]
 
-        response = requests.get(url=f"http://{client_info.service_address}/api/client/get_log/{client_info.uuid}")
+        token = get_client_token(client_info, request)
+        response = requests.get(
+            url=f"http://{client_info.service_address}/api/client/get_log/{client_info.uuid}",
+            headers={"Authorization": f"Bearer {token.access_token}"},
+        )
         json_response = response.json()
 
         if response.status_code != 200:

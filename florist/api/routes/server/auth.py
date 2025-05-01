@@ -1,7 +1,7 @@
 """FastAPI server routes for authentication."""
 
 import logging
-from typing import Annotated
+from typing import Annotated, cast
 
 import jwt
 import requests
@@ -104,12 +104,13 @@ def get_client_token(client_info: ClientInfo, request: Request) -> Token:
 
     :return: (Token) A valid client token.
     """
-    if client_info.uuid in request.app.clients_auth_tokens:
-        token = request.app.clients_auth_tokens[client_info.uuid]
+    if client_info.id in request.app.clients_auth_tokens:
+        token = request.app.clients_auth_tokens[client_info.id]
         assert isinstance(token, Token)
 
         response = requests.get(
-            f"http://{client_info.service_address}/{CONNECT_CLIENT_API}", auth=("Bearer", token.access_token)
+            f"http://{client_info.service_address}/{CONNECT_CLIENT_API}",
+            headers={"Authorization": f"Bearer {token.access_token}"},
         )
         if response.status_code == 200:
             return token
@@ -121,9 +122,9 @@ def get_client_token(client_info: ClientInfo, request: Request) -> Token:
 
     if response.status_code == 200:
         token = Token(**response.json())
-        request.app.clients_auth_tokens[client_info.uuid] = token
-        return token
+        request.app.clients_auth_tokens[client_info.id] = token
+        return cast(Token, token)  # for some reason mypy does not understand that the token var type is Token
 
     raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Could not connect to client {client_info.uuid}"
+        status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Could not connect to client with id {client_info.id}"
     )

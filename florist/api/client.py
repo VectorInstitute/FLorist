@@ -21,7 +21,7 @@ from florist.api.launchers.local import launch_client
 from florist.api.models.models import Model
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter, get_from_redis, get_host_and_port_from_address
-from florist.api.routes.client.auth import get_current_user
+from florist.api.routes.client.auth import OAUTH2_SCHEME
 from florist.api.routes.client.auth import router as auth_router
 
 
@@ -43,7 +43,7 @@ app.include_router(auth_router, tags=["auth"], prefix="/api/client/auth")
 
 
 @app.get("/api/client/connect")
-def connect(current_user: Annotated[AuthUser, Depends(get_current_user)]) -> JSONResponse:
+def connect(current_user: Annotated[AuthUser, Depends(OAUTH2_SCHEME)]) -> JSONResponse:
     """
     Confirm the client is up and ready to accept instructions.
 
@@ -61,7 +61,7 @@ def start(
     optimizer: Optimizer,
     data_path: str,
     redis_address: str,
-    current_user: Annotated[AuthUser, Depends(get_current_user)],
+    current_user: Annotated[AuthUser, Depends(OAUTH2_SCHEME)],
 ) -> JSONResponse:
     """
     Start a client.
@@ -119,7 +119,7 @@ def start(
 def check_status(
     client_uuid: str,
     redis_address: str,
-    current_user: Annotated[AuthUser, Depends(get_current_user)],
+    current_user: Annotated[AuthUser, Depends(OAUTH2_SCHEME)],
 ) -> JSONResponse:
     """
     Retrieve value at key client_uuid in redis if it exists.
@@ -148,7 +148,7 @@ def check_status(
 @app.get("/api/client/get_log/{uuid}")
 def get_log(
     uuid: str,
-    current_user: Annotated[AuthUser, Depends(get_current_user)],
+    current_user: Annotated[AuthUser, Depends(OAUTH2_SCHEME)],
 ) -> JSONResponse:
     """
     Return the contents of the logs for the given client uuid.
@@ -179,7 +179,7 @@ def get_log(
 @app.get("/api/client/stop/{uuid}")
 def stop(
     uuid: str,
-    current_user: Annotated[AuthUser, Depends(get_current_user)],
+    current_user: Annotated[AuthUser, Depends(OAUTH2_SCHEME)],
 ) -> JSONResponse:
     """
     Stop the client with given UUID.

@@ -36,7 +36,7 @@ async def mock_client_db() -> AsyncGenerator[Any, Any]:
 
 def test_connect() -> None:
     """Tests the client's connect endpoint."""
-    response = client.connect()
+    response = client.connect(None)
 
     assert response.status_code == 200
     json_body = json.loads(response.body.decode())
@@ -66,6 +66,7 @@ def test_start_success(mock_launch_client: Mock) -> None:
         test_optimizer,
         test_data_path,
         test_redis_address,
+        None,
     )
 
     assert response.status_code == 200
@@ -112,6 +113,7 @@ def test_start_fail_exception(_: Mock) -> None:
         test_optimizer,
         test_data_path,
         test_redis_address,
+        None,
     )
 
     assert response.status_code == 500
@@ -131,7 +133,7 @@ def test_check_status(mock_redis: Mock) -> None:
 
     mock_redis.Redis.return_value = mock_redis_connection
 
-    response = client.check_status(test_uuid, test_redis_address)
+    response = client.check_status(test_uuid, test_redis_address, None)
 
     mock_redis.Redis.assert_called_with(host=test_redis_host, port=test_redis_port)
     assert json.loads(response.body.decode()) == {"info": "test"}
@@ -149,7 +151,7 @@ def test_check_status_not_found(mock_redis: Mock) -> None:
 
     mock_redis.Redis.return_value = mock_redis_connection
 
-    response = client.check_status(test_uuid, test_redis_address)
+    response = client.check_status(test_uuid, test_redis_address, None)
 
     mock_redis.Redis.assert_called_with(host=test_redis_host, port=test_redis_port)
     assert response.status_code == 404
@@ -164,7 +166,7 @@ def test_check_status_fail_exception(_: Mock) -> None:
     test_redis_port = 1234
     test_redis_address = f"{test_redis_host}:{test_redis_port}"
 
-    response = client.check_status(test_uuid, test_redis_address)
+    response = client.check_status(test_uuid, test_redis_address, None)
 
     assert response.status_code == 500
     assert json.loads(response.body.decode()) == {"error": "test exception"}
@@ -181,7 +183,7 @@ def test_get_log() -> None:
     client_dao = ClientDAO(uuid=test_client_uuid, log_file_path=test_log_file_path)
     client_dao.save()
 
-    response = client.get_log(test_client_uuid)
+    response = client.get_log(test_client_uuid, None)
 
     assert response.status_code == 200
     assert response.body.decode() == f"\"{test_log_file_content}\""
@@ -194,7 +196,7 @@ def test_get_log_no_log_file_path() -> None:
     client_dao = ClientDAO(uuid=test_client_uuid)
     client_dao.save()
 
-    response = client.get_log(test_client_uuid)
+    response = client.get_log(test_client_uuid, None)
 
     assert response.status_code == 400
     assert json.loads(response.body.decode()) == {"error": "Client log file path is None or empty"}
@@ -206,7 +208,7 @@ def test_get_log_exception(mock_client_dao) -> None:
     test_exception_message = "test-exception-message"
     mock_client_dao.find.side_effect = Exception(test_exception_message)
 
-    response = client.get_log(test_client_uuid)
+    response = client.get_log(test_client_uuid, None)
 
     assert response.status_code == 500
     assert json.loads(response.body.decode()) == {"error": test_exception_message}
@@ -220,7 +222,7 @@ def test_stop_success(mock_kill: Mock) -> None:
     client_dao = ClientDAO(uuid=test_client_uuid, pid=test_pid)
     client_dao.save()
 
-    response = client.stop(test_client_uuid)
+    response = client.stop(test_client_uuid, None)
 
     assert response.status_code == 200
     assert json.loads(response.body.decode()) == {"status": "success"}
@@ -228,7 +230,7 @@ def test_stop_success(mock_kill: Mock) -> None:
 
 
 def test_stop_fail_no_uuid() -> None:
-    response = client.stop("")
+    response = client.stop("", None)
 
     assert response.status_code == 400
     assert json.loads(response.body.decode()) == {"error": "UUID is empty or None."}
@@ -240,7 +242,7 @@ def test_stop_fail_not_found() -> None:
     client_dao = ClientDAO(uuid="test-client-uuid", pid=1234)
     client_dao.save()
 
-    response = client.stop(test_uuid)
+    response = client.stop(test_uuid, None)
 
     assert response.status_code == 500
     assert json.loads(response.body.decode()) == {"error": f"Client with uuid '{test_uuid}' not found."}
@@ -256,7 +258,7 @@ def test_stop_fail_exception(mock_kill: Mock) -> None:
     client_dao = ClientDAO(uuid=test_client_uuid, pid=test_pid)
     client_dao.save()
 
-    response = client.stop(test_client_uuid)
+    response = client.stop(test_client_uuid, None)
 
     assert response.status_code == 500
     assert json.loads(response.body.decode()) == {"error": test_exception_message}

@@ -4,7 +4,7 @@ import { describe, afterEach, it, expect } from "@jest/globals";
 import { act } from "react-dom/test-utils";
 
 import yaml from "js-yaml";
-
+import { createHash } from "crypto";
 import EditJob, { makeEmptyJob } from "../../../../../app/jobs/edit/page";
 import {
     useGetModels,
@@ -395,11 +395,13 @@ describe("New Job Page", () => {
                         service_address: "test service address 1",
                         data_path: "test data path 1",
                         redis_address: "test redis address 1",
+                        hashed_password: "test hashed password 1",
                     },
                     {
                         service_address: "test service address 2",
                         data_path: "test data path 2",
                         redis_address: "test redis address 2",
+                        hashed_password: "test hashed password 2",
                     },
                 ],
             };
@@ -449,6 +451,10 @@ describe("New Job Page", () => {
                     makeTargetValue(testJob.clients_info[0].redis_address),
                 );
                 fireEvent.change(
+                    container.querySelector("input#job-client-info-password-0"),
+                    makeTargetValue(testJob.clients_info[0].hashed_password),
+                );
+                fireEvent.change(
                     container.querySelector("input#job-client-info-service-address-1"),
                     makeTargetValue(testJob.clients_info[1].service_address),
                 );
@@ -460,6 +466,10 @@ describe("New Job Page", () => {
                     container.querySelector("input#job-client-info-redis-address-1"),
                     makeTargetValue(testJob.clients_info[1].redis_address),
                 );
+                fireEvent.change(
+                    container.querySelector("input#job-client-info-password-1"),
+                    makeTargetValue(testJob.clients_info[1].hashed_password),
+                );
             });
 
             const submitButton = container.querySelector("button#job-post");
@@ -469,6 +479,8 @@ describe("New Job Page", () => {
                 [testJob.server_config[0].name]: testJob.server_config[0].value,
                 [testJob.server_config[1].name]: testJob.server_config[1].value,
             });
+            testJob.clients_info[0].hashed_password = createHash("sha256").update(testJob.clients_info[0].hashed_password).digest("hex")
+            testJob.clients_info[1].hashed_password = createHash("sha256").update(testJob.clients_info[1].hashed_password).digest("hex")
             expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
         });
 
@@ -483,6 +495,7 @@ describe("New Job Page", () => {
 
             const testJob = makeEmptyJob();
             testJob.server_config = JSON.stringify({ "": "" });
+            testJob.clients_info[0].hashed_password = createHash("sha256").update(testJob.clients_info[0].hashed_password).digest("hex")
             expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
 
             const errorAlert = container.querySelector("div#job-save-error");
