@@ -1,15 +1,14 @@
-import "./assets/css/nucleo-icons.css";
-import "./assets/css/nucleo-svg.css";
-import "./assets/css/material-dashboard.css?v=3.0.0";
-import "./assets/css/florist.css";
+import "../assets/css/nucleo-icons.css";
+import "../assets/css/nucleo-svg.css";
+import "../assets/css/material-dashboard.css?v=3.0.0";
+import "../assets/css/florist.css";
 
 import { Metadata } from "next";
 import { ReactElement } from "react";
 import Script from "next/script";
-import { useEffect } from "react";
 
 import Sidebar from "./sidebar";
-import ClientImports from "./client_imports";
+import ClientImports from "../client_imports";
 
 export const metadata: Metadata = {
     title: "Florist",

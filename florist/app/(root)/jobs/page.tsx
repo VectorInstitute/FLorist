@@ -9,7 +9,7 @@ import { validStatuses, Job, ClientInfo } from "./definitions";
 import Link from "next/link";
 import Image from "next/image";
 
-import loading_gif from "../assets/img/loading.gif";
+import loading_gif from "../../assets/img/loading.gif";
 
 type StatusProp = keyof typeof validStatuses;
 

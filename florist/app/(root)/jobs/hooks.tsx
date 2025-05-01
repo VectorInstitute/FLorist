@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import useSWR, { mutate } from "swr";
 
-import { fetcher } from "../client_imports";
+import { fetcher } from "../../client_imports";
 
 export function useGetJobsByJobStatus(status: string) {
     const endpoint = `/api/server/job/status/${status}`;

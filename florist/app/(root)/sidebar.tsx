@@ -1,6 +1,6 @@
 "use client";
 
-import logo_ct from "./assets/img/logo-ct.png";
+import logo_ct from "../assets/img/logo-ct.png";
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";

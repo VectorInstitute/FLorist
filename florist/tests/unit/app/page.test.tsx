@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import { describe, it, expect } from "@jest/globals";
 import { render } from "@testing-library/react";
 
-import Home from "../../../app/page";
+import Home from "../../../app/(root)/page";
 
 describe("Home page", () => {
     it("renders correctly", () => {

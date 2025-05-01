@@ -5,16 +5,16 @@ import { act } from "react-dom/test-utils";
 
 import yaml from "js-yaml";
 import { createHash } from "crypto";
-import EditJob, { makeEmptyJob } from "../../../../../app/jobs/edit/page";
+import EditJob, { makeEmptyJob } from "../../../../../app/(root)/jobs/edit/page";
 import {
     useGetModels,
     useGetClients,
     useGetStrategies,
     useGetOptimizers,
     usePost,
-} from "../../../../../app/jobs/hooks";
+} from "../../../../../app/(root)/jobs/hooks";
 
-jest.mock("../../../../../app/jobs/hooks");
+jest.mock("../../../../../app/(root)/jobs/hooks");
 jest.mock("next/navigation", () => ({
     useRouter() {
         return {
