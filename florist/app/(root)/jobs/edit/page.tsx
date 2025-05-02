@@ -8,7 +8,8 @@ import { Draft, produce } from "immer";
 
 import { useRouter } from "next/navigation";
 import { createHash } from "crypto";
-import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers, usePost } from "../hooks";
+import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers } from "../hooks";
+import { usePost } from "../../../hooks";
 import { Job, ServerConfig, ServerConfigDict, ClientInfo } from "../definitions";
 
 export function makeEmptyJob(): Job {

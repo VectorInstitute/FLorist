@@ -11,10 +11,11 @@ import {
     useGetClients,
     useGetStrategies,
     useGetOptimizers,
-    usePost,
 } from "../../../../../app/(root)/jobs/hooks";
+import { usePost } from "../../../../../app/hooks";
 
 jest.mock("../../../../../app/(root)/jobs/hooks");
+jest.mock("../../../../../app/hooks");
 jest.mock("next/navigation", () => ({
     useRouter() {
         return {

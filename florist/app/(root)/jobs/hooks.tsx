@@ -63,35 +63,6 @@ export function useSWRWithKey(key: string) {
     return useSWR(key, fetcher);
 }
 
-export const usePost = () => {
-    const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [response, setResponse] = useState<any | null>(null);
-
-    const post = async (path: string, body: any) => {
-        setIsLoading(true);
-        setResponse(null);
-        setError(null);
-
-        const response = await fetch(path, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: body,
-        });
-
-        const json = await response.json();
-
-        if (response.ok) {
-            setResponse(json);
-        } else {
-            setError(json.error || "An error occurred");
-        }
-        setIsLoading(false);
-    };
-
-    return { post, response, isLoading, error };
-};
-
 export function refreshJobsByJobStatus(statuses: Array<string>) {
     statuses.forEach((status: string) => mutate(`/api/server/job/status/${status}`));
 }

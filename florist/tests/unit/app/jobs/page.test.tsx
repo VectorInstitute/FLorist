@@ -5,10 +5,11 @@ import { act } from "react-dom/test-utils";
 
 import Page from "../../../../app/(root)/jobs/page";
 import { validStatuses } from "../../../../app/(root)/jobs/definitions";
-import { useGetJobsByJobStatus, usePost } from "../../../../app/(root)/jobs/hooks";
+import { useGetJobsByJobStatus } from "../../../../app/(root)/jobs/hooks";
+import { usePost } from "../../../../app/hooks";
 
 jest.mock("../../../../app/(root)/jobs/hooks");
-
+jest.mock("../../../../app/hooks");
 afterEach(() => {
     jest.clearAllMocks();
     cleanup();
