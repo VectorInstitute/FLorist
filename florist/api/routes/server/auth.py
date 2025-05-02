@@ -61,7 +61,7 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
-@router.get("/check", response_model=AuthUser)
+@router.get("/check_token", response_model=AuthUser)
 async def check_token(token: Annotated[str, Depends(oauth2_scheme)], request: Request) -> AuthUser:
     """
     Validate the default user against the token.

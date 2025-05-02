@@ -40,8 +40,8 @@ export default function LoginPage(): ReactElement {
     if (response) {
         // if there is a response, it means the user has logged in successfully
         // redirect to the home page and store the login token in the cookies
-        router.push("/");
         Cookies.set("token", response.access_token);
+        router.push("/");
     }
 
     let button_classes = "btn w-100 my-4 mb-2";

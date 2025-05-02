@@ -5,14 +5,14 @@ import { fetcher } from "../../client_imports";
 
 export function useGetJobsByJobStatus(status: string) {
     const endpoint = `/api/server/job/status/${status}`;
-    const { data, error, isLoading } = useSWR(endpoint, fetcher, {
+    const { data, error, isLoading } = useSWR([endpoint], fetcher, {
         refreshInterval: 1000,
     });
     return { data, error, isLoading };
 }
 
 export function useGetJob(jobId: string | null) {
-    const { data, error, isLoading } = useSWR(jobId ? `/api/server/job/${jobId}` : null, fetcher, {
+    const { data, error, isLoading } = useSWR(jobId ? [`/api/server/job/${jobId}`] : null, fetcher, {
         refreshInterval: (data) => {
             if (data?.status === "IN_PROGRESS") {
                 // Force refetching every second for in-progress jobs
@@ -36,19 +36,19 @@ export function useGetJob(jobId: string | null) {
 }
 
 export function useGetModels() {
-    return useSWR("/api/server/models", fetcher);
+    return useSWR(["/api/server/models"], fetcher);
 }
 
 export function useGetStrategies() {
-    return useSWR("/api/server/strategies", fetcher);
+    return useSWR(["/api/server/strategies"], fetcher);
 }
 
 export function useGetOptimizers() {
-    return useSWR("/api/server/optimizers", fetcher);
+    return useSWR(["/api/server/optimizers"], fetcher);
 }
 
 export function useGetClients({ strategy }: { strategy: string }) {
-    return useSWR(strategy ? `/api/server/clients/${strategy}` : null, fetcher);
+    return useSWR([`/api/server/clients/${strategy}`], fetcher);
 }
 
 export function getServerLogsKey(jobId: string) {
@@ -60,7 +60,7 @@ export function getClientLogsKey(jobId: string, clientIndex: number) {
 }
 
 export function useSWRWithKey(key: string) {
-    return useSWR(key, fetcher);
+    return useSWR([key], fetcher);
 }
 
 export function refreshJobsByJobStatus(statuses: Array<string>) {

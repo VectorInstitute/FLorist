@@ -13,7 +13,7 @@ function ClientImports(): null {
 }
 
 const fetcher = (...args: Parameters<typeof fetch>) =>
-    fetch(...args).then((res) => {
+    fetch(...args[0]).then((res) => {
         if (res.status != 200) {
             throw new Error(res.status.toString(), { cause: res.json() });
         }

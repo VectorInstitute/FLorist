@@ -1,13 +1,38 @@
 import { useState } from "react";
 
+import useSWR from "swr";
+import Cookies from "js-cookie";
+
+import { fetcher } from "./client_imports";
+
 const DEFAULT_HEADERS: Record<string, string> = { "Content-Type": "application/json" };
+
+export function getHeaders() {
+    const componentType = typeof window === "undefined" ? "server" : "client";
+    if (componentType == "server") {
+        return {};
+    }
+    const token = Cookies.get("token");
+    if (token) {
+        return { headers: new Headers({ Authorization: `Bearer ${token}` }) };
+    }
+    return {};
+}
+
+export function useCheckToken() {
+    return useSWR(["/api/server/auth/check_token", getHeaders()], fetcher);
+}
 
 export const usePost = () => {
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [response, setResponse] = useState<any | null>(null);
 
-    const post = async (path: string, body: any, headers: Record<string, string> = DEFAULT_HEADERS) => {
+    const post = async (
+        path: string,
+        body: string | FormData,
+        headers: Record<string, string> | null = DEFAULT_HEADERS,
+    ) => {
         setIsLoading(true);
         setResponse(null);
         setError(null);
