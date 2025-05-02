@@ -14,14 +14,14 @@ function ClientImports(): null {
 }
 
 const fetcher = (url: string) => {
-    // Adding the asuthentication token to the request headers if this is being run in a client context
+    // Adding the authentication token to the request headers
     const params: RequestInit = {
         headers: new Headers(getAuthHeaders()),
     };
 
     return fetch(url, params).then((res) => {
         if (res.status === 401) {
-            // redirecting to the login page in case any calls return a 401 error
+            // redirecting to the login page in case any calls return a 401 (unauthorized) error
             window.location.href = "/login";
         }
         if (res.status != 200) {

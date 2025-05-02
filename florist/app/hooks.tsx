@@ -28,6 +28,10 @@ export const usePost = () => {
         if (response.ok) {
             setResponse(json);
         } else {
+            // Redirecting to the login page in case of a 401 (unauthorized) error
+            if (json.status === 401) {
+                window.location.href = "/login";
+            }
             setError(json.error || json.detail || "An error occurred");
         }
         setIsLoading(false);
