@@ -18,7 +18,7 @@ export const usePost = () => {
         if (response.ok) {
             setResponse(json);
         } else {
-            setError(json.error || "An error occurred");
+            setError(json.error || json.detail || "An error occurred");
         }
         setIsLoading(false);
     };

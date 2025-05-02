@@ -6,12 +6,7 @@ import { act } from "react-dom/test-utils";
 import yaml from "js-yaml";
 import { createHash } from "crypto";
 import EditJob, { makeEmptyJob } from "../../../../../app/(root)/jobs/edit/page";
-import {
-    useGetModels,
-    useGetClients,
-    useGetStrategies,
-    useGetOptimizers,
-} from "../../../../../app/(root)/jobs/hooks";
+import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers } from "../../../../../app/(root)/jobs/hooks";
 import { usePost } from "../../../../../app/hooks";
 
 jest.mock("../../../../../app/(root)/jobs/hooks");
@@ -480,8 +475,12 @@ describe("New Job Page", () => {
                 [testJob.server_config[0].name]: testJob.server_config[0].value,
                 [testJob.server_config[1].name]: testJob.server_config[1].value,
             });
-            testJob.clients_info[0].hashed_password = createHash("sha256").update(testJob.clients_info[0].hashed_password).digest("hex")
-            testJob.clients_info[1].hashed_password = createHash("sha256").update(testJob.clients_info[1].hashed_password).digest("hex")
+            testJob.clients_info[0].hashed_password = createHash("sha256")
+                .update(testJob.clients_info[0].hashed_password)
+                .digest("hex");
+            testJob.clients_info[1].hashed_password = createHash("sha256")
+                .update(testJob.clients_info[1].hashed_password)
+                .digest("hex");
             expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
         });
 
@@ -496,7 +495,9 @@ describe("New Job Page", () => {
 
             const testJob = makeEmptyJob();
             testJob.server_config = JSON.stringify({ "": "" });
-            testJob.clients_info[0].hashed_password = createHash("sha256").update(testJob.clients_info[0].hashed_password).digest("hex")
+            testJob.clients_info[0].hashed_password = createHash("sha256")
+                .update(testJob.clients_info[0].hashed_password)
+                .digest("hex");
             expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
 
             const errorAlert = container.querySelector("div#job-save-error");

@@ -48,16 +48,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }):
                 />
             </head>
             <body className="g-sidenav-show  bg-gray-200">
-              <div className="page-header align-items-start min-vh-100">
-                <div id="content" className="container my-auto">
-                  <div className="row">
-                    <div className="col-lg-4 col-md-8 col-12 mx-auto">
-                      {children}
+                <div className="page-header align-items-start min-vh-100">
+                    <div id="content" className="container my-auto">
+                        <div className="row">
+                            <div className="col-lg-4 col-md-8 col-12 mx-auto">{children}</div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-              <ClientImports />
+                <ClientImports />
             </body>
         </html>
     );
