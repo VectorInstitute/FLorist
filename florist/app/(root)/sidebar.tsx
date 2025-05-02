@@ -5,27 +5,11 @@ import logo_ct from "../assets/img/logo-ct.png";
 import { ReactElement } from "react";
 
 import Image from "next/image";
-import { usePathname, redirect } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
-import Cookies from "js-cookie";
-
-import { useCheckToken } from "../hooks";
 
 export default function Sidebar(): ReactElement {
     const pathname = usePathname();
-
-    useCheckToken();
-
-    // Redirecting to login page if there is no login token or if the token is invalid
-    const componentType = typeof window === "undefined" ? "server" : "client";
-    if (componentType == "client") {
-        const token = Cookies.get("token");
-        if (!token) {
-            redirect("/login");
-        } else {
-
-        }
-    }
 
     return (
         <aside

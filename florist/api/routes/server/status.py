@@ -4,8 +4,10 @@ import json
 import logging
 
 import redis
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
+
+from florist.api.routes.server.auth import OAUTH2_SCHEME
 
 
 router = APIRouter()
@@ -16,6 +18,7 @@ LOGGER = logging.getLogger("uvicorn.error")
 @router.get(
     path="/{server_uuid}",
     response_description="Check status of the server",
+    dependencies=[Depends(OAUTH2_SCHEME)],
 )
 def check_status(server_uuid: str, redis_host: str, redis_port: str) -> JSONResponse:
     """

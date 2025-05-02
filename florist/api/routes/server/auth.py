@@ -21,12 +21,12 @@ from florist.api.db.server_entities import ClientInfo, User
 
 
 LOGGER = logging.getLogger("uvicorn.error")
+OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl="api/server/auth/token")
 
 CONNECT_CLIENT_API = "api/client/connect"
 AUTH_TOKEN_CLIENT_API = "api/client/auth/token"
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/server/auth/token")
 
 
 @router.post("/token")
@@ -62,7 +62,7 @@ async def login_for_access_token(
 
 
 @router.get("/check_token", response_model=AuthUser)
-async def check_token(token: Annotated[str, Depends(oauth2_scheme)], request: Request) -> AuthUser:
+async def check_token(token: Annotated[str, Depends(OAUTH2_SCHEME)], request: Request) -> AuthUser:
     """
     Validate the default user against the token.
 

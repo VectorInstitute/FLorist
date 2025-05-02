@@ -7,11 +7,11 @@ from datetime import datetime
 from typing import List, Union
 
 import requests
-from fastapi import APIRouter, Body, Request, status
+from fastapi import APIRouter, Body, Depends, Request, status
 from fastapi.responses import JSONResponse
 
 from florist.api.db.server_entities import MAX_RECORDS_TO_FETCH, Job, JobStatus
-from florist.api.routes.server.auth import get_client_token
+from florist.api.routes.server.auth import OAUTH2_SCHEME, get_client_token
 
 
 router = APIRouter()
@@ -24,6 +24,7 @@ LOGGER = logging.getLogger("uvicorn.error")
     response_description="Retrieves a job by ID",
     status_code=status.HTTP_200_OK,
     response_model=Job,
+    dependencies=[Depends(OAUTH2_SCHEME)],
 )
 async def get_job(job_id: str, request: Request) -> Union[Job, JSONResponse]:
     """
@@ -47,6 +48,7 @@ async def get_job(job_id: str, request: Request) -> Union[Job, JSONResponse]:
     response_description="Create a new job",
     status_code=status.HTTP_201_CREATED,
     response_model=Job,
+    dependencies=[Depends(OAUTH2_SCHEME)],
 )
 async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
     """
@@ -71,6 +73,7 @@ async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
     path="/status/{status}",
     response_description="List jobs with the specified status",
     response_model=List[Job],
+    dependencies=[Depends(OAUTH2_SCHEME)],
 )
 async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Job]:
     """
@@ -86,7 +89,11 @@ async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Job
     return await Job.find_by_status(status, MAX_RECORDS_TO_FETCH, request.app.database)
 
 
-@router.post(path="/change_status", response_description="Change job to the specified status")
+@router.post(
+    path="/change_status",
+    response_description="Change job to the specified status",
+    dependencies=[Depends(OAUTH2_SCHEME)],
+)
 async def change_job_status(job_id: str, status: JobStatus, request: Request) -> JSONResponse:
     """
     Change job job_id to specified status.
@@ -110,7 +117,7 @@ async def change_job_status(job_id: str, status: JobStatus, request: Request) ->
         return JSONResponse(content={"error": str(general_e)}, status_code=500)
 
 
-@router.post(path="/stop/{job_id}", response_description="Stops a job")
+@router.post(path="/stop/{job_id}", response_description="Stops a job", dependencies=[Depends(OAUTH2_SCHEME)])
 async def stop_job(job_id: str, request: Request) -> JSONResponse:
     """
     Stop the job with the given ID. The job is stopped by killing all the clients and servers processes.
@@ -161,7 +168,7 @@ async def stop_job(job_id: str, request: Request) -> JSONResponse:
         return JSONResponse(content={"error": str(general_e)}, status_code=500)
 
 
-@router.get("/get_server_log/{job_id}")
+@router.get("/get_server_log/{job_id}", dependencies=[Depends(OAUTH2_SCHEME)])
 async def get_server_log(job_id: str, request: Request) -> JSONResponse:
     """
     Return the contents of the server's log file for the given job id.
@@ -192,7 +199,7 @@ async def get_server_log(job_id: str, request: Request) -> JSONResponse:
         return JSONResponse(content={"error": str(general_e)}, status_code=500)
 
 
-@router.get("/get_client_log/{job_id}/{client_index}")
+@router.get("/get_client_log/{job_id}/{client_index}", dependencies=[Depends(OAUTH2_SCHEME)])
 async def get_client_log(job_id: str, client_index: int, request: Request) -> JSONResponse:
     """
     Return the contents of the log file for the client with given index under given job id.

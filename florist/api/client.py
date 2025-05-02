@@ -5,7 +5,7 @@ import os
 import signal
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Annotated, Any, AsyncGenerator
+from typing import Any, AsyncGenerator
 from uuid import uuid4
 
 import torch
@@ -13,7 +13,7 @@ from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
 from fl4health.utils.metrics import Accuracy
 
-from florist.api.auth.token import DEFAULT_USERNAME, AuthUser, make_default_client_user
+from florist.api.auth.token import DEFAULT_USERNAME, make_default_client_user
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
 from florist.api.db.client_entities import ClientDAO, UserDAO
@@ -42,8 +42,8 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(auth_router, tags=["auth"], prefix="/api/client/auth")
 
 
-@app.get("/api/client/connect")
-def connect(current_user: Annotated[AuthUser, Depends(OAUTH2_SCHEME)]) -> JSONResponse:
+@app.get("/api/client/connect", dependencies=[Depends(OAUTH2_SCHEME)])
+def connect() -> JSONResponse:
     """
     Confirm the client is up and ready to accept instructions.
 
@@ -53,7 +53,7 @@ def connect(current_user: Annotated[AuthUser, Depends(OAUTH2_SCHEME)]) -> JSONRe
     return JSONResponse({"status": "ok"})
 
 
-@app.get("/api/client/start")
+@app.get("/api/client/start", dependencies=[Depends(OAUTH2_SCHEME)])
 def start(
     server_address: str,
     client: Client,
@@ -61,7 +61,6 @@ def start(
     optimizer: Optimizer,
     data_path: str,
     redis_address: str,
-    current_user: Annotated[AuthUser, Depends(OAUTH2_SCHEME)],
 ) -> JSONResponse:
     """
     Start a client.
@@ -115,18 +114,13 @@ def start(
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-@app.get("/api/client/check_status/{client_uuid}")
-def check_status(
-    client_uuid: str,
-    redis_address: str,
-    current_user: Annotated[AuthUser, Depends(OAUTH2_SCHEME)],
-) -> JSONResponse:
+@app.get("/api/client/check_status/{client_uuid}", dependencies=[Depends(OAUTH2_SCHEME)])
+def check_status(client_uuid: str, redis_address: str) -> JSONResponse:
     """
     Retrieve value at key client_uuid in redis if it exists.
 
     :param client_uuid: (str) the uuid of the client to fetch from redis.
     :param redis_address: (str) the address for the Redis instance for metrics reporting.
-    :param current_user: (AuthUser) the current authenticated user.
 
     :return: (JSONResponse) If successful, returns 200 with JSON containing the val at `client_uuid`.
         If not successful, returns the appropriate error code with a JSON with the format below:
@@ -145,16 +139,12 @@ def check_status(
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-@app.get("/api/client/get_log/{uuid}")
-def get_log(
-    uuid: str,
-    current_user: Annotated[AuthUser, Depends(OAUTH2_SCHEME)],
-) -> JSONResponse:
+@app.get("/api/client/get_log/{uuid}", dependencies=[Depends(OAUTH2_SCHEME)])
+def get_log(uuid: str) -> JSONResponse:
     """
     Return the contents of the logs for the given client uuid.
 
     :param uuid: (str) the uuid of the client.
-    :param current_user: (AuthUser) the current authenticated user.
 
     :return: (JSONResponse) If successful, returns the contents of the file as a string.
         If not successful, returns the appropriate error code with a JSON with the format below:
@@ -176,16 +166,12 @@ def get_log(
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-@app.get("/api/client/stop/{uuid}")
-def stop(
-    uuid: str,
-    current_user: Annotated[AuthUser, Depends(OAUTH2_SCHEME)],
-) -> JSONResponse:
+@app.get("/api/client/stop/{uuid}", dependencies=[Depends(OAUTH2_SCHEME)])
+def stop(uuid: str) -> JSONResponse:
     """
     Stop the client with given UUID.
 
     :param uuid: (str) the UUID of the client to be stopped.
-    :param current_user: (AuthUser) the current authenticated user.
 
     :return: (JSONResponse) If successful, returns 200. If not successful, returns the appropriate
         error code with a JSON with the format below:

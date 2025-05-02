@@ -1,27 +1,7 @@
 import { useState } from "react";
+import { getAuthHeaders } from "./auth";
 
-import useSWR from "swr";
-import Cookies from "js-cookie";
-
-import { fetcher } from "./client_imports";
-
-const DEFAULT_HEADERS: Record<string, string> = { "Content-Type": "application/json" };
-
-export function getHeaders() {
-    const componentType = typeof window === "undefined" ? "server" : "client";
-    if (componentType == "server") {
-        return {};
-    }
-    const token = Cookies.get("token");
-    if (token) {
-        return { headers: new Headers({ Authorization: `Bearer ${token}` }) };
-    }
-    return {};
-}
-
-export function useCheckToken() {
-    return useSWR(["/api/server/auth/check_token", getHeaders()], fetcher);
-}
+const DEFAULT_HEADERS: Array<[string, string]> = [["Content-Type", "application/json"]];
 
 export const usePost = () => {
     const [error, setError] = useState<string | null>(null);
@@ -31,13 +11,18 @@ export const usePost = () => {
     const post = async (
         path: string,
         body: string | FormData,
-        headers: Record<string, string> | null = DEFAULT_HEADERS,
+        headers: Array<[string, string]> | null = DEFAULT_HEADERS,
     ) => {
         setIsLoading(true);
         setResponse(null);
         setError(null);
 
-        const response = await fetch(path, { method: "POST", body: body, headers: headers || undefined });
+        if (headers) {
+            headers.push(...getAuthHeaders());
+        }
+        const requestHeaders = headers ? new Headers(headers) : undefined;
+
+        const response = await fetch(path, { method: "POST", body: body, headers: requestHeaders });
 
         let json = await response.json();
         if (response.ok) {

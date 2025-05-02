@@ -3,11 +3,11 @@ import { ReactElement, useState } from "react";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { createHash } from "crypto";
 
 import logo_ct from "../assets/img/logo-ct.png";
 import { usePost } from "../hooks";
+import { setToken, removeToken } from "../auth";
 
 const DEFAULT_USERNAME = "admin";
 
@@ -34,13 +34,13 @@ export default function LoginPage(): ReactElement {
     if (!response || !isLoading) {
         // if no response or isLoading, it means the user just accessed the login page
         // remove the login token from the cookies in that case to log the user out
-        Cookies.remove("token");
+        removeToken();
     }
 
     if (response) {
         // if there is a response, it means the user has logged in successfully
         // redirect to the home page and store the login token in the cookies
-        Cookies.set("token", response.access_token);
+        setToken(response.access_token);
         router.push("/");
     }
 
