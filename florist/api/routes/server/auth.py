@@ -3,7 +3,6 @@
 import logging
 from typing import Annotated, cast
 
-import jwt
 import requests
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -11,10 +10,10 @@ from jwt.exceptions import InvalidTokenError
 
 from florist.api.auth.token import (
     DEFAULT_USERNAME,
-    ENCRYPTION_ALGORITHM,
     AuthUser,
     Token,
     create_access_token,
+    decode_access_token,
     verify_password,
 )
 from florist.api.db.server_entities import ClientInfo, User
@@ -82,7 +81,7 @@ async def check_token(token: Annotated[str, Depends(oauth2_scheme)], request: Re
         if user is None:
             raise credentials_exception
 
-        payload = jwt.decode(token, user.secret_key, algorithms=[ENCRYPTION_ALGORITHM])
+        payload = decode_access_token(token, user.secret_key)
         username = payload.get("sub")
         if username is None or username != user.username:
             raise credentials_exception

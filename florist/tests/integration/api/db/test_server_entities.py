@@ -3,6 +3,7 @@ import re
 from unittest.mock import ANY
 from pytest import raises
 
+from florist.api.auth.token import DEFAULT_PASSWORD, _simple_hash
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
 from florist.api.db.server_entities import Job, JobStatus
@@ -295,6 +296,7 @@ def get_test_job() -> Job:
                 "uuid": "test-client-uuids-1",
                 "metrics": "test-client-metrics-1",
                 "pid": "test-client-pid-1",
+                "hashed_password": _simple_hash(DEFAULT_PASSWORD),
             },
             {
                 "service_address": "test-service-address-2",
@@ -303,6 +305,7 @@ def get_test_job() -> Job:
                 "uuid": "test-client-uuids-2",
                 "metrics": "test-client-metrics-2",
                 "pid": "test-client-pid-2",
+                "hashed_password": _simple_hash(DEFAULT_PASSWORD),
             },
         ],
     })

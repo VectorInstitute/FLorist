@@ -97,7 +97,7 @@ async def make_default_server_user(database: AsyncIOMotorDatabase[Any]) -> User:
     :return: (User) the default server user.
     """
     hashed_password = _password_hash(_simple_hash(DEFAULT_PASSWORD))
-    user = User(username=DEFAULT_PASSWORD, hashed_password=hashed_password)
+    user = User(username=DEFAULT_USERNAME, hashed_password=hashed_password)
     await user.create(database)
     return user
 
@@ -109,7 +109,7 @@ def make_default_client_user() -> UserDAO:
     :return: (User) the default client user.
     """
     hashed_password = _password_hash(_simple_hash(DEFAULT_PASSWORD))
-    user = UserDAO(username=DEFAULT_PASSWORD, hashed_password=hashed_password)
+    user = UserDAO(username=DEFAULT_USERNAME, hashed_password=hashed_password)
     user.save()
     return user
 
@@ -129,3 +129,16 @@ def create_access_token(
     expire = datetime.now(timezone.utc) + expiration_delta
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, secret_key, algorithm=ENCRYPTION_ALGORITHM)
+
+
+def decode_access_token(token: str, secret_key: str) -> dict[str, Any]:
+    """
+    Decode an access token.
+
+    :param token: (str) the token to decode.
+    :param secret_key: (str) the user's secret key to decode the token.
+    :return: (dict) the decoded token information.
+    """
+    data = jwt.decode(token, secret_key, algorithms=[ENCRYPTION_ALGORITHM])
+    assert isinstance(data, dict)
+    return data
