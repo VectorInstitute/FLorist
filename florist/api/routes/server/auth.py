@@ -41,7 +41,7 @@ async def login_for_access_token(
     :return: (Token) The access token.
     :raise: (HTTPException) If the user does not exist or the password is incorrect.
     """
-    user = await User.find_by_username(DEFAULT_USERNAME, request.app.database)
+    user = await User.find_by_username(form_data.username, request.app.database)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -6,7 +6,7 @@ from pytest import raises
 from florist.api.auth.token import DEFAULT_PASSWORD, _simple_hash
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
-from florist.api.db.server_entities import Job, JobStatus
+from florist.api.db.server_entities import Job, JobStatus, User
 from florist.api.models.models import Model
 from florist.api.servers.strategies import Strategy
 from florist.tests.integration.api.utils import mock_request
@@ -309,3 +309,55 @@ def get_test_job() -> Job:
             },
         ],
     })
+
+
+async def test_user_create(mock_request):
+    user = User(**{
+        "username": "test-username",
+        "hashed_password": _simple_hash(DEFAULT_PASSWORD),
+        "secret_key": "test-secret-key",
+    })
+
+    user_id = await user.create(mock_request.app.database)
+
+    result_user = await User.find_by_username(user.username, mock_request.app.database)
+    user.id = user_id
+    assert user == result_user
+
+    # Asser a duplicate username raises an error
+    with raises(ValueError, match=re.escape("User already exists")):
+        await user.create(mock_request.app.database)
+
+
+async def test_user_find_by_username(mock_request):
+    user = User(**{
+        "username": "test-username",
+        "hashed_password": _simple_hash(DEFAULT_PASSWORD),
+        "secret_key": "test-secret-key",
+    })
+    user_id = await user.create(mock_request.app.database)
+    user.id = user_id
+
+    # User found
+    result_user = await User.find_by_username(user.username, mock_request.app.database)
+    assert user == result_user
+
+    # User not found
+    result_user = await User.find_by_username("test-username-that-does-not-exist", mock_request.app.database)
+    assert result_user is None
+
+
+async def test_user_change_password(mock_request):
+    test_new_password = "new-password"
+    user = User(**{
+        "username": "test-username",
+        "hashed_password": _simple_hash(DEFAULT_PASSWORD),
+        "secret_key": "test-secret-key",
+    })
+    user_id = await user.create(mock_request.app.database)
+    user.id = user_id
+
+    await user.change_password(test_new_password, mock_request.app.database)
+
+    result_user = await User.find_by_username(user.username, mock_request.app.database)
+    assert result_user.hashed_password == test_new_password

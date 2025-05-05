@@ -47,7 +47,6 @@ def connect() -> JSONResponse:
     """
     Confirm the client is up and ready to accept instructions.
 
-    :param current_user: (AuthUser) the current authenticated user.
     :return: JSON `{"status": "ok"}`
     """
     return JSONResponse({"status": "ok"})
@@ -70,7 +69,6 @@ def start(
     :param client: (Client) the client to be used for training.
     :param data_path: (str) the path where the training data is located.
     :param redis_address: (str) the address for the Redis instance for metrics reporting.
-    :param current_user: (AuthUser) the current authenticated user.
 
     :return: (JSONResponse) If successful, returns 200 with a JSON containing the UUID for the client in the
         format below, which can be used to pull metrics from Redis.

@@ -34,7 +34,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     :raise: (HTTPException) If the user does not exist or the password is incorrect.
     """
     try:
-        user = UserDAO.find(DEFAULT_USERNAME)
+        user = UserDAO.find(form_data.username)
         if not verify_password(form_data.password, user.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -43,9 +43,6 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
             )
 
         access_token = create_access_token(data={"sub": user.username}, secret_key=user.secret_key)
-
-        print(access_token)
-
         return Token(access_token=access_token, token_type="bearer")
 
     except ValueError as err:
@@ -81,5 +78,7 @@ async def check_token(token: Annotated[str, Depends(oauth2_scheme)]) -> AuthUser
         if username is None or username != user.username:
             raise credentials_exception
     except InvalidTokenError as err:
+        raise credentials_exception from err
+    except ValueError as err:
         raise credentials_exception from err
     return AuthUser(uuid=user.uuid, username=user.username)
