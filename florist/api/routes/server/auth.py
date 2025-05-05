@@ -104,27 +104,35 @@ def get_client_token(client_info: ClientInfo, request: Request) -> Token:
 
     :return: (Token) A valid client token.
     """
-    if client_info.id in request.app.clients_auth_tokens:
-        token = request.app.clients_auth_tokens[client_info.id]
-        assert isinstance(token, Token)
+    try:
+        if client_info.id in request.app.clients_auth_tokens:
+            token = request.app.clients_auth_tokens[client_info.id]
+            assert isinstance(token, Token)
 
-        response = requests.get(
-            f"http://{client_info.service_address}/{CONNECT_CLIENT_API}",
-            headers={"Authorization": f"Bearer {token.access_token}"},
+            response = requests.get(
+                f"http://{client_info.service_address}/{CONNECT_CLIENT_API}",
+                headers={"Authorization": f"Bearer {token.access_token}"},
+            )
+            if response.status_code == 200:
+                return token
+
+        response = requests.post(
+            f"http://{client_info.service_address}/{AUTH_TOKEN_CLIENT_API}",
+            data={"grant_type": "password", "username": DEFAULT_USERNAME, "password": client_info.hashed_password},
         )
+
         if response.status_code == 200:
-            return token
+            token = Token(**response.json())
+            request.app.clients_auth_tokens[client_info.id] = token
+            return cast(Token, token)  # for some reason mypy does not understand that the token var type is Token
 
-    response = requests.post(
-        f"http://{client_info.service_address}/{AUTH_TOKEN_CLIENT_API}",
-        data={"grant_type": "password", "username": DEFAULT_USERNAME, "password": client_info.hashed_password},
-    )
-
-    if response.status_code == 200:
-        token = Token(**response.json())
-        request.app.clients_auth_tokens[client_info.id] = token
-        return cast(Token, token)  # for some reason mypy does not understand that the token var type is Token
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Could not connect to client with id {client_info.id}",
+        ) from err
 
     raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Could not connect to client with id {client_info.id}"
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail=f"Unable to issue client token for client with id {client_info.id}",
     )

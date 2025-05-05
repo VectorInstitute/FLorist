@@ -1,18 +1,25 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 
 from pytest import raises
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from florist.api.auth.token import make_default_client_user, DEFAULT_USERNAME, DEFAULT_PASSWORD, _simple_hash, decode_access_token, create_access_token
+from florist.api.auth.token import (
+    make_default_client_user,
+    DEFAULT_USERNAME,
+    DEFAULT_PASSWORD,
+    TOKEN_EXPIRATION_TIMEDELTA,
+    _simple_hash,
+    decode_access_token,
+    create_access_token,
+)
 from florist.api.db.client_entities import UserDAO
 from florist.api.routes.client.auth import login_for_access_token, check_token
-
 from florist.tests.integration.api.utils import mock_request
 
 
 async def test_login_for_access_token_success(mock_request):
-    target_datetime = datetime.now(timezone.utc) + timedelta(days=7)
+    target_datetime = datetime.now(timezone.utc) + TOKEN_EXPIRATION_TIMEDELTA
     make_default_client_user()
     user = UserDAO.find(DEFAULT_USERNAME)
 
@@ -40,6 +47,16 @@ async def test_login_for_access_token_failure(mock_request):
 
     assert err.value.status_code == 401
     assert err.value.detail == "Incorrect password."
+
+
+async def test_login_for_access_token_failure_user_not_found(mock_request):
+    wrong_username = "some_username"
+    form_data = OAuth2PasswordRequestForm(username=wrong_username, password=_simple_hash("some password"))
+    with raises(HTTPException) as err:
+        await login_for_access_token(form_data)
+
+    assert err.value.status_code == 401
+    assert err.value.detail == f"User with uuid '{wrong_username}' not found."
 
 
 async def test_check_token_success(mock_request):
