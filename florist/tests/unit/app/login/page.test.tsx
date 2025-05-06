@@ -1,36 +1,45 @@
 import "@testing-library/jest-dom";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { describe, it, expect, afterEach } from "@jest/globals";
-import { usePost } from "../../../../app/hooks";
+import { act } from "react-dom/test-utils";
+import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+
 import LoginPage from "../../../../app/login/page";
+import { usePost } from "../../../../app/hooks";
 
 jest.mock("../../../../app/hooks");
-jest.mock("next/navigation", () => ({
-    useRouter: jest.fn(),
-}));
+jest.mock("next/navigation");
 afterEach(() => {
     jest.clearAllMocks();
 });
 
-function mockUsePost(postMock, isLoading) {
+function mockUsePost(
+    postMock: jest.Mock,
+    response: Object | null,
+    isLoading: boolean,
+    error: string | null,
+) {
     return {
         post: postMock,
-        response: null,
+        response: response,
         isLoading: isLoading,
-        error: null,
+        error: error,
     };
 }
 
-function setupMock(isLoading: boolean) {
+function setupMocks(response: Object | null, isLoading: boolean, error: string | null) {
     const postMock = jest.fn();
-    usePost.mockImplementation(() => mockUsePost(postMock, isLoading));
-    return postMock;
+    usePost.mockImplementation(() => mockUsePost(postMock, response, isLoading, error));
+
+    const routerMock = { push: jest.fn() };
+    useRouter.mockImplementation(() => routerMock);
+    return { postMock, routerMock };
 }
 
 describe("LoginPage", () => {
     it("Renders correctly", () => {
-        setupMock(false);
+        setupMocks(null, false, null);
         const { container } = render(<LoginPage />);
 
         const loginTitle = container.querySelector("h4#login-header");
@@ -42,22 +51,69 @@ describe("LoginPage", () => {
         expect(passwordInput).toHaveAttribute("type", "password");
         const submitButton = loginForm.querySelector("button#login-form-submit");
         expect(submitButton).toHaveClass("bg-gradient-primary");
+        expect(submitButton).toHaveTextContent("Log in");
+
+        expect(container.querySelector("div#login-error")).toBeNull();
     });
     it("Disables the submit button when the form is loading", () => {
-        setupMock(true);
+        setupMocks(null, true, null);
         const { container } = render(<LoginPage />);
 
         const loginForm = container.querySelector("form#login-form");
         const submitButton = loginForm.querySelector("button#login-form-submit");
         expect(submitButton).toHaveClass("bg-gradient-secondary disabled");
+        expect(submitButton).toHaveTextContent("Logging in...");
     });
-    it("Removes the token cookie if it exists", () => {
-        Cookies.set("token", "test-token");
-        expect(Cookies.get("token")).toBe("test-token");
-        setupMock(false);
+    it("Displays an error message if there is an error", () => {
+        setupMocks(null, false, "Invalid username or password");
 
-        render(<LoginPage />);
+        const { container } = render(<LoginPage />);
 
-        expect(Cookies.get("token")).toBeUndefined();
+        const errorMessage = container.querySelector("div#login-error");
+        expect(errorMessage).toHaveTextContent("An error occurred. Please try again.");
+    });
+
+    describe("Token Handling", () => {
+        it("Removes the token cookie if it exists", () => {
+            Cookies.set("token", "test-token");
+            expect(Cookies.get("token")).toBe("test-token");
+            setupMocks(null, false, null);
+
+            render(<LoginPage />);
+
+            expect(Cookies.get("token")).toBeUndefined();
+        });
+        it("Sets the token cookie and redirect to the home page if the response contains the token", () => {
+            const { routerMock } = setupMocks({ access_token: "test-token" }, false, null);
+            expect(Cookies.get("token")).toBeUndefined();
+
+            render(<LoginPage />);
+
+            expect(Cookies.get("token")).toBe("test-token");
+            expect(routerMock.push).toHaveBeenCalledWith("/");
+        });
+    });
+
+    describe("Form Submission", () => {
+        it("Submits the form correctly", async () => {
+            const { postMock } = setupMocks(null, false, null);
+            const { container } = render(<LoginPage />);
+
+            const loginForm = container.querySelector("form#login-form");
+
+            const passwordInput = loginForm.querySelector("input#login-form-password");
+            act(() => {
+                fireEvent.change(passwordInput, { target: { value: "test-password" } });
+            });
+
+            const submitButton = loginForm.querySelector("button#login-form-submit");
+            await act(async () => await submitButton.click());
+
+            const formData = new FormData();
+            formData.append("grant_type", "password");
+            formData.append("username", "admin");
+            formData.append("password", "c638833f69bbfb3c267afa0a74434812436b8f08a81fd263c6be6871de4f1265");
+            expect(postMock).toBeCalledWith("/api/server/auth/token", formData, null);
+        });
     });
 });

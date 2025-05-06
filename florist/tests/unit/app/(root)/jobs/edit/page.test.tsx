@@ -4,7 +4,6 @@ import { describe, afterEach, it, expect } from "@jest/globals";
 import { act } from "react-dom/test-utils";
 
 import yaml from "js-yaml";
-import { createHash } from "crypto";
 import EditJob, { makeEmptyJob } from "../../../../../../app/(root)/jobs/edit/page";
 import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers } from "../../../../../../app/(root)/jobs/hooks";
 import { usePost } from "../../../../../../app/hooks";
