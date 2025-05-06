@@ -5,12 +5,13 @@ import { act } from "react-dom/test-utils";
 
 import yaml from "js-yaml";
 import { createHash } from "crypto";
-import EditJob, { makeEmptyJob } from "../../../../../app/(root)/jobs/edit/page";
-import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers } from "../../../../../app/(root)/jobs/hooks";
-import { usePost } from "../../../../../app/hooks";
+import EditJob, { makeEmptyJob } from "../../../../../../app/(root)/jobs/edit/page";
+import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers } from "../../../../../../app/(root)/jobs/hooks";
+import { usePost } from "../../../../../../app/hooks";
+import { hashWord } from "../../../../../../app/auth";
 
-jest.mock("../../../../../app/(root)/jobs/hooks");
-jest.mock("../../../../../app/hooks");
+jest.mock("../../../../../../app/(root)/jobs/hooks");
+jest.mock("../../../../../../app/hooks");
 jest.mock("next/navigation", () => ({
     useRouter() {
         return {
@@ -307,6 +308,10 @@ describe("New Job Page", () => {
             const jobClientInfoRedisAddress = container.querySelector("input#job-client-info-redis-address-0");
             expect(jobClientInfoRedisAddress).toBeInTheDocument();
             expect(jobClientInfoRedisAddress.value).toBe("");
+
+            const jobClientInfoPassword = container.querySelector("input#job-client-info-password-0");
+            expect(jobClientInfoPassword).toBeInTheDocument();
+            expect(jobClientInfoPassword.value).toBe("");
         });
         it("Add button click adds a new element", () => {
             setupGetMocks();
@@ -330,6 +335,10 @@ describe("New Job Page", () => {
             const jobClientInfoRedisAddress = container.querySelector("input#job-client-info-redis-address-1");
             expect(jobClientInfoRedisAddress).toBeInTheDocument();
             expect(jobClientInfoRedisAddress.value).toBe("");
+
+            const jobClientInfoPassword = container.querySelector("input#job-client-info-password-1");
+            expect(jobClientInfoPassword).toBeInTheDocument();
+            expect(jobClientInfoPassword.value).toBe("");
         });
         it("Remove button click removed the clicked element", () => {
             setupPostMocks();
@@ -350,6 +359,8 @@ describe("New Job Page", () => {
             expect(jobClientInfoRedisHost).not.toBeInTheDocument();
             const jobClientInfoRedisPort = container.querySelector("input#job-client-info-redis-port-0");
             expect(jobClientInfoRedisPort).not.toBeInTheDocument();
+            const jobClientInfoPassword = container.querySelector("input#job-client-info-password-0");
+            expect(jobClientInfoPassword).not.toBeInTheDocument();
         });
     });
 
@@ -475,12 +486,8 @@ describe("New Job Page", () => {
                 [testJob.server_config[0].name]: testJob.server_config[0].value,
                 [testJob.server_config[1].name]: testJob.server_config[1].value,
             });
-            testJob.clients_info[0].hashed_password = createHash("sha256")
-                .update(testJob.clients_info[0].hashed_password)
-                .digest("hex");
-            testJob.clients_info[1].hashed_password = createHash("sha256")
-                .update(testJob.clients_info[1].hashed_password)
-                .digest("hex");
+            testJob.clients_info[0].hashed_password = hashWord(testJob.clients_info[0].hashed_password);
+            testJob.clients_info[1].hashed_password = hashWord(testJob.clients_info[1].hashed_password);
             expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
         });
 
@@ -495,9 +502,7 @@ describe("New Job Page", () => {
 
             const testJob = makeEmptyJob();
             testJob.server_config = JSON.stringify({ "": "" });
-            testJob.clients_info[0].hashed_password = createHash("sha256")
-                .update(testJob.clients_info[0].hashed_password)
-                .digest("hex");
+            testJob.clients_info[0].hashed_password = hashWord(testJob.clients_info[0].hashed_password);
             expect(postMock).toBeCalledWith("/api/server/job", JSON.stringify(testJob));
 
             const errorAlert = container.querySelector("div#job-save-error");

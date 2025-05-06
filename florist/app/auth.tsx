@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-
+import { createHash } from "crypto";
 export function removeToken(): void {
     Cookies.remove("token");
 }
@@ -25,4 +25,8 @@ export function getAuthHeaders(): [string, string][] {
         }
     }
     return [];
+}
+
+export function hashWord(word: string): string {
+    return createHash("sha256").update(word).digest("hex");
 }

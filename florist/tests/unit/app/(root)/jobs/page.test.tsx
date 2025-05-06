@@ -3,13 +3,13 @@ import { getByText, render, cleanup } from "@testing-library/react";
 import { describe, it, expect, afterEach } from "@jest/globals";
 import { act } from "react-dom/test-utils";
 
-import Page from "../../../../app/(root)/jobs/page";
-import { validStatuses } from "../../../../app/(root)/jobs/definitions";
-import { useGetJobsByJobStatus } from "../../../../app/(root)/jobs/hooks";
-import { usePost } from "../../../../app/hooks";
+import Page from "../../../../../app/(root)/jobs/page";
+import { validStatuses } from "../../../../../app/(root)/jobs/definitions";
+import { useGetJobsByJobStatus } from "../../../../../app/(root)/jobs/hooks";
+import { usePost } from "../../../../../app/hooks";
 
-jest.mock("../../../../app/(root)/jobs/hooks");
-jest.mock("../../../../app/hooks");
+jest.mock("../../../../../app/(root)/jobs/hooks");
+jest.mock("../../../../../app/hooks");
 afterEach(() => {
     jest.clearAllMocks();
     cleanup();

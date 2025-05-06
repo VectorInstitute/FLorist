@@ -1,13 +1,12 @@
 "use client";
-import { ReactElement, useState } from "react";
+import { ReactElement, useState, useEffect } from "react";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { createHash } from "crypto";
 
 import logo_ct from "../assets/img/logo-ct.png";
 import { usePost } from "../hooks";
-import { setToken, removeToken } from "../auth";
+import { setToken, removeToken, hashWord } from "../auth";
 
 const DEFAULT_USERNAME = "admin";
 
@@ -26,23 +25,25 @@ export default function LoginPage(): ReactElement {
         const formData = new FormData();
         formData.append("grant_type", "password");
         formData.append("username", DEFAULT_USERNAME);
-        formData.append("password", createHash("sha256").update(password).digest("hex"));
+        formData.append("password", hashWord(password));
 
         await post("/api/server/auth/token", formData, null);
     }
 
-    if (!response || !isLoading) {
-        // if no response or isLoading, it means the user just accessed the login page
-        // remove the login token from the cookies in that case to log the user out
-        removeToken();
-    }
+    useEffect(() => {
+        if (!response || !isLoading) {
+            // if no response or isLoading, it means the user just accessed the login page
+            // remove the login token from the cookies in that case to log the user out
+            removeToken();
+        }
 
-    if (response) {
-        // if there is a response, it means the user has logged in successfully
-        // redirect to the home page and store the login token in the cookies
-        setToken(response.access_token);
-        router.push("/");
-    }
+        if (response) {
+            // if there is a response, it means the user has logged in successfully
+            // redirect to the home page and store the login token in the cookies
+            setToken(response.access_token);
+            router.push("/");
+        }
+    }, [response, isLoading, router]);
 
     let button_classes = "btn w-100 my-4 mb-2";
     if (isLoading || response) {
@@ -70,10 +71,11 @@ export default function LoginPage(): ReactElement {
                     </div>
                 </div>
                 <div className="card-body">
-                    <form onSubmit={onSubmit} role="form" className="text-start">
+                    <form id="login-form" onSubmit={onSubmit} role="form" className="text-start">
                         <div className="input-group input-group-outline my-3">
                             <label className="form-label">Password</label>
                             <input
+                                id="login-form-password"
                                 type="password"
                                 className="form-control"
                                 value={password}
@@ -81,7 +83,7 @@ export default function LoginPage(): ReactElement {
                             />
                         </div>
                         <div className="text-center">
-                            <button type="submit" className={button_classes}>
+                            <button id="login-form-submit" type="submit" className={button_classes}>
                                 {isLoading || response ? "Logging in..." : "Log in"}
                             </button>
                         </div>

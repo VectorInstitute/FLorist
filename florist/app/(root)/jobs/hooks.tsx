@@ -48,7 +48,7 @@ export function useGetOptimizers() {
 }
 
 export function useGetClients({ strategy }: { strategy: string }) {
-    return useSWR(`/api/server/clients/${strategy}`, fetcher);
+    return useSWR(strategy ? `/api/server/clients/${strategy}` : null, fetcher);
 }
 
 export function getServerLogsKey(jobId: string) {
