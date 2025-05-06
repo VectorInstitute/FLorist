@@ -29,7 +29,7 @@ const fetcher = (url: string) => {
         }
         return res.json();
     });
-}
+};
 
 export { fetcher };
 export default ClientImports;

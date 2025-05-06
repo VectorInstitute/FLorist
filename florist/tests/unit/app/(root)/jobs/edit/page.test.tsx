@@ -5,7 +5,12 @@ import { act } from "react-dom/test-utils";
 
 import yaml from "js-yaml";
 import EditJob, { makeEmptyJob } from "../../../../../../app/(root)/jobs/edit/page";
-import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers } from "../../../../../../app/(root)/jobs/hooks";
+import {
+    useGetModels,
+    useGetClients,
+    useGetStrategies,
+    useGetOptimizers,
+} from "../../../../../../app/(root)/jobs/hooks";
 import { usePost } from "../../../../../../app/hooks";
 import { hashWord } from "../../../../../../app/auth";
 
