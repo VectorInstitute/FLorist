@@ -59,6 +59,10 @@ def _simple_hash(word: str) -> str:
     """
     Hash a word with sha256.
 
+    WARNING: This is not a secure hash function, it is only meant to obscure
+    plain text words. DO NOT use this for generating encrypted passwords for the
+    authentication users. For that, use the _password_hash function instead.
+
     :param word: (str) the word to hash.
     :return: (str) the word hashed as a sha256 hexadecimal string.
     """
@@ -67,7 +71,7 @@ def _simple_hash(word: str) -> str:
 
 def _password_hash(password: str) -> str:
     """
-    Hash a password.
+    Hash a password with bcrypt.
 
     :param password: (str) the password to hash.
     :return: (str) the hashed password.

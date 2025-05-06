@@ -7,10 +7,10 @@ import { useImmer } from "use-immer";
 import { Draft, produce } from "immer";
 
 import { useRouter } from "next/navigation";
-import { createHash } from "crypto";
 import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers } from "../hooks";
 import { usePost } from "../../../hooks";
 import { Job, ServerConfig, ServerConfigDict, ClientInfo } from "../definitions";
+import { hashWord } from "../../../auth";
 
 export function makeEmptyJob(): Job {
     return {
@@ -95,7 +95,7 @@ export function EditJobForm(): ReactElement {
             // The client password is hashed here before sending the data over
             clients_info: state.job.clients_info.map((client) => ({
                 ...client,
-                hashed_password: createHash("sha256").update(client.hashed_password).digest("hex"),
+                hashed_password: hashWord(client.hashed_password),
             })),
         };
         await post("/api/server/job", JSON.stringify(job));
