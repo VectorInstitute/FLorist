@@ -1,9 +1,18 @@
 from freezegun import freeze_time
 from datetime import timedelta, datetime, timezone
 from copy import deepcopy
+from pytest import raises
 
-from florist.api.auth.token import DEFAULT_PASSWORD, verify_password, _simple_hash, _password_hash, create_access_token, decode_access_token
+from jwt.exceptions import InvalidTokenError
 
+from florist.api.auth.token import (
+    DEFAULT_PASSWORD,
+    verify_password,
+    _simple_hash,
+    _password_hash,
+    create_access_token,
+    decode_access_token,
+)
 
 def test_verify_password():
     simple_hashed_password = _simple_hash(DEFAULT_PASSWORD)
@@ -27,3 +36,16 @@ def test_access_token():
     expected_test_data["exp"] = (datetime.now(timezone.utc) + test_expiration_delta).timestamp()
 
     assert decoded_data == expected_test_data
+
+
+@freeze_time("2025-01-01 12:00:00")
+def test_expired_token():
+    test_data = {"sub": "test@test.com"}
+    test_secret_key = "super_secret_key"
+    test_expiration_delta = timedelta(hours=1)
+
+    token = create_access_token(test_data, test_secret_key, test_expiration_delta)
+
+    with freeze_time("2025-01-01 14:00:00"):
+        with raises(InvalidTokenError):
+            decode_access_token(token, test_secret_key)
