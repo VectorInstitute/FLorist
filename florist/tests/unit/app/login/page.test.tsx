@@ -14,12 +14,7 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-function mockUsePost(
-    postMock: jest.Mock,
-    response: Object | null,
-    isLoading: boolean,
-    error: string | null,
-) {
+function mockUsePost(postMock: jest.Mock, response: Object | null, isLoading: boolean, error: string | null) {
     return {
         post: postMock,
         response: response,
