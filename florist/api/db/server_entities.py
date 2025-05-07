@@ -346,6 +346,14 @@ class Job(BaseModel):
         update_result = await job_collection.update_one({"_id": self.id}, {"$set": {"error_message": error_message}})
         assert_updated_successfully(update_result)
 
+    def obscure_hashed_passwords(self) -> None:
+        """Obscure the clients' hashed passwords so it is not returned in the API's response."""
+        if self.clients_info is None:
+            return
+
+        for client_info in self.clients_info:
+            client_info.hashed_password = "*****"
+
     class Config:
         """MongoDB config for the Job DB entity."""
 
@@ -371,6 +379,7 @@ class Job(BaseModel):
                         "data_path": "path/to/data",
                         "redis_address": "localhost:6380",
                         "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
+                        "hashed_password": "LQv3c1yqBWVHxkd0LHAkCOYz6T",
                     },
                 ],
                 "error_message": "Some plain text error message.",

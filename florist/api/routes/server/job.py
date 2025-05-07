@@ -40,6 +40,8 @@ async def get_job(job_id: str, request: Request) -> Union[Job, JSONResponse]:
     if job is None:
         return JSONResponse(content={"error": f"Job with ID {job_id} does not exist."}, status_code=400)
 
+    # Obscuring the clients' hashed passwords so they are not returned in the response
+    job.obscure_hashed_passwords()
     return job
 
 
@@ -66,6 +68,8 @@ async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
     job_in_db = await Job.find_by_id(job_id, request.app.database)
 
     assert job_in_db is not None
+    # Obscuring the clients' hashed passwords so they are not returned in the response
+    job_in_db.obscure_hashed_passwords()
     return job_in_db
 
 
@@ -86,7 +90,11 @@ async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Job
     :return: (List[Dict[str, Any]]) A list where each entry is a dictionary with the attributes
         of a Job instance with the specified status.
     """
-    return await Job.find_by_status(status, MAX_RECORDS_TO_FETCH, request.app.database)
+    jobs = await Job.find_by_status(status, MAX_RECORDS_TO_FETCH, request.app.database)
+    for job in jobs:
+        # Obscuring the clients' hashed passwords so they are not returned in the response
+        job.obscure_hashed_passwords()
+    return jobs
 
 
 @router.post(

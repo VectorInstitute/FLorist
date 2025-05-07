@@ -12,7 +12,7 @@ export function useGetJobsByJobStatus(status: string) {
 }
 
 export function useGetJob(jobId: string | null) {
-    const { data, error, isLoading } = useSWR(jobId ? [`/api/server/job/${jobId}`] : null, fetcher, {
+    const { data, error, isLoading } = useSWR(jobId ? `/api/server/job/${jobId}` : null, fetcher, {
         refreshInterval: (data) => {
             if (data?.status === "IN_PROGRESS") {
                 // Force refetching every second for in-progress jobs

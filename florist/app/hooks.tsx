@@ -17,10 +17,10 @@ export const usePost = () => {
         setResponse(null);
         setError(null);
 
+        var requestHeaders = undefined;
         if (headers) {
-            headers.push(...getAuthHeaders());
+            requestHeaders = new Headers(headers.concat(getAuthHeaders()));
         }
-        const requestHeaders = headers ? new Headers(headers) : undefined;
 
         const response = await fetch(path, { method: "POST", body: body, headers: requestHeaders });
 

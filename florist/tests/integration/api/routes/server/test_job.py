@@ -98,7 +98,7 @@ async def test_new_job(mock_request) -> None:
                 "redis_address": test_job.clients_info[0].redis_address,
                 "uuid": test_job.clients_info[0].uuid,
                 "metrics": test_job.clients_info[0].metrics,
-                "hashed_password": test_job.clients_info[0].hashed_password,
+                "hashed_password": "*****",
             }, {
                 "_id": ANY,
                 "service_address": test_job.clients_info[1].service_address,
@@ -106,7 +106,7 @@ async def test_new_job(mock_request) -> None:
                 "redis_address": test_job.clients_info[1].redis_address,
                 "uuid": test_job.clients_info[1].uuid,
                 "metrics": test_job.clients_info[1].metrics,
-                "hashed_password": test_job.clients_info[1].hashed_password,
+                "hashed_password": "*****",
             },
         ],
     }
@@ -290,7 +290,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job1.clients_info[0].redis_address,
                 "metrics": test_job1.clients_info[0].metrics,
                 "uuid": test_job1.clients_info[0].uuid,
-                "hashed_password": test_job1.clients_info[0].hashed_password,
+                "hashed_password": "*****",
             }, {
                 "_id": ANY,
                 "service_address": test_job1.clients_info[1].service_address,
@@ -298,7 +298,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job1.clients_info[1].redis_address,
                 "metrics": test_job1.clients_info[1].metrics,
                 "uuid": test_job1.clients_info[1].uuid,
-                "hashed_password": test_job1.clients_info[1].hashed_password,
+                "hashed_password": "*****",
             },
         ],
     }
@@ -326,7 +326,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job2.clients_info[0].redis_address,
                 "metrics": test_job2.clients_info[0].metrics,
                 "uuid": test_job2.clients_info[0].uuid,
-                "hashed_password": test_job2.clients_info[0].hashed_password,
+                "hashed_password": "*****",
             }, {
                 "_id": ANY,
                 "service_address": test_job2.clients_info[1].service_address,
@@ -334,7 +334,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job2.clients_info[1].redis_address,
                 "metrics": test_job2.clients_info[1].metrics,
                 "uuid": test_job2.clients_info[1].uuid,
-                "hashed_password": test_job2.clients_info[1].hashed_password,
+                "hashed_password": "*****",
             },
         ],
     }
@@ -362,7 +362,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job3.clients_info[0].redis_address,
                 "metrics": test_job3.clients_info[0].metrics,
                 "uuid": test_job3.clients_info[0].uuid,
-                "hashed_password": test_job3.clients_info[0].hashed_password,
+                "hashed_password": "*****",
             }, {
                 "_id": ANY,
                 "service_address": test_job3.clients_info[1].service_address,
@@ -370,7 +370,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job3.clients_info[1].redis_address,
                 "metrics": test_job3.clients_info[1].metrics,
                 "uuid": test_job3.clients_info[1].uuid,
-                "hashed_password": test_job3.clients_info[1].hashed_password,
+                "hashed_password": "*****",
             },
         ],
     }
@@ -398,7 +398,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job4.clients_info[0].redis_address,
                 "metrics": test_job4.clients_info[0].metrics,
                 "uuid": test_job4.clients_info[0].uuid,
-                "hashed_password": test_job4.clients_info[0].hashed_password,
+                "hashed_password": "*****",
             }, {
                 "_id": ANY,
                 "service_address": test_job4.clients_info[1].service_address,
@@ -406,7 +406,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job4.clients_info[1].redis_address,
                 "metrics": test_job4.clients_info[1].metrics,
                 "uuid": test_job4.clients_info[1].uuid,
-                "hashed_password": test_job4.clients_info[1].hashed_password,
+                "hashed_password": "*****",
             },
         ],
     }
