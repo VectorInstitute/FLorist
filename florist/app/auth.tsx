@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import { createHash } from "crypto";
+
 export function removeToken(): void {
     Cookies.remove("token");
 }
