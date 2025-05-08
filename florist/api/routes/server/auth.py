@@ -85,9 +85,11 @@ async def check_token(token: Annotated[str, Depends(oauth2_scheme)], request: Re
         username = payload.get("sub")
         if username is None or username != user.username:
             raise credentials_exception
+
+        return AuthUser(uuid=user.id, username=user.username)
+
     except InvalidTokenError as err:
         raise credentials_exception from err
-    return AuthUser(uuid=user.id, username=user.username)
 
 
 def get_client_token(client_info: ClientInfo, request: Request) -> Token:
