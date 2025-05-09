@@ -6,8 +6,9 @@ from unittest.mock import patch, Mock, AsyncMock, call
 from fastapi.responses import JSONResponse
 from freezegun import freeze_time
 
-from florist.api.routes.server.job import change_job_status, get_job, stop_job
+from florist.api.auth.token import Token
 from florist.api.db.server_entities import JobStatus, ClientInfo
+from florist.api.routes.server.job import change_job_status, get_job, stop_job
 
 
 @patch("florist.api.db.server_entities.Job.find_by_id")
@@ -114,13 +115,14 @@ async def test_change_job_status_failure_in_set_status(mock_find_by_id: Mock) ->
 @freeze_time("2012-12-11 10:09:08")
 @patch("florist.api.db.server_entities.Job.find_by_id")
 @patch("florist.api.routes.server.job.requests")
+@patch("florist.api.routes.server.auth.requests")
 @patch("florist.api.routes.server.job.os.kill")
-async def test_stop_job_success(mock_kill: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
+async def test_stop_job_success(mock_kill: Mock, mock_auth_requests: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
     test_job_id = "test-job-id"
     test_server_pid = 1234
     test_clients = [
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address=""),
-        ClientInfo(uuid="test-client-uuid-2", service_address="test-service-address-2", data_path="", redis_address=""),
+        ClientInfo(id="test-client-id-1", uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address="", hashed_password="test-password-1"),
+        ClientInfo(id="test-client-id-2", uuid="test-client-uuid-2", service_address="test-service-address-2", data_path="", redis_address="", hashed_password="test-password-2"),
     ]
 
     mock_job = Mock()
@@ -131,9 +133,14 @@ async def test_stop_job_success(mock_kill: Mock, mock_requests: Mock, mock_find_
     mock_find_by_id.return_value = mock_job
     mock_request = Mock()
     mock_request.app.database = Mock()
+    mock_request.app.clients_auth_tokens = {
+        "test-client-id-1": Token(access_token="test-client-token-1", token_type="bearer"),
+        "test-client-id-2": Token(access_token="test-client-token-2", token_type="bearer"),
+    }
     mock_response = Mock()
     mock_response.status_code = 200
     mock_requests.get.return_value = mock_response
+    mock_auth_requests.get.return_value = mock_response
 
     response = await stop_job(test_job_id, mock_request)
 
@@ -145,8 +152,14 @@ async def test_stop_job_success(mock_kill: Mock, mock_requests: Mock, mock_find_
         mock_request.app.database,
     )
     mock_requests.get.assert_has_calls([
-        call(url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}"),
-        call(url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].uuid}"),
+        call(
+            url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}",
+            headers={"Authorization": f"Bearer {mock_request.app.clients_auth_tokens['test-client-id-1'].access_token}"},
+        ),
+        call(
+            url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].uuid}",
+            headers={"Authorization": f"Bearer {mock_request.app.clients_auth_tokens['test-client-id-2'].access_token}"},
+        ),
     ])
 
     assert isinstance(response, JSONResponse)
@@ -157,13 +170,14 @@ async def test_stop_job_success(mock_kill: Mock, mock_requests: Mock, mock_find_
 @freeze_time("2012-12-11 10:09:08")
 @patch("florist.api.db.server_entities.Job.find_by_id")
 @patch("florist.api.routes.server.job.requests")
+@patch("florist.api.routes.server.auth.requests")
 @patch("florist.api.routes.server.job.os.kill")
-async def test_stop_job_fail_stop_client(mock_kill: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
+async def test_stop_job_fail_stop_client(mock_kill: Mock, mock_auth_requests: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
     test_job_id = "test-job-id"
     test_server_pid = 1234
     test_clients = [
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address=""),
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-2", data_path="", redis_address=""),
+        ClientInfo(id="test-client-id-1", uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address="", hashed_password="test-password-1"),
+        ClientInfo(id="test-client-id-2", uuid="test-client-uuid-2", service_address="test-service-address-2", data_path="", redis_address="", hashed_password="test-password-2"),
     ]
     test_error = "test-error"
 
@@ -175,10 +189,17 @@ async def test_stop_job_fail_stop_client(mock_kill: Mock, mock_requests: Mock, m
     mock_find_by_id.return_value = mock_job
     mock_request = Mock()
     mock_request.app.database = Mock()
+    mock_request.app.clients_auth_tokens = {
+        "test-client-id-1": Token(access_token="test-client-token-1", token_type="bearer"),
+        "test-client-id-2": Token(access_token="test-client-token-2", token_type="bearer"),
+    }
     mock_response = Mock()
     mock_response.status_code = 500
     mock_response.json.return_value = {"error": test_error}
     mock_requests.get.return_value = mock_response
+    mock_auth_response = Mock()
+    mock_auth_response.status_code = 200
+    mock_auth_requests.get.return_value = mock_auth_response
 
     response = await stop_job(test_job_id, mock_request)
 
@@ -186,8 +207,14 @@ async def test_stop_job_fail_stop_client(mock_kill: Mock, mock_requests: Mock, m
     mock_kill.assert_called_once_with(test_server_pid, signal.SIGTERM)
     mock_job.set_status.assert_called_once_with(JobStatus.FINISHED_WITH_ERROR, mock_request.app.database)
     mock_requests.get.assert_has_calls([
-        call(url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}"),
-        call(url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].uuid}"),
+        call(
+            url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}",
+            headers={"Authorization": f"Bearer {mock_request.app.clients_auth_tokens['test-client-id-1'].access_token}"},
+        ),
+        call(
+            url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].uuid}",
+            headers={"Authorization": f"Bearer {mock_request.app.clients_auth_tokens['test-client-id-2'].access_token}"},
+        ),
     ], any_order=True)
     mock_job.set_error_message.assert_called_once_with(
         f"Training job terminated manually on {datetime.now()}. " +
@@ -204,14 +231,15 @@ async def test_stop_job_fail_stop_client(mock_kill: Mock, mock_requests: Mock, m
 @freeze_time("2012-12-11 10:09:08")
 @patch("florist.api.db.server_entities.Job.find_by_id")
 @patch("florist.api.routes.server.job.requests")
+@patch("florist.api.routes.server.auth.requests")
 @patch("florist.api.routes.server.job.os.kill")
-async def test_stop_job_fail_stop_server(_: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
+async def test_stop_job_fail_stop_server(_: Mock, mock_auth_requests: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
     test_job_id = "test-job-id"
     test_server_uuid = "test-server-uuid"
     test_server_pid = "incorrect-pid"
     test_clients = [
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address=""),
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-2", data_path="", redis_address=""),
+        ClientInfo(id="test-client-id-1", uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address="", hashed_password="test-password-1"),
+        ClientInfo(id="test-client-id-2", uuid="test-client-uuid-2", service_address="test-service-address-2", data_path="", redis_address="", hashed_password="test-password-2"),
     ]
 
     mock_job = Mock()
@@ -223,17 +251,27 @@ async def test_stop_job_fail_stop_server(_: Mock, mock_requests: Mock, mock_find
     mock_find_by_id.return_value = mock_job
     mock_request = Mock()
     mock_request.app.database = Mock()
+    mock_request.app.clients_auth_tokens = {
+        "test-client-id-1": Token(access_token="test-client-token-1", token_type="bearer"),
+        "test-client-id-2": Token(access_token="test-client-token-2", token_type="bearer"),
+    }
     mock_response = Mock()
     mock_response.status_code = 200
     mock_requests.get.return_value = mock_response
-
+    mock_auth_requests.get.return_value = mock_response
     response = await stop_job(test_job_id, mock_request)
 
     mock_find_by_id.assert_called_once_with(test_job_id, mock_request.app.database)
     mock_job.set_status.assert_called_once_with(JobStatus.FINISHED_WITH_ERROR, mock_request.app.database)
     mock_requests.get.assert_has_calls([
-        call(url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}"),
-        call(url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].uuid}"),
+        call(
+            url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}",
+            headers={"Authorization": f"Bearer {mock_request.app.clients_auth_tokens['test-client-id-1'].access_token}"},
+        ),
+        call(
+            url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].uuid}",
+            headers={"Authorization": f"Bearer {mock_request.app.clients_auth_tokens['test-client-id-2'].access_token}"},
+        ),
     ])
     mock_job.set_error_message.assert_called_once_with(
         f"Training job terminated manually on {datetime.now()}. " +
@@ -249,13 +287,14 @@ async def test_stop_job_fail_stop_server(_: Mock, mock_requests: Mock, mock_find
 @freeze_time("2012-12-11 10:09:08")
 @patch("florist.api.db.server_entities.Job.find_by_id")
 @patch("florist.api.routes.server.job.requests")
+@patch("florist.api.routes.server.auth.requests")
 @patch("florist.api.routes.server.job.os.kill")
-async def test_stop_job_fail_no_server_pid(_: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
+async def test_stop_job_fail_no_server_pid(_: Mock, mock_auth_requests: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
     test_job_id = "test-job-id"
     test_server_uuid = "test-server-uuid"
     test_clients = [
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address=""),
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-2", data_path="", redis_address=""),
+        ClientInfo(id="test-client-id-1", uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address="", hashed_password="test-password-1"),
+        ClientInfo(id="test-client-id-2", uuid="test-client-uuid-2", service_address="test-service-address-2", data_path="", redis_address="", hashed_password="test-password-2"),
     ]
 
     mock_job = Mock()
@@ -267,17 +306,28 @@ async def test_stop_job_fail_no_server_pid(_: Mock, mock_requests: Mock, mock_fi
     mock_find_by_id.return_value = mock_job
     mock_request = Mock()
     mock_request.app.database = Mock()
+    mock_request.app.clients_auth_tokens = {
+        "test-client-id-1": Token(access_token="test-client-token-1", token_type="bearer"),
+        "test-client-id-2": Token(access_token="test-client-token-2", token_type="bearer"),
+    }
     mock_response = Mock()
     mock_response.status_code = 200
     mock_requests.get.return_value = mock_response
+    mock_auth_requests.get.return_value = mock_response
 
     response = await stop_job(test_job_id, mock_request)
 
     mock_find_by_id.assert_called_once_with(test_job_id, mock_request.app.database)
     mock_job.set_status.assert_called_once_with(JobStatus.FINISHED_WITH_ERROR, mock_request.app.database)
     mock_requests.get.assert_has_calls([
-        call(url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}"),
-        call(url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].uuid}"),
+        call(
+            url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}",
+            headers={"Authorization": f"Bearer {mock_request.app.clients_auth_tokens['test-client-id-1'].access_token}"},
+        ),
+        call(
+            url=f"http://{test_clients[1].service_address}/api/client/stop/{test_clients[1].uuid}",
+            headers={"Authorization": f"Bearer {mock_request.app.clients_auth_tokens['test-client-id-2'].access_token}"},
+        ),
     ])
     mock_job.set_error_message.assert_called_once_with(
         f"Training job terminated manually on {datetime.now()}. " +
@@ -293,13 +343,14 @@ async def test_stop_job_fail_no_server_pid(_: Mock, mock_requests: Mock, mock_fi
 @freeze_time("2012-12-11 10:09:08")
 @patch("florist.api.db.server_entities.Job.find_by_id")
 @patch("florist.api.routes.server.job.requests")
-async def test_stop_job_exception(mock_requests: Mock, mock_find_by_id: Mock) -> None:
+@patch("florist.api.routes.server.auth.requests")
+async def test_stop_job_exception(mock_auth_requests: Mock, mock_requests: Mock, mock_find_by_id: Mock) -> None:
     test_exception_message = "test-exception-message"
     test_job_id = "test-job-id"
     test_server_pid = 1234
     test_clients = [
-        ClientInfo(uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address=""),
-        ClientInfo(uuid="test-client-uuid-2", service_address="test-service-address-2", data_path="", redis_address=""),
+        ClientInfo(id="test-client-id-1", uuid="test-client-uuid-1", service_address="test-service-address-1", data_path="", redis_address="", hashed_password="test-password-1"),
+        ClientInfo(id="test-client-id-2", uuid="test-client-uuid-2", service_address="test-service-address-2", data_path="", redis_address="", hashed_password="test-password-2"),
     ]
 
     mock_job = Mock()
@@ -310,19 +361,25 @@ async def test_stop_job_exception(mock_requests: Mock, mock_find_by_id: Mock) ->
     mock_find_by_id.return_value = mock_job
     mock_request = Mock()
     mock_request.app.database = Mock()
+    mock_request.app.clients_auth_tokens = {
+        "test-client-id-1": Token(access_token="test-client-token-1", token_type="bearer"),
+        "test-client-id-2": Token(access_token="test-client-token-2", token_type="bearer"),
+    }
     mock_response = Mock()
     mock_response.status_code = 200
     mock_requests.get.side_effect = Exception(test_exception_message)
-
+    mock_auth_requests.get.return_value = mock_response
     response = await stop_job(test_job_id, mock_request)
 
     mock_find_by_id.assert_called_once_with(test_job_id, mock_request.app.database)
     mock_job.set_status.assert_not_called()
     mock_job.set_error_message.assert_not_called()
-    mock_requests.get.assert_called_once_with(
-        url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}",
-    )
-
+    mock_requests.get.assert_has_calls([
+        call(
+            url=f"http://{test_clients[0].service_address}/api/client/stop/{test_clients[0].uuid}",
+            headers={"Authorization": f"Bearer {mock_request.app.clients_auth_tokens['test-client-id-1'].access_token}"},
+        ),
+    ])
     assert isinstance(response, JSONResponse)
     assert response.status_code == 500
     assert json.loads(response.body.decode("utf-8")) == {"error": test_exception_message}

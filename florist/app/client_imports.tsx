@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { getAuthHeaders } from "./auth";
 
 function ClientImports(): null {
     useEffect(() => {
@@ -12,12 +13,23 @@ function ClientImports(): null {
     return null;
 }
 
-const fetcher = (...args: Parameters<typeof fetch>) =>
-    fetch(...args).then((res) => {
+const fetcher = (url: string) => {
+    // Adding the authentication token to the request headers
+    const params: RequestInit = {
+        headers: new Headers(getAuthHeaders()),
+    };
+
+    return fetch(url, params).then((res) => {
+        if (res.status === 401) {
+            // redirecting to the login page in case any calls return a 401 (unauthorized) error
+            window.location.href = "/login";
+        }
         if (res.status != 200) {
             throw new Error(res.status.toString(), { cause: res.json() });
         }
         return res.json();
     });
+};
+
 export { fetcher };
 export default ClientImports;

@@ -1,4 +1,4 @@
-import logo_ct from "./assets/img/logo-ct.png";
+import logo_ct from "../assets/img/logo-ct.png";
 
 import { ReactElement } from "react";
 import Image from "next/image";

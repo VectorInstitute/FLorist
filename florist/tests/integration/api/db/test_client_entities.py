@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from florist.api.db.client_entities import ClientDAO
+from florist.api.db.client_entities import ClientDAO, UserDAO
 
 from florist.tests.integration.api.utils import mock_request
 
@@ -85,3 +85,27 @@ def test_to_json(mock_request):
     client = ClientDAO(uuid="test-uuid", log_file_path="test-log-file-path", pid=1234)
 
     assert client.to_json() == f'{{"uuid": "{client.uuid}", "log_file_path": "{client.log_file_path}", "pid": {client.pid}}}'
+
+
+def test_user_init(mock_request):
+    test_username = "test-username"
+    test_hashed_password = "test-hashed-password"
+
+    user = UserDAO(username=test_username, hashed_password=test_hashed_password)
+    assert user.username == test_username
+    assert user.hashed_password == test_hashed_password
+    assert user.uuid == test_username
+    assert isinstance(user.secret_key, str) and len(user.secret_key) == 64
+
+
+def test_user_to_and_from_json(mock_request):
+    json_data = json.dumps({
+        "uuid": "test-uuid",
+        "username": "test-username",
+        "hashed_password": "test-hashed-password",
+        "secret_key": "test-secret-key",
+    })
+
+    user = UserDAO.from_json(json_data)
+
+    assert user.to_json() == json_data

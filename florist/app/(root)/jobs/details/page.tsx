@@ -8,7 +8,7 @@ import type { ReactElement } from "react";
 
 import { useGetJob, getServerLogsKey, getClientLogsKey, useSWRWithKey } from "../hooks";
 import { validStatuses, ClientInfo, Metrics, RoundMetrics, JobDetailsProperties } from "../definitions";
-import loading_gif from "../../assets/img/loading.gif";
+import loading_gif from "../../../assets/img/loading.gif";
 
 export default function JobDetails(): ReactElement {
     return (

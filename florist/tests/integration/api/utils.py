@@ -34,6 +34,7 @@ class MockApp:
     def __init__(self, database_name: str):
         self.db_client = AsyncIOMotorClient(MONGODB_URI)
         self.database = self.db_client[database_name]
+        self.clients_auth_tokens = {}
 
 
 class MockRequest(Request):

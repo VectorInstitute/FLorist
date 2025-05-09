@@ -597,7 +597,9 @@ function onWindowLoadFunction() {
                     rippleDiv.style.top = e.offsetY - rippleDiv.offsetHeight / 2 + "px";
                     rippleDiv.classList.add("ripple");
                     setTimeout(function () {
-                        rippleDiv.parentElement.removeChild(rippleDiv);
+                        if (rippleDiv.parentElement) {
+                            rippleDiv.parentElement.removeChild(rippleDiv);
+                        }
                     }, 600);
                 },
                 false,

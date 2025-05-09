@@ -28,6 +28,7 @@ export interface ClientInfo {
     service_address: string;
     data_path: string;
     redis_address: string;
+    hashed_password: string;
     metrics?: string;
 }
 

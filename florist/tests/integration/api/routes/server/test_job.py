@@ -5,6 +5,7 @@ from unittest.mock import ANY
 import uvicorn
 from fastapi.encoders import jsonable_encoder
 
+from florist.api.auth.token import DEFAULT_PASSWORD, _simple_hash
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
 from florist.api.db.client_entities import ClientDAO
@@ -60,6 +61,7 @@ async def test_new_job(mock_request) -> None:
                 redis_address="test-redis-address-1",
                 metrics="test-client-metrics-1",
                 uuid="test-client-uuid-1",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
             ClientInfo(
                 service_address="test-addr-2",
@@ -67,6 +69,7 @@ async def test_new_job(mock_request) -> None:
                 redis_address="test-redis-address-2",
                 metrics="test-client-metrics-2",
                 uuid="test-client-uuid-2",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
         ]
     )
@@ -95,6 +98,7 @@ async def test_new_job(mock_request) -> None:
                 "redis_address": test_job.clients_info[0].redis_address,
                 "uuid": test_job.clients_info[0].uuid,
                 "metrics": test_job.clients_info[0].metrics,
+                "hashed_password": "*****",
             }, {
                 "_id": ANY,
                 "service_address": test_job.clients_info[1].service_address,
@@ -102,6 +106,7 @@ async def test_new_job(mock_request) -> None:
                 "redis_address": test_job.clients_info[1].redis_address,
                 "uuid": test_job.clients_info[1].uuid,
                 "metrics": test_job.clients_info[1].metrics,
+                "hashed_password": "*****",
             },
         ],
     }
@@ -130,6 +135,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_address="test-redis-address-1-1",
                 metrics="test-client-metrics-1-1",
                 uuid="test-client-uuid-1-1",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
             ClientInfo(
                 service_address="test-addr-2-1",
@@ -137,6 +143,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_address="test-redis-address-2-1",
                 metrics="test-client-metrics-2-1",
                 uuid="test-client-uuid-2-1",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
         ]
     )
@@ -163,6 +170,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_address="test-redis-address-1-2",
                 metrics="test-client-metrics-1-2",
                 uuid="test-client-uuid-1-2",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
             ClientInfo(
                 service_address="test-addr-2-2",
@@ -170,6 +178,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_address="test-redis-address-2-2",
                 metrics="test-client-metrics-2-2",
                 uuid="test-client-uuid-2-2",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
         ]
     )
@@ -196,6 +205,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_address="test-redis-address-1-3",
                 metrics="test-client-metrics-1-3",
                 uuid="test-client-uuid-1-3",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
             ClientInfo(
                 service_address="test-addr-2-3",
@@ -203,6 +213,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_address="test-redis-address-2-3",
                 metrics="test-client-metrics-2-3",
                 uuid="test-client-uuid-2-3",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
         ]
     )
@@ -229,6 +240,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_address="test-redis-address-1-4",
                 metrics="test-client-metrics-1-4",
                 uuid="test-client-uuid-1-4",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
             ClientInfo(
                 service_address="test-addr-2-4",
@@ -236,6 +248,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 redis_address="test-redis-address-2-4",
                 metrics="test-client-metrics-2-4",
                 uuid="test-client-uuid-2-4",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
         ]
     )
@@ -277,6 +290,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job1.clients_info[0].redis_address,
                 "metrics": test_job1.clients_info[0].metrics,
                 "uuid": test_job1.clients_info[0].uuid,
+                "hashed_password": "*****",
             }, {
                 "_id": ANY,
                 "service_address": test_job1.clients_info[1].service_address,
@@ -284,6 +298,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job1.clients_info[1].redis_address,
                 "metrics": test_job1.clients_info[1].metrics,
                 "uuid": test_job1.clients_info[1].uuid,
+                "hashed_password": "*****",
             },
         ],
     }
@@ -311,6 +326,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job2.clients_info[0].redis_address,
                 "metrics": test_job2.clients_info[0].metrics,
                 "uuid": test_job2.clients_info[0].uuid,
+                "hashed_password": "*****",
             }, {
                 "_id": ANY,
                 "service_address": test_job2.clients_info[1].service_address,
@@ -318,6 +334,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job2.clients_info[1].redis_address,
                 "metrics": test_job2.clients_info[1].metrics,
                 "uuid": test_job2.clients_info[1].uuid,
+                "hashed_password": "*****",
             },
         ],
     }
@@ -345,6 +362,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job3.clients_info[0].redis_address,
                 "metrics": test_job3.clients_info[0].metrics,
                 "uuid": test_job3.clients_info[0].uuid,
+                "hashed_password": "*****",
             }, {
                 "_id": ANY,
                 "service_address": test_job3.clients_info[1].service_address,
@@ -352,6 +370,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job3.clients_info[1].redis_address,
                 "metrics": test_job3.clients_info[1].metrics,
                 "uuid": test_job3.clients_info[1].uuid,
+                "hashed_password": "*****",
             },
         ],
     }
@@ -379,6 +398,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job4.clients_info[0].redis_address,
                 "metrics": test_job4.clients_info[0].metrics,
                 "uuid": test_job4.clients_info[0].uuid,
+                "hashed_password": "*****",
             }, {
                 "_id": ANY,
                 "service_address": test_job4.clients_info[1].service_address,
@@ -386,6 +406,7 @@ async def test_list_jobs_with_status(mock_request) -> None:
                 "redis_address": test_job4.clients_info[1].redis_address,
                 "metrics": test_job4.clients_info[1].metrics,
                 "uuid": test_job4.clients_info[1].uuid,
+                "hashed_password": "*****",
             },
         ],
     }
@@ -445,12 +466,14 @@ async def test_get_client_log_success(mock_request):
                 service_address=f"{test_client_host}:{test_client_port}",
                 data_path="test/data/path-1",
                 redis_address="test-redis-address-1",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
             ClientInfo(
                 uuid="test-client-uuid-2",
                 service_address=f"{test_client_host}:{test_client_port}",
                 data_path="test/data/path-2",
                 redis_address="test-redis-address-2",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
         ],
     ))
@@ -497,6 +520,7 @@ async def test_get_client_log_error_invalid_client_index(mock_request):
                 service_address=f"test-address",
                 data_path="test/data/path-1",
                 redis_address="test-redis-address-1",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
         ],
     ))
@@ -517,6 +541,7 @@ async def test_get_client_log_error_log_file_path_is_none(mock_request):
                 service_address=f"{test_client_host}:{test_client_port}",
                 data_path="test/data/path-1",
                 redis_address="test-redis-address-1",
+                hashed_password=_simple_hash(DEFAULT_PASSWORD),
             ),
         ],
     ))
