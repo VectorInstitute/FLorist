@@ -179,7 +179,6 @@ class UserDAO(EntityDAO):
         """
         Initialize a User entity.
 
-        :param uuid: (str) the UUID of the user.
         :param username: (str) the username of the user.
         :param hashed_password: (str) the hashed password of the user.
         """
@@ -198,7 +197,7 @@ class UserDAO(EntityDAO):
         Convert from a JSON string into an instance of User.
 
         :param json_data: the user's data as a JSON string.
-        :return: (Self) and instancxe of UserDAO populated with the JSON data.
+        :return: (Self) and instance of UserDAO populated with the JSON data.
         """
         data = json.loads(json_data)
         user = cls(data["username"], data["hashed_password"])

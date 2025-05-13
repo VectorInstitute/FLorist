@@ -21,7 +21,7 @@ from florist.api.launchers.local import launch_client
 from florist.api.models.models import Model
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter, get_from_redis, get_host_and_port_from_address
-from florist.api.routes.client.auth import check_token
+from florist.api.routes.client.auth import check_default_user_token
 from florist.api.routes.client.auth import router as auth_router
 
 
@@ -42,7 +42,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(auth_router, tags=["auth"], prefix="/api/client/auth")
 
 
-@app.get("/api/client/connect", dependencies=[Depends(check_token)])
+@app.get("/api/client/connect", dependencies=[Depends(check_default_user_token)])
 def connect() -> JSONResponse:
     """
     Confirm the client is up and ready to accept instructions.
@@ -52,7 +52,7 @@ def connect() -> JSONResponse:
     return JSONResponse({"status": "ok"})
 
 
-@app.get("/api/client/start", dependencies=[Depends(check_token)])
+@app.get("/api/client/start", dependencies=[Depends(check_default_user_token)])
 def start(
     server_address: str,
     client: Client,
@@ -112,7 +112,7 @@ def start(
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-@app.get("/api/client/check_status/{client_uuid}", dependencies=[Depends(check_token)])
+@app.get("/api/client/check_status/{client_uuid}", dependencies=[Depends(check_default_user_token)])
 def check_status(client_uuid: str, redis_address: str) -> JSONResponse:
     """
     Retrieve value at key client_uuid in redis if it exists.
@@ -137,7 +137,7 @@ def check_status(client_uuid: str, redis_address: str) -> JSONResponse:
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-@app.get("/api/client/get_log/{uuid}", dependencies=[Depends(check_token)])
+@app.get("/api/client/get_log/{uuid}", dependencies=[Depends(check_default_user_token)])
 def get_log(uuid: str) -> JSONResponse:
     """
     Return the contents of the logs for the given client uuid.
@@ -164,7 +164,7 @@ def get_log(uuid: str) -> JSONResponse:
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-@app.get("/api/client/stop/{uuid}", dependencies=[Depends(check_token)])
+@app.get("/api/client/stop/{uuid}", dependencies=[Depends(check_default_user_token)])
 def stop(uuid: str) -> JSONResponse:
     """
     Stop the client with given UUID.

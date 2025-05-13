@@ -18,7 +18,7 @@ from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.launchers.local import launch_local_server
 from florist.api.models.models import Model
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
-from florist.api.routes.server.auth import check_token, get_client_token
+from florist.api.routes.server.auth import check_default_user_token, get_client_token
 from florist.api.servers.config_parsers import ConfigParser
 
 
@@ -30,7 +30,7 @@ START_CLIENT_API = "api/client/start"
 CHECK_CLIENT_STATUS_API = "api/client/check_status"
 
 
-@router.post("/start", dependencies=[Depends(check_token)])
+@router.post("/start", dependencies=[Depends(check_default_user_token)])
 async def start(job_id: str, request: Request) -> JSONResponse:
     """
     Start FL training for a job id by starting a FL server and its clients.

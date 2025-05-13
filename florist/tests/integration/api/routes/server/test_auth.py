@@ -16,7 +16,7 @@ from florist.api.auth.token import (
 )
 from florist.api.db.server_entities import User, ClientInfo
 from florist.api.db.client_entities import UserDAO
-from florist.api.routes.server.auth import login_for_access_token, check_token, get_client_token
+from florist.api.routes.server.auth import login_for_access_token, check_default_user_token, get_client_token
 
 from florist.tests.integration.api.utils import TestUvicornServer
 from florist.tests.integration.api.utils import mock_request
@@ -50,7 +50,7 @@ async def test_login_for_access_token_failure(mock_request):
         await login_for_access_token(form_data, mock_request)
 
     assert err.value.status_code == 401
-    assert err.value.detail == "Incorrect password."
+    assert err.value.detail == "Incorrect username or password."
 
 
 async def test_login_for_access_token_failure_user_not_found(mock_request):
@@ -60,7 +60,7 @@ async def test_login_for_access_token_failure_user_not_found(mock_request):
         await login_for_access_token(form_data, mock_request)
 
     assert err.value.status_code == 401
-    assert err.value.detail == f"Default user does not exist."
+    assert err.value.detail == f"Incorrect username or password."
 
 
 async def test_check_token_success(mock_request):
@@ -68,7 +68,7 @@ async def test_check_token_success(mock_request):
     user = await User.find_by_username(DEFAULT_USERNAME, mock_request.app.database)
     token = create_access_token({"sub": user.username}, user.secret_key)
 
-    auth_user = await check_token(token, mock_request)
+    auth_user = await check_default_user_token(token, mock_request)
 
     assert auth_user.username == DEFAULT_USERNAME
     assert auth_user.uuid == user.id
@@ -78,7 +78,7 @@ async def test_check_token_failure_user_not_found(mock_request):
     token = create_access_token({"sub": "some_username"}, "some_key")
 
     with raises(HTTPException) as err:
-        await check_token(token, mock_request)
+        await check_default_user_token(token, mock_request)
 
     assert err.value.status_code == 401
     assert err.value.detail == "Could not validate credentials"
@@ -90,7 +90,7 @@ async def test_check_token_failure_wrong_username(mock_request):
     token = create_access_token({"sub": "wrong_username"}, "wrong_key")
 
     with raises(HTTPException) as err:
-        await check_token(token, mock_request)
+        await check_default_user_token(token, mock_request)
 
     assert err.value.status_code == 401
     assert err.value.detail == "Could not validate credentials"
@@ -102,7 +102,7 @@ async def test_check_token_failure_invalid_token(mock_request):
     token = create_access_token({"sub": user.username}, "wrong_key")
 
     with raises(HTTPException) as err:
-        await check_token(token, mock_request)
+        await check_default_user_token(token, mock_request)
 
     assert err.value.status_code == 401
     assert err.value.detail == "Could not validate credentials"

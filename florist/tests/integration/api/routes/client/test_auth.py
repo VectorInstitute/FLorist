@@ -14,7 +14,7 @@ from florist.api.auth.token import (
     create_access_token,
 )
 from florist.api.db.client_entities import UserDAO
-from florist.api.routes.client.auth import login_for_access_token, check_token
+from florist.api.routes.client.auth import login_for_access_token, check_default_user_token
 from florist.tests.integration.api.utils import mock_request
 
 
@@ -46,7 +46,7 @@ async def test_login_for_access_token_failure(mock_request):
         await login_for_access_token(form_data)
 
     assert err.value.status_code == 401
-    assert err.value.detail == "Incorrect password."
+    assert err.value.detail == "Incorrect username or password."
 
 
 async def test_login_for_access_token_failure_user_not_found(mock_request):
@@ -64,7 +64,7 @@ async def test_check_token_success(mock_request):
     user = UserDAO.find(DEFAULT_USERNAME)
     token = create_access_token({"sub": user.username}, user.secret_key)
 
-    auth_user = await check_token(token)
+    auth_user = await check_default_user_token(token)
 
     assert auth_user.username == DEFAULT_USERNAME
     assert auth_user.uuid == user.uuid
@@ -74,7 +74,7 @@ async def test_check_token_failure_user_not_found(mock_request):
     token = create_access_token({"sub": "some_username"}, "some_key")
 
     with raises(HTTPException) as err:
-        await check_token(token)
+        await check_default_user_token(token)
 
     assert err.value.status_code == 401
     assert err.value.detail == "Could not validate credentials"
@@ -86,7 +86,7 @@ async def test_check_token_failure_wrong_username(mock_request):
     token = create_access_token({"sub": "wrong_username"}, "wrong_key")
 
     with raises(HTTPException) as err:
-        await check_token(token)
+        await check_default_user_token(token)
 
     assert err.value.status_code == 401
     assert err.value.detail == "Could not validate credentials"
@@ -98,7 +98,7 @@ async def test_check_token_failure_invalid_token(mock_request):
     token = create_access_token({"sub": user.username}, "wrong_key")
 
     with raises(HTTPException) as err:
-        await check_token(token)
+        await check_default_user_token(token)
 
     assert err.value.status_code == 401
     assert err.value.detail == "Could not validate credentials"

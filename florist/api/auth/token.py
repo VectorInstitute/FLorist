@@ -1,6 +1,7 @@
 """Module for handling token and user creation."""
 
 import hashlib
+import re
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -55,6 +56,22 @@ class AuthUser(BaseModel):
         }
 
 
+def _check_valid_word(word: str) -> None:
+    """
+    Check if a word is valid.
+
+    It can only contain letters, numbers, spaces, and the following symbols:
+    !@#$%&*()_+-=[]{}|;:,.<>?
+
+    :param word: (str) the word to check.
+    :raise ValueError: if the word is not valid.
+    """
+    if not re.match(r"^[a-zA-Z0-9!@#$%&*()_+\-=\[\]{}|;:,.<>? ]+$", word):
+        raise ValueError(
+            "Word can only contain letters, numbers, spaces, and the following symbols: !@#$%&*()_+-=[]{}|;:,.<>?"
+        )
+
+
 def _simple_hash(word: str) -> str:
     """
     Hash a word with sha256.
@@ -66,6 +83,7 @@ def _simple_hash(word: str) -> str:
     :param word: (str) the word to hash.
     :return: (str) the word hashed as a sha256 hexadecimal string.
     """
+    _check_valid_word(word)
     return hashlib.sha256(word.encode("utf-8")).hexdigest()
 
 
@@ -76,6 +94,7 @@ def _password_hash(password: str) -> str:
     :param password: (str) the password to hash.
     :return: (str) the hashed password.
     """
+    _check_valid_word(password)
     password_bytes = password.encode("utf-8")
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password=password_bytes, salt=salt)

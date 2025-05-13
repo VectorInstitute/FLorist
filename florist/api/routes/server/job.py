@@ -11,7 +11,7 @@ from fastapi import APIRouter, Body, Depends, Request, status
 from fastapi.responses import JSONResponse
 
 from florist.api.db.server_entities import MAX_RECORDS_TO_FETCH, Job, JobStatus
-from florist.api.routes.server.auth import check_token, get_client_token
+from florist.api.routes.server.auth import check_default_user_token, get_client_token
 
 
 router = APIRouter()
@@ -24,7 +24,7 @@ LOGGER = logging.getLogger("uvicorn.error")
     response_description="Retrieves a job by ID",
     status_code=status.HTTP_200_OK,
     response_model=Job,
-    dependencies=[Depends(check_token)],
+    dependencies=[Depends(check_default_user_token)],
 )
 async def get_job(job_id: str, request: Request) -> Union[Job, JSONResponse]:
     """
@@ -50,7 +50,7 @@ async def get_job(job_id: str, request: Request) -> Union[Job, JSONResponse]:
     response_description="Create a new job",
     status_code=status.HTTP_201_CREATED,
     response_model=Job,
-    dependencies=[Depends(check_token)],
+    dependencies=[Depends(check_default_user_token)],
 )
 async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
     """
@@ -77,7 +77,7 @@ async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
     path="/status/{status}",
     response_description="List jobs with the specified status",
     response_model=List[Job],
-    dependencies=[Depends(check_token)],
+    dependencies=[Depends(check_default_user_token)],
 )
 async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Job]:
     """
@@ -100,7 +100,7 @@ async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Job
 @router.post(
     path="/change_status",
     response_description="Change job to the specified status",
-    dependencies=[Depends(check_token)],
+    dependencies=[Depends(check_default_user_token)],
 )
 async def change_job_status(job_id: str, status: JobStatus, request: Request) -> JSONResponse:
     """
@@ -125,7 +125,9 @@ async def change_job_status(job_id: str, status: JobStatus, request: Request) ->
         return JSONResponse(content={"error": str(general_e)}, status_code=500)
 
 
-@router.post(path="/stop/{job_id}", response_description="Stops a job", dependencies=[Depends(check_token)])
+@router.post(
+    path="/stop/{job_id}", response_description="Stops a job", dependencies=[Depends(check_default_user_token)]
+)
 async def stop_job(job_id: str, request: Request) -> JSONResponse:
     """
     Stop the job with the given ID. The job is stopped by killing all the clients and servers processes.
@@ -176,7 +178,7 @@ async def stop_job(job_id: str, request: Request) -> JSONResponse:
         return JSONResponse(content={"error": str(general_e)}, status_code=500)
 
 
-@router.get("/get_server_log/{job_id}", dependencies=[Depends(check_token)])
+@router.get("/get_server_log/{job_id}", dependencies=[Depends(check_default_user_token)])
 async def get_server_log(job_id: str, request: Request) -> JSONResponse:
     """
     Return the contents of the server's log file for the given job id.
@@ -207,7 +209,7 @@ async def get_server_log(job_id: str, request: Request) -> JSONResponse:
         return JSONResponse(content={"error": str(general_e)}, status_code=500)
 
 
-@router.get("/get_client_log/{job_id}/{client_index}", dependencies=[Depends(check_token)])
+@router.get("/get_client_log/{job_id}/{client_index}", dependencies=[Depends(check_default_user_token)])
 async def get_client_log(job_id: str, client_index: int, request: Request) -> JSONResponse:
     """
     Return the contents of the log file for the client with given index under given job id.

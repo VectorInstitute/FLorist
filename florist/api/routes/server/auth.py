@@ -41,27 +41,25 @@ async def login_for_access_token(
     :return: (Token) The access token.
     :raise: (HTTPException) If the user does not exist or the password is incorrect.
     """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Incorrect username or password.",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
     user = await User.find_by_username(form_data.username, request.app.database)
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Default user does not exist.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise credentials_exception
 
     if not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect password.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise credentials_exception
 
     access_token = create_access_token(data={"sub": user.username}, secret_key=user.secret_key)
     return Token(access_token=access_token, token_type="bearer")
 
 
-@router.get("/check_token", response_model=AuthUser)
-async def check_token(token: Annotated[str, Depends(oauth2_scheme)], request: Request) -> AuthUser:
+@router.get("/check_default_user_token", response_model=AuthUser)
+async def check_default_user_token(token: Annotated[str, Depends(oauth2_scheme)], request: Request) -> AuthUser:
     """
     Validate the default user against the token.
 
