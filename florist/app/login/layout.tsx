@@ -57,7 +57,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }):
                 </div>
 
                 <ClientImports />
-
             </body>
         </html>
     );
