@@ -24,15 +24,23 @@ export const usePost = () => {
 
         const response = await fetch(path, { method: "POST", body: body, headers: requestHeaders });
 
-        let json = await response.json();
+        const responseText = await response.text();
+        let parsedResponse;
+        try {
+            parsedResponse = JSON.parse(responseText);
+        } catch (error) {
+            parsedResponse = responseText;
+        }
+
         if (response.ok) {
-            setResponse(json);
+            setResponse(parsedResponse);
         } else {
             // Redirecting to the login page in case of a 401 (unauthorized) error
-            if (json.status === 401) {
+            // (except on the login page itself)
+            if (response.status === 401 && !window.location.href.includes("/login")) {
                 window.location.href = "/login";
             }
-            setError(json.error || json.detail || "An error occurred");
+            setError(parsedResponse.error || parsedResponse.detail || "An error occurred");
         }
         setIsLoading(false);
     };

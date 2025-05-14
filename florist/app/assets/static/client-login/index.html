@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <title>Change Password</title>
+    </head>
+    <body>
+        <h1>Change Password</h1>
+        <form>
+            <p><input type="password" name="current_password" placeholder="Current Password"></p>
+            <p><input type="password" name="new_password" placeholder="New Password"></p>
+            <p><input type="password" name="confirm_password" placeholder="Confirm New Password"></p>
+            <p><button type="submit">Change Password</button></p>
+        </form>
+
+        <p id="error" style="color: red; display: none;">
+            An error occurred. Please try again.
+        </p>
+
+        <script>
+            async function simpleHash(word) {
+                const encoder = new TextEncoder();
+                const encodedWord = encoder.encode(word);
+
+                const hashBuffer = await window.crypto.subtle.digest("SHA-256", encodedWord)
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+
+                return hashHex;
+            }
+
+            document.querySelector("form").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                document.getElementById("error").style.display = "none";
+
+                const formData = new FormData(e.target);
+                formData.append("username", "admin");
+                formData.append("current_password", await simpleHash(formData.get("current_password")));
+                formData.append("new_password", await simpleHash(formData.get("new_password")));
+                formData.append("confirm_password", await simpleHash(formData.get("confirm_password")));
+
+                const response = await fetch("/api/client/auth/change_password", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    window.location.href = "/change-password/confirmation.html";
+                } else {
+                    document.getElementById("error").style.display = "block";
+                }
+            });
+        </script>
+    </body>
+</html>

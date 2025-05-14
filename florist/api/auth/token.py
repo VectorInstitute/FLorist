@@ -3,10 +3,12 @@
 import hashlib
 import re
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Annotated, Any, Union
 
 import bcrypt
 import jwt
+from fastapi.param_functions import Form
+from fastapi.security import OAuth2PasswordRequestForm
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import BaseModel
 
@@ -25,6 +27,7 @@ class Token(BaseModel):
 
     access_token: str
     token_type: str
+    should_change_password: bool = False
 
     class Config:
         """Config for the Token model."""
@@ -34,6 +37,7 @@ class Token(BaseModel):
             "example": {
                 "access_token": "LQv3c1yqBWVHxkd0LHAkCOYz6T",
                 "token_type": "bearer",
+                "should_change_password": False,
             },
         }
 
@@ -54,6 +58,33 @@ class AuthUser(BaseModel):
                 "username": "admin",
             },
         }
+
+
+class OAuth2ChangePasswordForm(OAuth2PasswordRequestForm):
+    """
+    Define the OAuth2ChangePasswordForm model.
+
+    Extends the OAuth2PasswordRequestForm model to add a current_password field.
+    """
+
+    def __init__(
+        self,
+        *,
+        grant_type: Annotated[Union[str, None], Form(pattern="password")] = None,
+        username: Annotated[str, Form()],
+        current_password: Annotated[str, Form()],
+        new_password: Annotated[str, Form()],
+    ):
+        super().__init__(
+            grant_type=grant_type,
+            username=username,
+            password=new_password,
+            scope="",
+            client_id=None,
+            client_secret=None,
+        )
+        self.current_password = current_password
+        self.new_password = new_password
 
 
 def _check_valid_word(word: str) -> None:

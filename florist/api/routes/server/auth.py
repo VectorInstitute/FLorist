@@ -9,9 +9,13 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 
 from florist.api.auth.token import (
+    DEFAULT_PASSWORD,
     DEFAULT_USERNAME,
     AuthUser,
+    OAuth2ChangePasswordForm,
     Token,
+    _password_hash,
+    _simple_hash,
     create_access_token,
     decode_access_token,
     verify_password,
@@ -37,7 +41,9 @@ async def login_for_access_token(
     Make a login request to get an access token.
 
     :param form_data: (OAuth2PasswordRequestForm) The form data from the login request.
+        It must contain the username and password fields.
     :param request: (Request) The request object.
+
     :return: (Token) The access token.
     :raise: (HTTPException) If the user does not exist or the password is incorrect.
     """
@@ -55,7 +61,46 @@ async def login_for_access_token(
         raise credentials_exception
 
     access_token = create_access_token(data={"sub": user.username}, secret_key=user.secret_key)
-    return Token(access_token=access_token, token_type="bearer")
+    # if the password is the default password, then set the flag to indicate the user should change it
+    should_change_password = form_data.password == _simple_hash(DEFAULT_PASSWORD)
+    return Token(access_token=access_token, token_type="bearer", should_change_password=should_change_password)
+
+
+@router.post("/change_password")
+async def change_password(
+    form_data: Annotated[OAuth2ChangePasswordForm, Depends()],
+    request: Request,
+) -> Token:
+    """
+    Change the password for the user.
+
+    :param form_data: (OAuth2ChangePasswordForm) The form data from the change password request.
+        It must contain the username, current_password, and new_password fields.
+    :param request: (Request) The request object.
+
+    :return: (Token) The access token.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Incorrect username or password.",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    user = await User.find_by_username(form_data.username, request.app.database)
+    if user is None:
+        raise credentials_exception
+
+    if not verify_password(form_data.current_password, user.hashed_password):
+        raise credentials_exception
+
+    if form_data.new_password == _simple_hash(DEFAULT_PASSWORD):
+        # new password cannot be the default password
+        raise credentials_exception
+
+    await user.change_password(_password_hash(form_data.new_password), request.app.database)
+
+    access_token = create_access_token(data={"sub": user.username}, secret_key=user.secret_key)
+    return Token(access_token=access_token, token_type="bearer", should_change_password=False)
 
 
 @router.get("/check_default_user_token", response_model=AuthUser)
@@ -77,6 +122,10 @@ async def check_default_user_token(token: Annotated[str, Depends(oauth2_scheme)]
     try:
         user = await User.find_by_username(DEFAULT_USERNAME, request.app.database)
         if user is None:
+            raise credentials_exception
+
+        if verify_password(_simple_hash(DEFAULT_PASSWORD), user.hashed_password):
+            # Fail if the user's password is the default, it must be changed
             raise credentials_exception
 
         payload = decode_access_token(token, user.secret_key)
