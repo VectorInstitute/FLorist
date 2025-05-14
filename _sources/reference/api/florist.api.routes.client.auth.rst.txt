@@ -1,0 +1,7 @@
+florist.api.routes.client.auth module
+=====================================
+
+.. automodule:: florist.api.routes.client.auth
+   :members:
+   :undoc-members:
+   :show-inheritance:

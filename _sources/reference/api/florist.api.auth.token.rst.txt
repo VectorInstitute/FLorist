@@ -1,0 +1,7 @@
+florist.api.auth.token module
+=============================
+
+.. automodule:: florist.api.auth.token
+   :members:
+   :undoc-members:
+   :show-inheritance:

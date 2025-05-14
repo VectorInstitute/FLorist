@@ -1,0 +1,7 @@
+florist.tests.unit.api.auth.test\_token module
+==============================================
+
+.. automodule:: florist.tests.unit.api.auth.test_token
+   :members:
+   :undoc-members:
+   :show-inheritance:

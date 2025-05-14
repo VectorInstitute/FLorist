@@ -12,4 +12,5 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   florist.tests.integration.api.routes.client
    florist.tests.integration.api.routes.server

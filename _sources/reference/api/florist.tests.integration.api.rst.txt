@@ -12,6 +12,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   florist.tests.integration.api.auth
    florist.tests.integration.api.db
    florist.tests.integration.api.routes
 
@@ -21,6 +22,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   florist.tests.integration.api.test_client
    florist.tests.integration.api.test_server
    florist.tests.integration.api.test_train
    florist.tests.integration.api.utils

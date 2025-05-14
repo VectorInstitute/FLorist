@@ -1,0 +1,7 @@
+florist.tests.integration.api.routes.client.test\_auth module
+=============================================================
+
+.. automodule:: florist.tests.integration.api.routes.client.test_auth
+   :members:
+   :undoc-members:
+   :show-inheritance:
