@@ -3,30 +3,46 @@
 import logging
 import os
 import signal
+from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Any, AsyncGenerator
 from uuid import uuid4
 
 import torch
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
 from fl4health.utils.metrics import Accuracy
 
+from florist.api.auth.token import DEFAULT_USERNAME, make_default_client_user
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
-from florist.api.db.client_entities import ClientDAO
+from florist.api.db.client_entities import ClientDAO, UserDAO
 from florist.api.launchers.local import launch_client
 from florist.api.models.models import Model
 from florist.api.monitoring.logs import get_client_log_file_path
 from florist.api.monitoring.metrics import RedisMetricsReporter, get_from_redis, get_host_and_port_from_address
-
-
-app = FastAPI()
+from florist.api.routes.client.auth import check_default_user_token
+from florist.api.routes.client.auth import router as auth_router
 
 
 LOGGER = logging.getLogger("uvicorn.error")
 
 
-@app.get("/api/client/connect")
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
+    """Set up function for app startup and shutdown."""
+    # Create default user if it does not exist
+    if not UserDAO.exists(DEFAULT_USERNAME):
+        make_default_client_user()
+
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(auth_router, tags=["auth"], prefix="/api/client/auth")
+
+
+@app.get("/api/client/connect", dependencies=[Depends(check_default_user_token)])
 def connect() -> JSONResponse:
     """
     Confirm the client is up and ready to accept instructions.
@@ -36,7 +52,7 @@ def connect() -> JSONResponse:
     return JSONResponse({"status": "ok"})
 
 
-@app.get("/api/client/start")
+@app.get("/api/client/start", dependencies=[Depends(check_default_user_token)])
 def start(
     server_address: str,
     client: Client,
@@ -53,6 +69,7 @@ def start(
     :param client: (Client) the client to be used for training.
     :param data_path: (str) the path where the training data is located.
     :param redis_address: (str) the address for the Redis instance for metrics reporting.
+
     :return: (JSONResponse) If successful, returns 200 with a JSON containing the UUID for the client in the
         format below, which can be used to pull metrics from Redis.
             {
@@ -95,7 +112,7 @@ def start(
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-@app.get("/api/client/check_status/{client_uuid}")
+@app.get("/api/client/check_status/{client_uuid}", dependencies=[Depends(check_default_user_token)])
 def check_status(client_uuid: str, redis_address: str) -> JSONResponse:
     """
     Retrieve value at key client_uuid in redis if it exists.
@@ -120,7 +137,7 @@ def check_status(client_uuid: str, redis_address: str) -> JSONResponse:
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-@app.get("/api/client/get_log/{uuid}")
+@app.get("/api/client/get_log/{uuid}", dependencies=[Depends(check_default_user_token)])
 def get_log(uuid: str) -> JSONResponse:
     """
     Return the contents of the logs for the given client uuid.
@@ -147,12 +164,13 @@ def get_log(uuid: str) -> JSONResponse:
         return JSONResponse({"error": str(ex)}, status_code=500)
 
 
-@app.get("/api/client/stop/{uuid}")
+@app.get("/api/client/stop/{uuid}", dependencies=[Depends(check_default_user_token)])
 def stop(uuid: str) -> JSONResponse:
     """
     Stop the client with given UUID.
 
     :param uuid: (str) the UUID of the client to be stopped.
+
     :return: (JSONResponse) If successful, returns 200. If not successful, returns the appropriate
         error code with a JSON with the format below:
             {"error": <error message>}

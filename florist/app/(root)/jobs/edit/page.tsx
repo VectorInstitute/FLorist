@@ -7,9 +7,10 @@ import { useImmer } from "use-immer";
 import { Draft, produce } from "immer";
 
 import { useRouter } from "next/navigation";
-
-import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers, usePost } from "../hooks";
+import { useGetModels, useGetClients, useGetStrategies, useGetOptimizers } from "../hooks";
+import { usePost } from "../../../hooks";
 import { Job, ServerConfig, ServerConfigDict, ClientInfo } from "../definitions";
+import { hashWord } from "../../../auth";
 
 export function makeEmptyJob(): Job {
     return {
@@ -36,6 +37,7 @@ export function makeEmptyClientInfo(): ClientInfo {
         service_address: "",
         data_path: "",
         redis_address: "",
+        hashed_password: "",
     };
 }
 
@@ -90,6 +92,11 @@ export function EditJobForm(): ReactElement {
             ...state.job,
             // Server config is a json string, so changing it here before sending the data over
             server_config: formatServerConfig(state.job.server_config),
+            // The client password is hashed here before sending the data over
+            clients_info: state.job.clients_info.map((client) => ({
+                ...client,
+                hashed_password: hashWord(client.hashed_password),
+            })),
         };
         await post("/api/server/job", JSON.stringify(job));
     }
@@ -543,6 +550,20 @@ export function EditJobClientsInfoItem({
                         id={"job-client-info-redis-address-" + index}
                         value={state.job.clients_info[index].redis_address}
                         onChange={(e) => setState(changeClientInfoAttribute(state, "redis_address", e.target.value))}
+                    />
+                </div>
+            </div>
+            <div className="input-group-column">
+                <div className="input-group input-group-outline gray-input-box mb-3">
+                    <label className="form-label" htmlFor={"job-client-info-password-" + index}>
+                        Password
+                    </label>
+                    <input
+                        className="form-control"
+                        type="password"
+                        id={"job-client-info-password-" + index}
+                        value={state.job.clients_info[index].hashed_password}
+                        onChange={(e) => setState(changeClientInfoAttribute(state, "hashed_password", e.target.value))}
                     />
                 </div>
             </div>

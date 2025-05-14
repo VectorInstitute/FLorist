@@ -1,6 +1,7 @@
 """Definitions for the SQLIte database entities (client database)."""
 
 import json
+import secrets
 import sqlite3
 from abc import ABC, abstractmethod
 from typing import Optional
@@ -55,7 +56,7 @@ class EntityDAO(ABC):
         for result in results:
             return cls.from_json(result[1])
 
-        raise ValueError(f"Client with uuid '{uuid}' not found.")
+        raise ValueError(f"{cls.table_name} with uuid '{uuid}' not found.")
 
     @classmethod
     def exists(cls, uuid: str) -> bool:
@@ -165,5 +166,56 @@ class ClientDAO(EntityDAO):
                 "uuid": self.uuid,
                 "log_file_path": self.log_file_path,
                 "pid": self.pid,
+            }
+        )
+
+
+class UserDAO(EntityDAO):
+    """Data Access Object (DAO) for the User SQLite entity."""
+
+    table_name = "User"
+
+    def __init__(self, username: str, hashed_password: str):
+        """
+        Initialize a User entity.
+
+        :param username: (str) the username of the user.
+        :param hashed_password: (str) the hashed password of the user.
+        """
+        # The UUID for the user is the username
+        super().__init__(uuid=username)
+
+        self.username = username
+        self.hashed_password = hashed_password
+
+        # always create a new random secret key
+        self.secret_key = secrets.token_hex(32)
+
+    @classmethod
+    def from_json(cls, json_data: str) -> Self:
+        """
+        Convert from a JSON string into an instance of User.
+
+        :param json_data: the user's data as a JSON string.
+        :return: (Self) and instance of UserDAO populated with the JSON data.
+        """
+        data = json.loads(json_data)
+        user = cls(data["username"], data["hashed_password"])
+        user.uuid = data["uuid"]
+        user.secret_key = data["secret_key"]
+        return user
+
+    def to_json(self) -> str:
+        """
+        Convert the user data into a JSON string.
+
+        :return: (str) the user data as a JSON string.
+        """
+        return json.dumps(
+            {
+                "uuid": self.uuid,
+                "username": self.username,
+                "hashed_password": self.hashed_password,
+                "secret_key": self.secret_key,
             }
         )

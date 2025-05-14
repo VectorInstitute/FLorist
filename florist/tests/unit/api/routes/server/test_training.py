@@ -4,6 +4,7 @@ from pytest import raises
 from typing import Dict, Any, Tuple
 from unittest.mock import Mock, AsyncMock, patch, ANY, call
 
+from florist.api.auth.token import Token
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
 from florist.api.db.config import DATABASE_NAME
@@ -23,6 +24,7 @@ from florist.api.servers.strategies import Strategy
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
+@patch("florist.api.routes.server.auth.requests")
 @patch("florist.api.db.server_entities.Job.set_status")
 @patch("florist.api.db.server_entities.Job.set_uuids")
 @patch("florist.api.db.server_entities.Job.set_server_log_file_path")
@@ -32,6 +34,7 @@ async def test_start_success(
     mock_server_log_file_path: Mock,
     mock_set_uuids: Mock,
     mock_set_status: Mock,
+    mock_auth_requests: Mock,
     mock_requests: Mock,
     mock_redis: Mock,
     mock_launch_local_server: Mock,
@@ -65,6 +68,7 @@ async def test_start_success(
         test_client_2_uuid = "test-client-2-uuid"
         mock_response.json.side_effect = [{"uuid": test_client_1_uuid}, {"uuid": test_client_2_uuid}]
         mock_requests.get.return_value = mock_response
+        mock_auth_requests.get.return_value = mock_response
 
         mock_client_training_listener.return_value = AsyncMock()
         mock_server_training_listener.return_value = AsyncMock()
@@ -105,6 +109,7 @@ async def test_start_success(
                 "data_path": test_job["clients_info"][0]["data_path"],
                 "redis_address": test_job["clients_info"][0]["redis_address"],
             },
+            headers={"Authorization": f"Bearer {mock_fastapi_request.app.clients_auth_tokens['test-client-id-1'].access_token}"},
         )
         mock_requests.get.assert_any_call(
             url=f"http://{test_job['clients_info'][1]['service_address']}/api/client/start",
@@ -116,6 +121,7 @@ async def test_start_success(
                 "data_path": test_job["clients_info"][1]["data_path"],
                 "redis_address": test_job["clients_info"][1]["redis_address"],
             },
+            headers={"Authorization": f"Bearer {mock_fastapi_request.app.clients_auth_tokens['test-client-id-2'].access_token}"},
         )
 
         mock_set_uuids.assert_called_once_with(
@@ -404,9 +410,11 @@ async def test_start_wait_for_metric_timeout(
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
+@patch("florist.api.routes.server.auth.requests")
 @patch("florist.api.db.server_entities.Job.set_server_log_file_path")
 async def test_start_fail_response(
     mock_set_server_log_file_path: Mock,
+    mock_auth_requests: Mock,
     mock_requests: Mock,
     mock_redis: Mock,
     mock_launch_local_server: Mock,
@@ -429,7 +437,9 @@ async def test_start_fail_response(
     mock_response.status_code = 403
     mock_response.json.return_value = "error"
     mock_requests.get.return_value = mock_response
-
+    mock_auth_response = Mock()
+    mock_auth_response.status_code = 200
+    mock_auth_requests.get.return_value = mock_auth_response
     # Act
     response = await start(test_job_id, mock_fastapi_request)
 
@@ -453,9 +463,11 @@ async def test_start_fail_response(
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
+@patch("florist.api.routes.server.auth.requests")
 @patch("florist.api.db.server_entities.Job.set_server_log_file_path")
 async def test_start_no_client_uuid_in_response(
     mock_set_server_log_file_path: Mock,
+    mock_auth_requests: Mock,
     mock_requests: Mock,
     mock_redis: Mock,
     mock_launch_local_server: Mock,
@@ -478,7 +490,7 @@ async def test_start_no_client_uuid_in_response(
     mock_response.status_code = 200
     mock_response.json.return_value = {"foo": "bar"}
     mock_requests.get.return_value = mock_response
-
+    mock_auth_requests.get.return_value = mock_response
     # Act
     response = await start(test_job_id, mock_fastapi_request)
 
@@ -502,9 +514,11 @@ async def test_start_no_client_uuid_in_response(
 @patch("florist.api.routes.server.training.launch_local_server")
 @patch("florist.api.monitoring.metrics.redis")
 @patch("florist.api.routes.server.training.requests")
+@patch("florist.api.routes.server.auth.requests")
 @patch("florist.api.db.server_entities.Job.set_server_log_file_path")
 async def test_start_client_uuid_in_response_is_not_a_string(
     mock_set_server_log_file_path: Mock,
+    mock_auth_requests: Mock,
     mock_requests: Mock,
     mock_redis: Mock,
     mock_launch_local_server: Mock,
@@ -527,7 +541,7 @@ async def test_start_client_uuid_in_response_is_not_a_string(
     mock_response.status_code = 200
     mock_response.json.return_value = {"uuid": 1234}
     mock_requests.get.return_value = mock_response
-
+    mock_auth_requests.get.return_value = mock_response
     # Act
     response = await start(test_job_id, mock_fastapi_request)
 
@@ -563,6 +577,7 @@ async def test_server_training_listener(
                 "uuid": "test-uuid",
                 "redis_address": "test-client-redis-host:1234",
                 "data_path": "test-data-path",
+                "hashed_password": "test-password",
             }
         ]
     })
@@ -617,6 +632,7 @@ async def test_server_training_listener_already_finished(mock_get_from_redis: Mo
                 "uuid": "test-uuid",
                 "redis_address": "test-client-redis-host:1234",
                 "data_path": "test-data-path",
+                "hashed_password": "test-password",
             }
         ]
     })
@@ -673,6 +689,7 @@ async def test_client_training_listener(
                 "uuid": test_client_uuid,
                 "redis_address": "test-client-redis-host:1234",
                 "data_path": "test-data-path",
+                "hashed_password": "test-password",
             }
         ]
     })
@@ -726,6 +743,7 @@ async def test_client_training_listener_already_finished(mock_get_from_redis: Mo
                 "uuid": test_client_uuid,
                 "redis_address": "test-client-redis-host:1234",
                 "data_path": "test-data-path",
+                "hashed_password": "test-password",
             }
         ]
     })
@@ -756,6 +774,7 @@ async def test_client_training_listener_fail_no_uuid() -> None:
                 "redis_address": "test-client-redis-host:1234",
                 "service_address": "test-service-address",
                 "data_path": "test-data-path",
+                "hashed_password": "test-password",
             },
         ],
     })
@@ -781,18 +800,22 @@ def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, M
         "client": Client.FEDAVG.value,
         "clients_info": [
             {
+                "id": "test-client-id-1",
                 "service_address": "test-service-address-1",
                 "data_path": "test-data-path-1",
                 "redis_address": "test-redis-host-1:12341",
                 "uuid": "test-client-uuids-1",
                 "metrics": "test-client-metrics-1",
+                "hashed_password": "test-password-1",
             },
             {
+                "id": "test-client-id-2",
                 "service_address": "test-service-address-2",
                 "data_path": "test-data-path-2",
                 "redis_address": "test-redis-host-2:12342",
                 "uuid": "test-client-uuids-2",
                 "metrics": "test-client-metrics-2",
+                "hashed_password": "test-password-2",
             },
         ],
     }
@@ -804,6 +827,10 @@ def _setup_test_job_and_mocks() -> Tuple[Dict[str, Any], Dict[str, Any], Mock, M
     mock_fastapi_request = Mock()
     mock_fastapi_request.app.database = {JOB_COLLECTION_NAME: mock_job_collection}
     mock_fastapi_request.app.synchronous_database = {JOB_COLLECTION_NAME: mock_job_collection}
+    mock_fastapi_request.app.clients_auth_tokens = {
+        "test-client-id-1": Token(access_token="test-client-token-1", token_type="bearer"),
+        "test-client-id-2": Token(access_token="test-client-token-2", token_type="bearer"),
+    }
 
     return test_server_config, test_job, mock_job_collection, mock_fastapi_request
 

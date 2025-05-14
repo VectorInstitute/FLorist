@@ -6,6 +6,7 @@ from unittest.mock import ANY
 import redis
 import uvicorn
 
+from florist.api.auth.token import DEFAULT_USERNAME, DEFAULT_PASSWORD, _simple_hash, Token
 from florist.api.clients.optimizers import Optimizer
 from florist.api.clients.clients import Client
 from florist.api.db.server_entities import Job, JobStatus, ClientInfo
@@ -31,12 +32,25 @@ async def test_train():
     # Start services
     with server_service.run_in_thread():
         with client_service.run_in_thread():
+
+            # Issuing a server access token
+            server_token_response = requests.post(
+                "http://localhost:8000/api/server/auth/token",
+                data={
+                    "grant_type": "password",
+                    "username": DEFAULT_USERNAME,
+                    "password": _simple_hash(DEFAULT_PASSWORD),
+                }
+            )
+            server_token = Token(**server_token_response.json())
+
             with tempfile.TemporaryDirectory() as temp_dir:
                 test_redis_host = "localhost"
                 test_redis_port = "6379"
                 test_redis_address = f"{test_redis_host}:{test_redis_port}"
                 test_n_server_rounds = 2
 
+                # creating a training job
                 job = await new_job(test_request, Job(
                     status=JobStatus.NOT_STARTED,
                     model=Model.MNIST.value,
@@ -55,13 +69,16 @@ async def test_train():
                             service_address="localhost:8001",
                             data_path=f"{temp_dir}/data",
                             redis_address=test_redis_address,
+                            hashed_password=_simple_hash(DEFAULT_PASSWORD),
                         )
                     ]
                 ))
 
+                # Starting training
                 request = requests.Request(
                     method="POST",
                     url=f"http://localhost:8000/api/server/training/start?job_id={job.id}",
+                    headers={"Authorization": f"Bearer {server_token.access_token}"},
                 ).prepare()
                 session = requests.Session()
                 response = session.send(request)

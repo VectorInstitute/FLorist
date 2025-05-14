@@ -3,13 +3,13 @@ import { render, cleanup } from "@testing-library/react";
 import { describe, it, expect, afterEach } from "@jest/globals";
 import { act } from "react-dom/test-utils";
 
-import { useGetJob, useSWRWithKey, getServerLogsKey, getClientLogsKey } from "../../../../../app/jobs/hooks";
-import { validStatuses, Job } from "../../../../../app/jobs/definitions";
-import JobDetails, { getTimeString } from "../../../../../app/jobs/details/page";
+import { useGetJob, useSWRWithKey, getServerLogsKey, getClientLogsKey } from "../../../../../../app/(root)/jobs/hooks";
+import { validStatuses, Job } from "../../../../../../app/(root)/jobs/definitions";
+import JobDetails, { getTimeString } from "../../../../../../app/(root)/jobs/details/page";
 
 const testJobId = "test-job-id";
 
-jest.mock("../../../../../app/jobs/hooks");
+jest.mock("../../../../../../app/(root)/jobs/hooks");
 jest.mock("next/navigation", () => ({
     ...require("next-router-mock"),
     useSearchParams: () => new Map([["id", testJobId]]),

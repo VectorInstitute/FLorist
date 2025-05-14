@@ -1,6 +1,7 @@
 """Definitions for the MongoDB database entities (server database)."""
 
 import json
+import secrets
 import uuid
 from enum import Enum
 from typing import Annotated, Any, Dict, List, Optional
@@ -9,6 +10,7 @@ from fastapi.encoders import jsonable_encoder
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import BaseModel, Field
 from pymongo.results import UpdateResult
+from typing_extensions import Self
 
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
@@ -17,7 +19,74 @@ from florist.api.servers.strategies import Strategy
 
 
 JOB_COLLECTION_NAME = "job"
+USER_COLLECTION_NAME = "user"
 MAX_RECORDS_TO_FETCH = 1000
+
+
+class User(BaseModel):
+    """Define the User DB entity."""
+
+    id: str = Field(default_factory=uuid.uuid4, alias="_id")
+    username: str = Field(...)
+    hashed_password: str = Field(...)
+    secret_key: str = Field(default_factory=lambda: secrets.token_hex(32))
+
+    @classmethod
+    async def find_by_username(cls, username: str, database: AsyncIOMotorDatabase[Any]) -> Optional[Self]:
+        """
+        Find a user in the database by its username.
+
+        :param username: (str) the username of the user to find.
+        :param database: (AsyncIOMotorDatabase) the database to search in.
+        :return: (Optional[User]) the user with the given username, or `None` if it can't be found.
+        """
+        user_collection = database[USER_COLLECTION_NAME]
+        result = await user_collection.find_one({"username": username})
+
+        if result is None:
+            return None
+
+        return cls(**result)
+
+    async def create(self, database: AsyncIOMotorDatabase[Any]) -> str:
+        """
+        Save this user under a new record in the database.
+
+        :param database: (AsyncIOMotorDatabase) the database to save the user in.
+        :return: (str) the id of the new user.
+        """
+        existing_user = await User.find_by_username(self.username, database)
+        if existing_user is not None:
+            raise ValueError("User already exists")
+
+        json_user = jsonable_encoder(self)
+        result = await database[USER_COLLECTION_NAME].insert_one(json_user)
+        assert isinstance(result.inserted_id, str)
+        return result.inserted_id
+
+    async def change_password(self, new_hashed_password: str, database: AsyncIOMotorDatabase[Any]) -> None:
+        """
+        Change the password of this user.
+
+        :param new_hashed_password: (str) the new hashed password for the user.
+        :param database: (AsyncIOMotorDatabase) the database to save the user in.
+        """
+        user_collection = database[USER_COLLECTION_NAME]
+        await user_collection.update_one(
+            {"username": self.username}, {"$set": {"hashed_password": new_hashed_password}}
+        )
+
+    class Config:
+        """MongoDB config for the User DB entity."""
+
+        allow_population_by_field_name = True
+        schema_extra = {
+            "example": {
+                "username": "some_user",
+                "hashed_password": "LQv3c1yqBWVHxkd0LHAkCOYz6T",
+                "secret_key": "a0dL1LXMIgZ2xGxQOQtxMQJqhN8",
+            },
+        }
 
 
 class JobStatus(Enum):
@@ -45,6 +114,7 @@ class ClientInfo(BaseModel):
     service_address: str = Field(...)
     data_path: str = Field(...)
     redis_address: str = Field(...)
+    hashed_password: str = Field(...)
     uuid: Optional[Annotated[str, Field(...)]]
     metrics: Optional[Annotated[str, Field(...)]]
 
@@ -57,6 +127,7 @@ class ClientInfo(BaseModel):
                 "service_address": "localhost:8001",
                 "data_path": "path/to/data",
                 "redis_address": "localhost:6380",
+                "hashed_password": "LQv3c1yqBWVHxkd0LHAkCOYz6T",
                 "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
                 "metrics": '{"host_type": "client", "initialized": "2024-03-25 11:20:56.819569", "rounds": {"1": {"fit_start": "2024-03-25 11:20:56.827081"}}}',
             },
@@ -83,7 +154,7 @@ class Job(BaseModel):
     error_message: Optional[Annotated[str, Field(...)]]
 
     @classmethod
-    async def find_by_id(cls, job_id: str, database: AsyncIOMotorDatabase[Any]) -> Optional["Job"]:
+    async def find_by_id(cls, job_id: str, database: AsyncIOMotorDatabase[Any]) -> Optional[Self]:
         """
         Find a job in the database by its id.
 
@@ -95,10 +166,10 @@ class Job(BaseModel):
         result = await job_collection.find_one({"_id": job_id})
         if result is None:
             return result
-        return Job(**result)
+        return cls(**result)
 
     @classmethod
-    async def find_by_status(cls, status: JobStatus, limit: int, database: AsyncIOMotorDatabase[Any]) -> List["Job"]:
+    async def find_by_status(cls, status: JobStatus, limit: int, database: AsyncIOMotorDatabase[Any]) -> List[Self]:
         """
         Return all jobs with the given status.
 
@@ -112,7 +183,7 @@ class Job(BaseModel):
         job_collection = database[JOB_COLLECTION_NAME]
         result = await job_collection.find({"status": status}).to_list(limit)
         assert isinstance(result, list)
-        return [Job(**r) for r in result]
+        return [cls(**r) for r in result]
 
     async def create(self, database: AsyncIOMotorDatabase[Any]) -> str:
         """
@@ -275,6 +346,14 @@ class Job(BaseModel):
         update_result = await job_collection.update_one({"_id": self.id}, {"$set": {"error_message": error_message}})
         assert_updated_successfully(update_result)
 
+    def obscure_hashed_passwords(self) -> None:
+        """Obscure the clients' hashed passwords so it is not returned in the API's response."""
+        if self.clients_info is None:
+            return
+
+        for client_info in self.clients_info:
+            client_info.hashed_password = "*****"
+
     class Config:
         """MongoDB config for the Job DB entity."""
 
@@ -300,6 +379,7 @@ class Job(BaseModel):
                         "data_path": "path/to/data",
                         "redis_address": "localhost:6380",
                         "uuid": "0c316680-1375-4e07-84c3-a732a2e6d03f",
+                        "hashed_password": "LQv3c1yqBWVHxkd0LHAkCOYz6T",
                     },
                 ],
                 "error_message": "Some plain text error message.",

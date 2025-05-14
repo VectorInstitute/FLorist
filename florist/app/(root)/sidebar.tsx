@@ -1,14 +1,16 @@
 "use client";
 
-import logo_ct from "./assets/img/logo-ct.png";
+import logo_ct from "../assets/img/logo-ct.png";
+
+import { ReactElement } from "react";
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { ReactElement } from "react";
 
 export default function Sidebar(): ReactElement {
     const pathname = usePathname();
+
     return (
         <aside
             className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3  bg-gradient-dark"

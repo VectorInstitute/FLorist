@@ -7,7 +7,7 @@ from threading import Thread
 from typing import Any, List
 
 import requests
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -18,6 +18,7 @@ from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.launchers.local import launch_local_server
 from florist.api.models.models import Model
 from florist.api.monitoring.metrics import get_from_redis, get_subscriber, wait_for_metric
+from florist.api.routes.server.auth import check_default_user_token, get_client_token
 from florist.api.servers.config_parsers import ConfigParser
 
 
@@ -29,7 +30,7 @@ START_CLIENT_API = "api/client/start"
 CHECK_CLIENT_STATUS_API = "api/client/check_status"
 
 
-@router.post("/start")
+@router.post("/start", dependencies=[Depends(check_default_user_token)])
 async def start(job_id: str, request: Request) -> JSONResponse:
     """
     Start FL training for a job id by starting a FL server and its clients.
@@ -95,7 +96,7 @@ async def start(job_id: str, request: Request) -> JSONResponse:
         client_uuids: List[str] = []
         for i in range(len(job.clients_info)):
             client_info = job.clients_info[i]
-            uuid = _start_client(job.server_address, job.client, job.model, job.optimizer, client_info)
+            uuid = _start_client(job.server_address, job.client, job.model, job.optimizer, client_info, request)
             client_uuids.append(uuid)
 
         await job.set_uuids(server_uuid, client_uuids, request.app.database)
@@ -236,6 +237,7 @@ def _start_client(
     model: Model,
     optimizer: Optimizer,
     client_info: ClientInfo,
+    request: Request,
 ) -> str:
     """
     Start a client.
@@ -252,9 +254,13 @@ def _start_client(
         "data_path": client_info.data_path,
         "redis_address": client_info.redis_address,
     }
-    response = requests.get(url=f"http://{client_info.service_address}/{START_CLIENT_API}", params=parameters)
+    token = get_client_token(client_info, request)
+    response = requests.get(
+        url=f"http://{client_info.service_address}/{START_CLIENT_API}",
+        params=parameters,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
     json_response = response.json()
-    LOGGER.debug(f"Client response: {json_response}")
 
     if response.status_code != 200:
         raise Exception(f"Client response returned {response.status_code}. Response: {json_response}")

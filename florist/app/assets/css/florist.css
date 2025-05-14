@@ -1,3 +1,23 @@
+#login-page {
+    #login-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+
+        > * {
+            margin: 10px;
+        }
+
+        .spacer {
+            width: 50px;
+            height: 50px;
+        }
+    }
+    #login-error {
+        margin-top: 10px;
+    }
+}
+
 .home-page-title {
     margin-bottom: 40px;
 }
@@ -227,4 +247,6 @@
 
 #job-server-config-uploader {
     opacity: 0;
+    width: 0;
+    height: 0;
 }

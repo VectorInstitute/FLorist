@@ -7,10 +7,11 @@ from datetime import datetime
 from typing import List, Union
 
 import requests
-from fastapi import APIRouter, Body, Request, status
+from fastapi import APIRouter, Body, Depends, Request, status
 from fastapi.responses import JSONResponse
 
 from florist.api.db.server_entities import MAX_RECORDS_TO_FETCH, Job, JobStatus
+from florist.api.routes.server.auth import check_default_user_token, get_client_token
 
 
 router = APIRouter()
@@ -23,6 +24,7 @@ LOGGER = logging.getLogger("uvicorn.error")
     response_description="Retrieves a job by ID",
     status_code=status.HTTP_200_OK,
     response_model=Job,
+    dependencies=[Depends(check_default_user_token)],
 )
 async def get_job(job_id: str, request: Request) -> Union[Job, JSONResponse]:
     """
@@ -38,6 +40,8 @@ async def get_job(job_id: str, request: Request) -> Union[Job, JSONResponse]:
     if job is None:
         return JSONResponse(content={"error": f"Job with ID {job_id} does not exist."}, status_code=400)
 
+    # Obscuring the clients' hashed passwords so they are not returned in the response
+    job.obscure_hashed_passwords()
     return job
 
 
@@ -46,6 +50,7 @@ async def get_job(job_id: str, request: Request) -> Union[Job, JSONResponse]:
     response_description="Create a new job",
     status_code=status.HTTP_201_CREATED,
     response_model=Job,
+    dependencies=[Depends(check_default_user_token)],
 )
 async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
     """
@@ -63,6 +68,8 @@ async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
     job_in_db = await Job.find_by_id(job_id, request.app.database)
 
     assert job_in_db is not None
+    # Obscuring the clients' hashed passwords so they are not returned in the response
+    job_in_db.obscure_hashed_passwords()
     return job_in_db
 
 
@@ -70,6 +77,7 @@ async def new_job(request: Request, job: Job = Body(...)) -> Job:  # noqa: B008
     path="/status/{status}",
     response_description="List jobs with the specified status",
     response_model=List[Job],
+    dependencies=[Depends(check_default_user_token)],
 )
 async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Job]:
     """
@@ -82,10 +90,18 @@ async def list_jobs_with_status(status: JobStatus, request: Request) -> List[Job
     :return: (List[Dict[str, Any]]) A list where each entry is a dictionary with the attributes
         of a Job instance with the specified status.
     """
-    return await Job.find_by_status(status, MAX_RECORDS_TO_FETCH, request.app.database)
+    jobs = await Job.find_by_status(status, MAX_RECORDS_TO_FETCH, request.app.database)
+    for job in jobs:
+        # Obscuring the clients' hashed passwords so they are not returned in the response
+        job.obscure_hashed_passwords()
+    return jobs
 
 
-@router.post(path="/change_status", response_description="Change job to the specified status")
+@router.post(
+    path="/change_status",
+    response_description="Change job to the specified status",
+    dependencies=[Depends(check_default_user_token)],
+)
 async def change_job_status(job_id: str, status: JobStatus, request: Request) -> JSONResponse:
     """
     Change job job_id to specified status.
@@ -109,7 +125,9 @@ async def change_job_status(job_id: str, status: JobStatus, request: Request) ->
         return JSONResponse(content={"error": str(general_e)}, status_code=500)
 
 
-@router.post(path="/stop/{job_id}", response_description="Stops a job")
+@router.post(
+    path="/stop/{job_id}", response_description="Stops a job", dependencies=[Depends(check_default_user_token)]
+)
 async def stop_job(job_id: str, request: Request) -> JSONResponse:
     """
     Stop the job with the given ID. The job is stopped by killing all the clients and servers processes.
@@ -127,7 +145,11 @@ async def stop_job(job_id: str, request: Request) -> JSONResponse:
 
         user_error_message = ""
         for client_info in job.clients_info:
-            response = requests.get(url=f"http://{client_info.service_address}/api/client/stop/{client_info.uuid}")
+            token = get_client_token(client_info, request)
+            response = requests.get(
+                url=f"http://{client_info.service_address}/api/client/stop/{client_info.uuid}",
+                headers={"Authorization": f"Bearer {token.access_token}"},
+            )
             status_code = response.status_code
             if status_code != 200:
                 response_data = response.json()
@@ -156,7 +178,7 @@ async def stop_job(job_id: str, request: Request) -> JSONResponse:
         return JSONResponse(content={"error": str(general_e)}, status_code=500)
 
 
-@router.get("/get_server_log/{job_id}")
+@router.get("/get_server_log/{job_id}", dependencies=[Depends(check_default_user_token)])
 async def get_server_log(job_id: str, request: Request) -> JSONResponse:
     """
     Return the contents of the server's log file for the given job id.
@@ -187,7 +209,7 @@ async def get_server_log(job_id: str, request: Request) -> JSONResponse:
         return JSONResponse(content={"error": str(general_e)}, status_code=500)
 
 
-@router.get("/get_client_log/{job_id}/{client_index}")
+@router.get("/get_client_log/{job_id}/{client_index}", dependencies=[Depends(check_default_user_token)])
 async def get_client_log(job_id: str, client_index: int, request: Request) -> JSONResponse:
     """
     Return the contents of the log file for the client with given index under given job id.
@@ -211,7 +233,11 @@ async def get_client_log(job_id: str, client_index: int, request: Request) -> JS
 
         client_info = job.clients_info[client_index]
 
-        response = requests.get(url=f"http://{client_info.service_address}/api/client/get_log/{client_info.uuid}")
+        token = get_client_token(client_info, request)
+        response = requests.get(
+            url=f"http://{client_info.service_address}/api/client/get_log/{client_info.uuid}",
+            headers={"Authorization": f"Bearer {token.access_token}"},
+        )
         json_response = response.json()
 
         if response.status_code != 200:
