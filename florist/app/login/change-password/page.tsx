@@ -115,7 +115,7 @@ export default function ChangePasswordPage(): ReactElement {
                         </div>
                         <div className="text-center">
                             <button id="change-password-form-submit" type="submit" className={button_classes}>
-                                {isLoading || response ? "Changing password..." : "Change password"}
+                                {isLoading || response ? "Changing Password..." : "Change Password"}
                             </button>
                         </div>
                     </form>

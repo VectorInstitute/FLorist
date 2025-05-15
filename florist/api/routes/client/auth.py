@@ -11,7 +11,7 @@ from florist.api.auth.token import (
     DEFAULT_PASSWORD,
     DEFAULT_USERNAME,
     AuthUser,
-    OAuth2ChangePasswordForm,
+    OAuth2ChangePasswordRequestForm,
     Token,
     _password_hash,
     _simple_hash,
@@ -93,7 +93,7 @@ async def check_default_user_token(token: Annotated[str, Depends(oauth2_scheme)]
 
 
 @router.post("/change_password")
-async def change_password(form_data: Annotated[OAuth2ChangePasswordForm, Depends()]) -> Token:
+async def change_password(form_data: Annotated[OAuth2ChangePasswordRequestForm, Depends()]) -> Token:
     """
     Change the password for the user.
 
