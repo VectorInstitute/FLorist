@@ -1,11 +1,11 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render } from "@testing-library/react";
-import { describe, it, expect, afterEach } from "@jest/globals";
+import { describe, it, expect, afterEach, beforeEach } from "@jest/globals";
 import { act } from "react-dom/test-utils";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
-import LoginPage from "../../../../app/login/page";
+import LoginPage, { DEFAULT_USERNAME } from "../../../../app/login/page";
 import { usePost } from "../../../../app/hooks";
 
 jest.mock("../../../../app/hooks");
@@ -69,6 +69,9 @@ describe("LoginPage", () => {
     });
 
     describe("Token Handling", () => {
+        beforeEach(() => {
+            Cookies.remove("token");
+        });
         it("Removes the token cookie if it exists", () => {
             Cookies.set("token", "test-token");
             expect(Cookies.get("token")).toBe("test-token");
@@ -86,6 +89,19 @@ describe("LoginPage", () => {
 
             expect(Cookies.get("token")).toBe("test-token");
             expect(routerMock.push).toHaveBeenCalledWith("/");
+        });
+        it("Redirects to the change password page if the response contains the change password flag", () => {
+            const { routerMock } = setupMocks(
+                { access_token: "test-token", should_change_password: true },
+                false,
+                null,
+            );
+            expect(Cookies.get("token")).toBeUndefined();
+
+            render(<LoginPage />);
+
+            expect(routerMock.push).toHaveBeenCalledWith("/login/change-password");
+            expect(Cookies.get("token")).toBeUndefined();
         });
     });
 
@@ -106,7 +122,7 @@ describe("LoginPage", () => {
 
             const formData = new FormData();
             formData.append("grant_type", "password");
-            formData.append("username", "admin");
+            formData.append("username", DEFAULT_USERNAME);
             formData.append("password", "c638833f69bbfb3c267afa0a74434812436b8f08a81fd263c6be6871de4f1265");
             expect(postMock).toBeCalledWith("/api/server/auth/token", formData, null);
         });

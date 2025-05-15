@@ -7,7 +7,7 @@ from unittest.mock import Mock, AsyncMock, patch, ANY, call
 from florist.api.auth.token import Token
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
-from florist.api.db.config import DATABASE_NAME
+from florist.api.db.config import DatabaseConfig
 from florist.api.db.server_entities import Job, JobStatus, JOB_COLLECTION_NAME
 from florist.api.monitoring.metrics import get_host_and_port_from_address
 from florist.api.models.models import Model
@@ -605,13 +605,13 @@ async def test_server_training_listener(
             await server_training_listener(test_job)
 
             # Assert
-            mock_set_status.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_db_client[DATABASE_NAME])
+            mock_set_status.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_db_client[DatabaseConfig.mongodb_db_name])
 
             assert mock_set_server_metrics.call_count == 3
             mock_set_server_metrics.assert_has_calls([
-                call(test_server_metrics[0], mock_db_client[DATABASE_NAME]),
-                call(test_server_metrics[1], mock_db_client[DATABASE_NAME]),
-                call(test_server_metrics[2], mock_db_client[DATABASE_NAME]),
+                call(test_server_metrics[0], mock_db_client[DatabaseConfig.mongodb_db_name]),
+                call(test_server_metrics[1], mock_db_client[DatabaseConfig.mongodb_db_name]),
+                call(test_server_metrics[2], mock_db_client[DatabaseConfig.mongodb_db_name]),
             ])
 
     assert mock_get_from_redis.call_count == 3
@@ -647,8 +647,8 @@ async def test_server_training_listener_already_finished(mock_get_from_redis: Mo
             await server_training_listener(test_job)
 
             # Assert
-            mock_set_status.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_db_client[DATABASE_NAME])
-            mock_set_server_metrics.assert_called_once_with(test_server_final_metrics, mock_db_client[DATABASE_NAME])
+            mock_set_status.assert_called_once_with(JobStatus.FINISHED_SUCCESSFULLY, mock_db_client[DatabaseConfig.mongodb_db_name])
+            mock_set_server_metrics.assert_called_once_with(test_server_final_metrics, mock_db_client[DatabaseConfig.mongodb_db_name])
 
     assert mock_get_from_redis.call_count == 1
     mock_db_client.close.assert_called()
@@ -718,9 +718,9 @@ async def test_client_training_listener(
         # Assert
         assert mock_set_client_metrics.call_count == 3
         mock_set_client_metrics.assert_has_calls([
-            call(test_client_uuid, test_client_metrics[0], mock_db_client[DATABASE_NAME]),
-            call(test_client_uuid, test_client_metrics[1], mock_db_client[DATABASE_NAME]),
-            call(test_client_uuid, test_client_metrics[2], mock_db_client[DATABASE_NAME]),
+            call(test_client_uuid, test_client_metrics[0], mock_db_client[DatabaseConfig.mongodb_db_name]),
+            call(test_client_uuid, test_client_metrics[1], mock_db_client[DatabaseConfig.mongodb_db_name]),
+            call(test_client_uuid, test_client_metrics[2], mock_db_client[DatabaseConfig.mongodb_db_name]),
         ])
 
     assert mock_get_from_redis.call_count == 3
@@ -760,7 +760,7 @@ async def test_client_training_listener_already_finished(mock_get_from_redis: Mo
         mock_set_client_metrics.assert_called_once_with(
             test_client_uuid,
             test_client_final_metrics,
-            mock_db_client[DATABASE_NAME],
+            mock_db_client[DatabaseConfig.mongodb_db_name],
         )
 
     assert mock_get_from_redis.call_count == 1
@@ -863,6 +863,6 @@ def make_mock_db_client() -> Mock:
     mock_database = Mock()
     mock_db_client = Mock()
     mock_db_client.__getitem__ = Mock(
-        side_effect=lambda database_name: mock_database if database_name == DATABASE_NAME else None
+        side_effect=lambda database_name: mock_database if database_name == DatabaseConfig.mongodb_db_name else None
     )
     return mock_db_client

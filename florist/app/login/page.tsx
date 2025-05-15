@@ -8,7 +8,7 @@ import logo_ct from "../assets/img/logo-ct.png";
 import { usePost } from "../hooks";
 import { setToken, removeToken, hashWord } from "../auth";
 
-const DEFAULT_USERNAME = "admin";
+export const DEFAULT_USERNAME = "admin";
 
 export default function LoginPage(): ReactElement {
     const router = useRouter();
@@ -31,17 +31,23 @@ export default function LoginPage(): ReactElement {
     }
 
     useEffect(() => {
+        // if no response or isLoading, it means the user just accessed the login page
         if (!response || !isLoading) {
-            // if no response or isLoading, it means the user just accessed the login page
             // remove the login token from the cookies in that case to log the user out
             removeToken();
         }
 
-        if (response) {
-            // if there is a response, it means the user has logged in successfully
-            // redirect to the home page and store the login token in the cookies
-            setToken(response.access_token);
-            router.push("/");
+        // if there is a response and no error, it means the user has logged in successfully
+        if (response && !error) {
+            // if the flag to change the password is set
+            if (response.should_change_password) {
+                // redirect to the change password page
+                router.push("/login/change-password");
+            } else {
+                // redirect to the home page and store the login token in the cookies
+                setToken(response.access_token);
+                router.push("/");
+            }
         }
     }, [response, isLoading, router]);
 

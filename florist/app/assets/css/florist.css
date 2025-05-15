@@ -1,5 +1,7 @@
-#login-page {
-    #login-header {
+#login-page,
+#change-password-page {
+    #login-header,
+    #change-password-header {
         display: flex;
         align-items: center;
         justify-content: space-evenly;
@@ -13,7 +15,8 @@
             height: 50px;
         }
     }
-    #login-error {
+    #login-error,
+    #change-password-error {
         margin-top: 10px;
     }
 }

@@ -1,16 +1,19 @@
 import contextlib
 import os
+from typing import Literal
 
 import pytest
 import time
 import threading
 import uvicorn
+import requests
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from starlette.requests import Request
 
-from florist.api.server import MONGODB_URI
 from florist.api.db.client_entities import EntityDAO
+from florist.api.db.config import DatabaseConfig
+from florist.api.auth.token import Token, _simple_hash, DEFAULT_USERNAME, DEFAULT_PASSWORD
 
 
 class TestUvicornServer(uvicorn.Server):
@@ -32,7 +35,7 @@ class TestUvicornServer(uvicorn.Server):
 
 class MockApp:
     def __init__(self, database_name: str):
-        self.db_client = AsyncIOMotorClient(MONGODB_URI)
+        self.db_client = AsyncIOMotorClient(DatabaseConfig.mongodb_uri)
         self.database = self.db_client[database_name]
         self.clients_auth_tokens = {}
 
@@ -73,3 +76,49 @@ async def mock_request() -> MockRequest:
     if os.path.exists(TEST_SQLITE_DB_PATH):
         print(f"Deleting test detabase '{TEST_SQLITE_DB_PATH}'")
         os.remove(TEST_SQLITE_DB_PATH)
+
+
+@pytest.fixture
+async def use_test_database() -> None:
+    # saving real database config
+    sqlite_db_path = DatabaseConfig.sqlite_db_path
+    database_name = DatabaseConfig.mongodb_db_name
+
+    # replacing real database config with test database config
+    DatabaseConfig.sqlite_db_path = TEST_SQLITE_DB_PATH
+    EntityDAO.db_path = DatabaseConfig.sqlite_db_path
+    print(f"Creating test detabase '{DatabaseConfig.sqlite_db_path}'")
+    DatabaseConfig.mongodb_db_name = TEST_DATABASE_NAME
+    print(f"Using test detabase '{DatabaseConfig.mongodb_db_name}'")
+
+    yield
+
+    # restoring real database config
+    DatabaseConfig.sqlite_db_path = sqlite_db_path
+    EntityDAO.db_path = sqlite_db_path
+    DatabaseConfig.mongodb_db_name = database_name
+
+    # deleting test databases
+    print(f"Deleting test detabase '{TEST_DATABASE_NAME}'")
+    db_client = AsyncIOMotorClient(DatabaseConfig.mongodb_uri)
+    await db_client.drop_database(TEST_DATABASE_NAME)
+
+    if os.path.exists(TEST_SQLITE_DB_PATH):
+        print(f"Deleting test detabase '{TEST_SQLITE_DB_PATH}'")
+        os.remove(TEST_SQLITE_DB_PATH)
+
+
+def change_default_password(address: str, new_password: str, type: Literal["server", "client"]) -> None:
+    response = requests.post(
+        f"http://{address}/api/{type}/auth/change_password",
+        data={
+            "grant_type": "password",
+            "username": DEFAULT_USERNAME,
+            "current_password": _simple_hash(DEFAULT_PASSWORD),
+            "new_password": new_password,
+        },
+    )
+
+    assert response.status_code == 200, f"Failed to change {type} password: {response.json()}"
+
+    return Token(**response.json())
