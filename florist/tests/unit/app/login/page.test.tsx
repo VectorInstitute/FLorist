@@ -91,7 +91,11 @@ describe("LoginPage", () => {
             expect(routerMock.push).toHaveBeenCalledWith("/");
         });
         it("Redirects to the change password page if the response contains the change password flag", () => {
-            const { routerMock } = setupMocks({ access_token: "test-token", should_change_password: true }, false, null);
+            const { routerMock } = setupMocks(
+                { access_token: "test-token", should_change_password: true },
+                false,
+                null,
+            );
             expect(Cookies.get("token")).toBeUndefined();
 
             render(<LoginPage />);

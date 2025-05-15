@@ -121,11 +121,9 @@ export default function ChangePasswordPage(): ReactElement {
                     </form>
                 </div>
             </div>
-            {(error || passwordError) ? (
+            {error || passwordError ? (
                 <div id="change-password-error" className="alert alert-danger text-white" role="alert">
-                    <span className="text-sm">
-                        { passwordError || "An error occurred. Please try again." }
-                    </span>
+                    <span className="text-sm">{passwordError || "An error occurred. Please try again."}</span>
                 </div>
             ) : null}
         </div>

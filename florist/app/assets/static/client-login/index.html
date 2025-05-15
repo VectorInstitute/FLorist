@@ -5,24 +5,22 @@
     <body>
         <h1>Change Password</h1>
         <form>
-            <p><input type="password" name="current_password" placeholder="Current Password"></p>
-            <p><input type="password" name="new_password" placeholder="New Password"></p>
-            <p><input type="password" name="confirm_password" placeholder="Confirm New Password"></p>
+            <p><input type="password" name="current_password" placeholder="Current Password" /></p>
+            <p><input type="password" name="new_password" placeholder="New Password" /></p>
+            <p><input type="password" name="confirm_password" placeholder="Confirm New Password" /></p>
             <p><button type="submit">Change Password</button></p>
         </form>
 
-        <p id="error" style="color: red; display: none;">
-            An error occurred. Please try again.
-        </p>
+        <p id="error" style="color: red; display: none">An error occurred. Please try again.</p>
 
         <script>
             async function simpleHash(word) {
                 const encoder = new TextEncoder();
                 const encodedWord = encoder.encode(word);
 
-                const hashBuffer = await window.crypto.subtle.digest("SHA-256", encodedWord)
+                const hashBuffer = await window.crypto.subtle.digest("SHA-256", encodedWord);
                 const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+                const hashHex = hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
 
                 return hashHex;
             }
