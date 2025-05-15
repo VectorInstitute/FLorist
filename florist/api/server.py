@@ -10,7 +10,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from florist.api.auth.token import DEFAULT_USERNAME, Token, make_default_server_user
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
-from florist.api.db.config import DATABASE_NAME, MONGODB_URI
+from florist.api.db.config import DatabaseConfig
 from florist.api.db.server_entities import User
 from florist.api.models.models import Model
 from florist.api.routes.server.auth import check_default_user_token
@@ -25,8 +25,8 @@ from florist.api.servers.strategies import Strategy
 async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
     """Set up function for app startup and shutdown."""
     # Set up mongodb
-    app.db_client = AsyncIOMotorClient(MONGODB_URI)  # type: ignore[attr-defined]
-    app.database = app.db_client[DATABASE_NAME]  # type: ignore[attr-defined]
+    app.db_client = AsyncIOMotorClient(DatabaseConfig.mongodb_uri)  # type: ignore[attr-defined]
+    app.database = app.db_client[DatabaseConfig.mongodb_db_name]  # type: ignore[attr-defined]
 
     # Create default user if it does not exist
     user = await User.find_by_username(DEFAULT_USERNAME, app.database)  # type: ignore[attr-defined]

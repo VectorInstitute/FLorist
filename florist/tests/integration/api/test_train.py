@@ -13,33 +13,50 @@ from florist.api.db.server_entities import Job, JobStatus, ClientInfo
 from florist.api.monitoring.metrics import wait_for_metric
 from florist.api.routes.server.training import LOGGER
 from florist.api.routes.server.job import new_job, list_jobs_with_status
-from florist.api.server import DATABASE_NAME
 from florist.api.servers.strategies import Strategy
 from florist.api.models.models import Model
-from florist.tests.integration.api.utils import TestUvicornServer, MockRequest, MockApp
+from florist.tests.integration.api.utils import (
+    TestUvicornServer,
+    MockRequest,
+    MockApp,
+    use_test_database,
+    TEST_DATABASE_NAME,
+    change_default_password
+)
 
 
-async def test_train():
+async def test_train(use_test_database):
     # Define services
-    server_config = uvicorn.Config("florist.api.server:app", host="localhost", port=8000, log_level="debug")
+    test_server_host = "localhost"
+    test_server_port = 8000
+    server_config = uvicorn.Config("florist.api.server:app", host=test_server_host, port=test_server_port, log_level="debug")
     server_service = TestUvicornServer(config=server_config)
-    client_config = uvicorn.Config("florist.api.client:app", host="localhost", port=8001, log_level="debug")
+    test_client_host = "localhost"
+    test_client_port = 8001
+    client_config = uvicorn.Config("florist.api.client:app", host=test_client_host, port=test_client_port, log_level="debug")
     client_service = TestUvicornServer(config=client_config)
 
-    # TODO figure out how to run fastapi with the test DB so we can use the fixture here
-    test_request = MockRequest(MockApp(DATABASE_NAME))
+    test_new_password = _simple_hash("new_password")
+    test_server_fl_host = "localhost"
+    test_server_fl_port = 8080
+
+    test_request = MockRequest(MockApp(TEST_DATABASE_NAME))
 
     # Start services
     with server_service.run_in_thread():
         with client_service.run_in_thread():
 
+            # changing default passwords
+            change_default_password(f"{test_server_host}:{test_server_port}", test_new_password, "server")
+            change_default_password(f"{test_client_host}:{test_client_port}", test_new_password, "client")
+
             # Issuing a server access token
             server_token_response = requests.post(
-                "http://localhost:8000/api/server/auth/token",
+                f"http://{test_server_host}:{test_server_port}/api/server/auth/token",
                 data={
                     "grant_type": "password",
                     "username": DEFAULT_USERNAME,
-                    "password": _simple_hash(DEFAULT_PASSWORD),
+                    "password": test_new_password,
                 }
             )
             server_token = Token(**server_token_response.json())
@@ -56,7 +73,7 @@ async def test_train():
                     model=Model.MNIST.value,
                     strategy=Strategy.FEDAVG.value,
                     optimizer=Optimizer.SGD.value,
-                    server_address="localhost:8080",
+                    server_address=f"{test_server_fl_host}:{test_server_fl_port}",
                     server_config=json.dumps({
                         "n_server_rounds": test_n_server_rounds,
                         "batch_size": 8,
@@ -66,10 +83,10 @@ async def test_train():
                     client=Client.FEDAVG,
                     clients_info=[
                         ClientInfo(
-                            service_address="localhost:8001",
+                            service_address=f"{test_client_host}:{test_client_port}",
                             data_path=f"{temp_dir}/data",
                             redis_address=test_redis_address,
-                            hashed_password=_simple_hash(DEFAULT_PASSWORD),
+                            hashed_password=test_new_password,
                         )
                     ]
                 ))
@@ -77,7 +94,7 @@ async def test_train():
                 # Starting training
                 request = requests.Request(
                     method="POST",
-                    url=f"http://localhost:8000/api/server/training/start?job_id={job.id}",
+                    url=f"http://{test_server_host}:{test_server_port}/api/server/training/start?job_id={job.id}",
                     headers={"Authorization": f"Bearer {server_token.access_token}"},
                 ).prepare()
                 session = requests.Session()
