@@ -12,7 +12,7 @@ import torch
 from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fl4health.utils.metrics import Accuracy
+from fl4health.metrics import Accuracy
 
 from florist.api.auth.token import DEFAULT_USERNAME, make_default_client_user
 from florist.api.clients.clients import Client
