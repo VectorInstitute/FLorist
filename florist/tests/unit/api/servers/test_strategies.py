@@ -2,7 +2,7 @@ from fl4health.client_managers.base_sampling_manager import SimpleClientManager
 from fl4health.servers.adaptive_constraint_servers.fedprox_server import FedProxServer
 from fl4health.servers.base_server import FlServer
 from fl4health.strategies.fedavg_with_adaptive_constraint import FedAvgWithAdaptiveConstraint
-from fl4health.utils.metric_aggregation import evaluate_metrics_aggregation_fn, fit_metrics_aggregation_fn
+from fl4health.metrics.metric_aggregation import evaluate_metrics_aggregation_fn, fit_metrics_aggregation_fn
 from flwr.server.strategy import FedAvg
 from flwr.common.typing import Parameters
 

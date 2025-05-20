@@ -1,3 +1,4 @@
+import freezegun
 from freezegun import freeze_time
 from datetime import timedelta, datetime, timezone
 from copy import deepcopy
@@ -14,6 +15,8 @@ from florist.api.auth.token import (
     decode_access_token,
     _check_valid_word,
 )
+
+freezegun.configure(extend_ignore_list=["transformers"])  # type: ignore
 
 def test_verify_password():
     simple_hashed_password = _simple_hash(DEFAULT_PASSWORD)
