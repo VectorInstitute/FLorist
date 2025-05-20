@@ -4,16 +4,20 @@ import logging
 from pytest import raises
 from unittest.mock import Mock, call, patch
 
-from florist.api.monitoring.metrics import DateTimeEncoder
+import freezegun
 from freezegun import freeze_time
 
 from florist.api.monitoring.metrics import (
+    DateTimeEncoder,
     get_from_redis,
     get_host_and_port_from_address,
     get_subscriber,
     RedisMetricsReporter,
     wait_for_metric,
 )
+
+
+freezegun.configure(extend_ignore_list=["transformers"])  # type: ignore
 
 
 @freeze_time("2012-12-11 10:09:08")

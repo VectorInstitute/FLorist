@@ -2,13 +2,17 @@ import json
 import signal
 from datetime import datetime
 
+import freezegun
+from freezegun import freeze_time
 from unittest.mock import patch, Mock, AsyncMock, call
 from fastapi.responses import JSONResponse
-from freezegun import freeze_time
 
 from florist.api.auth.token import Token
 from florist.api.db.server_entities import JobStatus, ClientInfo
 from florist.api.routes.server.job import change_job_status, get_job, stop_job
+
+
+freezegun.configure(extend_ignore_list=["transformers"])  # type: ignore
 
 
 @patch("florist.api.db.server_entities.Job.find_by_id")
