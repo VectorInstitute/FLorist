@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.unit.api.routes.server.test_training - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,26 +376,26 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.unit.api.routes.server.test_training</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">pytest</span> <span class="kn">import</span> <span class="n">raises</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">AsyncMock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">ANY</span><span class="p">,</span> <span class="n">call</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytest</span><span class="w"> </span><span class="kn">import</span> <span class="n">raises</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">AsyncMock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">ANY</span><span class="p">,</span> <span class="n">call</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.auth.token</span> <span class="kn">import</span> <span class="n">Token</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.clients</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.optimizers</span> <span class="kn">import</span> <span class="n">Optimizer</span>
-<span class="kn">from</span> <span class="nn">florist.api.db.config</span> <span class="kn">import</span> <span class="n">DATABASE_NAME</span>
-<span class="kn">from</span> <span class="nn">florist.api.db.server_entities</span> <span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">JOB_COLLECTION_NAME</span>
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">get_host_and_port_from_address</span>
-<span class="kn">from</span> <span class="nn">florist.api.models.models</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">florist.api.models.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
-<span class="kn">from</span> <span class="nn">florist.api.routes.server.training</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.auth.token</span><span class="w"> </span><span class="kn">import</span> <span class="n">Token</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.clients</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">DATABASE_NAME</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.server_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">JOB_COLLECTION_NAME</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.monitoring.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_host_and_port_from_address</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.mnist</span><span class="w"> </span><span class="kn">import</span> <span class="n">MnistNet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.routes.server.training</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">client_training_listener</span><span class="p">,</span>
     <span class="n">start</span><span class="p">,</span>
     <span class="n">server_training_listener</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.strategies</span> <span class="kn">import</span> <span class="n">Strategy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.servers.strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strategy</span>
 
 <div class="viewcode-block" id="test_start_success">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_start_success">[docs]</a>
@@ -409,7 +409,7 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_uuids&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_server_log_file_path&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_server_pid&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_success</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_success</span><span class="p">(</span>
     <span class="n">mock_set_server_pid</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_server_log_file_path</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_set_uuids</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
@@ -536,7 +536,7 @@
 
 <div class="viewcode-block" id="test_start_fail_unsupported_server_model">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_start_fail_unsupported_server_model">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_fail_unsupported_server_model</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_fail_unsupported_server_model</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Arrange</span>
     <span class="n">test_job_id</span> <span class="o">=</span> <span class="s2">&quot;test-job-id&quot;</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">test_job</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">mock_fastapi_request</span> <span class="o">=</span> <span class="n">_setup_test_job_and_mocks</span><span class="p">()</span>
@@ -555,7 +555,7 @@
 
 <div class="viewcode-block" id="test_start_fail_unsupported_client">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_start_fail_unsupported_client">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_fail_unsupported_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_fail_unsupported_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Arrange</span>
     <span class="n">test_job_id</span> <span class="o">=</span> <span class="s2">&quot;test-job-id&quot;</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">test_job</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">mock_fastapi_request</span> <span class="o">=</span> <span class="n">_setup_test_job_and_mocks</span><span class="p">()</span>
@@ -574,7 +574,7 @@
 
 <div class="viewcode-block" id="test_start_fail_missing_info">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_start_fail_missing_info">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_fail_missing_info</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_fail_missing_info</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">fields_to_be_removed</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="s2">&quot;strategy&quot;</span><span class="p">,</span> <span class="s2">&quot;optimizer&quot;</span><span class="p">,</span> <span class="s2">&quot;client&quot;</span><span class="p">,</span> <span class="s2">&quot;server_config&quot;</span><span class="p">,</span> <span class="s2">&quot;clients_info&quot;</span><span class="p">,</span> <span class="s2">&quot;server_address&quot;</span><span class="p">,</span> <span class="s2">&quot;redis_address&quot;</span><span class="p">,</span>
     <span class="p">]</span>
@@ -610,7 +610,7 @@
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_start_fail_invalid_server_config">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_status&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_error_message&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_fail_invalid_server_config</span><span class="p">(</span><span class="n">mock_set_error_message</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_set_status</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_fail_invalid_server_config</span><span class="p">(</span><span class="n">mock_set_error_message</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_set_status</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Arrange</span>
     <span class="n">test_job_id</span> <span class="o">=</span> <span class="s2">&quot;test-job-id&quot;</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">test_job</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">mock_fastapi_request</span> <span class="o">=</span> <span class="n">_setup_test_job_and_mocks</span><span class="p">()</span>
@@ -638,7 +638,7 @@
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_start_fail_invalid_client_for_strategy">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_status&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_error_message&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_fail_invalid_client_for_strategy</span><span class="p">(</span><span class="n">mock_set_error_message</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_set_status</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_fail_invalid_client_for_strategy</span><span class="p">(</span><span class="n">mock_set_error_message</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_set_status</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Arrange</span>
     <span class="n">test_job_id</span> <span class="o">=</span> <span class="s2">&quot;test-job-id&quot;</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">test_job</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">mock_fastapi_request</span> <span class="o">=</span> <span class="n">_setup_test_job_and_mocks</span><span class="p">()</span>
@@ -666,7 +666,7 @@
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_start_fail_empty_clients_info">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_status&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_error_message&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_fail_empty_clients_info</span><span class="p">(</span><span class="n">mock_set_error_message</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_set_status</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_fail_empty_clients_info</span><span class="p">(</span><span class="n">mock_set_error_message</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_set_status</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Arrange</span>
     <span class="n">test_job_id</span> <span class="o">=</span> <span class="s2">&quot;test-job-id&quot;</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">test_job</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">mock_fastapi_request</span> <span class="o">=</span> <span class="n">_setup_test_job_and_mocks</span><span class="p">()</span>
@@ -695,7 +695,7 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_status&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_error_message&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.launch_local_server&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_launch_server_exception</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_launch_server_exception</span><span class="p">(</span>
     <span class="n">mock_launch_local_server</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_set_error_message</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_set_status</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
@@ -730,7 +730,7 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.launch_local_server&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_server_log_file_path&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_wait_for_metric_exception</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_wait_for_metric_exception</span><span class="p">(</span>
     <span class="n">mock_set_server_log_file_path</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_launch_local_server</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
@@ -774,7 +774,7 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.time&quot;</span><span class="p">)</span>  <span class="c1"># just so time.sleep does not actually sleep</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_server_log_file_path&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_wait_for_metric_timeout</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_wait_for_metric_timeout</span><span class="p">(</span>
     <span class="n">mock_set_server_log_file_path</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">_</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
@@ -822,7 +822,7 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.requests&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.auth.requests&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_server_log_file_path&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_fail_response</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_fail_response</span><span class="p">(</span>
     <span class="n">mock_set_server_log_file_path</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_auth_requests</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_requests</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
@@ -878,7 +878,7 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.requests&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.auth.requests&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_server_log_file_path&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_no_client_uuid_in_response</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_no_client_uuid_in_response</span><span class="p">(</span>
     <span class="n">mock_set_server_log_file_path</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_auth_requests</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_requests</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
@@ -932,7 +932,7 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.requests&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.auth.requests&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.db.server_entities.Job.set_server_log_file_path&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_start_client_uuid_in_response_is_not_a_string</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_start_client_uuid_in_response_is_not_a_string</span><span class="p">(</span>
     <span class="n">mock_set_server_log_file_path</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_auth_requests</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_requests</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
@@ -981,7 +981,7 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.AsyncIOMotorClient&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.get_from_redis&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.get_subscriber&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_server_training_listener</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_server_training_listener</span><span class="p">(</span>
     <span class="n">mock_get_subscriber</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_get_from_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_motor_client</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
@@ -1043,7 +1043,7 @@
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_server_training_listener_already_finished">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.AsyncIOMotorClient&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.get_from_redis&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_server_training_listener_already_finished</span><span class="p">(</span><span class="n">mock_get_from_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_motor_client</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_server_training_listener_already_finished</span><span class="p">(</span><span class="n">mock_get_from_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_motor_client</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Setup</span>
     <span class="n">test_job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
         <span class="s2">&quot;server_uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;test-server-uuid&quot;</span><span class="p">,</span>
@@ -1079,7 +1079,7 @@
 
 <div class="viewcode-block" id="test_server_training_listener_fail_no_server_uuid">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_server_training_listener_fail_no_server_uuid">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_server_training_listener_fail_no_server_uuid</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_server_training_listener_fail_no_server_uuid</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
         <span class="s2">&quot;redis_address&quot;</span><span class="p">:</span> <span class="s2">&quot;test-redis-host:1234&quot;</span><span class="p">,</span>
     <span class="p">})</span>
@@ -1091,7 +1091,7 @@
 
 <div class="viewcode-block" id="test_server_training_listener_fail_no_redis_address">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_server_training_listener_fail_no_redis_address">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_server_training_listener_fail_no_redis_address</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_server_training_listener_fail_no_redis_address</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
         <span class="s2">&quot;server_uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;test-server-uuid&quot;</span><span class="p">,</span>
     <span class="p">})</span>
@@ -1106,7 +1106,7 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.AsyncIOMotorClient&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.get_from_redis&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.get_subscriber&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_client_training_listener</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_client_training_listener</span><span class="p">(</span>
     <span class="n">mock_get_subscriber</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_get_from_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
     <span class="n">mock_motor_client</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span>
@@ -1167,7 +1167,7 @@
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_client_training_listener_already_finished">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.AsyncIOMotorClient&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.training.get_from_redis&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_client_training_listener_already_finished</span><span class="p">(</span><span class="n">mock_get_from_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_motor_client</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_client_training_listener_already_finished</span><span class="p">(</span><span class="n">mock_get_from_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_motor_client</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Setup</span>
     <span class="n">test_client_uuid</span> <span class="o">=</span> <span class="s2">&quot;test-client-uuid&quot;</span>
     <span class="n">test_job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
@@ -1204,7 +1204,7 @@
 
 <div class="viewcode-block" id="test_client_training_listener_fail_no_uuid">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.test_client_training_listener_fail_no_uuid">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_client_training_listener_fail_no_uuid</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_client_training_listener_fail_no_uuid</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
         <span class="s2">&quot;clients_info&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="p">{</span>
@@ -1221,7 +1221,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_setup_test_job_and_mocks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_setup_test_job_and_mocks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">]:</span>
     <span class="n">test_strategy</span> <span class="o">=</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">FEDAVG</span>
     <span class="n">test_server_config</span> <span class="o">=</span> <span class="n">_get_test_server_config</span><span class="p">(</span><span class="n">test_strategy</span><span class="p">)</span>
     <span class="n">test_job</span> <span class="o">=</span> <span class="p">{</span>
@@ -1273,7 +1273,7 @@
     <span class="k">return</span> <span class="n">test_server_config</span><span class="p">,</span> <span class="n">test_job</span><span class="p">,</span> <span class="n">mock_job_collection</span><span class="p">,</span> <span class="n">mock_fastapi_request</span>
 
 
-<span class="k">def</span> <span class="nf">_get_test_server_config</span><span class="p">(</span><span class="n">strategy</span><span class="p">:</span> <span class="n">Strategy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_test_server_config</span><span class="p">(</span><span class="n">strategy</span><span class="p">:</span> <span class="n">Strategy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">if</span> <span class="n">strategy</span> <span class="o">==</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">FEDAVG</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;n_server_rounds&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
@@ -1299,7 +1299,7 @@
 
 <div class="viewcode-block" id="make_mock_db_client">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_training.html#florist.tests.unit.api.routes.server.test_training.make_mock_db_client">[docs]</a>
-<span class="k">def</span> <span class="nf">make_mock_db_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Mock</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_mock_db_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Mock</span><span class="p">:</span>
     <span class="n">mock_database</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
     <span class="n">mock_db_client</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
     <span class="n">mock_db_client</span><span class="o">.</span><span class="fm">__getitem__</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span>

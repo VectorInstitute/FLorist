@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.integration.api.test_train - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,30 +376,30 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.integration.api.test_train</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">ANY</span>
 
-<span class="kn">import</span> <span class="nn">redis</span>
-<span class="kn">import</span> <span class="nn">uvicorn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">redis</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.auth.token</span> <span class="kn">import</span> <span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">DEFAULT_PASSWORD</span><span class="p">,</span> <span class="n">_simple_hash</span><span class="p">,</span> <span class="n">Token</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.optimizers</span> <span class="kn">import</span> <span class="n">Optimizer</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.clients</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">florist.api.db.server_entities</span> <span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">ClientInfo</span>
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">wait_for_metric</span>
-<span class="kn">from</span> <span class="nn">florist.api.routes.server.training</span> <span class="kn">import</span> <span class="n">LOGGER</span>
-<span class="kn">from</span> <span class="nn">florist.api.routes.server.job</span> <span class="kn">import</span> <span class="n">new_job</span><span class="p">,</span> <span class="n">list_jobs_with_status</span>
-<span class="kn">from</span> <span class="nn">florist.api.server</span> <span class="kn">import</span> <span class="n">DATABASE_NAME</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.strategies</span> <span class="kn">import</span> <span class="n">Strategy</span>
-<span class="kn">from</span> <span class="nn">florist.api.models.models</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">florist.tests.integration.api.utils</span> <span class="kn">import</span> <span class="n">TestUvicornServer</span><span class="p">,</span> <span class="n">MockRequest</span><span class="p">,</span> <span class="n">MockApp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.auth.token</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">DEFAULT_PASSWORD</span><span class="p">,</span> <span class="n">_simple_hash</span><span class="p">,</span> <span class="n">Token</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.clients</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.server_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">ClientInfo</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.monitoring.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">wait_for_metric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.routes.server.training</span><span class="w"> </span><span class="kn">import</span> <span class="n">LOGGER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.routes.server.job</span><span class="w"> </span><span class="kn">import</span> <span class="n">new_job</span><span class="p">,</span> <span class="n">list_jobs_with_status</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">DATABASE_NAME</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.servers.strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strategy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.tests.integration.api.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestUvicornServer</span><span class="p">,</span> <span class="n">MockRequest</span><span class="p">,</span> <span class="n">MockApp</span>
 
 
 <div class="viewcode-block" id="test_train">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.test_train.html#florist.tests.integration.api.test_train.test_train">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_train</span><span class="p">():</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_train</span><span class="p">():</span>
     <span class="c1"># Define services</span>
     <span class="n">server_config</span> <span class="o">=</span> <span class="n">uvicorn</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="s2">&quot;florist.api.server:app&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span>
     <span class="n">server_service</span> <span class="o">=</span> <span class="n">TestUvicornServer</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">server_config</span><span class="p">)</span>

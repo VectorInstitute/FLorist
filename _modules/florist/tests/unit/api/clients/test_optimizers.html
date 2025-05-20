@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.unit.api.clients.test_optimizers - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,14 +376,14 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.unit.api.clients.test_optimizers</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.clients.optimizers</span> <span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span>
 
 
 <div class="viewcode-block" id="test_optimizer_list">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_optimizers.html#florist.tests.unit.api.clients.test_optimizers.test_optimizer_list">[docs]</a>
-<span class="k">def</span> <span class="nf">test_optimizer_list</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_optimizer_list</span><span class="p">():</span>
     <span class="k">assert</span> <span class="n">Optimizer</span><span class="o">.</span><span class="n">list</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="n">Optimizer</span><span class="o">.</span><span class="n">SGD</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Optimizer</span><span class="o">.</span><span class="n">ADAM_W</span><span class="o">.</span><span class="n">value</span><span class="p">]</span></div>
 
 
@@ -391,7 +391,7 @@
 <div class="viewcode-block" id="test_optimizer_get_sgd">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_optimizers.html#florist.tests.unit.api.clients.test_optimizers.test_optimizer_get_sgd">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.clients.optimizers.torch&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_optimizer_get_sgd</span><span class="p">(</span><span class="n">mock_torch</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_optimizer_get_sgd</span><span class="p">(</span><span class="n">mock_torch</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
     <span class="n">test_model_parameters</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
     <span class="n">test_optimizer</span> <span class="o">=</span> <span class="s2">&quot;test-optimizer&quot;</span>
     <span class="n">mock_torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">test_optimizer</span>
@@ -406,7 +406,7 @@
 <div class="viewcode-block" id="test_optimizer_get_adam_w">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_optimizers.html#florist.tests.unit.api.clients.test_optimizers.test_optimizer_get_adam_w">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.clients.optimizers.torch&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_optimizer_get_adam_w</span><span class="p">(</span><span class="n">mock_torch</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_optimizer_get_adam_w</span><span class="p">(</span><span class="n">mock_torch</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
     <span class="n">test_model_parameters</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
     <span class="n">test_optimizer</span> <span class="o">=</span> <span class="s2">&quot;test-optimizer&quot;</span>
     <span class="n">mock_torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">test_optimizer</span>

@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.api.db.client_entities - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -378,20 +378,20 @@
           <h1>Source code for florist.api.db.client_entities</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Definitions for the SQLIte database entities (client database).&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">secrets</span>
-<span class="kn">import</span> <span class="nn">sqlite3</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.db.config</span> <span class="kn">import</span> <span class="n">SQLITE_DB_PATH</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLITE_DB_PATH</span>
 
 
 <div class="viewcode-block" id="EntityDAO">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO">[docs]</a>
-<span class="k">class</span> <span class="nc">EntityDAO</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EntityDAO</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base Data Access Object (DAO) for SQLite entities.&quot;&quot;&quot;</span>
 
     <span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;Entity&quot;</span>
@@ -400,7 +400,7 @@
 <div class="viewcode-block" id="EntityDAO.__init__">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.__init__">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize an Entity.</span>
 
@@ -414,7 +414,7 @@
 <div class="viewcode-block" id="EntityDAO.get_connection">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.get_connection">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_connection</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Connection</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_connection</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Connection</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the SQLite connection object.</span>
 
@@ -431,7 +431,7 @@
 <div class="viewcode-block" id="EntityDAO.find">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.find">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the entity in the database with the given UUID.</span>
 
@@ -450,7 +450,7 @@
 <div class="viewcode-block" id="EntityDAO.exists">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.exists">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if an entity with the given UUID exists in the database.</span>
 
@@ -467,7 +467,7 @@
 
 <div class="viewcode-block" id="EntityDAO.save">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.save">[docs]</a>
-    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the current entity to the database.</span>
 
@@ -486,7 +486,7 @@
         <span class="n">sqlite_db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if two instances of this entity have the same values for the same attributes.</span>
 
@@ -501,7 +501,7 @@
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert from a JSON string to an instance of the entity.</span>
 
@@ -516,7 +516,7 @@
 <div class="viewcode-block" id="EntityDAO.to_json">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.EntityDAO.to_json">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the entity data into a JSON string.</span>
 
@@ -531,14 +531,14 @@
 
 <div class="viewcode-block" id="ClientDAO">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.ClientDAO">[docs]</a>
-<span class="k">class</span> <span class="nc">ClientDAO</span><span class="p">(</span><span class="n">EntityDAO</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClientDAO</span><span class="p">(</span><span class="n">EntityDAO</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Data Access Object (DAO) for the Client SQLite entity.&quot;&quot;&quot;</span>
 
     <span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;Client&quot;</span>
 
 <div class="viewcode-block" id="ClientDAO.__init__">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.ClientDAO.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">log_file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">log_file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a Client entity.</span>
 
@@ -554,7 +554,7 @@
 <div class="viewcode-block" id="ClientDAO.from_json">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.ClientDAO.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert from a JSON string into an instance of Client.</span>
 
@@ -567,7 +567,7 @@
 
 <div class="viewcode-block" id="ClientDAO.to_json">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.ClientDAO.to_json">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the client data into a JSON string.</span>
 
@@ -586,14 +586,14 @@
 
 <div class="viewcode-block" id="UserDAO">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.UserDAO">[docs]</a>
-<span class="k">class</span> <span class="nc">UserDAO</span><span class="p">(</span><span class="n">EntityDAO</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserDAO</span><span class="p">(</span><span class="n">EntityDAO</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Data Access Object (DAO) for the User SQLite entity.&quot;&quot;&quot;</span>
 
     <span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;User&quot;</span>
 
 <div class="viewcode-block" id="UserDAO.__init__">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.UserDAO.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hashed_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hashed_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a User entity.</span>
 
@@ -613,7 +613,7 @@
 <div class="viewcode-block" id="UserDAO.from_json">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.UserDAO.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert from a JSON string into an instance of User.</span>
 
@@ -629,7 +629,7 @@
 
 <div class="viewcode-block" id="UserDAO.to_json">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.client_entities.html#florist.api.db.client_entities.UserDAO.to_json">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the user data into a JSON string.</span>
 

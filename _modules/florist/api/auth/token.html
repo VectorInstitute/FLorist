@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.api.auth.token - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -378,18 +378,18 @@
           <h1>Source code for florist.api.auth.token</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Module for handling token and user creation.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">hashlib</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">import</span> <span class="nn">bcrypt</span>
-<span class="kn">import</span> <span class="nn">jwt</span>
-<span class="kn">from</span> <span class="nn">motor.motor_asyncio</span> <span class="kn">import</span> <span class="n">AsyncIOMotorDatabase</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">bcrypt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jwt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">motor.motor_asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIOMotorDatabase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.db.client_entities</span> <span class="kn">import</span> <span class="n">UserDAO</span>
-<span class="kn">from</span> <span class="nn">florist.api.db.server_entities</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.client_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserDAO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.server_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span>
 
 
 <span class="n">ENCRYPTION_ALGORITHM</span> <span class="o">=</span> <span class="s2">&quot;HS256&quot;</span>
@@ -400,7 +400,7 @@
 
 <div class="viewcode-block" id="Token">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.auth.token.html#florist.api.auth.token.Token">[docs]</a>
-<span class="k">class</span> <span class="nc">Token</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Token</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Define the Token model.&quot;&quot;&quot;</span>
 
     <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span>
@@ -408,7 +408,7 @@
 
 <div class="viewcode-block" id="Token.Config">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.auth.token.html#florist.api.auth.token.Token.Config">[docs]</a>
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Config for the Token model.&quot;&quot;&quot;</span>
 
         <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span>
@@ -424,7 +424,7 @@
 
 <div class="viewcode-block" id="AuthUser">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.auth.token.html#florist.api.auth.token.AuthUser">[docs]</a>
-<span class="k">class</span> <span class="nc">AuthUser</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthUser</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Define the User model to be returned by the API.&quot;&quot;&quot;</span>
 
     <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span>
@@ -432,7 +432,7 @@
 
 <div class="viewcode-block" id="AuthUser.Config">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.auth.token.html#florist.api.auth.token.AuthUser.Config">[docs]</a>
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Config for the AuthUser model.&quot;&quot;&quot;</span>
 
         <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span>
@@ -446,7 +446,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_check_valid_word</span><span class="p">(</span><span class="n">word</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_valid_word</span><span class="p">(</span><span class="n">word</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if a word is valid.</span>
 
@@ -462,7 +462,7 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_simple_hash</span><span class="p">(</span><span class="n">word</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_simple_hash</span><span class="p">(</span><span class="n">word</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hash a word with sha256.</span>
 
@@ -477,7 +477,7 @@
     <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">word</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">_password_hash</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_password_hash</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hash a password with bcrypt.</span>
 
@@ -493,7 +493,7 @@
 
 <div class="viewcode-block" id="verify_password">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.auth.token.html#florist.api.auth.token.verify_password">[docs]</a>
-<span class="k">def</span> <span class="nf">verify_password</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hashed_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">verify_password</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hashed_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verify if a password matches a hashed password.</span>
 
@@ -507,7 +507,7 @@
 
 <div class="viewcode-block" id="make_default_server_user">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.auth.token.html#florist.api.auth.token.make_default_server_user">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">make_default_server_user</span><span class="p">(</span><span class="n">database</span><span class="p">:</span> <span class="n">AsyncIOMotorDatabase</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">make_default_server_user</span><span class="p">(</span><span class="n">database</span><span class="p">:</span> <span class="n">AsyncIOMotorDatabase</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Make a default server user.</span>
 
@@ -523,7 +523,7 @@
 
 <div class="viewcode-block" id="make_default_client_user">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.auth.token.html#florist.api.auth.token.make_default_client_user">[docs]</a>
-<span class="k">def</span> <span class="nf">make_default_client_user</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">UserDAO</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_default_client_user</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">UserDAO</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Make a default client user.</span>
 
@@ -538,7 +538,7 @@
 
 <div class="viewcode-block" id="create_access_token">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.auth.token.html#florist.api.auth.token.create_access_token">[docs]</a>
-<span class="k">def</span> <span class="nf">create_access_token</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_access_token</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">secret_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expiration_delta</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">TOKEN_EXPIRATION_TIMEDELTA</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -558,7 +558,7 @@
 
 <div class="viewcode-block" id="decode_access_token">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.auth.token.html#florist.api.auth.token.decode_access_token">[docs]</a>
-<span class="k">def</span> <span class="nf">decode_access_token</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secret_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">decode_access_token</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secret_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decode an access token.</span>
 

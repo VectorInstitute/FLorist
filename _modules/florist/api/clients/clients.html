@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.api.clients.clients - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -378,32 +378,32 @@
           <h1>Source code for florist.api.clients.clients</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Implementation of the clients and the Client enumeration.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">fl4health.clients.basic_client</span> <span class="kn">import</span> <span class="n">BasicClient</span>
-<span class="kn">from</span> <span class="nn">fl4health.clients.fed_prox_client</span> <span class="kn">import</span> <span class="n">FedProxClient</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.config</span> <span class="kn">import</span> <span class="n">narrow_dict_type</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.dataset</span> <span class="kn">import</span> <span class="n">TensorDataset</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.sampler</span> <span class="kn">import</span> <span class="n">DirichletLabelBasedSampler</span>
-<span class="kn">from</span> <span class="nn">flwr.common.typing</span> <span class="kn">import</span> <span class="n">Config</span>
-<span class="kn">from</span> <span class="nn">torch.nn.modules.loss</span> <span class="kn">import</span> <span class="n">_Loss</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.clients.basic_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasicClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.clients.fed_prox_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">FedProxClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.utils.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">narrow_dict_type</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.utils.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.utils.sampler</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirichletLabelBasedSampler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flwr.common.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn.modules.loss</span><span class="w"> </span><span class="kn">import</span> <span class="n">_Loss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.clients.optimizers</span> <span class="kn">import</span> <span class="n">Optimizer</span>
-<span class="kn">from</span> <span class="nn">florist.api.models.abstract</span> <span class="kn">import</span> <span class="n">LocalDataModel</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.strategies</span> <span class="kn">import</span> <span class="n">Strategy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.abstract</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalDataModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.servers.strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strategy</span>
 
 
 <div class="viewcode-block" id="LocalDataClient">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient">[docs]</a>
-<span class="k">class</span> <span class="nc">LocalDataClient</span><span class="p">(</span><span class="n">BasicClient</span><span class="p">):</span>  <span class="c1"># type: ignore[misc]</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LocalDataClient</span><span class="p">(</span><span class="n">BasicClient</span><span class="p">):</span>  <span class="c1"># type: ignore[misc]</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of a client that uses a model with data stored locally.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="LocalDataClient.set_model">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient.set_model">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LocalDataModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LocalDataModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the model to be used for training with local data.</span>
 
@@ -414,7 +414,7 @@
 
 <div class="viewcode-block" id="LocalDataClient.set_optimizer_type">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient.set_optimizer_type">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_optimizer_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimizer_type</span><span class="p">:</span> <span class="n">Optimizer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_optimizer_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimizer_type</span><span class="p">:</span> <span class="n">Optimizer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the type of the optimizer to be used for training.</span>
 
@@ -426,7 +426,7 @@
 
 <div class="viewcode-block" id="LocalDataClient.get_model">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient.get_model">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the model for training with local data.</span>
 
@@ -439,7 +439,7 @@
 
 <div class="viewcode-block" id="LocalDataClient.get_optimizer">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient.get_optimizer">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the optimizer for the model.</span>
 
@@ -454,7 +454,7 @@
 
 <div class="viewcode-block" id="LocalDataClient.get_data_loaders">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient.get_data_loaders">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">],</span> <span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">],</span> <span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the data loader for the model with local data.</span>
 
@@ -469,7 +469,7 @@
 
 <div class="viewcode-block" id="LocalDataClient.get_criterion">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.LocalDataClient.get_criterion">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Loss</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Loss</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the loss for the model.</span>
 
@@ -485,12 +485,12 @@
 
 <div class="viewcode-block" id="FedProxLocalDataClient">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.FedProxLocalDataClient">[docs]</a>
-<span class="k">class</span> <span class="nc">FedProxLocalDataClient</span><span class="p">(</span><span class="n">FedProxClient</span><span class="p">,</span> <span class="n">LocalDataClient</span><span class="p">):</span>  <span class="c1"># type: ignore[misc]</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FedProxLocalDataClient</span><span class="p">(</span><span class="n">FedProxClient</span><span class="p">,</span> <span class="n">LocalDataClient</span><span class="p">):</span>  <span class="c1"># type: ignore[misc]</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of the FedProx client that uses a model with data stored locally.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FedProxLocalDataClient.get_data_loaders">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.FedProxLocalDataClient.get_data_loaders">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">],</span> <span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_data_loaders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">],</span> <span class="n">DataLoader</span><span class="p">[</span><span class="n">TensorDataset</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the data loader for FedProx on model with data stored locally.</span>
 
@@ -510,7 +510,7 @@
 
 <div class="viewcode-block" id="Client">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.Client">[docs]</a>
-<span class="k">class</span> <span class="nc">Client</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Client</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enumeration of supported clients.&quot;&quot;&quot;</span>
 
     <span class="n">FEDAVG</span> <span class="o">=</span> <span class="s2">&quot;FedAvg&quot;</span>
@@ -518,7 +518,7 @@
 
 <div class="viewcode-block" id="Client.get_client_class">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.Client.get_client_class">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_client_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">LocalDataClient</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_client_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">LocalDataClient</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the class for this client.</span>
 
@@ -536,7 +536,7 @@
 <div class="viewcode-block" id="Client.list">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.Client.list">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List all the supported clients.</span>
 
@@ -548,7 +548,7 @@
 <div class="viewcode-block" id="Client.list_by_strategy">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.clients.clients.html#florist.api.clients.clients.Client.list_by_strategy">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">list_by_strategy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">strategy</span><span class="p">:</span> <span class="n">Strategy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_by_strategy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">strategy</span><span class="p">:</span> <span class="n">Strategy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List all the supported clients given a strategy.</span>
 

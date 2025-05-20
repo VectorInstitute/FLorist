@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.api.models.mnist - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -378,30 +378,30 @@
           <h1>Source code for florist.api.models.mnist</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Definitions for the MNIST model.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">f</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.dataset</span> <span class="kn">import</span> <span class="n">TensorDataset</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.load_data</span> <span class="kn">import</span> <span class="n">load_mnist_data</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.sampler</span> <span class="kn">import</span> <span class="n">LabelBasedSampler</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
-<span class="kn">from</span> <span class="nn">torch.nn.modules.loss</span> <span class="kn">import</span> <span class="n">_Loss</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
-<span class="kn">from</span> <span class="nn">torchvision.datasets</span> <span class="kn">import</span> <span class="n">MNIST</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">f</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.utils.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.utils.load_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_mnist_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.utils.sampler</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabelBasedSampler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn.modules.loss</span><span class="w"> </span><span class="kn">import</span> <span class="n">_Loss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">MNIST</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.models.abstract</span> <span class="kn">import</span> <span class="n">LocalDataModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.abstract</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalDataModel</span>
 
 
 <div class="viewcode-block" id="MnistNet">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.models.mnist.html#florist.api.models.mnist.MnistNet">[docs]</a>
-<span class="k">class</span> <span class="nc">MnistNet</span><span class="p">(</span><span class="n">LocalDataModel</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MnistNet</span><span class="p">(</span><span class="n">LocalDataModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of the Mnist model.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MnistNet.__init__">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.models.mnist.html#florist.api.models.mnist.MnistNet.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize an instance of MnistNet.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
@@ -413,7 +413,7 @@
 
 <div class="viewcode-block" id="MnistNet.forward">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.models.mnist.html#florist.api.models.mnist.MnistNet.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform a forward pass for the given tensor.</span>
 
@@ -429,7 +429,7 @@
 
 <div class="viewcode-block" id="MnistNet.get_data_loaders">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.models.mnist.html#florist.api.models.mnist.MnistNet.get_data_loaders">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_data_loaders</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_data_loaders</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -456,7 +456,7 @@
 
 <div class="viewcode-block" id="MnistNet.get_criterion">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.models.mnist.html#florist.api.models.mnist.MnistNet.get_criterion">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Loss</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Loss</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the loss for MNIST model.</span>
 

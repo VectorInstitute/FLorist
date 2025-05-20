@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.integration.api.auth.test_token - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,7 +376,7 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.integration.api.auth.test_token</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">florist.api.auth.token</span> <span class="kn">import</span> <span class="p">(</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.auth.token</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DEFAULT_PASSWORD</span><span class="p">,</span>
     <span class="n">DEFAULT_USERNAME</span><span class="p">,</span>
     <span class="n">_simple_hash</span><span class="p">,</span>
@@ -384,12 +384,12 @@
     <span class="n">make_default_server_user</span><span class="p">,</span>
     <span class="n">verify_password</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">florist.tests.integration.api.utils</span> <span class="kn">import</span> <span class="n">mock_request</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.tests.integration.api.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">mock_request</span>
 
 
 <div class="viewcode-block" id="test_make_default_client_user">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.auth.test_token.html#florist.tests.integration.api.auth.test_token.test_make_default_client_user">[docs]</a>
-<span class="k">def</span> <span class="nf">test_make_default_client_user</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_make_default_client_user</span><span class="p">():</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">make_default_client_user</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">DEFAULT_USERNAME</span>
     <span class="k">assert</span> <span class="n">verify_password</span><span class="p">(</span><span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">),</span> <span class="n">user</span><span class="o">.</span><span class="n">hashed_password</span><span class="p">)</span></div>
@@ -398,7 +398,7 @@
 
 <div class="viewcode-block" id="test_make_default_server_user">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.integration.api.auth.test_token.html#florist.tests.integration.api.auth.test_token.test_make_default_server_user">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">DEFAULT_USERNAME</span>
     <span class="k">assert</span> <span class="n">verify_password</span><span class="p">(</span><span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">),</span> <span class="n">user</span><span class="o">.</span><span class="n">hashed_password</span><span class="p">)</span></div>

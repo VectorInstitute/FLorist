@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.api.client - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -378,29 +378,29 @@
           <h1>Source code for florist.api.client</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;FLorist client FastAPI endpoints.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">signal</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">asynccontextmanager</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncGenerator</span>
-<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">uuid4</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">FastAPI</span>
-<span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.metrics</span> <span class="kn">import</span> <span class="n">Accuracy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">FastAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accuracy</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.auth.token</span> <span class="kn">import</span> <span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">make_default_client_user</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.clients</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.optimizers</span> <span class="kn">import</span> <span class="n">Optimizer</span>
-<span class="kn">from</span> <span class="nn">florist.api.db.client_entities</span> <span class="kn">import</span> <span class="n">ClientDAO</span><span class="p">,</span> <span class="n">UserDAO</span>
-<span class="kn">from</span> <span class="nn">florist.api.launchers.local</span> <span class="kn">import</span> <span class="n">launch_client</span>
-<span class="kn">from</span> <span class="nn">florist.api.models.models</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.logs</span> <span class="kn">import</span> <span class="n">get_client_log_file_path</span>
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">RedisMetricsReporter</span><span class="p">,</span> <span class="n">get_from_redis</span><span class="p">,</span> <span class="n">get_host_and_port_from_address</span>
-<span class="kn">from</span> <span class="nn">florist.api.routes.client.auth</span> <span class="kn">import</span> <span class="n">check_default_user_token</span>
-<span class="kn">from</span> <span class="nn">florist.api.routes.client.auth</span> <span class="kn">import</span> <span class="n">router</span> <span class="k">as</span> <span class="n">auth_router</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.auth.token</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">make_default_client_user</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.clients</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.client_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientDAO</span><span class="p">,</span> <span class="n">UserDAO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.launchers.local</span><span class="w"> </span><span class="kn">import</span> <span class="n">launch_client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.monitoring.logs</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_client_log_file_path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.monitoring.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedisMetricsReporter</span><span class="p">,</span> <span class="n">get_from_redis</span><span class="p">,</span> <span class="n">get_host_and_port_from_address</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.routes.client.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_default_user_token</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.routes.client.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">router</span> <span class="k">as</span> <span class="n">auth_router</span>
 
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;uvicorn.error&quot;</span><span class="p">)</span>
@@ -409,7 +409,7 @@
 <div class="viewcode-block" id="lifespan">
 <a class="viewcode-back" href="../../../reference/api/florist.api.client.html#florist.api.client.lifespan">[docs]</a>
 <span class="nd">@asynccontextmanager</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set up function for app startup and shutdown.&quot;&quot;&quot;</span>
     <span class="c1"># Create default user if it does not exist</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">UserDAO</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">):</span>
@@ -426,7 +426,7 @@
 <div class="viewcode-block" id="connect">
 <a class="viewcode-back" href="../../../reference/api/florist.api.client.html#florist.api.client.connect">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/api/client/connect&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">check_default_user_token</span><span class="p">)])</span>
-<span class="k">def</span> <span class="nf">connect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Confirm the client is up and ready to accept instructions.</span>
 
@@ -439,7 +439,7 @@
 <div class="viewcode-block" id="start">
 <a class="viewcode-back" href="../../../reference/api/florist.api.client.html#florist.api.client.start">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/api/client/start&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">check_default_user_token</span><span class="p">)])</span>
-<span class="k">def</span> <span class="nf">start</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span>
     <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">,</span>
@@ -502,7 +502,7 @@
 <div class="viewcode-block" id="check_status">
 <a class="viewcode-back" href="../../../reference/api/florist.api.client.html#florist.api.client.check_status">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/api/client/check_status/</span><span class="si">{client_uuid}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">check_default_user_token</span><span class="p">)])</span>
-<span class="k">def</span> <span class="nf">check_status</span><span class="p">(</span><span class="n">client_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">redis_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_status</span><span class="p">(</span><span class="n">client_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">redis_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve value at key client_uuid in redis if it exists.</span>
 
@@ -530,7 +530,7 @@
 <div class="viewcode-block" id="get_log">
 <a class="viewcode-back" href="../../../reference/api/florist.api.client.html#florist.api.client.get_log">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/api/client/get_log/</span><span class="si">{uuid}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">check_default_user_token</span><span class="p">)])</span>
-<span class="k">def</span> <span class="nf">get_log</span><span class="p">(</span><span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_log</span><span class="p">(</span><span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the contents of the logs for the given client uuid.</span>
 
@@ -560,7 +560,7 @@
 <div class="viewcode-block" id="stop">
 <a class="viewcode-back" href="../../../reference/api/florist.api.client.html#florist.api.client.stop">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/api/client/stop/</span><span class="si">{uuid}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">check_default_user_token</span><span class="p">)])</span>
-<span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stop the client with given UUID.</span>
 

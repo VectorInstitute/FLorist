@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.unit.api.models.test_models - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,20 +376,20 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.unit.api.models.test_models</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">florist.api.models.models</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">florist.api.models.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.mnist</span><span class="w"> </span><span class="kn">import</span> <span class="n">MnistNet</span>
 
 
 <div class="viewcode-block" id="test_get_model_class">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.models.test_models.html#florist.tests.unit.api.models.test_models.test_get_model_class">[docs]</a>
-<span class="k">def</span> <span class="nf">test_get_model_class</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_model_class</span><span class="p">():</span>
     <span class="k">assert</span> <span class="n">Model</span><span class="o">.</span><span class="n">MNIST</span><span class="o">.</span><span class="n">get_model_class</span><span class="p">()</span> <span class="o">==</span> <span class="n">MnistNet</span></div>
 
 
 
 <div class="viewcode-block" id="test_list">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.models.test_models.html#florist.tests.unit.api.models.test_models.test_list">[docs]</a>
-<span class="k">def</span> <span class="nf">test_list</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_list</span><span class="p">():</span>
     <span class="k">assert</span> <span class="n">Model</span><span class="o">.</span><span class="n">list</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="n">Model</span><span class="o">.</span><span class="n">MNIST</span><span class="o">.</span><span class="n">value</span><span class="p">]</span></div>
 
 </pre></div>

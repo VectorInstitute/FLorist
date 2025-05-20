@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.unit.api.models.test_mnist - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,18 +376,18 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.unit.api.models.test_mnist</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.sampler</span> <span class="kn">import</span> <span class="n">DirichletLabelBasedSampler</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.utils.sampler</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirichletLabelBasedSampler</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.models.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.mnist</span><span class="w"> </span><span class="kn">import</span> <span class="n">MnistNet</span>
 
 
 <div class="viewcode-block" id="test_get_data_loaders">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.models.test_mnist.html#florist.tests.unit.api.models.test_mnist.test_get_data_loaders">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.models.mnist.load_mnist_data&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_data_loaders</span><span class="p">(</span><span class="n">mock_load_mnist_data</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_data_loaders</span><span class="p">(</span><span class="n">mock_load_mnist_data</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
     <span class="n">test_train_loader</span> <span class="o">=</span> <span class="s2">&quot;test-train-loader&quot;</span>
     <span class="n">test_val_loader</span> <span class="o">=</span> <span class="s2">&quot;test-val-loader&quot;</span>
     <span class="n">mock_load_mnist_data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">test_train_loader</span><span class="p">,</span> <span class="n">test_val_loader</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -406,7 +406,7 @@
 
 <div class="viewcode-block" id="test_get_criterion">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.models.test_mnist.html#florist.tests.unit.api.models.test_mnist.test_get_criterion">[docs]</a>
-<span class="k">def</span> <span class="nf">test_get_criterion</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_criterion</span><span class="p">():</span>
     <span class="n">test_model</span> <span class="o">=</span> <span class="n">MnistNet</span><span class="p">()</span>
     <span class="n">criterion</span> <span class="o">=</span> <span class="n">test_model</span><span class="o">.</span><span class="n">get_criterion</span><span class="p">()</span>
 

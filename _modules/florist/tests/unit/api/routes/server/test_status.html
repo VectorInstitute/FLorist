@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.unit.api.routes.server.test_status - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,16 +376,16 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.unit.api.routes.server.test_status</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span>  <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span>  <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.routes.server.status</span> <span class="kn">import</span> <span class="n">check_status</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.routes.server.status</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_status</span>
 
 
 <div class="viewcode-block" id="test_check_status">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_status.html#florist.tests.unit.api.routes.server.test_status.test_check_status">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.status.redis&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_check_status</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_check_status</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">mock_redis_connection</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
     <span class="n">mock_redis_connection</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">info</span><span class="se">\&quot;</span><span class="s2">: </span><span class="se">\&quot;</span><span class="s2">test</span><span class="se">\&quot;</span><span class="s2">}&quot;</span>
 
@@ -404,7 +404,7 @@
 <div class="viewcode-block" id="test_check_status_not_found">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_status.html#florist.tests.unit.api.routes.server.test_status.test_check_status_not_found">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.status.redis&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_check_status_not_found</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_check_status_not_found</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">mock_redis_connection</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
     <span class="n">mock_redis_connection</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -424,7 +424,7 @@
 <div class="viewcode-block" id="test_check_status_fail_exception">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.unit.api.routes.server.test_status.html#florist.tests.unit.api.routes.server.test_status.test_check_status_fail_exception">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.routes.server.status.redis.Redis&quot;</span><span class="p">,</span> <span class="n">side_effect</span><span class="o">=</span><span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;test exception&quot;</span><span class="p">))</span>
-<span class="k">def</span> <span class="nf">test_check_status_fail_exception</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_check_status_fail_exception</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
     <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;test_uuid&quot;</span>
     <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>

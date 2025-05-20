@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.api.servers.config_parsers - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -378,24 +378,24 @@
           <h1>Source code for florist.api.servers.config_parsers</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Parsers for FL server configurations.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ast</span><span class="w"> </span><span class="kn">import</span> <span class="n">literal_eval</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
 
 <div class="viewcode-block" id="BasicConfigParser">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.BasicConfigParser">[docs]</a>
-<span class="k">class</span> <span class="nc">BasicConfigParser</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BasicConfigParser</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parser for basic server configurations.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BasicConfigParser.mandatory_fields">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.BasicConfigParser.mandatory_fields">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">mandatory_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mandatory_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Define the mandatory fields for basic server configuration.</span>
 
@@ -409,7 +409,7 @@
 <div class="viewcode-block" id="BasicConfigParser.parse">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.BasicConfigParser.parse">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config_json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config_json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse a configuration JSON string into a dictionary.</span>
 
@@ -438,13 +438,13 @@
 
 <div class="viewcode-block" id="FedProxConfigParser">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.FedProxConfigParser">[docs]</a>
-<span class="k">class</span> <span class="nc">FedProxConfigParser</span><span class="p">(</span><span class="n">BasicConfigParser</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FedProxConfigParser</span><span class="p">(</span><span class="n">BasicConfigParser</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parser for FedProx server configurations.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FedProxConfigParser.mandatory_fields">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.FedProxConfigParser.mandatory_fields">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">mandatory_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mandatory_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Define the mandatory fields for FedProx configuration.</span>
 
@@ -466,7 +466,7 @@
 
 <div class="viewcode-block" id="ConfigParser">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.ConfigParser">[docs]</a>
-<span class="k">class</span> <span class="nc">ConfigParser</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigParser</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum to define the types of server configuration parsers.&quot;&quot;&quot;</span>
 
     <span class="n">BASIC</span> <span class="o">=</span> <span class="s2">&quot;BASIC&quot;</span>
@@ -475,7 +475,7 @@
 <div class="viewcode-block" id="ConfigParser.class_for_parser">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.ConfigParser.class_for_parser">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">class_for_parser</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config_parser</span><span class="p">:</span> <span class="n">Self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">BasicConfigParser</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">class_for_parser</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config_parser</span><span class="p">:</span> <span class="n">Self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">BasicConfigParser</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the class for a given config parser.</span>
 
@@ -494,7 +494,7 @@
 <div class="viewcode-block" id="ConfigParser.list">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.ConfigParser.list">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List all the supported config parsers.</span>
 
@@ -507,7 +507,7 @@
 
 <div class="viewcode-block" id="IncompleteConfigError">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.config_parsers.html#florist.api.servers.config_parsers.IncompleteConfigError">[docs]</a>
-<span class="k">class</span> <span class="nc">IncompleteConfigError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IncompleteConfigError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Defines errors in server config strings that have incomplete information.&quot;&quot;&quot;</span>
 
     <span class="k">pass</span></div>

@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.unit.api.launchers.test_local - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,19 +376,19 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.unit.api.launchers.test_local</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">ANY</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">ANY</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.launchers.local</span> <span class="kn">import</span> <span class="n">launch_local_server</span>
-<span class="kn">from</span> <span class="nn">florist.api.models.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">RedisMetricsReporter</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.strategies</span> <span class="kn">import</span> <span class="n">ServerFactory</span><span class="p">,</span> <span class="n">get_fedavg_server</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.launchers.local</span><span class="w"> </span><span class="kn">import</span> <span class="n">launch_local_server</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.mnist</span><span class="w"> </span><span class="kn">import</span> <span class="n">MnistNet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.monitoring.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedisMetricsReporter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.servers.strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerFactory</span><span class="p">,</span> <span class="n">get_fedavg_server</span>
 
 
 <div class="viewcode-block" id="test_launch_local_server">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.launchers.test_local.html#florist.tests.unit.api.launchers.test_local.test_launch_local_server">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.launchers.local.launch_server&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.launchers.local.uuid&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_launch_local_server</span><span class="p">(</span><span class="n">mock_uuid</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_launch_server</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_launch_local_server</span><span class="p">(</span><span class="n">mock_uuid</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_launch_server</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_n_clients</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">test_server_address</span> <span class="o">=</span> <span class="s2">&quot;test-server-address&quot;</span>
     <span class="n">test_server_config</span> <span class="o">=</span> <span class="p">{</span>

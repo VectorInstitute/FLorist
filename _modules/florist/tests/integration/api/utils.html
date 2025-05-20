@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.integration.api.utils - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,34 +376,34 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.integration.api.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">contextlib</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">pytest</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">uvicorn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
 
-<span class="kn">from</span> <span class="nn">motor.motor_asyncio</span> <span class="kn">import</span> <span class="n">AsyncIOMotorClient</span>
-<span class="kn">from</span> <span class="nn">starlette.requests</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">motor.motor_asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIOMotorClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">starlette.requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.server</span> <span class="kn">import</span> <span class="n">MONGODB_URI</span>
-<span class="kn">from</span> <span class="nn">florist.api.db.client_entities</span> <span class="kn">import</span> <span class="n">EntityDAO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">MONGODB_URI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.client_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntityDAO</span>
 
 
 <div class="viewcode-block" id="TestUvicornServer">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.utils.html#florist.tests.integration.api.utils.TestUvicornServer">[docs]</a>
-<span class="k">class</span> <span class="nc">TestUvicornServer</span><span class="p">(</span><span class="n">uvicorn</span><span class="o">.</span><span class="n">Server</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestUvicornServer</span><span class="p">(</span><span class="n">uvicorn</span><span class="o">.</span><span class="n">Server</span><span class="p">):</span>
 <div class="viewcode-block" id="TestUvicornServer.install_signal_handlers">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.utils.html#florist.tests.integration.api.utils.TestUvicornServer.install_signal_handlers">[docs]</a>
-    <span class="k">def</span> <span class="nf">install_signal_handlers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">install_signal_handlers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="TestUvicornServer.run_in_thread">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.utils.html#florist.tests.integration.api.utils.TestUvicornServer.run_in_thread">[docs]</a>
     <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
-    <span class="k">def</span> <span class="nf">run_in_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_in_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">)</span>
         <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
@@ -419,8 +419,8 @@
 
 <div class="viewcode-block" id="MockApp">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.utils.html#florist.tests.integration.api.utils.MockApp">[docs]</a>
-<span class="k">class</span> <span class="nc">MockApp</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MockApp</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_client</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">MONGODB_URI</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_client</span><span class="p">[</span><span class="n">database_name</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clients_auth_tokens</span> <span class="o">=</span> <span class="p">{}</span></div>
@@ -429,17 +429,17 @@
 
 <div class="viewcode-block" id="MockRequest">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.utils.html#florist.tests.integration.api.utils.MockRequest">[docs]</a>
-<span class="k">class</span> <span class="nc">MockRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">MockApp</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MockRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">MockApp</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;http&quot;</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_app</span> <span class="o">=</span> <span class="n">app</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_app</span> <span class="o">=</span> <span class="n">value</span></div>
 
 
@@ -451,7 +451,7 @@
 <div class="viewcode-block" id="mock_request">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.utils.html#florist.tests.integration.api.utils.mock_request">[docs]</a>
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">mock_request</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MockRequest</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">mock_request</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MockRequest</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating test detabase &#39;</span><span class="si">{</span><span class="n">TEST_DATABASE_NAME</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">MockApp</span><span class="p">(</span><span class="n">TEST_DATABASE_NAME</span><span class="p">)</span>
     <span class="n">request</span> <span class="o">=</span> <span class="n">MockRequest</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>

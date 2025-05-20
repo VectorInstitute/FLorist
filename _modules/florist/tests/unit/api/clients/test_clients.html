@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.unit.api.clients.test_clients - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,17 +376,17 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.unit.api.clients.test_clients</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">ANY</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">ANY</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.models.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.clients</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">LocalDataClient</span><span class="p">,</span> <span class="n">FedProxLocalDataClient</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.optimizers</span> <span class="kn">import</span> <span class="n">Optimizer</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.strategies</span> <span class="kn">import</span> <span class="n">Strategy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.mnist</span><span class="w"> </span><span class="kn">import</span> <span class="n">MnistNet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.clients</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">LocalDataClient</span><span class="p">,</span> <span class="n">FedProxLocalDataClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.servers.strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strategy</span>
 
 
 <div class="viewcode-block" id="test_get_client_class">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_clients.html#florist.tests.unit.api.clients.test_clients.test_get_client_class">[docs]</a>
-<span class="k">def</span> <span class="nf">test_get_client_class</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_client_class</span><span class="p">():</span>
     <span class="k">assert</span> <span class="n">Client</span><span class="o">.</span><span class="n">FEDAVG</span><span class="o">.</span><span class="n">get_client_class</span><span class="p">()</span> <span class="o">==</span> <span class="n">LocalDataClient</span>
     <span class="k">assert</span> <span class="n">Client</span><span class="o">.</span><span class="n">FEDPROX</span><span class="o">.</span><span class="n">get_client_class</span><span class="p">()</span> <span class="o">==</span> <span class="n">FedProxLocalDataClient</span></div>
 
@@ -394,14 +394,14 @@
 
 <div class="viewcode-block" id="test_list">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_clients.html#florist.tests.unit.api.clients.test_clients.test_list">[docs]</a>
-<span class="k">def</span> <span class="nf">test_list</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_list</span><span class="p">():</span>
     <span class="k">assert</span> <span class="n">Client</span><span class="o">.</span><span class="n">list</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="n">Client</span><span class="o">.</span><span class="n">FEDAVG</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Client</span><span class="o">.</span><span class="n">FEDPROX</span><span class="o">.</span><span class="n">value</span><span class="p">]</span></div>
 
 
 
 <div class="viewcode-block" id="test_list_by_strategy">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_clients.html#florist.tests.unit.api.clients.test_clients.test_list_by_strategy">[docs]</a>
-<span class="k">def</span> <span class="nf">test_list_by_strategy</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_list_by_strategy</span><span class="p">():</span>
     <span class="k">assert</span> <span class="n">Client</span><span class="o">.</span><span class="n">list_by_strategy</span><span class="p">(</span><span class="n">Strategy</span><span class="o">.</span><span class="n">FEDAVG</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="n">Client</span><span class="o">.</span><span class="n">FEDAVG</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
     <span class="k">assert</span> <span class="n">Client</span><span class="o">.</span><span class="n">list_by_strategy</span><span class="p">(</span><span class="n">Strategy</span><span class="o">.</span><span class="n">FEDPROX</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="n">Client</span><span class="o">.</span><span class="n">FEDPROX</span><span class="o">.</span><span class="n">value</span><span class="p">]</span></div>
 
@@ -410,7 +410,7 @@
 <div class="viewcode-block" id="test_local_data_model_get_data_loaders">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_clients.html#florist.tests.unit.api.clients.test_clients.test_local_data_model_get_data_loaders">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.models.mnist.load_mnist_data&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_local_data_model_get_data_loaders</span><span class="p">(</span><span class="n">mock_load_mnist_data</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_local_data_model_get_data_loaders</span><span class="p">(</span><span class="n">mock_load_mnist_data</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
     <span class="n">test_data_path</span> <span class="o">=</span> <span class="s2">&quot;test-data-path&quot;</span>
     <span class="n">test_device</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
     <span class="n">test_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">}</span>
@@ -432,7 +432,7 @@
 <div class="viewcode-block" id="test_local_data_model_get_optimizer_type">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_clients.html#florist.tests.unit.api.clients.test_clients.test_local_data_model_get_optimizer_type">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.clients.optimizers.torch&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_local_data_model_get_optimizer_type</span><span class="p">(</span><span class="n">mock_torch</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_local_data_model_get_optimizer_type</span><span class="p">(</span><span class="n">mock_torch</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
     <span class="n">test_optimizer</span> <span class="o">=</span> <span class="s2">&quot;test-optimizer&quot;</span>
     <span class="n">mock_torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">test_optimizer</span>
     <span class="n">test_client</span> <span class="o">=</span> <span class="n">LocalDataClient</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test-data-path&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[],</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
@@ -454,7 +454,7 @@
 <div class="viewcode-block" id="test_local_data_model_get_criterion">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_clients.html#florist.tests.unit.api.clients.test_clients.test_local_data_model_get_criterion">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.models.mnist.torch&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_local_data_model_get_criterion</span><span class="p">(</span><span class="n">mock_torch</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_local_data_model_get_criterion</span><span class="p">(</span><span class="n">mock_torch</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
     <span class="n">test_criterion</span> <span class="o">=</span> <span class="s2">&quot;test-criterion&quot;</span>
     <span class="n">mock_torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">test_criterion</span>
     <span class="n">test_client</span> <span class="o">=</span> <span class="n">LocalDataClient</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test-data-path&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[],</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
@@ -470,7 +470,7 @@
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.clients.test_clients.html#florist.tests.unit.api.clients.test_clients.test_fedprox_local_data_model_get_data_loaders">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.models.mnist.load_mnist_data&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.clients.clients.DirichletLabelBasedSampler&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_fedprox_local_data_model_get_data_loaders</span><span class="p">(</span><span class="n">mock_sampler</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_load_mnist_data</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_fedprox_local_data_model_get_data_loaders</span><span class="p">(</span><span class="n">mock_sampler</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_load_mnist_data</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
     <span class="n">test_data_path</span> <span class="o">=</span> <span class="s2">&quot;test-data-path&quot;</span>
     <span class="n">test_device</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
     <span class="n">test_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">}</span>

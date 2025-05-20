@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.api.servers.strategies - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -378,24 +378,24 @@
           <h1>Source code for florist.api.servers.strategies</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Definitions for the strategies, strategy enumeration and server constructors.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TypeAlias</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TypeAlias</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">fl4health.client_managers.base_sampling_manager</span> <span class="kn">import</span> <span class="n">SimpleClientManager</span>
-<span class="kn">from</span> <span class="nn">fl4health.reporting.base_reporter</span> <span class="kn">import</span> <span class="n">BaseReporter</span>
-<span class="kn">from</span> <span class="nn">fl4health.servers.adaptive_constraint_servers.fedprox_server</span> <span class="kn">import</span> <span class="n">FedProxServer</span>
-<span class="kn">from</span> <span class="nn">fl4health.servers.base_server</span> <span class="kn">import</span> <span class="n">FlServer</span>
-<span class="kn">from</span> <span class="nn">fl4health.strategies.fedavg_with_adaptive_constraint</span> <span class="kn">import</span> <span class="n">FedAvgWithAdaptiveConstraint</span>
-<span class="kn">from</span> <span class="nn">fl4health.utils.metric_aggregation</span> <span class="kn">import</span> <span class="n">evaluate_metrics_aggregation_fn</span><span class="p">,</span> <span class="n">fit_metrics_aggregation_fn</span>
-<span class="kn">from</span> <span class="nn">flwr.common</span> <span class="kn">import</span> <span class="n">Scalar</span>
-<span class="kn">from</span> <span class="nn">flwr.common.parameter</span> <span class="kn">import</span> <span class="n">ndarrays_to_parameters</span>
-<span class="kn">from</span> <span class="nn">flwr.server.strategy</span> <span class="kn">import</span> <span class="n">FedAvg</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.client_managers.base_sampling_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleClientManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.metrics.metric_aggregation</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_metrics_aggregation_fn</span><span class="p">,</span> <span class="n">fit_metrics_aggregation_fn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.reporting.base_reporter</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseReporter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.servers.adaptive_constraint_servers.fedprox_server</span><span class="w"> </span><span class="kn">import</span> <span class="n">FedProxServer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.servers.base_server</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlServer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.strategies.fedavg_with_adaptive_constraint</span><span class="w"> </span><span class="kn">import</span> <span class="n">FedAvgWithAdaptiveConstraint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flwr.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scalar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flwr.common.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarrays_to_parameters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flwr.server.strategy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FedAvg</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.servers.config_parsers</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.servers.config_parsers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigParser</span>
 
 
 <span class="n">GetServerFunction</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseReporter</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">FlServer</span><span class="p">]</span>
@@ -404,7 +404,7 @@
 
 <div class="viewcode-block" id="Strategy">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.strategies.html#florist.api.servers.strategies.Strategy">[docs]</a>
-<span class="k">class</span> <span class="nc">Strategy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Strategy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The strategies that can be picked for training.&quot;&quot;&quot;</span>
 
     <span class="n">FEDAVG</span> <span class="o">=</span> <span class="s2">&quot;FedAvg&quot;</span>
@@ -412,7 +412,7 @@
 
 <div class="viewcode-block" id="Strategy.get_config_parser">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.strategies.html#florist.api.servers.strategies.Strategy.get_config_parser">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_config_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConfigParser</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_config_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConfigParser</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the config parser for this strategy.</span>
 
@@ -429,7 +429,7 @@
 
 <div class="viewcode-block" id="Strategy.get_server_factory">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.strategies.html#florist.api.servers.strategies.Strategy.get_server_factory">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_server_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ServerFactory&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_server_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ServerFactory&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the server factory instance for this strategy.</span>
 
@@ -448,7 +448,7 @@
 <div class="viewcode-block" id="Strategy.list">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.strategies.html#florist.api.servers.strategies.Strategy.list">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List all the supported strategies.</span>
 
@@ -461,12 +461,12 @@
 
 <div class="viewcode-block" id="ServerFactory">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.strategies.html#florist.api.servers.strategies.ServerFactory">[docs]</a>
-<span class="k">class</span> <span class="nc">ServerFactory</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServerFactory</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory class that will provide the server constructor.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ServerFactory.__init__">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.strategies.html#florist.api.servers.strategies.ServerFactory.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_server_function</span><span class="p">:</span> <span class="n">GetServerFunction</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_server_function</span><span class="p">:</span> <span class="n">GetServerFunction</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a ServerFactory.</span>
 
@@ -478,7 +478,7 @@
 
 <div class="viewcode-block" id="ServerFactory.get_server_constructor">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.strategies.html#florist.api.servers.strategies.ServerFactory.get_server_constructor">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_server_constructor</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_server_constructor</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
         <span class="n">n_clients</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -497,7 +497,7 @@
         <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_server_function</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">n_clients</span><span class="p">,</span> <span class="n">reporters</span><span class="p">,</span> <span class="n">server_config</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the self instance is equal to the given other instance.</span>
 
@@ -515,7 +515,7 @@
 
 <div class="viewcode-block" id="fit_config_function">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.strategies.html#florist.api.servers.strategies.fit_config_function">[docs]</a>
-<span class="k">def</span> <span class="nf">fit_config_function</span><span class="p">(</span><span class="n">server_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Scalar</span><span class="p">],</span> <span class="n">current_server_round</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Scalar</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_config_function</span><span class="p">(</span><span class="n">server_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Scalar</span><span class="p">],</span> <span class="n">current_server_round</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Scalar</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produce the fit config dictionary.</span>
 
@@ -531,7 +531,7 @@
 
 <div class="viewcode-block" id="get_fedavg_server">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.strategies.html#florist.api.servers.strategies.get_fedavg_server">[docs]</a>
-<span class="k">def</span> <span class="nf">get_fedavg_server</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fedavg_server</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
     <span class="n">n_clients</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">reporters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseReporter</span><span class="p">],</span>
@@ -565,7 +565,7 @@
 
 <div class="viewcode-block" id="get_fedprox_server">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.servers.strategies.html#florist.api.servers.strategies.get_fedprox_server">[docs]</a>
-<span class="k">def</span> <span class="nf">get_fedprox_server</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fedprox_server</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
     <span class="n">n_clients</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">reporters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseReporter</span><span class="p">],</span>

@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.integration.api.routes.server.test_auth - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,13 +376,13 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.integration.api.routes.server.test_auth</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">fastapi.security</span> <span class="kn">import</span> <span class="n">OAuth2PasswordRequestForm</span>
-<span class="kn">from</span> <span class="nn">pytest</span> <span class="kn">import</span> <span class="n">raises</span>
-<span class="kn">import</span> <span class="nn">uvicorn</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.security</span><span class="w"> </span><span class="kn">import</span> <span class="n">OAuth2PasswordRequestForm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytest</span><span class="w"> </span><span class="kn">import</span> <span class="n">raises</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.auth.token</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.auth.token</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">make_default_server_user</span><span class="p">,</span>
     <span class="n">DEFAULT_USERNAME</span><span class="p">,</span>
     <span class="n">DEFAULT_PASSWORD</span><span class="p">,</span>
@@ -392,17 +392,17 @@
     <span class="n">create_access_token</span><span class="p">,</span>
     <span class="n">Token</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">florist.api.db.server_entities</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">ClientInfo</span>
-<span class="kn">from</span> <span class="nn">florist.api.db.client_entities</span> <span class="kn">import</span> <span class="n">UserDAO</span>
-<span class="kn">from</span> <span class="nn">florist.api.routes.server.auth</span> <span class="kn">import</span> <span class="n">login_for_access_token</span><span class="p">,</span> <span class="n">check_default_user_token</span><span class="p">,</span> <span class="n">get_client_token</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.server_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">ClientInfo</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.client_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserDAO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.routes.server.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_for_access_token</span><span class="p">,</span> <span class="n">check_default_user_token</span><span class="p">,</span> <span class="n">get_client_token</span>
 
-<span class="kn">from</span> <span class="nn">florist.tests.integration.api.utils</span> <span class="kn">import</span> <span class="n">TestUvicornServer</span>
-<span class="kn">from</span> <span class="nn">florist.tests.integration.api.utils</span> <span class="kn">import</span> <span class="n">mock_request</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.tests.integration.api.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestUvicornServer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.tests.integration.api.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">mock_request</span>
 
 
 <div class="viewcode-block" id="test_login_for_access_token_success">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_login_for_access_token_success">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_login_for_access_token_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_login_for_access_token_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="n">target_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span> <span class="n">TOKEN_EXPIRATION_TIMEDELTA</span>
     <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
@@ -424,7 +424,7 @@
 
 <div class="viewcode-block" id="test_login_for_access_token_failure">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_login_for_access_token_failure">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_login_for_access_token_failure</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_login_for_access_token_failure</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
 
@@ -439,7 +439,7 @@
 
 <div class="viewcode-block" id="test_login_for_access_token_failure_user_not_found">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_login_for_access_token_failure_user_not_found">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_login_for_access_token_failure_user_not_found</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_login_for_access_token_failure_user_not_found</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="n">wrong_username</span> <span class="o">=</span> <span class="s2">&quot;some_username&quot;</span>
     <span class="n">form_data</span> <span class="o">=</span> <span class="n">OAuth2PasswordRequestForm</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">wrong_username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;some password&quot;</span><span class="p">))</span>
     <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -452,7 +452,7 @@
 
 <div class="viewcode-block" id="test_check_token_success">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_check_token_success">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_check_token_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_check_token_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">create_access_token</span><span class="p">({</span><span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">},</span> <span class="n">user</span><span class="o">.</span><span class="n">secret_key</span><span class="p">)</span>
@@ -466,7 +466,7 @@
 
 <div class="viewcode-block" id="test_check_token_failure_user_not_found">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_check_token_failure_user_not_found">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_check_token_failure_user_not_found</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_check_token_failure_user_not_found</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">create_access_token</span><span class="p">({</span><span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="s2">&quot;some_username&quot;</span><span class="p">},</span> <span class="s2">&quot;some_key&quot;</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -479,7 +479,7 @@
 
 <div class="viewcode-block" id="test_check_token_failure_wrong_username">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_check_token_failure_wrong_username">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_check_token_failure_wrong_username</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_check_token_failure_wrong_username</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">create_access_token</span><span class="p">({</span><span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="s2">&quot;wrong_username&quot;</span><span class="p">},</span> <span class="s2">&quot;wrong_key&quot;</span><span class="p">)</span>
@@ -494,7 +494,7 @@
 
 <div class="viewcode-block" id="test_check_token_failure_invalid_token">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_check_token_failure_invalid_token">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_check_token_failure_invalid_token</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_check_token_failure_invalid_token</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">create_access_token</span><span class="p">({</span><span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">},</span> <span class="s2">&quot;wrong_key&quot;</span><span class="p">)</span>
@@ -509,7 +509,7 @@
 
 <div class="viewcode-block" id="test_get_client_token_success">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_get_client_token_success">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_client_token_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_get_client_token_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="n">test_client_host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
     <span class="n">test_client_port</span> <span class="o">=</span> <span class="mi">8001</span>
     <span class="n">target_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span> <span class="n">TOKEN_EXPIRATION_TIMEDELTA</span>
@@ -539,7 +539,7 @@
 
 <div class="viewcode-block" id="test_get_client_token_success_existing_invalid_token">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_get_client_token_success_existing_invalid_token">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_client_token_success_existing_invalid_token</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_get_client_token_success_existing_invalid_token</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="n">target_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span> <span class="n">TOKEN_EXPIRATION_TIMEDELTA</span>
     <span class="n">test_client_host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
     <span class="n">test_client_port</span> <span class="o">=</span> <span class="mi">8001</span>
@@ -573,7 +573,7 @@
 
 <div class="viewcode-block" id="test_get_client_token_failure_unable_to_connect">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_get_client_token_failure_unable_to_connect">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_client_token_failure_unable_to_connect</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_get_client_token_failure_unable_to_connect</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="n">test_client_info</span> <span class="o">=</span> <span class="n">ClientInfo</span><span class="p">(</span>
         <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-1&quot;</span><span class="p">,</span>
         <span class="n">service_address</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;0.0.0.0:1337&quot;</span><span class="p">,</span>

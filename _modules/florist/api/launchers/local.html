@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.api.launchers.local - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -378,23 +378,23 @@
           <h1>Source code for florist.api.launchers.local</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Launcher functions for local clients and servers.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Process</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 
-<span class="kn">import</span> <span class="nn">flwr</span> <span class="k">as</span> <span class="nn">fl</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">fl4health.clients.basic_client</span> <span class="kn">import</span> <span class="n">BasicClient</span>
-<span class="kn">from</span> <span class="nn">fl4health.servers.base_server</span> <span class="kn">import</span> <span class="n">FlServer</span>
-<span class="kn">from</span> <span class="nn">flwr.common</span> <span class="kn">import</span> <span class="n">Scalar</span>
-<span class="kn">from</span> <span class="nn">flwr.server</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">flwr</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.clients.basic_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasicClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.servers.base_server</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlServer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flwr.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scalar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flwr.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerConfig</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.logs</span> <span class="kn">import</span> <span class="n">get_server_log_file_path</span>
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">RedisMetricsReporter</span><span class="p">,</span> <span class="n">get_host_and_port_from_address</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.strategies</span> <span class="kn">import</span> <span class="n">ServerFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.monitoring.logs</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_server_log_file_path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.monitoring.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedisMetricsReporter</span><span class="p">,</span> <span class="n">get_host_and_port_from_address</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.servers.strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerFactory</span>
 
 
 <span class="n">DEFAULT_FORMATTER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(levelname)s</span><span class="s2"> </span><span class="si">%(name)s</span><span class="s2"> </span><span class="si">%(asctime)s</span><span class="s2"> | </span><span class="si">%(filename)s</span><span class="s2">:</span><span class="si">%(lineno)d</span><span class="s2"> | </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -402,7 +402,7 @@
 
 <div class="viewcode-block" id="redirect_logging_from_console_to_file">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.local.html#florist.api.launchers.local.redirect_logging_from_console_to_file">[docs]</a>
-<span class="k">def</span> <span class="nf">redirect_logging_from_console_to_file</span><span class="p">(</span><span class="n">log_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">redirect_logging_from_console_to_file</span><span class="p">(</span><span class="n">log_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Redirect loggers outputting to console to specified file.</span>
 
@@ -425,7 +425,7 @@
 
 <div class="viewcode-block" id="start_server">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.local.html#florist.api.launchers.local.start_server">[docs]</a>
-<span class="k">def</span> <span class="nf">start_server</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">start_server</span><span class="p">(</span>
     <span class="n">server_constructor</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">FlServer</span><span class="p">],</span>
     <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">n_server_rounds</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -457,7 +457,7 @@
 
 <div class="viewcode-block" id="start_client">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.local.html#florist.api.launchers.local.start_client">[docs]</a>
-<span class="k">def</span> <span class="nf">start_client</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">BasicClient</span><span class="p">,</span> <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_log_file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">start_client</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">BasicClient</span><span class="p">,</span> <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_log_file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start client. Redirects logging to console, stdout and stderr to file.</span>
 
@@ -478,7 +478,7 @@
 
 <div class="viewcode-block" id="launch_server">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.local.html#florist.api.launchers.local.launch_server">[docs]</a>
-<span class="k">def</span> <span class="nf">launch_server</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">launch_server</span><span class="p">(</span>
     <span class="n">server_constructor</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">FlServer</span><span class="p">],</span>
     <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">n_server_rounds</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -516,7 +516,7 @@
 
 <div class="viewcode-block" id="launch_client">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.local.html#florist.api.launchers.local.launch_client">[docs]</a>
-<span class="k">def</span> <span class="nf">launch_client</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">BasicClient</span><span class="p">,</span> <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_log_file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Process</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">launch_client</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">BasicClient</span><span class="p">,</span> <span class="n">server_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_log_file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Process</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spawn a process that starts FL client.</span>
 
@@ -533,7 +533,7 @@
 
 <div class="viewcode-block" id="launch_local_server">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.launchers.local.html#florist.api.launchers.local.launch_local_server">[docs]</a>
-<span class="k">def</span> <span class="nf">launch_local_server</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">launch_local_server</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
     <span class="n">server_factory</span><span class="p">:</span> <span class="n">ServerFactory</span><span class="p">,</span>
     <span class="n">server_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Scalar</span><span class="p">],</span>

@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.unit.api.monitoring.test_metrics - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,16 +376,16 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.unit.api.monitoring.test_metrics</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">pytest</span> <span class="kn">import</span> <span class="n">raises</span>
-<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">patch</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytest</span><span class="w"> </span><span class="kn">import</span> <span class="n">raises</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">patch</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="n">DateTimeEncoder</span>
-<span class="kn">from</span> <span class="nn">freezegun</span> <span class="kn">import</span> <span class="n">freeze_time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.monitoring.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">DateTimeEncoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">freezegun</span><span class="w"> </span><span class="kn">import</span> <span class="n">freeze_time</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.monitoring.metrics</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.monitoring.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">get_from_redis</span><span class="p">,</span>
     <span class="n">get_host_and_port_from_address</span><span class="p">,</span>
     <span class="n">get_subscriber</span><span class="p">,</span>
@@ -398,7 +398,7 @@
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_report">[docs]</a>
 <span class="nd">@freeze_time</span><span class="p">(</span><span class="s2">&quot;2012-12-11 10:09:08&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis.Redis&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_report</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_report</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">mock_redis_connection</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
     <span class="n">mock_redis</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_redis_connection</span>
 
@@ -419,7 +419,7 @@
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_report_at_round">[docs]</a>
 <span class="nd">@freeze_time</span><span class="p">(</span><span class="s2">&quot;2012-12-11 10:09:08&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis.Redis&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_report_at_round</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_report_at_round</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">mock_redis_connection</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
     <span class="n">mock_redis</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_redis_connection</span>
 
@@ -446,7 +446,7 @@
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_dump_without_existing_connection">[docs]</a>
 <span class="nd">@freeze_time</span><span class="p">(</span><span class="s2">&quot;2012-12-11 10:09:08&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis.Redis&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_dump_without_existing_connection</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_dump_without_existing_connection</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">mock_redis_connection</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
     <span class="n">mock_redis</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_redis_connection</span>
 
@@ -476,7 +476,7 @@
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_dump_does_not_save_duplicate">[docs]</a>
 <span class="nd">@freeze_time</span><span class="p">(</span><span class="s2">&quot;2012-12-11 10:09:08&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis.Redis&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_dump_does_not_save_duplicate</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_dump_does_not_save_duplicate</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">mock_redis_connection</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
     <span class="n">mock_redis</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_redis_connection</span>
 
@@ -505,7 +505,7 @@
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_dump_with_existing_connection">[docs]</a>
 <span class="nd">@freeze_time</span><span class="p">(</span><span class="s2">&quot;2012-12-11 10:09:08&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis.Redis&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_dump_with_existing_connection</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_dump_with_existing_connection</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">mock_redis_connection</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
 
     <span class="n">test_run_id</span> <span class="o">=</span> <span class="s2">&quot;123&quot;</span>
@@ -526,7 +526,7 @@
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_wait_for_metric_success">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.time&quot;</span><span class="p">)</span>  <span class="c1"># just so time.sleep does not actually sleep</span>
-<span class="k">def</span> <span class="nf">test_wait_for_metric_success</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_wait_for_metric_success</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;uuid&quot;</span>
     <span class="n">test_metric</span> <span class="o">=</span> <span class="s2">&quot;test-metric&quot;</span>
     <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;test-redis-host&quot;</span>
@@ -548,7 +548,7 @@
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_wait_for_metric_success_with_retry">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.time&quot;</span><span class="p">)</span>  <span class="c1"># just so time.sleep does not actually sleep</span>
-<span class="k">def</span> <span class="nf">test_wait_for_metric_success_with_retry</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_wait_for_metric_success_with_retry</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;uuid&quot;</span>
     <span class="n">test_metric</span> <span class="o">=</span> <span class="s2">&quot;test-metric&quot;</span>
     <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;test-redis-host&quot;</span>
@@ -577,7 +577,7 @@
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_wait_for_metric_fail_max_retries">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis&quot;</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.time&quot;</span><span class="p">)</span>  <span class="c1"># just so time.sleep does not actually sleep</span>
-<span class="k">def</span> <span class="nf">test_wait_for_metric_fail_max_retries</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_wait_for_metric_fail_max_retries</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_uuid</span> <span class="o">=</span> <span class="s2">&quot;uuid&quot;</span>
     <span class="n">test_metric</span> <span class="o">=</span> <span class="s2">&quot;test-metric&quot;</span>
     <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;test-redis-host&quot;</span>
@@ -596,7 +596,7 @@
 <div class="viewcode-block" id="test_get_subscriber">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_get_subscriber">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_subscriber</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_subscriber</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_channel</span> <span class="o">=</span> <span class="s2">&quot;test-channel&quot;</span>
     <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;test-redis-host&quot;</span>
     <span class="n">test_redis_port</span> <span class="o">=</span> <span class="mi">1234</span>
@@ -619,7 +619,7 @@
 <div class="viewcode-block" id="test_get_from_redis">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_get_from_redis">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_from_redis</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_from_redis</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;test-name&quot;</span>
     <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;test-redis-host&quot;</span>
     <span class="n">test_redis_port</span> <span class="o">=</span> <span class="mi">1234</span>
@@ -641,7 +641,7 @@
 <div class="viewcode-block" id="test_get_from_redis_empty">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_get_from_redis_empty">[docs]</a>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;florist.api.monitoring.metrics.redis&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_from_redis_empty</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_from_redis_empty</span><span class="p">(</span><span class="n">mock_redis</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;test-name&quot;</span>
     <span class="n">test_redis_host</span> <span class="o">=</span> <span class="s2">&quot;test-redis-host&quot;</span>
     <span class="n">test_redis_port</span> <span class="o">=</span> <span class="mi">1234</span>
@@ -661,7 +661,7 @@
 
 <div class="viewcode-block" id="test_get_host_and_port_from_address_success">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_get_host_and_port_from_address_success">[docs]</a>
-<span class="k">def</span> <span class="nf">test_get_host_and_port_from_address_success</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_host_and_port_from_address_success</span><span class="p">():</span>
     <span class="n">test_host</span> <span class="o">=</span> <span class="s2">&quot;test-host&quot;</span>
     <span class="n">test_port</span> <span class="o">=</span> <span class="mi">1234</span>
     <span class="n">test_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">test_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">test_port</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -675,7 +675,7 @@
 
 <div class="viewcode-block" id="test_get_host_and_port_from_address_failure">
 <a class="viewcode-back" href="../../../../../../reference/api/florist.tests.unit.api.monitoring.test_metrics.html#florist.tests.unit.api.monitoring.test_metrics.test_get_host_and_port_from_address_failure">[docs]</a>
-<span class="k">def</span> <span class="nf">test_get_host_and_port_from_address_failure</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_host_and_port_from_address_failure</span><span class="p">():</span>
     <span class="n">test_host</span> <span class="o">=</span> <span class="s2">&quot;test-host&quot;</span>
     <span class="n">test_port</span> <span class="o">=</span> <span class="mi">1234</span>
     <span class="n">test_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">test_host</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">test_port</span><span class="si">}</span><span class="s2">&quot;</span>

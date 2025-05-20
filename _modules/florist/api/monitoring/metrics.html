@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.api.monitoring.metrics - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -378,28 +378,28 @@
           <h1>Source code for florist.api.monitoring.metrics</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Classes for the instrumentation of metrics reporting from clients and servers.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">urllib</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">Logger</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">Logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">import</span> <span class="nn">redis</span>
-<span class="kn">from</span> <span class="nn">fl4health.reporting.base_reporter</span> <span class="kn">import</span> <span class="n">BaseReporter</span>
-<span class="kn">from</span> <span class="nn">flwr.common.logger</span> <span class="kn">import</span> <span class="n">log</span>
-<span class="kn">from</span> <span class="nn">redis.client</span> <span class="kn">import</span> <span class="n">PubSub</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">redis</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fl4health.reporting.base_reporter</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseReporter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flwr.common.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">redis.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">PubSub</span>
 
 
 <div class="viewcode-block" id="DateTimeEncoder">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.DateTimeEncoder">[docs]</a>
-<span class="k">class</span> <span class="nc">DateTimeEncoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DateTimeEncoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a datetime object to string in order to make json encoding easier.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DateTimeEncoder.default">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.DateTimeEncoder.default">[docs]</a>
-    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return string of datetime if datetime object is passed else return result of the default encoder method.</span>
 
@@ -414,7 +414,7 @@
 
 <div class="viewcode-block" id="RedisMetricsReporter">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter">[docs]</a>
-<span class="k">class</span> <span class="nc">RedisMetricsReporter</span><span class="p">(</span><span class="n">BaseReporter</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RedisMetricsReporter</span><span class="p">(</span><span class="n">BaseReporter</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save the metrics to a Redis instance while it records them.</span>
 
@@ -423,7 +423,7 @@
 
 <div class="viewcode-block" id="RedisMetricsReporter.__init__">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Init an instance of RedisMetricsReporter.</span>
 
@@ -443,7 +443,7 @@
 
 <div class="viewcode-block" id="RedisMetricsReporter.initialize">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter.initialize">[docs]</a>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize RedisMetricReporter with run_id and set initialized to True.</span>
 
@@ -461,7 +461,7 @@
 
 <div class="viewcode-block" id="RedisMetricsReporter.report">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter.report">[docs]</a>
-    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="nb">round</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># noqa: A002</span>
@@ -502,7 +502,7 @@
 
 <div class="viewcode-block" id="RedisMetricsReporter.dump">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.RedisMetricsReporter.dump">[docs]</a>
-    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dump the current metrics to Redis under the run_id name.</span>
 
@@ -531,7 +531,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">redis_connection</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this instance has the same attributes to the other instance.</span>
 
@@ -556,7 +556,7 @@
 
 <div class="viewcode-block" id="get_host_and_port_from_address">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.get_host_and_port_from_address">[docs]</a>
-<span class="k">def</span> <span class="nf">get_host_and_port_from_address</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_host_and_port_from_address</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Split an address into host and port. The address must be in the format `&lt;host&gt;:&lt;port&gt;`.</span>
 
@@ -574,7 +574,7 @@
 
 <div class="viewcode-block" id="wait_for_metric">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.wait_for_metric">[docs]</a>
-<span class="k">def</span> <span class="nf">wait_for_metric</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">wait_for_metric</span><span class="p">(</span>
     <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">redis_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -629,7 +629,7 @@
 
 <div class="viewcode-block" id="get_subscriber">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.get_subscriber">[docs]</a>
-<span class="k">def</span> <span class="nf">get_subscriber</span><span class="p">(</span><span class="n">channel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">redis_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PubSub</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_subscriber</span><span class="p">(</span><span class="n">channel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">redis_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PubSub</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a PubSub instance with a subscription to the given channel.</span>
 
@@ -647,7 +647,7 @@
 
 <div class="viewcode-block" id="get_from_redis">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.monitoring.metrics.html#florist.api.monitoring.metrics.get_from_redis">[docs]</a>
-<span class="k">def</span> <span class="nf">get_from_redis</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">redis_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_from_redis</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">redis_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the contents of what&#39;s saved on Redis under the name.</span>
 

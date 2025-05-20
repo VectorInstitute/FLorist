@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.api.models.models - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -378,22 +378,22 @@
           <h1>Source code for florist.api.models.models</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Functions and definitions for models and the Model enumeration.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.models.abstract</span> <span class="kn">import</span> <span class="n">LocalDataModel</span>
-<span class="kn">from</span> <span class="nn">florist.api.models.mnist</span> <span class="kn">import</span> <span class="n">MnistNet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.abstract</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalDataModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.mnist</span><span class="w"> </span><span class="kn">import</span> <span class="n">MnistNet</span>
 
 
 <div class="viewcode-block" id="Model">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.models.models.html#florist.api.models.models.Model">[docs]</a>
-<span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enumeration of supported models.&quot;&quot;&quot;</span>
 
     <span class="n">MNIST</span> <span class="o">=</span> <span class="s2">&quot;MNIST&quot;</span>
 
 <div class="viewcode-block" id="Model.get_model_class">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.models.models.html#florist.api.models.models.Model.get_model_class">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_model_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">LocalDataModel</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_model_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">LocalDataModel</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the class for this model.</span>
 
@@ -409,7 +409,7 @@
 <div class="viewcode-block" id="Model.list">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.models.models.html#florist.api.models.models.Model.list">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List all the supported models.</span>
 

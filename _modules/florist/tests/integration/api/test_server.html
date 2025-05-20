@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>florist.tests.integration.api.test_server - FLorist</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -376,23 +376,23 @@
         </div>
         <article role="main">
           <h1>Source code for florist.tests.integration.api.test_server</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
-<span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">uvicorn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
 
-<span class="kn">from</span> <span class="nn">florist.api.auth.token</span> <span class="kn">import</span> <span class="n">Token</span><span class="p">,</span> <span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">DEFAULT_PASSWORD</span><span class="p">,</span> <span class="n">_simple_hash</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.clients</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">florist.api.clients.optimizers</span> <span class="kn">import</span> <span class="n">Optimizer</span>
-<span class="kn">from</span> <span class="nn">florist.api.server</span> <span class="kn">import</span> <span class="n">list_models</span><span class="p">,</span> <span class="n">list_clients</span><span class="p">,</span> <span class="n">list_strategies</span><span class="p">,</span> <span class="n">list_optimizers</span>
-<span class="kn">from</span> <span class="nn">florist.api.models.models</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">florist.api.servers.strategies</span> <span class="kn">import</span> <span class="n">Strategy</span>
-<span class="kn">from</span> <span class="nn">florist.tests.integration.api.utils</span> <span class="kn">import</span> <span class="n">TestUvicornServer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.auth.token</span><span class="w"> </span><span class="kn">import</span> <span class="n">Token</span><span class="p">,</span> <span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">DEFAULT_PASSWORD</span><span class="p">,</span> <span class="n">_simple_hash</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.clients</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_models</span><span class="p">,</span> <span class="n">list_clients</span><span class="p">,</span> <span class="n">list_strategies</span><span class="p">,</span> <span class="n">list_optimizers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.servers.strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strategy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.tests.integration.api.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestUvicornServer</span>
 
 
 <div class="viewcode-block" id="test_list_models">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.test_server.html#florist.tests.integration.api.test_server.test_list_models">[docs]</a>
-<span class="k">def</span> <span class="nf">test_list_models</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_list_models</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">list_models</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="o">==</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">list</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span></div>
 
@@ -400,7 +400,7 @@
 
 <div class="viewcode-block" id="test_list_clients">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.test_server.html#florist.tests.integration.api.test_server.test_list_clients">[docs]</a>
-<span class="k">def</span> <span class="nf">test_list_clients</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_list_clients</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">strategies</span> <span class="o">=</span> <span class="p">[</span><span class="n">Strategy</span><span class="o">.</span><span class="n">FEDAVG</span><span class="p">,</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">FEDPROX</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">strategies</span><span class="p">:</span>
@@ -411,7 +411,7 @@
 
 <div class="viewcode-block" id="test_list_strategies">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.test_server.html#florist.tests.integration.api.test_server.test_list_strategies">[docs]</a>
-<span class="k">def</span> <span class="nf">test_list_strategies</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_list_strategies</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">list_strategies</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="o">==</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">Strategy</span><span class="o">.</span><span class="n">list</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span></div>
 
@@ -419,7 +419,7 @@
 
 <div class="viewcode-block" id="test_list_optimizers">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.test_server.html#florist.tests.integration.api.test_server.test_list_optimizers">[docs]</a>
-<span class="k">def</span> <span class="nf">test_list_optimizers</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_list_optimizers</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">list_optimizers</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="o">==</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">Optimizer</span><span class="o">.</span><span class="n">list</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span></div>
 
@@ -427,7 +427,7 @@
 
 <div class="viewcode-block" id="test_authentication_success">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.test_server.html#florist.tests.integration.api.test_server.test_authentication_success">[docs]</a>
-<span class="k">def</span> <span class="nf">test_authentication_success</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_authentication_success</span><span class="p">():</span>
     <span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
     <span class="n">port</span> <span class="o">=</span> <span class="mi">8000</span>
     <span class="n">service_config</span> <span class="o">=</span> <span class="n">uvicorn</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="s2">&quot;florist.api.server:app&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span>
@@ -454,7 +454,7 @@
 
 <div class="viewcode-block" id="test_authentication_failure">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.test_server.html#florist.tests.integration.api.test_server.test_authentication_failure">[docs]</a>
-<span class="k">def</span> <span class="nf">test_authentication_failure</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_authentication_failure</span><span class="p">():</span>
     <span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
     <span class="n">port</span> <span class="o">=</span> <span class="mi">8000</span>
     <span class="n">service_config</span> <span class="o">=</span> <span class="n">uvicorn</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="s2">&quot;florist.api.server:app&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span>
