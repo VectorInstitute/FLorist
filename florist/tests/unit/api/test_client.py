@@ -6,7 +6,7 @@ from unittest.mock import ANY, Mock, patch
 from typing import Any, AsyncGenerator
 
 import pytest
-from fl4health.utils.metrics import Accuracy
+from fl4health.metrics import Accuracy
 
 from florist.api import client
 from florist.api.clients.clients import Client
