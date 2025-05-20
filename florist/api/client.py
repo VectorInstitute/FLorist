@@ -11,6 +11,7 @@ from uuid import uuid4
 import torch
 from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from fl4health.metrics import Accuracy
 
 from florist.api.auth.token import DEFAULT_USERNAME, make_default_client_user
@@ -40,6 +41,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(auth_router, tags=["auth"], prefix="/api/client/auth")
+app.mount("/change-password", StaticFiles(directory="florist/app/assets/static/client-login"), name="login")
 
 
 @app.get("/api/client/connect", dependencies=[Depends(check_default_user_token)])

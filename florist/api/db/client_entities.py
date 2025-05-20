@@ -8,14 +8,14 @@ from typing import Optional
 
 from typing_extensions import Self
 
-from florist.api.db.config import SQLITE_DB_PATH
+from florist.api.db.config import DatabaseConfig
 
 
 class EntityDAO(ABC):
     """Base Data Access Object (DAO) for SQLite entities."""
 
     table_name = "Entity"
-    db_path = SQLITE_DB_PATH
+    db_path = DatabaseConfig.sqlite_db_path
 
     @abstractmethod
     def __init__(self, uuid: str):

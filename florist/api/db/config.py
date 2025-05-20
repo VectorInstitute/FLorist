@@ -1,6 +1,10 @@
 """Database configuration parameters."""
 
-MONGODB_URI = "mongodb://localhost:27017/"
-DATABASE_NAME = "florist-server"
 
-SQLITE_DB_PATH = "florist/api/client.db"
+class DatabaseConfig:
+    """Database configuration parameters."""
+
+    mongodb_uri = "mongodb://localhost:27017/"
+    mongodb_db_name = "florist-server"
+
+    sqlite_db_path = "florist/api/client.db"
