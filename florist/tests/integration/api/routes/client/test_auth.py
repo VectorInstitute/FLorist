@@ -224,4 +224,4 @@ async def test_change_password_failure_default_password(mock_request):
         await change_password(form_data)
 
     assert err.value.status_code == 401
-    assert err.value.detail == "Incorrect username or password."
+    assert err.value.detail == "New password cannot be the default password."
