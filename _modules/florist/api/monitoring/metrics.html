@@ -639,7 +639,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">redis_host</span><span class="p">,</span> <span class="n">redis_port</span> <span class="o">=</span> <span class="n">get_host_and_port_from_address</span><span class="p">(</span><span class="n">redis_address</span><span class="p">)</span>
     <span class="n">redis_connection</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">redis_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">redis_port</span><span class="p">)</span>
-    <span class="n">pubsub</span><span class="p">:</span> <span class="n">PubSub</span> <span class="o">=</span> <span class="n">redis_connection</span><span class="o">.</span><span class="n">pubsub</span><span class="p">()</span>  <span class="c1"># type: ignore[no-untyped-call]</span>
+    <span class="n">pubsub</span><span class="p">:</span> <span class="n">PubSub</span> <span class="o">=</span> <span class="n">redis_connection</span><span class="o">.</span><span class="n">pubsub</span><span class="p">()</span>
     <span class="n">pubsub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>  <span class="c1"># type: ignore[no-untyped-call]</span>
     <span class="k">return</span> <span class="n">pubsub</span></div>
 
