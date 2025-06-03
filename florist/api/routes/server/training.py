@@ -13,7 +13,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from florist.api.clients.clients import Client
 from florist.api.clients.optimizers import Optimizer
-from florist.api.db.config import DATABASE_NAME, MONGODB_URI
+from florist.api.db.config import DatabaseConfig
 from florist.api.db.server_entities import ClientInfo, Job, JobStatus
 from florist.api.launchers.local import launch_local_server
 from florist.api.models.models import Model
@@ -142,8 +142,8 @@ async def client_training_listener(job: Job, client_info: ClientInfo) -> None:
 
     assert client_info.uuid is not None, "client_info.uuid is None."
 
-    db_client: AsyncIOMotorClient[Any] = AsyncIOMotorClient(MONGODB_URI)
-    database = db_client[DATABASE_NAME]
+    db_client: AsyncIOMotorClient[Any] = AsyncIOMotorClient(DatabaseConfig.mongodb_uri)
+    database = db_client[DatabaseConfig.mongodb_db_name]
 
     # check if training has already finished before start listening
     client_metrics = get_from_redis(client_info.uuid, client_info.redis_address)
@@ -192,8 +192,8 @@ async def server_training_listener(job: Job) -> None:
     assert job.server_uuid is not None, "job.server_uuid is None."
     assert job.redis_address is not None, "job.redis_address is None."
 
-    db_client: AsyncIOMotorClient[Any] = AsyncIOMotorClient(MONGODB_URI)
-    database = db_client[DATABASE_NAME]
+    db_client: AsyncIOMotorClient[Any] = AsyncIOMotorClient(DatabaseConfig.mongodb_uri)
+    database = db_client[DatabaseConfig.mongodb_db_name]
 
     # check if training has already finished before start listening
     server_metrics = get_from_redis(job.server_uuid, job.redis_address)

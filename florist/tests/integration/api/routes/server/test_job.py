@@ -14,7 +14,7 @@ from florist.api.monitoring.logs import get_server_log_file_path, get_client_log
 from florist.api.routes.server.job import list_jobs_with_status, new_job, get_server_log, get_client_log
 from florist.api.models.models import Model
 from florist.api.servers.strategies import Strategy
-from florist.tests.integration.api.utils import mock_request, TestUvicornServer
+from florist.tests.integration.api.utils import mock_request, TestUvicornServer, change_default_password
 
 
 async def test_new_job(mock_request) -> None:
@@ -458,6 +458,7 @@ async def test_get_client_log_success(mock_request):
 
     test_client_host = "localhost"
     test_client_port = 8001
+    test_client_password = _simple_hash("test_client_password")
 
     result_job = await new_job(mock_request, Job(
         clients_info=[
@@ -466,14 +467,14 @@ async def test_get_client_log_success(mock_request):
                 service_address=f"{test_client_host}:{test_client_port}",
                 data_path="test/data/path-1",
                 redis_address="test-redis-address-1",
-                hashed_password=_simple_hash(DEFAULT_PASSWORD),
+                hashed_password=test_client_password,
             ),
             ClientInfo(
                 uuid="test-client-uuid-2",
                 service_address=f"{test_client_host}:{test_client_port}",
                 data_path="test/data/path-2",
                 redis_address="test-redis-address-2",
-                hashed_password=_simple_hash(DEFAULT_PASSWORD),
+                hashed_password=test_client_password,
             ),
         ],
     ))
@@ -486,6 +487,7 @@ async def test_get_client_log_success(mock_request):
     client_config = uvicorn.Config("florist.api.client:app", host=test_client_host, port=test_client_port, log_level="debug")
     client_service = TestUvicornServer(config=client_config)
     with client_service.run_in_thread():
+        change_default_password(result_job.clients_info[1].service_address, test_client_password, "client")
         result = await get_client_log(result_job.id, 1, mock_request)
 
     assert result.status_code == 200
@@ -534,6 +536,7 @@ async def test_get_client_log_error_invalid_client_index(mock_request):
 async def test_get_client_log_error_log_file_path_is_none(mock_request):
     test_client_host = "localhost"
     test_client_port = 8001
+    test_client_password = _simple_hash("test_client_password")
     result_job = await new_job(mock_request, Job(
         clients_info=[
             ClientInfo(
@@ -541,7 +544,7 @@ async def test_get_client_log_error_log_file_path_is_none(mock_request):
                 service_address=f"{test_client_host}:{test_client_port}",
                 data_path="test/data/path-1",
                 redis_address="test-redis-address-1",
-                hashed_password=_simple_hash(DEFAULT_PASSWORD),
+                hashed_password=test_client_password,
             ),
         ],
     ))
@@ -551,6 +554,7 @@ async def test_get_client_log_error_log_file_path_is_none(mock_request):
     client_config = uvicorn.Config("florist.api.client:app", host=test_client_host, port=test_client_port, log_level="debug")
     client_service = TestUvicornServer(config=client_config)
     with client_service.run_in_thread():
+        change_default_password(result_job.clients_info[0].service_address, test_client_password, "client")
         result = await get_client_log(result_job.id, 0, mock_request)
 
     assert result.status_code == 400

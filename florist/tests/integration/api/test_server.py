@@ -9,7 +9,7 @@ from florist.api.clients.optimizers import Optimizer
 from florist.api.server import list_models, list_clients, list_strategies, list_optimizers
 from florist.api.models.models import Model
 from florist.api.servers.strategies import Strategy
-from florist.tests.integration.api.utils import TestUvicornServer
+from florist.tests.integration.api.utils import TestUvicornServer, use_test_database, change_default_password
 
 
 def test_list_models() -> None:
@@ -35,7 +35,36 @@ def test_list_optimizers() -> None:
     assert result.body.decode() == json.dumps(Optimizer.list()).replace(", ", ",")
 
 
-def test_authentication_success():
+def test_authentication_success(use_test_database):
+    host = "localhost"
+    port = 8000
+    new_password = "new_password"
+    service_config = uvicorn.Config("florist.api.server:app", host=host, port=port, log_level="debug")
+    service = TestUvicornServer(config=service_config)
+
+    with service.run_in_thread():
+        response = requests.post(
+            f"http://{host}:{port}/api/server/auth/token",
+            data={
+                "grant_type": "password",
+                "username": DEFAULT_USERNAME,
+                "password": _simple_hash(DEFAULT_PASSWORD),
+            }
+        )
+        token = Token(**response.json())
+        assert token.should_change_password == True
+
+        token = change_default_password(f"{host}:{port}", _simple_hash(new_password), "server")
+        assert token.should_change_password == False
+
+        response = requests.get(
+            f"http://{host}:{port}/api/server/models",
+            headers={"Authorization": f"Bearer {token.access_token}"}
+        )
+        assert response.status_code == 200
+
+
+def test_authentication_failure_default_password(use_test_database):
     host = "localhost"
     port = 8000
     service_config = uvicorn.Config("florist.api.server:app", host=host, port=port, log_level="debug")
@@ -51,15 +80,16 @@ def test_authentication_success():
             }
         )
         token = Token(**response.json())
+        assert token.should_change_password == True
 
         response = requests.get(
             f"http://{host}:{port}/api/server/models",
             headers={"Authorization": f"Bearer {token.access_token}"}
         )
-        assert response.status_code == 200
+        assert response.status_code == 401
 
 
-def test_authentication_failure():
+def test_authentication_failure_invalid_token(use_test_database):
     host = "localhost"
     port = 8000
     service_config = uvicorn.Config("florist.api.server:app", host=host, port=port, log_level="debug")
