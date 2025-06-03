@@ -64,7 +64,7 @@ class OAuth2ChangePasswordRequestForm(OAuth2PasswordRequestForm):
     """
     Define the model for the change password request.
 
-    Extends the OAuth2PasswordRequestForm model to add a new_password and a current_password field.
+    Extends the `OAuth2PasswordRequestForm` model to add a `new_password` and a `current_password` field.
     """
 
     def __init__(

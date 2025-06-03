@@ -115,6 +115,7 @@ async def change_password(form_data: Annotated[OAuth2ChangePasswordRequestForm, 
 
         if form_data.new_password == _simple_hash(DEFAULT_PASSWORD):
             # new password cannot be the default password
+            credentials_exception.detail = "New password cannot be the default password."
             raise credentials_exception
 
         user.hashed_password = _password_hash(form_data.new_password)

@@ -95,6 +95,7 @@ async def change_password(
 
     if form_data.new_password == _simple_hash(DEFAULT_PASSWORD):
         # new password cannot be the default password
+        credentials_exception.detail = "New password cannot be the default password."
         raise credentials_exception
 
     await user.change_password(_password_hash(form_data.new_password), request.app.database)
