@@ -30,6 +30,13 @@
                 document.getElementById("error").style.display = "none";
 
                 const formData = new FormData(e.target);
+
+                if (formData.get("new_password") !== formData.get("confirm_password")) {
+                    document.getElementById("error").innerHTML = "New password and confirm password do not match.";
+                    document.getElementById("error").style.display = "block";
+                    return;
+                }
+
                 formData.append("username", "admin");
                 formData.append("current_password", await simpleHash(formData.get("current_password")));
                 formData.append("new_password", await simpleHash(formData.get("new_password")));
