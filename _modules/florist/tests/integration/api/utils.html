@@ -378,17 +378,20 @@
           <h1>Source code for florist.tests.integration.api.utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">motor.motor_asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIOMotorClient</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">starlette.requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">MONGODB_URI</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.client_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntityDAO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.auth.token</span><span class="w"> </span><span class="kn">import</span> <span class="n">Token</span><span class="p">,</span> <span class="n">_simple_hash</span><span class="p">,</span> <span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">DEFAULT_PASSWORD</span>
 
 
 <div class="viewcode-block" id="TestUvicornServer">
@@ -421,7 +424,7 @@
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.utils.html#florist.tests.integration.api.utils.MockApp">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MockApp</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_client</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">MONGODB_URI</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_client</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_uri</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_client</span><span class="p">[</span><span class="n">database_name</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clients_auth_tokens</span> <span class="o">=</span> <span class="p">{}</span></div>
 
@@ -468,6 +471,58 @@
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">TEST_SQLITE_DB_PATH</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting test detabase &#39;</span><span class="si">{</span><span class="n">TEST_SQLITE_DB_PATH</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">TEST_SQLITE_DB_PATH</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="use_test_database">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.utils.html#florist.tests.integration.api.utils.use_test_database">[docs]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">use_test_database</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># saving real database config</span>
+    <span class="n">sqlite_db_path</span> <span class="o">=</span> <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">sqlite_db_path</span>
+    <span class="n">database_name</span> <span class="o">=</span> <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span>
+
+    <span class="c1"># replacing real database config with test database config</span>
+    <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">sqlite_db_path</span> <span class="o">=</span> <span class="n">TEST_SQLITE_DB_PATH</span>
+    <span class="n">EntityDAO</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">sqlite_db_path</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating test detabase &#39;</span><span class="si">{</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">sqlite_db_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span> <span class="o">=</span> <span class="n">TEST_DATABASE_NAME</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using test detabase &#39;</span><span class="si">{</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+    <span class="k">yield</span>
+
+    <span class="c1"># restoring real database config</span>
+    <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">sqlite_db_path</span> <span class="o">=</span> <span class="n">sqlite_db_path</span>
+    <span class="n">EntityDAO</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">sqlite_db_path</span>
+    <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span> <span class="o">=</span> <span class="n">database_name</span>
+
+    <span class="c1"># deleting test databases</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting test detabase &#39;</span><span class="si">{</span><span class="n">TEST_DATABASE_NAME</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="n">db_client</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_uri</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">db_client</span><span class="o">.</span><span class="n">drop_database</span><span class="p">(</span><span class="n">TEST_DATABASE_NAME</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">TEST_SQLITE_DB_PATH</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting test detabase &#39;</span><span class="si">{</span><span class="n">TEST_SQLITE_DB_PATH</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">TEST_SQLITE_DB_PATH</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="change_default_password">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.utils.html#florist.tests.integration.api.utils.change_default_password">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">change_default_password</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;client&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">/api/</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">/auth/change_password&quot;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;grant_type&quot;</span><span class="p">:</span> <span class="s2">&quot;password&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">DEFAULT_USERNAME</span><span class="p">,</span>
+            <span class="s2">&quot;current_password&quot;</span><span class="p">:</span> <span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">),</span>
+            <span class="s2">&quot;new_password&quot;</span><span class="p">:</span> <span class="n">new_password</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Failed to change </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2"> password: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">return</span> <span class="n">Token</span><span class="p">(</span><span class="o">**</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span></div>
 
 </pre></div>
         </article>

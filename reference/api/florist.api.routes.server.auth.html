@@ -381,6 +381,27 @@
 <span id="florist-api-routes-server-auth-module"></span><h1>florist.api.routes.server.auth module<a class="headerlink" href="#module-florist.api.routes.server.auth" title="Link to this heading">¶</a></h1>
 <p>FastAPI server routes for authentication.</p>
 <dl class="py function">
+<dt class="sig sig-object py" id="florist.api.routes.server.auth.change_password">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">change_password</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/routes/server/auth.html#change_password"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.routes.server.auth.change_password" title="Link to this definition">¶</a></dt>
+<dd><p>Change the password for the user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>form_data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.auth.token.html#florist.api.auth.token.OAuth2ChangePasswordRequestForm" title="florist.api.auth.token.OAuth2ChangePasswordRequestForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuth2ChangePasswordRequestForm</span></code></a></span>) – (OAuth2ChangePasswordForm) The form data from the change password request.
+It must contain the username, current_password, and new_password fields.</p></li>
+<li><p><strong>request</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></span>) – (Request) The request object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="florist.api.auth.token.html#florist.api.auth.token.Token" title="florist.api.auth.token.Token"><code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(Token) The access token.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="florist.api.routes.server.auth.check_default_user_token">
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_default_user_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/florist/api/routes/server/auth.html#check_default_user_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#florist.api.routes.server.auth.check_default_user_token" title="Link to this definition">¶</a></dt>
 <dd><p>Validate the default user against the token.</p>
@@ -434,7 +455,8 @@ request.app.clients_auth_tokens dictionary, and then return the token.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>form_data</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuth2PasswordRequestForm</span></code></span>) – (OAuth2PasswordRequestForm) The form data from the login request.</p></li>
+<li><p><strong>form_data</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuth2PasswordRequestForm</span></code></span>) – (OAuth2PasswordRequestForm) The form data from the login request.
+It must contain the username and password fields.</p></li>
 <li><p><strong>request</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></span>) – (Request) The request object.</p></li>
 </ul>
 </dd>
@@ -517,6 +539,7 @@ request.app.clients_auth_tokens dictionary, and then return the token.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">florist.api.routes.server.auth module</a><ul>
+<li><a class="reference internal" href="#florist.api.routes.server.auth.change_password"><code class="docutils literal notranslate"><span class="pre">change_password()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.routes.server.auth.check_default_user_token"><code class="docutils literal notranslate"><span class="pre">check_default_user_token()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.routes.server.auth.get_client_token"><code class="docutils literal notranslate"><span class="pre">get_client_token()</span></code></a></li>
 <li><a class="reference internal" href="#florist.api.routes.server.auth.login_for_access_token"><code class="docutils literal notranslate"><span class="pre">login_for_access_token()</span></code></a></li>

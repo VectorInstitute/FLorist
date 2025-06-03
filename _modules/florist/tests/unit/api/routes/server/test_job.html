@@ -380,13 +380,17 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">freezegun</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">freezegun</span><span class="w"> </span><span class="kn">import</span> <span class="n">freeze_time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">AsyncMock</span><span class="p">,</span> <span class="n">call</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONResponse</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">freezegun</span><span class="w"> </span><span class="kn">import</span> <span class="n">freeze_time</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.auth.token</span><span class="w"> </span><span class="kn">import</span> <span class="n">Token</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.server_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">ClientInfo</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.routes.server.job</span><span class="w"> </span><span class="kn">import</span> <span class="n">change_job_status</span><span class="p">,</span> <span class="n">get_job</span><span class="p">,</span> <span class="n">stop_job</span>
+
+
+<span class="n">freezegun</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">extend_ignore_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;transformers&quot;</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
 
 
 <div class="viewcode-block" id="test_get_job_success">

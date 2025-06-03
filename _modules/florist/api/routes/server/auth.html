@@ -387,9 +387,13 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">jwt.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidTokenError</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.auth.token</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DEFAULT_PASSWORD</span><span class="p">,</span>
     <span class="n">DEFAULT_USERNAME</span><span class="p">,</span>
     <span class="n">AuthUser</span><span class="p">,</span>
+    <span class="n">OAuth2ChangePasswordRequestForm</span><span class="p">,</span>
     <span class="n">Token</span><span class="p">,</span>
+    <span class="n">_password_hash</span><span class="p">,</span>
+    <span class="n">_simple_hash</span><span class="p">,</span>
     <span class="n">create_access_token</span><span class="p">,</span>
     <span class="n">decode_access_token</span><span class="p">,</span>
     <span class="n">verify_password</span><span class="p">,</span>
@@ -417,7 +421,9 @@
 <span class="sd">    Make a login request to get an access token.</span>
 
 <span class="sd">    :param form_data: (OAuth2PasswordRequestForm) The form data from the login request.</span>
+<span class="sd">        It must contain the username and password fields.</span>
 <span class="sd">    :param request: (Request) The request object.</span>
+
 <span class="sd">    :return: (Token) The access token.</span>
 <span class="sd">    :raise: (HTTPException) If the user does not exist or the password is incorrect.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -435,7 +441,50 @@
         <span class="k">raise</span> <span class="n">credentials_exception</span>
 
     <span class="n">access_token</span> <span class="o">=</span> <span class="n">create_access_token</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">},</span> <span class="n">secret_key</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">secret_key</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Token</span><span class="p">(</span><span class="n">access_token</span><span class="o">=</span><span class="n">access_token</span><span class="p">,</span> <span class="n">token_type</span><span class="o">=</span><span class="s2">&quot;bearer&quot;</span><span class="p">)</span></div>
+    <span class="c1"># if the password is the default password, then set the flag to indicate the user should change it</span>
+    <span class="n">should_change_password</span> <span class="o">=</span> <span class="n">form_data</span><span class="o">.</span><span class="n">password</span> <span class="o">==</span> <span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Token</span><span class="p">(</span><span class="n">access_token</span><span class="o">=</span><span class="n">access_token</span><span class="p">,</span> <span class="n">token_type</span><span class="o">=</span><span class="s2">&quot;bearer&quot;</span><span class="p">,</span> <span class="n">should_change_password</span><span class="o">=</span><span class="n">should_change_password</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="change_password">
+<a class="viewcode-back" href="../../../../../reference/api/florist.api.routes.server.auth.html#florist.api.routes.server.auth.change_password">[docs]</a>
+<span class="nd">@router</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/change_password&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">change_password</span><span class="p">(</span>
+    <span class="n">form_data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">OAuth2ChangePasswordRequestForm</span><span class="p">,</span> <span class="n">Depends</span><span class="p">()],</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Token</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Change the password for the user.</span>
+
+<span class="sd">    :param form_data: (OAuth2ChangePasswordForm) The form data from the change password request.</span>
+<span class="sd">        It must contain the username, current_password, and new_password fields.</span>
+<span class="sd">    :param request: (Request) The request object.</span>
+
+<span class="sd">    :return: (Token) The access token.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">credentials_exception</span> <span class="o">=</span> <span class="n">HTTPException</span><span class="p">(</span>
+        <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_401_UNAUTHORIZED</span><span class="p">,</span>
+        <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Incorrect username or password.&quot;</span><span class="p">,</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;WWW-Authenticate&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">form_data</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">credentials_exception</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">verify_password</span><span class="p">(</span><span class="n">form_data</span><span class="o">.</span><span class="n">current_password</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">hashed_password</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">credentials_exception</span>
+
+    <span class="k">if</span> <span class="n">form_data</span><span class="o">.</span><span class="n">new_password</span> <span class="o">==</span> <span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">):</span>
+        <span class="c1"># new password cannot be the default password</span>
+        <span class="n">credentials_exception</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="s2">&quot;New password cannot be the default password.&quot;</span>
+        <span class="k">raise</span> <span class="n">credentials_exception</span>
+
+    <span class="k">await</span> <span class="n">user</span><span class="o">.</span><span class="n">change_password</span><span class="p">(</span><span class="n">_password_hash</span><span class="p">(</span><span class="n">form_data</span><span class="o">.</span><span class="n">new_password</span><span class="p">),</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+
+    <span class="n">access_token</span> <span class="o">=</span> <span class="n">create_access_token</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">},</span> <span class="n">secret_key</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">secret_key</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Token</span><span class="p">(</span><span class="n">access_token</span><span class="o">=</span><span class="n">access_token</span><span class="p">,</span> <span class="n">token_type</span><span class="o">=</span><span class="s2">&quot;bearer&quot;</span><span class="p">,</span> <span class="n">should_change_password</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
 
@@ -460,6 +509,10 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">credentials_exception</span>
+
+        <span class="k">if</span> <span class="n">verify_password</span><span class="p">(</span><span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">),</span> <span class="n">user</span><span class="o">.</span><span class="n">hashed_password</span><span class="p">):</span>
+            <span class="c1"># Fail if the user&#39;s password is the default, it must be changed</span>
             <span class="k">raise</span> <span class="n">credentials_exception</span>
 
         <span class="n">payload</span> <span class="o">=</span> <span class="n">decode_access_token</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">secret_key</span><span class="p">)</span>

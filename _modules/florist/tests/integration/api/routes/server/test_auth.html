@@ -380,6 +380,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.security</span><span class="w"> </span><span class="kn">import</span> <span class="n">OAuth2PasswordRequestForm</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pytest</span><span class="w"> </span><span class="kn">import</span> <span class="n">raises</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.auth.token</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -388,16 +389,18 @@
     <span class="n">DEFAULT_PASSWORD</span><span class="p">,</span>
     <span class="n">TOKEN_EXPIRATION_TIMEDELTA</span><span class="p">,</span>
     <span class="n">_simple_hash</span><span class="p">,</span>
+    <span class="n">_password_hash</span><span class="p">,</span>
     <span class="n">decode_access_token</span><span class="p">,</span>
     <span class="n">create_access_token</span><span class="p">,</span>
     <span class="n">Token</span><span class="p">,</span>
+    <span class="n">OAuth2ChangePasswordRequestForm</span><span class="p">,</span>
+    <span class="n">verify_password</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.server_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">ClientInfo</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.client_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserDAO</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.routes.server.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_for_access_token</span><span class="p">,</span> <span class="n">check_default_user_token</span><span class="p">,</span> <span class="n">get_client_token</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.routes.server.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_for_access_token</span><span class="p">,</span> <span class="n">check_default_user_token</span><span class="p">,</span> <span class="n">get_client_token</span><span class="p">,</span> <span class="n">change_password</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">florist.tests.integration.api.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestUvicornServer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">florist.tests.integration.api.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">mock_request</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.tests.integration.api.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestUvicornServer</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">,</span> <span class="n">change_default_password</span>
 
 
 <div class="viewcode-block" id="test_login_for_access_token_success">
@@ -412,6 +415,35 @@
 
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">access_token</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">access_token</span><span class="o">.</span><span class="n">token_type</span> <span class="o">==</span> <span class="s2">&quot;bearer&quot;</span>
+    <span class="c1"># the default password is used, so the user should be prompted to change it</span>
+    <span class="k">assert</span> <span class="n">access_token</span><span class="o">.</span><span class="n">should_change_password</span> <span class="o">==</span> <span class="kc">True</span>
+
+    <span class="n">decoded_access_token</span> <span class="o">=</span> <span class="n">decode_access_token</span><span class="p">(</span><span class="n">access_token</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">secret_key</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">decoded_access_token</span><span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">DEFAULT_USERNAME</span>
+    <span class="n">result_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">decoded_access_token</span><span class="p">[</span><span class="s2">&quot;exp&quot;</span><span class="p">],</span> <span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">target_datetime</span><span class="o">.</span><span class="n">day</span> <span class="o">==</span> <span class="n">result_datetime</span><span class="o">.</span><span class="n">day</span>
+    <span class="k">assert</span> <span class="n">target_datetime</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="n">result_datetime</span><span class="o">.</span><span class="n">month</span>
+    <span class="k">assert</span> <span class="n">target_datetime</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="n">result_datetime</span><span class="o">.</span><span class="n">year</span></div>
+
+
+
+<div class="viewcode-block" id="test_login_for_access_token_success_with_new_password">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_login_for_access_token_success_with_new_password">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_login_for_access_token_success_with_new_password</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">target_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span> <span class="n">TOKEN_EXPIRATION_TIMEDELTA</span>
+    <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+
+    <span class="n">test_new_password</span> <span class="o">=</span> <span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;new_password&quot;</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">user</span><span class="o">.</span><span class="n">change_password</span><span class="p">(</span><span class="n">_password_hash</span><span class="p">(</span><span class="n">test_new_password</span><span class="p">),</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+
+    <span class="n">form_data</span> <span class="o">=</span> <span class="n">OAuth2PasswordRequestForm</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">test_new_password</span><span class="p">)</span>
+    <span class="n">access_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">login_for_access_token</span><span class="p">(</span><span class="n">form_data</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">access_token</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">access_token</span><span class="o">.</span><span class="n">token_type</span> <span class="o">==</span> <span class="s2">&quot;bearer&quot;</span>
+    <span class="c1"># the new password is used, so the user should not be prompted to change it</span>
+    <span class="k">assert</span> <span class="n">access_token</span><span class="o">.</span><span class="n">should_change_password</span> <span class="o">==</span> <span class="kc">False</span>
 
     <span class="n">decoded_access_token</span> <span class="o">=</span> <span class="n">decode_access_token</span><span class="p">(</span><span class="n">access_token</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">secret_key</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">decoded_access_token</span><span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">DEFAULT_USERNAME</span>
@@ -426,7 +458,8 @@
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_login_for_access_token_failure">[docs]</a>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_login_for_access_token_failure</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
-    <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">user</span><span class="o">.</span><span class="n">change_password</span><span class="p">(</span><span class="n">_password_hash</span><span class="p">(</span><span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;new_password&quot;</span><span class="p">)),</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
 
     <span class="n">form_data</span> <span class="o">=</span> <span class="n">OAuth2PasswordRequestForm</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;some other password&quot;</span><span class="p">))</span>
     <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -455,6 +488,7 @@
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_check_token_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">user</span><span class="o">.</span><span class="n">change_password</span><span class="p">(</span><span class="n">_password_hash</span><span class="p">(</span><span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;new_password&quot;</span><span class="p">)),</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">create_access_token</span><span class="p">({</span><span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">},</span> <span class="n">user</span><span class="o">.</span><span class="n">secret_key</span><span class="p">)</span>
 
     <span class="n">auth_user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">check_default_user_token</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
@@ -482,6 +516,7 @@
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_check_token_failure_wrong_username</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">user</span><span class="o">.</span><span class="n">change_password</span><span class="p">(</span><span class="n">_password_hash</span><span class="p">(</span><span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;new_password&quot;</span><span class="p">)),</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">create_access_token</span><span class="p">({</span><span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="s2">&quot;wrong_username&quot;</span><span class="p">},</span> <span class="s2">&quot;wrong_key&quot;</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -497,6 +532,7 @@
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_check_token_failure_invalid_token</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">user</span><span class="o">.</span><span class="n">change_password</span><span class="p">(</span><span class="n">_password_hash</span><span class="p">(</span><span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;new_password&quot;</span><span class="p">)),</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">create_access_token</span><span class="p">({</span><span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">},</span> <span class="s2">&quot;wrong_key&quot;</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -513,18 +549,20 @@
     <span class="n">test_client_host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
     <span class="n">test_client_port</span> <span class="o">=</span> <span class="mi">8001</span>
     <span class="n">target_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span> <span class="n">TOKEN_EXPIRATION_TIMEDELTA</span>
+    <span class="n">test_client_password</span> <span class="o">=</span> <span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;test_client_password&quot;</span><span class="p">)</span>
     <span class="n">test_client_info</span> <span class="o">=</span> <span class="n">ClientInfo</span><span class="p">(</span>
         <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-1&quot;</span><span class="p">,</span>
         <span class="n">service_address</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">test_client_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">test_client_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test/data/path-1&quot;</span><span class="p">,</span>
         <span class="n">redis_address</span><span class="o">=</span><span class="s2">&quot;test-redis-address-1&quot;</span><span class="p">,</span>
-        <span class="n">hashed_password</span><span class="o">=</span><span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">),</span>
+        <span class="n">hashed_password</span><span class="o">=</span><span class="n">test_client_password</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
 
     <span class="n">client_config</span> <span class="o">=</span> <span class="n">uvicorn</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="s2">&quot;florist.api.client:app&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">test_client_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">test_client_port</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span>
     <span class="n">client_service</span> <span class="o">=</span> <span class="n">TestUvicornServer</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">client_config</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">client_service</span><span class="o">.</span><span class="n">run_in_thread</span><span class="p">():</span>
+        <span class="n">change_default_password</span><span class="p">(</span><span class="n">test_client_info</span><span class="o">.</span><span class="n">service_address</span><span class="p">,</span> <span class="n">test_client_info</span><span class="o">.</span><span class="n">hashed_password</span><span class="p">,</span> <span class="s2">&quot;client&quot;</span><span class="p">)</span>
         <span class="n">client_token</span> <span class="o">=</span> <span class="n">get_client_token</span><span class="p">(</span><span class="n">test_client_info</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
 
     <span class="n">client_user</span> <span class="o">=</span> <span class="n">UserDAO</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">)</span>
@@ -537,18 +575,53 @@
 
 
 
+<div class="viewcode-block" id="test_get_client_token_success_existing_valid_token">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_get_client_token_success_existing_valid_token">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_get_client_token_success_existing_valid_token</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">target_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span> <span class="n">TOKEN_EXPIRATION_TIMEDELTA</span>
+    <span class="n">test_client_host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+    <span class="n">test_client_port</span> <span class="o">=</span> <span class="mi">8001</span>
+    <span class="n">test_client_password</span> <span class="o">=</span> <span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;test_client_password&quot;</span><span class="p">)</span>
+    <span class="n">test_client_info</span> <span class="o">=</span> <span class="n">ClientInfo</span><span class="p">(</span>
+        <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-1&quot;</span><span class="p">,</span>
+        <span class="n">service_address</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">test_client_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">test_client_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test/data/path-1&quot;</span><span class="p">,</span>
+        <span class="n">redis_address</span><span class="o">=</span><span class="s2">&quot;test-redis-address-1&quot;</span><span class="p">,</span>
+        <span class="n">hashed_password</span><span class="o">=</span><span class="n">test_client_password</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+
+    <span class="n">client_config</span> <span class="o">=</span> <span class="n">uvicorn</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="s2">&quot;florist.api.client:app&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">test_client_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">test_client_port</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span>
+    <span class="n">client_service</span> <span class="o">=</span> <span class="n">TestUvicornServer</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">client_config</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">client_service</span><span class="o">.</span><span class="n">run_in_thread</span><span class="p">():</span>
+        <span class="n">change_default_password</span><span class="p">(</span><span class="n">test_client_info</span><span class="o">.</span><span class="n">service_address</span><span class="p">,</span> <span class="n">test_client_info</span><span class="o">.</span><span class="n">hashed_password</span><span class="p">,</span> <span class="s2">&quot;client&quot;</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">test_client_info</span><span class="o">.</span><span class="n">service_address</span><span class="si">}</span><span class="s2">/api/client/auth/token&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;grant_type&quot;</span><span class="p">:</span> <span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">test_client_info</span><span class="o">.</span><span class="n">hashed_password</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">test_valid_token</span> <span class="o">=</span> <span class="n">Token</span><span class="p">(</span><span class="o">**</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">clients_auth_tokens</span><span class="p">[</span><span class="n">test_client_info</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_valid_token</span>
+
+        <span class="n">client_token</span> <span class="o">=</span> <span class="n">get_client_token</span><span class="p">(</span><span class="n">test_client_info</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">client_token</span> <span class="o">==</span> <span class="n">test_valid_token</span></div>
+
+
+
 <div class="viewcode-block" id="test_get_client_token_success_existing_invalid_token">
 <a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_get_client_token_success_existing_invalid_token">[docs]</a>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_get_client_token_success_existing_invalid_token</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
     <span class="n">target_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span> <span class="n">TOKEN_EXPIRATION_TIMEDELTA</span>
     <span class="n">test_client_host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
     <span class="n">test_client_port</span> <span class="o">=</span> <span class="mi">8001</span>
+    <span class="n">test_client_password</span> <span class="o">=</span> <span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;test_client_password&quot;</span><span class="p">)</span>
     <span class="n">test_client_info</span> <span class="o">=</span> <span class="n">ClientInfo</span><span class="p">(</span>
         <span class="n">uuid</span><span class="o">=</span><span class="s2">&quot;test-client-uuid-1&quot;</span><span class="p">,</span>
         <span class="n">service_address</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">test_client_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">test_client_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;test/data/path-1&quot;</span><span class="p">,</span>
         <span class="n">redis_address</span><span class="o">=</span><span class="s2">&quot;test-redis-address-1&quot;</span><span class="p">,</span>
-        <span class="n">hashed_password</span><span class="o">=</span><span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">),</span>
+        <span class="n">hashed_password</span><span class="o">=</span><span class="n">test_client_password</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
     <span class="n">test_invalid_token</span> <span class="o">=</span> <span class="n">Token</span><span class="p">(</span><span class="n">access_token</span><span class="o">=</span><span class="s2">&quot;invalid_token&quot;</span><span class="p">,</span> <span class="n">token_type</span><span class="o">=</span><span class="s2">&quot;bearer&quot;</span><span class="p">)</span>
@@ -557,6 +630,7 @@
     <span class="n">client_config</span> <span class="o">=</span> <span class="n">uvicorn</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="s2">&quot;florist.api.client:app&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">test_client_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">test_client_port</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span>
     <span class="n">client_service</span> <span class="o">=</span> <span class="n">TestUvicornServer</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">client_config</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">client_service</span><span class="o">.</span><span class="n">run_in_thread</span><span class="p">():</span>
+        <span class="n">change_default_password</span><span class="p">(</span><span class="n">test_client_info</span><span class="o">.</span><span class="n">service_address</span><span class="p">,</span> <span class="n">test_client_info</span><span class="o">.</span><span class="n">hashed_password</span><span class="p">,</span> <span class="s2">&quot;client&quot;</span><span class="p">)</span>
         <span class="n">client_token</span> <span class="o">=</span> <span class="n">get_client_token</span><span class="p">(</span><span class="n">test_client_info</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">clients_auth_tokens</span><span class="p">[</span><span class="n">test_client_info</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">!=</span> <span class="n">test_invalid_token</span>
@@ -588,6 +662,105 @@
 
     <span class="k">assert</span> <span class="n">err</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span>
     <span class="k">assert</span> <span class="n">err</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">detail</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;Could not connect to client with id </span><span class="si">{</span><span class="n">test_client_info</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="test_check_token_failure_default_password">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_check_token_failure_default_password">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_check_token_failure_default_password</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">create_access_token</span><span class="p">({</span><span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">},</span> <span class="n">user</span><span class="o">.</span><span class="n">secret_key</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">check_default_user_token</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">err</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span>
+    <span class="k">assert</span> <span class="n">err</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">detail</span> <span class="o">==</span> <span class="s2">&quot;Could not validate credentials&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="test_change_password_success">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_change_password_success">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_change_password_success</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">target_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span> <span class="n">TOKEN_EXPIRATION_TIMEDELTA</span>
+    <span class="n">test_new_password</span> <span class="o">=</span> <span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;new_password&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+
+    <span class="n">form_data</span> <span class="o">=</span> <span class="n">OAuth2ChangePasswordRequestForm</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span>
+        <span class="n">current_password</span><span class="o">=</span><span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">),</span>
+        <span class="n">new_password</span><span class="o">=</span><span class="n">test_new_password</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">access_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">change_password</span><span class="p">(</span><span class="n">form_data</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span> <span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">verify_password</span><span class="p">(</span><span class="n">test_new_password</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">hashed_password</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">access_token</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">access_token</span><span class="o">.</span><span class="n">token_type</span> <span class="o">==</span> <span class="s2">&quot;bearer&quot;</span>
+    <span class="c1"># the new password is used, so the user should not be prompted to change it</span>
+    <span class="k">assert</span> <span class="n">access_token</span><span class="o">.</span><span class="n">should_change_password</span> <span class="o">==</span> <span class="kc">False</span>
+
+    <span class="n">decoded_access_token</span> <span class="o">=</span> <span class="n">decode_access_token</span><span class="p">(</span><span class="n">access_token</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">secret_key</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">decoded_access_token</span><span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">DEFAULT_USERNAME</span>
+    <span class="n">result_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">decoded_access_token</span><span class="p">[</span><span class="s2">&quot;exp&quot;</span><span class="p">],</span> <span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">target_datetime</span><span class="o">.</span><span class="n">day</span> <span class="o">==</span> <span class="n">result_datetime</span><span class="o">.</span><span class="n">day</span>
+    <span class="k">assert</span> <span class="n">target_datetime</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="n">result_datetime</span><span class="o">.</span><span class="n">month</span>
+    <span class="k">assert</span> <span class="n">target_datetime</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="n">result_datetime</span><span class="o">.</span><span class="n">year</span></div>
+
+
+
+<div class="viewcode-block" id="test_change_password_failure_no_user">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_change_password_failure_no_user">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_change_password_failure_no_user</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="n">form_data</span> <span class="o">=</span> <span class="n">OAuth2ChangePasswordRequestForm</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span>
+        <span class="n">current_password</span><span class="o">=</span><span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">),</span>
+        <span class="n">new_password</span><span class="o">=</span><span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;new_password&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">change_password</span><span class="p">(</span><span class="n">form_data</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">err</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span>
+    <span class="k">assert</span> <span class="n">err</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">detail</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;Incorrect username or password.&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="test_change_password_failure_wrong_current_password">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_change_password_failure_wrong_current_password">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_change_password_failure_wrong_current_password</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">form_data</span> <span class="o">=</span> <span class="n">OAuth2ChangePasswordRequestForm</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span>
+        <span class="n">current_password</span><span class="o">=</span><span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;wrong_password&quot;</span><span class="p">),</span>
+        <span class="n">new_password</span><span class="o">=</span><span class="n">_simple_hash</span><span class="p">(</span><span class="s2">&quot;new_password&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">change_password</span><span class="p">(</span><span class="n">form_data</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">err</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span>
+    <span class="k">assert</span> <span class="n">err</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">detail</span> <span class="o">==</span> <span class="s2">&quot;Incorrect username or password.&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="test_change_password_failure_default_password">
+<a class="viewcode-back" href="../../../../../../../reference/api/florist.tests.integration.api.routes.server.test_auth.html#florist.tests.integration.api.routes.server.test_auth.test_change_password_failure_default_password">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_change_password_failure_default_password</span><span class="p">(</span><span class="n">mock_request</span><span class="p">):</span>
+    <span class="k">await</span> <span class="n">make_default_server_user</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">database</span><span class="p">)</span>
+    <span class="n">form_data</span> <span class="o">=</span> <span class="n">OAuth2ChangePasswordRequestForm</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="n">DEFAULT_USERNAME</span><span class="p">,</span>
+        <span class="n">current_password</span><span class="o">=</span><span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">),</span>
+        <span class="n">new_password</span><span class="o">=</span><span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">change_password</span><span class="p">(</span><span class="n">form_data</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">err</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span>
+    <span class="k">assert</span> <span class="n">err</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">detail</span> <span class="o">==</span> <span class="s2">&quot;New password cannot be the default password.&quot;</span></div>
 
 </pre></div>
         </article>

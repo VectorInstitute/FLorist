@@ -387,7 +387,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_models</span><span class="p">,</span> <span class="n">list_clients</span><span class="p">,</span> <span class="n">list_strategies</span><span class="p">,</span> <span class="n">list_optimizers</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.servers.strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strategy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">florist.tests.integration.api.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestUvicornServer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.tests.integration.api.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestUvicornServer</span><span class="p">,</span> <span class="n">use_test_database</span><span class="p">,</span> <span class="n">change_default_password</span>
 
 
 <div class="viewcode-block" id="test_list_models">
@@ -427,7 +427,39 @@
 
 <div class="viewcode-block" id="test_authentication_success">
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.test_server.html#florist.tests.integration.api.test_server.test_authentication_success">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_authentication_success</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_authentication_success</span><span class="p">(</span><span class="n">use_test_database</span><span class="p">):</span>
+    <span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="mi">8000</span>
+    <span class="n">new_password</span> <span class="o">=</span> <span class="s2">&quot;new_password&quot;</span>
+    <span class="n">service_config</span> <span class="o">=</span> <span class="n">uvicorn</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="s2">&quot;florist.api.server:app&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">TestUvicornServer</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">service_config</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">service</span><span class="o">.</span><span class="n">run_in_thread</span><span class="p">():</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">/api/server/auth/token&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;grant_type&quot;</span><span class="p">:</span> <span class="s2">&quot;password&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">DEFAULT_USERNAME</span><span class="p">,</span>
+                <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">_simple_hash</span><span class="p">(</span><span class="n">DEFAULT_PASSWORD</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">Token</span><span class="p">(</span><span class="o">**</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="k">assert</span> <span class="n">token</span><span class="o">.</span><span class="n">should_change_password</span> <span class="o">==</span> <span class="kc">True</span>
+
+        <span class="n">token</span> <span class="o">=</span> <span class="n">change_default_password</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">_simple_hash</span><span class="p">(</span><span class="n">new_password</span><span class="p">),</span> <span class="s2">&quot;server&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">token</span><span class="o">.</span><span class="n">should_change_password</span> <span class="o">==</span> <span class="kc">False</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">/api/server/models&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">token</span><span class="o">.</span><span class="n">access_token</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span></div>
+
+
+
+<div class="viewcode-block" id="test_authentication_failure_default_password">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.test_server.html#florist.tests.integration.api.test_server.test_authentication_failure_default_password">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_authentication_failure_default_password</span><span class="p">(</span><span class="n">use_test_database</span><span class="p">):</span>
     <span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
     <span class="n">port</span> <span class="o">=</span> <span class="mi">8000</span>
     <span class="n">service_config</span> <span class="o">=</span> <span class="n">uvicorn</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="s2">&quot;florist.api.server:app&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span>
@@ -443,18 +475,19 @@
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="n">token</span> <span class="o">=</span> <span class="n">Token</span><span class="p">(</span><span class="o">**</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="k">assert</span> <span class="n">token</span><span class="o">.</span><span class="n">should_change_password</span> <span class="o">==</span> <span class="kc">True</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">/api/server/models&quot;</span><span class="p">,</span>
             <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">token</span><span class="o">.</span><span class="n">access_token</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
         <span class="p">)</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span></div>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span></div>
 
 
 
-<div class="viewcode-block" id="test_authentication_failure">
-<a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.test_server.html#florist.tests.integration.api.test_server.test_authentication_failure">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_authentication_failure</span><span class="p">():</span>
+<div class="viewcode-block" id="test_authentication_failure_invalid_token">
+<a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.test_server.html#florist.tests.integration.api.test_server.test_authentication_failure_invalid_token">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_authentication_failure_invalid_token</span><span class="p">(</span><span class="n">use_test_database</span><span class="p">):</span>
     <span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
     <span class="n">port</span> <span class="o">=</span> <span class="mi">8000</span>
     <span class="n">service_config</span> <span class="o">=</span> <span class="n">uvicorn</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="s2">&quot;florist.api.server:app&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span>

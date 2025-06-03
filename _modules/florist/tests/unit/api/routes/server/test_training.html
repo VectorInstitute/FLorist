@@ -385,7 +385,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.auth.token</span><span class="w"> </span><span class="kn">import</span> <span class="n">Token</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.clients</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.clients.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">DATABASE_NAME</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.db.server_entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">JOB_COLLECTION_NAME</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.monitoring.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_host_and_port_from_address</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">florist.api.models.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
@@ -1024,13 +1024,13 @@
             <span class="k">await</span> <span class="n">server_training_listener</span><span class="p">(</span><span class="n">test_job</span><span class="p">)</span>
 
             <span class="c1"># Assert</span>
-            <span class="n">mock_set_status</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_SUCCESSFULLY</span><span class="p">,</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DATABASE_NAME</span><span class="p">])</span>
+            <span class="n">mock_set_status</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_SUCCESSFULLY</span><span class="p">,</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="p">])</span>
 
             <span class="k">assert</span> <span class="n">mock_set_server_metrics</span><span class="o">.</span><span class="n">call_count</span> <span class="o">==</span> <span class="mi">3</span>
             <span class="n">mock_set_server_metrics</span><span class="o">.</span><span class="n">assert_has_calls</span><span class="p">([</span>
-                <span class="n">call</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DATABASE_NAME</span><span class="p">]),</span>
-                <span class="n">call</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DATABASE_NAME</span><span class="p">]),</span>
-                <span class="n">call</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DATABASE_NAME</span><span class="p">]),</span>
+                <span class="n">call</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="p">]),</span>
+                <span class="n">call</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="p">]),</span>
+                <span class="n">call</span><span class="p">(</span><span class="n">test_server_metrics</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="p">]),</span>
             <span class="p">])</span>
 
     <span class="k">assert</span> <span class="n">mock_get_from_redis</span><span class="o">.</span><span class="n">call_count</span> <span class="o">==</span> <span class="mi">3</span>
@@ -1069,8 +1069,8 @@
             <span class="k">await</span> <span class="n">server_training_listener</span><span class="p">(</span><span class="n">test_job</span><span class="p">)</span>
 
             <span class="c1"># Assert</span>
-            <span class="n">mock_set_status</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_SUCCESSFULLY</span><span class="p">,</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DATABASE_NAME</span><span class="p">])</span>
-            <span class="n">mock_set_server_metrics</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_server_final_metrics</span><span class="p">,</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DATABASE_NAME</span><span class="p">])</span>
+            <span class="n">mock_set_status</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">FINISHED_SUCCESSFULLY</span><span class="p">,</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="p">])</span>
+            <span class="n">mock_set_server_metrics</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">test_server_final_metrics</span><span class="p">,</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="p">])</span>
 
     <span class="k">assert</span> <span class="n">mock_get_from_redis</span><span class="o">.</span><span class="n">call_count</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="n">mock_db_client</span><span class="o">.</span><span class="n">close</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div>
@@ -1149,9 +1149,9 @@
         <span class="c1"># Assert</span>
         <span class="k">assert</span> <span class="n">mock_set_client_metrics</span><span class="o">.</span><span class="n">call_count</span> <span class="o">==</span> <span class="mi">3</span>
         <span class="n">mock_set_client_metrics</span><span class="o">.</span><span class="n">assert_has_calls</span><span class="p">([</span>
-            <span class="n">call</span><span class="p">(</span><span class="n">test_client_uuid</span><span class="p">,</span> <span class="n">test_client_metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DATABASE_NAME</span><span class="p">]),</span>
-            <span class="n">call</span><span class="p">(</span><span class="n">test_client_uuid</span><span class="p">,</span> <span class="n">test_client_metrics</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DATABASE_NAME</span><span class="p">]),</span>
-            <span class="n">call</span><span class="p">(</span><span class="n">test_client_uuid</span><span class="p">,</span> <span class="n">test_client_metrics</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DATABASE_NAME</span><span class="p">]),</span>
+            <span class="n">call</span><span class="p">(</span><span class="n">test_client_uuid</span><span class="p">,</span> <span class="n">test_client_metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="p">]),</span>
+            <span class="n">call</span><span class="p">(</span><span class="n">test_client_uuid</span><span class="p">,</span> <span class="n">test_client_metrics</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="p">]),</span>
+            <span class="n">call</span><span class="p">(</span><span class="n">test_client_uuid</span><span class="p">,</span> <span class="n">test_client_metrics</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="p">]),</span>
         <span class="p">])</span>
 
     <span class="k">assert</span> <span class="n">mock_get_from_redis</span><span class="o">.</span><span class="n">call_count</span> <span class="o">==</span> <span class="mi">3</span>
@@ -1194,7 +1194,7 @@
         <span class="n">mock_set_client_metrics</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span>
             <span class="n">test_client_uuid</span><span class="p">,</span>
             <span class="n">test_client_final_metrics</span><span class="p">,</span>
-            <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DATABASE_NAME</span><span class="p">],</span>
+            <span class="n">mock_db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="p">],</span>
         <span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">mock_get_from_redis</span><span class="o">.</span><span class="n">call_count</span> <span class="o">==</span> <span class="mi">1</span>
@@ -1303,7 +1303,7 @@
     <span class="n">mock_database</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
     <span class="n">mock_db_client</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
     <span class="n">mock_db_client</span><span class="o">.</span><span class="fm">__getitem__</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span>
-        <span class="n">side_effect</span><span class="o">=</span><span class="k">lambda</span> <span class="n">database_name</span><span class="p">:</span> <span class="n">mock_database</span> <span class="k">if</span> <span class="n">database_name</span> <span class="o">==</span> <span class="n">DATABASE_NAME</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">side_effect</span><span class="o">=</span><span class="k">lambda</span> <span class="n">database_name</span><span class="p">:</span> <span class="n">mock_database</span> <span class="k">if</span> <span class="n">database_name</span> <span class="o">==</span> <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">mock_db_client</span></div>
 
