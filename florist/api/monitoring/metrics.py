@@ -232,7 +232,7 @@ def get_subscriber(channel: str, redis_address: str) -> PubSub:
     """
     redis_host, redis_port = get_host_and_port_from_address(redis_address)
     redis_connection = redis.Redis(host=redis_host, port=redis_port)
-    pubsub: PubSub = redis_connection.pubsub()  # type: ignore[no-untyped-call]
+    pubsub: PubSub = redis_connection.pubsub()
     pubsub.subscribe(channel)  # type: ignore[no-untyped-call]
     return pubsub
 
