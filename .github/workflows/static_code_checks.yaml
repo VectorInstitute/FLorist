@@ -65,11 +65,12 @@ jobs:
         uses: pypa/gh-action-pip-audit@v1.1.0
         with:
           virtual-environment: .venv/
-          # Skipping 2 cryptography issues that can't be patched because of Flower
-          # Skipping 3 pytorch issues that don't have a fix yet
+          # Skipping 3 pytorch issues that can't be patched because of FL4Health
+          # Skipping 1 pillow issue that can't be patched because of pycyclops
+          # Skipping 1 vulnerability in ecdsa that has no planned fix version
           ignore-vulns: |
-            GHSA-h4gh-qq45-vh27
-            GHSA-79v4-65xg-pq4g
             GHSA-3749-ghw9-m3mg
             GHSA-887c-mr87-cxwp
             GHSA-53q9-r3pm-6pq6
+            PYSEC-2025-61
+            GHSA-wj6h-64fc-37mp
