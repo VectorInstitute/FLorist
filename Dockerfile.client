@@ -1,0 +1,46 @@
+FROM ubuntu:22.04
+
+# Set environment variables to avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+
+# Update package list and install Python 3.10 and essential packages
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update \
+    && apt-get install -y \
+    python3.10 \
+    python3.10-venv \
+    python3.10-dev \
+    python3-pip \
+    curl \
+    wget \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create symbolic links to make python3.10 the default python3
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+
+# Upgrade pip to latest version
+RUN python3 -m pip install --upgrade pip
+
+# Install Poetry
+RUN python3 -m pip install poetry
+
+# Configure Poetry to not create virtual environment (since we're in a container)
+RUN poetry config virtualenvs.create false
+
+# Copy the entire working directory to /app in the container
+COPY . /app/
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies
+RUN poetry install --no-interaction --no-ansi
+
+# Run the client
+CMD ["python3", "-m", "uvicorn", "florist.api.client:app", "--host", "0.0.0.0", "--port", "8001"]

@@ -136,3 +136,8 @@ After that, the password will need to be shared with the server for authenticati
 If you are interested in contributing to the library, please see [CONTRIBUTING.MD](CONTRIBUTING.md).
 This file contains many details around contributing to the code base, including development
 practices, code checks, tests, and more.
+
+
+TODO: change the readme to this:
+docker build -f Dockerfile.client -t florist-client .
+docker run -p 8001:8001 florist-client
