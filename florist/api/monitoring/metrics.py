@@ -154,6 +154,14 @@ class RedisMetricsReporter(BaseReporter):  # type: ignore
 
         return True
 
+    def __hash__(self) -> int:
+        """
+        Return the hash of the instance.
+
+        :return: (int) the hash of the instance.
+        """
+        return hash(str(self.host) + str(self.port) + str(self.run_id))
+
 
 def get_host_and_port_from_address(address: str) -> tuple[str, int]:
     """

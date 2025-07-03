@@ -102,6 +102,14 @@ class EntityDAO(ABC):
             return False
         return self.to_json() == other.to_json()
 
+    def __hash__(self) -> int:
+        """
+        Return the hash of the entity.
+
+        :return: (int) the hash of the entity.
+        """
+        return hash(self.to_json())
+
     @classmethod
     @abstractmethod
     def from_json(cls, json_data: str) -> Self:
