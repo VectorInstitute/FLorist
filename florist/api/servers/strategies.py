@@ -113,6 +113,14 @@ class ServerFactory:
 
         return True
 
+    def __hash__(self) -> int:
+        """
+        Return the hash of the instance.
+
+        :return: (int) the hash of the instance.
+        """
+        return hash(self.get_server_function)
+
 
 def fit_config_function(server_config: dict[str, Scalar], current_server_round: int) -> dict[str, Scalar]:
     """
