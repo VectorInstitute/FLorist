@@ -138,6 +138,11 @@ This file contains many details around contributing to the code base, including 
 practices, code checks, tests, and more.
 
 
+<!--
 TODO: change the readme to this:
 docker build -f Dockerfile.client -t florist-client .
 docker run -p 8001:8001 florist-client
+
+docker build -f Dockerfile.server -t florist-server .
+docker run -p 3000:3000 florist-server
+-->

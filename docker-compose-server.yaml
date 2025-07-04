@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # MongoDB service
+  mongodb:
+    image: mongo:7.0
+    container_name: florist-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: admin
+    #   MONGO_INITDB_ROOT_PASSWORD: password
+    #   MONGO_INITDB_DATABASE: florist
+    # volumes:
+    #   - mongodb_data:/data/db
+    #   - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - florist-network
+
+  # Redis service
+  redis:
+    image: redis:7.2-alpine
+    container_name: florist-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    # volumes:
+    #   - redis_data:/data
+    # command: redis-server --appendonly yes
+    networks:
+      - florist-network
+
+  # Florist Server
+  florist-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: florist-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    # environment:
+      # - MONGODB_URI=mongodb://admin:password@mongodb:27017/florist?authSource=admin
+      # - REDIS_HOST=redis
+      # - REDIS_PORT=6379
+      # - PYTHONPATH=/app
+    depends_on:
+      - mongodb
+      - redis
+    # volumes:
+    #   - ./logs:/app/logs
+    #   - ./metrics:/app/metrics
+    networks:
+      - florist-network
+
+# volumes:
+#   mongodb_data:
+#     driver: local
+#   redis_data:
+#     driver: local
+
+networks:
+  florist-network:
+    driver: bridge
