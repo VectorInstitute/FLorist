@@ -4,9 +4,7 @@ services:
 
   # Florist Client
   florist-client:
-    build:
-      context: .
-      dockerfile: Dockerfile.client
+    image: floristdocker/florist:client
     container_name: florist-client
     restart: unless-stopped
     ports:
