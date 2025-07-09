@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+
+  # Florist Client
+  florist-client:
+    image: floristdocker/florist:client
+    container_name: florist-client
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    networks:
+      - florist-network
+
+networks:
+  florist-network:
+    driver: bridge

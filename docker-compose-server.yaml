@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # MongoDB service
+  florist-mongodb:
+    image: mongo:7.0
+    container_name: florist-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/mongodb
+    networks:
+      - florist-network
+
+  # Redis service
+  florist-redis:
+    image: redis:7.2-alpine
+    container_name: florist-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data/redis
+    networks:
+      - florist-network
+
+  # Florist Server
+  florist-server:
+    image: floristdocker/florist:server
+    container_name: florist-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+      - "8080-8200:8080-8200"  # Exposing a range of ports so flower servers can be started using them
+    environment:
+      - MONGODB_URI=mongodb://florist-mongodb:27017/
+    depends_on:
+      - florist-mongodb
+      - florist-redis
+    networks:
+      - florist-network
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  florist-network:
+    driver: bridge
