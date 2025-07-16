@@ -134,7 +134,7 @@ python -m uvicorn florist.api.client:app --reload --port 8001
 
 The service will be available at `http://localhost:8001`.
 
-Aditionally, in order to have a client fully up and running, you will need to change the
+Additionally, in order to have a client fully up and running, you will need to change the
 default password to something else. To do so, go to `http://localhost:8001/change-password/index.html`
 and input the new password. The default password is `admin`. Changing the password
 to something different than the default is required, all API calls will fail otherwise.

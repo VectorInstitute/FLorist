@@ -33,6 +33,13 @@ default password, which you can do at the URL below:
 http://localhost:8001/change-password/index.html
 ```
 
+> [!NOTE]
+> If you need to run two clients on the same machine, you will need to
+> change a few things in the [`docker-compose-client.yaml`](docker-compose-client.yaml) file:
+> - The name of the service on [line 6](docker-compose-client.yaml#L6)
+> - The `container_name` on [line 11](docker-compose-client.yaml#L11)
+> - And the port mapping of your host (the first of the two values) on [line 11](docker-compose-client.yaml#L11)
+
 ### 3. Start the server containers
 
 To start the server containers, download the [docker-compose-server.yaml](docker-compose-server.yaml)
@@ -67,7 +74,14 @@ they are all being run within the same machine:
 
 - Server Address: `florist-server:8080` (or any other port between 8080-8200)
 - Redis Address: `florist-redis:6379`
-- Client Address: `florist-client:8001` (or any other port that you have started the client with)
+- Client Address: `florist-client:8001`
+
+> [!NOTE]
+> If you have more than one client running, you can add another client
+> using the UI controls and use the service name and port you have started
+> your client under. For example, if you have used the service name
+> `florist-client-2` and the port `8002`, you should fill up in the client
+> address as `florist-client-2:8002`.
 
 Please also refer to te screenshot below for a sample configuration:
 
