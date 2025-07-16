@@ -1,138 +1,99 @@
 # <img src="https://github.com/VectorInstitute/FLorist/assets/11467898/5c7bcdef-311f-4a88-ae72-ed16f76b7c03" alt="FLorist logo" width="40"/> FLorist
 
-A platform to launch federated learning (FL) training jobs.
+FLorist is a platform to launch and monitor Federated Learning (FL) training jobs. Its goal is to bridge the gap between state-of-the-art FL algorithm implementations and their applications by providing a system to easily kick off, orchestrate, manage, collect, and summarize the results of FL4Health training jobs.
 
-## Setting up
+For a technical deep dive, visit our [documentation](https://vectorinstitute.github.io/FLorist/).
 
-### Install dependencies
+## Running FLorist with Docker
 
-To install the project dependencies, first you need to create a virtual environment.
-The easiest way is by using the [virtualenv](https://pypi.org/project/virtualenv/) package:
+The easiest way to get FLorist up and running is to run the Docker images.
 
-```shell
-virtualenv venv
-source venv/bin/activate
-```
+### 1. Installing Docker
 
-We use [Poetry](https://python-poetry.org/) to manage back-end dependencies:
+In case you don't have Docker installed, install it with the guide below:
+https://docs.docker.com/desktop/
 
-```shell
-pip install --upgrade pip poetry
-poetry install
-```
+The FLorist Docker images are going to be located at [floristdocker/florist](https://hub.docker.com/repository/docker/floristdocker/florist/general) in Docker Hub.
 
-### Install Yarn
+### 2. Start the client container
 
-We use [Yarn](https://yarnpkg.com/) to manage front-end dependencies. Install it on MacOS
-using [Homebrew](https://brew.sh/). Also make sure install Node in case you don't have it.
+To start the client container, download the [docker-compose-client.yaml](docker-compose-client.yaml)
+file and run the command below:
 
 ```shell
-brew install node
-brew install yarn
+docker compose -f docker-compose-client.yaml up
 ```
 
-Then install the project dependencies in production mode:
-```shell
-yarn --prod
+That command will start the client's docker image, which will run the service on
+port `8001`. The authentication service is configured with a default password `admin`.
+You will only be able to successfully authenticate to the client if you change the
+default password, which you can do at the URL below:
+
+```
+http://localhost:8001/change-password/index.html
 ```
 
-### Pulling Redis' Docker
+> [!NOTE]
+> If you need to run two clients on the same machine, you will need to
+> change a few things in the [`docker-compose-client.yaml`](docker-compose-client.yaml) file:
+> - The name of the service on [line 6](docker-compose-client.yaml#L6)
+> - The `container_name` on [line 11](docker-compose-client.yaml#L11)
+> - And the port mapping of your host (the first of the two values) on [line 11](docker-compose-client.yaml#L11)
 
-[Redis](https://redis.io/) is used to fetch the metrics reported by servers and clients during their runs.
+### 3. Start the server containers
 
-
-If you don't have Docker installed, follow [these instructions](https://docs.docker.com/desktop/)
-to install it. Then, pull [Redis' official docker image](https://hub.docker.com/_/redis)
-(we currently use version 7.2.4):
-```shell
-docker pull redis:7.2.4
-```
-
-### Pulling MongoDB's Docker
-
-[MongoDB](https://www.mongodb.com) is used to store information about the training jobs.
-
-If you don't have Docker installed, follow [these instructions](https://docs.docker.com/desktop/)
-to install it. Then, pull [MongoDB' official docker image](https://hub.docker.com/_/mongo)
-(we currently use version 7.0.8):
-```shell
-docker pull mongo:7.0.8
-```
-
-## Running the server
-
-### Start MongoDB's instance
-
-If it's your first time running it, create a container and run it with the command below:
-```shell
-docker run --name mongodb-florist -d -p 27017:27017 mongo:7.0.8
-```
-
-From the second time on, you can just start it:
-```shell
-docker start mongodb-florist
-```
-
-### Start server's Redis instance
-
-If it's your first time running it, create a container and run it with the command below:
-```shell
-docker run --name redis-florist-server -d -p 6379:6379 redis:7.2.4 redis-server --save 60 1 --loglevel warning
-```
-
-From the second time on, you can just start it:
-```shell
-docker start redis-florist-server
-```
-
-### Start back-end and front-end servers
-
-Use Yarn to run both the back-end and front-end on production server mode:
+To start the server containers, download the [docker-compose-server.yaml](docker-compose-server.yaml)
+file and run the command below:
 
 ```shell
-yarn prod
+docker compose -f docker-compose-server.yaml up
 ```
 
-The front-end will be available at `http://localhost:3000`. If you want to access
-back-end APIs individually, they will be available at `https://localhost:8000`.
+That command will start 3 containers:
 
-Upon first access, you will be redirected to the `/login` page to enter a password.
-The default password is `admin` and you will be prompted to change it on first login.
-Changing the password to something different than the default is required, all API calls
-will fail otherwise.
+1. A MongoDB container, called `florist-mongodb` at port `27017`, which serves as
+the application database.
+2. A Redis container, called `florist-redis` at port `6379`, which serves as
+the communication layer between FLorist and the federated learning clients and
+servers.
+3. The FLorist server service itself, at port `3000`.
 
-## Running the client
+Upon first access to the URL below, the UI will prompt you to authenticate with
+the default password (`admin`). Right after it will ask you to change that
+password in order to keep using the service.
 
-### Start client's Redis instance
-
-If it's your first time running it, create a container and run it with the command below:
-```shell
-docker run --name redis-florist-client -d -p 6380:6379 redis:7.2.4 redis-server --save 60 1 --loglevel warning
+```
+http://localhost:3000/
 ```
 
-From the second time on, you can just start it:
-```shell
-docker start redis-florist-client
-```
+### 4. Kicking off training jobs
 
-### Start back-end and front-end servers
+Once you access the Jobs page, you will need to fill up a few network addresses.
+In the Docker configuration, those are the following addresses that will work if
+they are all being run within the same machine:
 
-To start the client back-end service:
+- Server Address: `florist-server:8080` (or any other port between 8080-8200)
+- Redis Address: `florist-redis:6379`
+- Client Address: `florist-client:8001`
 
-```shell
-python -m uvicorn florist.api.client:app --reload --port 8001
-```
+> [!NOTE]
+> If you have more than one client running, you can add another client
+> using the UI controls and use the service name and port you have started
+> your client under. For example, if you have used the service name
+> `florist-client-2` and the port `8002`, you should fill up in the client
+> address as `florist-client-2:8002`.
 
-The service will be available at `http://localhost:8001`.
+Please also refer to te screenshot below for a sample configuration:
 
-Aditionally, in order to have a client fully up and running, you will need to change the
-default password to something else. To do so, go to `http://localhost:8001/change-password/index.html`
-and input the new password. The default password is `admin`. Changing the password
-to something different than the default is required, all API calls will fail otherwise.
-After that, the password will need to be shared with the server for authentication.
+<img width="876" height="901" alt="Image" src="https://github.com/user-attachments/assets/801bba42-e204-4508-8a9f-94d5c125b7bc" />
+
+## Running FLorist from source
+
+In case you want to run FLorist from the source code, please follow the steps in
+our [CONTRIBUTING.md](CONTRIBUTING.md) guide.
 
 # Contributing
 
-If you are interested in contributing to the library, please see [CONTRIBUTING.MD](CONTRIBUTING.md).
+If you are interested in contributing to the library, please see [CONTRIBUTING.md](CONTRIBUTING.md).
 This file contains many details around contributing to the code base, including development
 practices, code checks, tests, and more.

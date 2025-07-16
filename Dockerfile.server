@@ -1,0 +1,63 @@
+FROM ubuntu:22.04
+
+# Set environment variables to avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+
+# Update package list and install Python 3.10 and essential packages
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update \
+    && apt-get install -y \
+    python3.10 \
+    python3.10-venv \
+    python3.10-dev \
+    python3-pip \
+    curl \
+    wget \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+# Install Yarn
+RUN npm install -g yarn
+
+# Install concurrently globally
+RUN npm install -g concurrently
+
+# Create symbolic links to make python3.10 the default python3
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+
+# Upgrade pip to latest version
+RUN python3 -m pip install --upgrade pip
+
+# Install Poetry
+RUN python3 -m pip install poetry
+
+# Configure Poetry to not create virtual environment (since we're in a container)
+RUN poetry config virtualenvs.create false
+
+# Set working directory
+WORKDIR /app
+
+# Copy dependency files first (for better caching)
+COPY pyproject.toml poetry.lock ./
+COPY package.json yarn.lock ./
+
+# Install backend dependencies
+RUN poetry install --no-interaction --no-ansi --no-root
+
+# Install frontend dependencies
+RUN yarn --prod
+
+# Copy the rest of the application code
+COPY . .
+
+# Run the server and UI
+CMD ["yarn", "prod"]

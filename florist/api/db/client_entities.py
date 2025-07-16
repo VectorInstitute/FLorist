@@ -15,7 +15,7 @@ class EntityDAO(ABC):
     """Base Data Access Object (DAO) for SQLite entities."""
 
     table_name = "Entity"
-    db_path = DatabaseConfig.sqlite_db_path
+    db_path = DatabaseConfig.get_sqlite_db_path()
 
     @abstractmethod
     def __init__(self, uuid: str):

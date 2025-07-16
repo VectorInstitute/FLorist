@@ -35,7 +35,7 @@ class TestUvicornServer(uvicorn.Server):
 
 class MockApp:
     def __init__(self, database_name: str):
-        self.db_client = AsyncIOMotorClient(DatabaseConfig.mongodb_uri)
+        self.db_client = AsyncIOMotorClient(DatabaseConfig.get_mongodb_uri())
         self.database = self.db_client[database_name]
         self.clients_auth_tokens = {}
 
@@ -80,27 +80,22 @@ async def mock_request() -> MockRequest:
 
 @pytest.fixture
 async def use_test_database() -> None:
-    # saving real database config
-    sqlite_db_path = DatabaseConfig.sqlite_db_path
-    database_name = DatabaseConfig.mongodb_db_name
+    os.environ["MONGODB_DB_NAME"] = TEST_DATABASE_NAME
+    os.environ["SQLITE_DB_PATH"] = TEST_SQLITE_DB_PATH
 
     # replacing real database config with test database config
-    DatabaseConfig.sqlite_db_path = TEST_SQLITE_DB_PATH
-    EntityDAO.db_path = DatabaseConfig.sqlite_db_path
-    print(f"Creating test detabase '{DatabaseConfig.sqlite_db_path}'")
-    DatabaseConfig.mongodb_db_name = TEST_DATABASE_NAME
-    print(f"Using test detabase '{DatabaseConfig.mongodb_db_name}'")
+    EntityDAO.db_path = DatabaseConfig.get_sqlite_db_path()
+    print(f"Using test database '{DatabaseConfig.get_sqlite_db_path()}'")
+    print(f"Using test database '{DatabaseConfig.get_mongodb_db_name()}'")
 
     yield
 
-    # restoring real database config
-    DatabaseConfig.sqlite_db_path = sqlite_db_path
-    EntityDAO.db_path = sqlite_db_path
-    DatabaseConfig.mongodb_db_name = database_name
+    os.environ.pop("MONGODB_DB_NAME")
+    os.environ.pop("SQLITE_DB_PATH")
 
     # deleting test databases
     print(f"Deleting test detabase '{TEST_DATABASE_NAME}'")
-    db_client = AsyncIOMotorClient(DatabaseConfig.mongodb_uri)
+    db_client = AsyncIOMotorClient(DatabaseConfig.get_mongodb_uri())
     await db_client.drop_database(TEST_DATABASE_NAME)
 
     if os.path.exists(TEST_SQLITE_DB_PATH):
