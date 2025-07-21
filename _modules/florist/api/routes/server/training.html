@@ -525,8 +525,8 @@
 
     <span class="k">assert</span> <span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;client_info.uuid is None.&quot;</span>
 
-    <span class="n">db_client</span><span class="p">:</span> <span class="n">AsyncIOMotorClient</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_uri</span><span class="p">)</span>
-    <span class="n">database</span> <span class="o">=</span> <span class="n">db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="p">]</span>
+    <span class="n">db_client</span><span class="p">:</span> <span class="n">AsyncIOMotorClient</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">get_mongodb_uri</span><span class="p">())</span>
+    <span class="n">database</span> <span class="o">=</span> <span class="n">db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">get_mongodb_db_name</span><span class="p">()]</span>
 
     <span class="c1"># check if training has already finished before start listening</span>
     <span class="n">client_metrics</span> <span class="o">=</span> <span class="n">get_from_redis</span><span class="p">(</span><span class="n">client_info</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">client_info</span><span class="o">.</span><span class="n">redis_address</span><span class="p">)</span>
@@ -578,8 +578,8 @@
     <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">server_uuid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;job.server_uuid is None.&quot;</span>
     <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_address</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;job.redis_address is None.&quot;</span>
 
-    <span class="n">db_client</span><span class="p">:</span> <span class="n">AsyncIOMotorClient</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_uri</span><span class="p">)</span>
-    <span class="n">database</span> <span class="o">=</span> <span class="n">db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="p">]</span>
+    <span class="n">db_client</span><span class="p">:</span> <span class="n">AsyncIOMotorClient</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">get_mongodb_uri</span><span class="p">())</span>
+    <span class="n">database</span> <span class="o">=</span> <span class="n">db_client</span><span class="p">[</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">get_mongodb_db_name</span><span class="p">()]</span>
 
     <span class="c1"># check if training has already finished before start listening</span>
     <span class="n">server_metrics</span> <span class="o">=</span> <span class="n">get_from_redis</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">server_uuid</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">redis_address</span><span class="p">)</span>

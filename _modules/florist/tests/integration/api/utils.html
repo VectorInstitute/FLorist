@@ -424,7 +424,7 @@
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.utils.html#florist.tests.integration.api.utils.MockApp">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MockApp</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_client</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_client</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">get_mongodb_uri</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_client</span><span class="p">[</span><span class="n">database_name</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clients_auth_tokens</span> <span class="o">=</span> <span class="p">{}</span></div>
 
@@ -478,27 +478,22 @@
 <a class="viewcode-back" href="../../../../../reference/api/florist.tests.integration.api.utils.html#florist.tests.integration.api.utils.use_test_database">[docs]</a>
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">use_test_database</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="c1"># saving real database config</span>
-    <span class="n">sqlite_db_path</span> <span class="o">=</span> <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">sqlite_db_path</span>
-    <span class="n">database_name</span> <span class="o">=</span> <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;MONGODB_DB_NAME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEST_DATABASE_NAME</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SQLITE_DB_PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEST_SQLITE_DB_PATH</span>
 
     <span class="c1"># replacing real database config with test database config</span>
-    <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">sqlite_db_path</span> <span class="o">=</span> <span class="n">TEST_SQLITE_DB_PATH</span>
-    <span class="n">EntityDAO</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">sqlite_db_path</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating test detabase &#39;</span><span class="si">{</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">sqlite_db_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-    <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span> <span class="o">=</span> <span class="n">TEST_DATABASE_NAME</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using test detabase &#39;</span><span class="si">{</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="n">EntityDAO</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">get_sqlite_db_path</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using test database &#39;</span><span class="si">{</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">get_sqlite_db_path</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using test database &#39;</span><span class="si">{</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">get_mongodb_db_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
     <span class="k">yield</span>
 
-    <span class="c1"># restoring real database config</span>
-    <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">sqlite_db_path</span> <span class="o">=</span> <span class="n">sqlite_db_path</span>
-    <span class="n">EntityDAO</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">sqlite_db_path</span>
-    <span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_db_name</span> <span class="o">=</span> <span class="n">database_name</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;MONGODB_DB_NAME&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;SQLITE_DB_PATH&quot;</span><span class="p">)</span>
 
     <span class="c1"># deleting test databases</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting test detabase &#39;</span><span class="si">{</span><span class="n">TEST_DATABASE_NAME</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-    <span class="n">db_client</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">mongodb_uri</span><span class="p">)</span>
+    <span class="n">db_client</span> <span class="o">=</span> <span class="n">AsyncIOMotorClient</span><span class="p">(</span><span class="n">DatabaseConfig</span><span class="o">.</span><span class="n">get_mongodb_uri</span><span class="p">())</span>
     <span class="k">await</span> <span class="n">db_client</span><span class="o">.</span><span class="n">drop_database</span><span class="p">(</span><span class="n">TEST_DATABASE_NAME</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">TEST_SQLITE_DB_PATH</span><span class="p">):</span>

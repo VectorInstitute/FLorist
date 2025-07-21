@@ -378,6 +378,8 @@
           <h1>Source code for florist.api.db.config</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Database configuration parameters.&quot;&quot;&quot;</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
 
 <div class="viewcode-block" id="DatabaseConfig">
 <a class="viewcode-back" href="../../../../reference/api/florist.api.db.config.html#florist.api.db.config.DatabaseConfig">[docs]</a>
@@ -387,7 +389,49 @@
     <span class="n">mongodb_uri</span> <span class="o">=</span> <span class="s2">&quot;mongodb://localhost:27017/&quot;</span>
     <span class="n">mongodb_db_name</span> <span class="o">=</span> <span class="s2">&quot;florist-server&quot;</span>
 
-    <span class="n">sqlite_db_path</span> <span class="o">=</span> <span class="s2">&quot;florist/api/client.db&quot;</span></div>
+    <span class="n">sqlite_db_path</span> <span class="o">=</span> <span class="s2">&quot;florist/api/client.db&quot;</span>
+
+<div class="viewcode-block" id="DatabaseConfig.get_mongodb_uri">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.config.html#florist.api.db.config.DatabaseConfig.get_mongodb_uri">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_mongodb_uri</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the MongoDB URI.</span>
+
+<span class="sd">        :return: (str) the MongoDB URI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MONGODB_URI&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MONGODB_URI&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mongodb_uri</span></div>
+
+
+<div class="viewcode-block" id="DatabaseConfig.get_mongodb_db_name">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.config.html#florist.api.db.config.DatabaseConfig.get_mongodb_db_name">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_mongodb_db_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the MongoDB database name.</span>
+
+<span class="sd">        :return: (str) the MongoDB database name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MONGODB_DB_NAME&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MONGODB_DB_NAME&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mongodb_db_name</span></div>
+
+
+<div class="viewcode-block" id="DatabaseConfig.get_sqlite_db_path">
+<a class="viewcode-back" href="../../../../reference/api/florist.api.db.config.html#florist.api.db.config.DatabaseConfig.get_sqlite_db_path">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_sqlite_db_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the SQLite database path.</span>
+
+<span class="sd">        :return: (str) the SQLite database path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SQLITE_DB_PATH&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SQLITE_DB_PATH&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">sqlite_db_path</span></div>
+</div>
 
 </pre></div>
         </article>
