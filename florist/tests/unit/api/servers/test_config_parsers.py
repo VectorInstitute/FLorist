@@ -1,7 +1,7 @@
 import json
 from pytest import raises
 
-from florist.api.servers.config_parsers import ConfigParser,
+from florist.api.servers.config_parsers import ConfigParser
 from florist.api.servers.exception import IncompleteConfigError
 
 def test_parse_basic_config_success() -> None:
