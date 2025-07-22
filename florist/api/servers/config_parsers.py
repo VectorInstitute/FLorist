@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 
 from typing_extensions import Self
 
-from florist.api.servers.exception import IncompleteConfigError
+from florist.api.servers.exceptions import IncompleteConfigError
 
 
 class BasicConfigParser:
