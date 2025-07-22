@@ -1,4 +1,4 @@
-"""Base exception for servers construction"""
+"""Base exception for servers construction."""
 
 
 class IncompleteConfigError(BaseException):
