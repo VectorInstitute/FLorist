@@ -8,6 +8,7 @@ from typing import Any, Dict, List
 
 from typing_extensions import Self
 
+from florist.api.servers.exception import IncompleteConfigError
 
 class BasicConfigParser:
     """Parser for basic server configurations."""
@@ -101,9 +102,3 @@ class ConfigParser(Enum):
         :return: (List[str]) a list of supported config parsers.
         """
         return [config_parser.value for config_parser in ConfigParser]
-
-
-class IncompleteConfigError(Exception):
-    """Defines errors in server config strings that have incomplete information."""
-
-    pass
