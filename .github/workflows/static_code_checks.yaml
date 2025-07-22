@@ -67,9 +67,11 @@ jobs:
           virtual-environment: .venv/
           # Skipping 4 pytorch issues that can't be patched because of FL4Health
           # Skipping 1 pillow issue that can't be patched because of pycyclops
+          # Skipping 1 starlette issue that can't be patched because of fastapi
           ignore-vulns: |
             GHSA-3749-ghw9-m3mg
             GHSA-887c-mr87-cxwp
             GHSA-53q9-r3pm-6pq6
             PYSEC-2024-259
             PYSEC-2025-61
+            GHSA-2c2j-9gv5-cj73
