@@ -10,6 +10,7 @@ from typing_extensions import Self
 
 from florist.api.servers.exception import IncompleteConfigError
 
+
 class BasicConfigParser:
     """Parser for basic server configurations."""
 
