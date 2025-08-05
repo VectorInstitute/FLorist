@@ -142,8 +142,8 @@ async def client_training_listener(job: Job, client_info: ClientInfo) -> None:
 
     assert client_info.uuid is not None, "client_info.uuid is None."
 
-    db_client: AsyncIOMotorClient[Any] = AsyncIOMotorClient(DatabaseConfig.mongodb_uri)
-    database = db_client[DatabaseConfig.mongodb_db_name]
+    db_client: AsyncIOMotorClient[Any] = AsyncIOMotorClient(DatabaseConfig.get_mongodb_uri())
+    database = db_client[DatabaseConfig.get_mongodb_db_name()]
 
     # check if training has already finished before start listening
     client_metrics = get_from_redis(client_info.uuid, client_info.redis_address)
@@ -192,8 +192,8 @@ async def server_training_listener(job: Job) -> None:
     assert job.server_uuid is not None, "job.server_uuid is None."
     assert job.redis_address is not None, "job.redis_address is None."
 
-    db_client: AsyncIOMotorClient[Any] = AsyncIOMotorClient(DatabaseConfig.mongodb_uri)
-    database = db_client[DatabaseConfig.mongodb_db_name]
+    db_client: AsyncIOMotorClient[Any] = AsyncIOMotorClient(DatabaseConfig.get_mongodb_uri())
+    database = db_client[DatabaseConfig.get_mongodb_db_name()]
 
     # check if training has already finished before start listening
     server_metrics = get_from_redis(job.server_uuid, job.redis_address)
