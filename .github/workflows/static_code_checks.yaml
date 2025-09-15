@@ -69,6 +69,7 @@ jobs:
           # Skipping 1 starlette issue that can't be patched because of fastapi
           # Skipping 1 ecdsa vulnerability that has no planned fix version
           # Skipping 1 future vulnerability that has no planned fix version
+          # Skipping 3 monai vulnerabilities that have no planned fix version
           ignore-vulns: |
             GHSA-3749-ghw9-m3mg
             GHSA-887c-mr87-cxwp
@@ -77,3 +78,6 @@ jobs:
             GHSA-wj6h-64fc-37mp
             PYSEC-2025-41
             GHSA-xqrq-4mgf-ff32
+            GHSA-x6ww-pf9m-m73m
+            GHSA-6vm5-6jv9-rjpj
+            GHSA-p8cm-mm2v-gwjm
