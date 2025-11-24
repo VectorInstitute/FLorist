@@ -1,8 +1,8 @@
 import json
 from pytest import raises
 
-from florist.api.servers.config_parsers import ConfigParser, IncompleteConfigError
-
+from florist.api.servers.config_parsers import ConfigParser
+from florist.api.servers.exceptions import IncompleteConfigError
 
 def test_parse_basic_config_success() -> None:
     test_config = {"n_server_rounds": 123, "batch_size": 456, "local_epochs": 789}
