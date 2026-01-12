@@ -67,9 +67,11 @@ jobs:
           virtual-environment: .venv/
           # Skipping 4 pytorch issues that can't be patched because of FL4Health
           # Skipping 1 ecdsa vulnerability that has no planned fix version
+          # Skipping 1 monai vulnerability that has no planned fix version
           ignore-vulns: |
             GHSA-3749-ghw9-m3mg
             GHSA-887c-mr87-cxwp
             PYSEC-2024-259
             PYSEC-2025-41
             GHSA-wj6h-64fc-37mp
+            GHSA-9rg3-9pvr-6p27
