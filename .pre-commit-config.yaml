@@ -16,7 +16,7 @@ repos:
     - id: check-toml
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.14.10'
+    rev: 'v0.17.6'
     hooks:
     - id: ruff
       args: [--fix, --exit-non-zero-on-fix]
@@ -25,7 +25,7 @@ repos:
       types_or: [python, jupyter]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.19.1
+    rev: v2.4.1
     hooks:
     - id: mypy
       entry: python -m mypy --config-file pyproject.toml
@@ -34,7 +34,7 @@ repos:
       exclude: "florist/tests/"
 
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.9.1
+    rev: 1.10.0
     hooks:
     - id: nbqa-ruff
       args: [--fix, --exit-non-zero-on-fix]
